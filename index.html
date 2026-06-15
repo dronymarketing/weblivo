@@ -1,33 +1,702 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Web</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu Nombre — Diseño & Fotografía Aérea</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    /* =====================
+       RESET Y BASE
+    ===================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#111;
-            color:white;
-            text-align:center;
-            padding-top:100px;
-        }
+    body {
+      background: #0a0a0a;
+      color: #f0ede8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
 
-        button{
-            padding:10px 20px;
-            font-size:18px;
-        }
-    </style>
+    /* =====================
+       NAVEGACIÓN
+    ===================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2.5rem;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+    }
+
+    nav .logo {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #f0ede8;
+      text-decoration: none;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    nav ul li a {
+      font-size: 13px;
+      color: rgba(240, 237, 232, 0.55);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    nav ul li a:hover {
+      color: #f0ede8;
+    }
+
+    /* =====================
+       SECCIONES (ESTRUCTURA)
+    ===================== */
+    section {
+      padding: 5rem 2.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+      margin: 0;
+    }
+
+    .section-tag {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240, 237, 232, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      color: #f0ede8;
+      line-height: 1.1;
+      margin-bottom: 3rem;
+    }
+
+    /* =====================
+       HERO (INICIO)
+    ===================== */
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: rgba(240, 237, 232, 0.38);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 500;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      color: #f0ede8;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Este efecto hace el texto con solo el borde, sin relleno */
+    .hero h1 .texto-contorno {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(240, 237, 232, 0.35);
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(240, 237, 232, 0.5);
+      line-height: 1.7;
+      max-width: 440px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-botones {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Botón principal (blanco) */
+    .btn-principal {
+      background: #f0ede8;
+      color: #0a0a0a;
+      border: none;
+      padding: 0.75rem 1.75rem;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-principal:hover {
+      opacity: 0.85;
+    }
+
+    /* Botón secundario (transparente con borde) */
+    .btn-secundario {
+      background: transparent;
+      color: rgba(240, 237, 232, 0.55);
+      border: 0.5px solid rgba(255, 255, 255, 0.15);
+      padding: 0.75rem 1.75rem;
+      font-size: 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-secundario:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #f0ede8;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: rgba(240, 237, 232, 0.25);
+      text-transform: uppercase;
+    }
+
+    /* =====================
+       BRANDING
+    ===================== */
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .brand-card {
+      border-radius: 12px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .brand-card:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Reemplazá el fondo de color por una imagen:
+       background-image: url('imagenes/proyecto1.jpg');
+       background-size: cover;
+       background-position: center; */
+    .brand-card .imagen {
+      aspect-ratio: 4 / 3;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: rgba(240, 237, 232, 0.2);
+      text-transform: uppercase;
+    }
+
+    .brand-card .info {
+      padding: 0.75rem 1rem;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand-card .info-nombre {
+      font-size: 13px;
+      color: rgba(240, 237, 232, 0.75);
+      margin-bottom: 2px;
+    }
+
+    .brand-card .info-tipo {
+      font-size: 11px;
+      color: rgba(240, 237, 232, 0.3);
+      letter-spacing: 0.06em;
+    }
+
+    /* =====================
+       DRON
+    ===================== */
+    .dron-principal {
+      border-radius: 16px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      aspect-ratio: 16 / 7;
+      background: #0d1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      /* Para agregar tu foto/video:
+         background-image: url('imagenes/dron-hero.jpg');
+         background-size: cover;
+         background-position: center; */
+    }
+
+    .dron-placeholder {
+      text-align: center;
+      color: rgba(240, 237, 232, 0.18);
+    }
+
+    .dron-placeholder i {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .dron-placeholder span {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .dron-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .dron-miniatura {
+      border-radius: 10px;
+      border: 0.5px solid rgba(255, 255, 255, 0.07);
+      aspect-ratio: 16 / 9;
+      background: #0d1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(240, 237, 232, 0.18);
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      /* Para tu imagen:
+         background-image: url('imagenes/dron1.jpg');
+         background-size: cover; */
+    }
+
+    .dron-miniatura:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* =====================
+       SOBRE MÍ
+    ===================== */
+    .sobre-mi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .foto-perfil {
+      aspect-ratio: 3 / 4;
+      border-radius: 14px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      background: #141414;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240, 237, 232, 0.18);
+      /* Para tu foto:
+         background-image: url('imagenes/foto.jpg');
+         background-size: cover;
+         background-position: center; */
+    }
+
+    .sobre-mi-texto p {
+      font-size: 15px;
+      color: rgba(240, 237, 232, 0.55);
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+    }
+
+    .habilidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .habilidad-tag {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(240, 237, 232, 0.45);
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 0.3rem 0.85rem;
+    }
+
+    /* =====================
+       CONTACTO
+    ===================== */
+    .contacto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .contacto-info p {
+      font-size: 15px;
+      color: rgba(240, 237, 232, 0.45);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .contacto-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .contacto-link {
+      font-size: 13px;
+      color: rgba(240, 237, 232, 0.4);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+
+    .contacto-link:hover {
+      color: #f0ede8;
+    }
+
+    .contacto-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contacto-form input,
+    .contacto-form textarea {
+      background: rgba(255, 255, 255, 0.04);
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 14px;
+      color: #f0ede8;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .contacto-form input::placeholder,
+    .contacto-form textarea::placeholder {
+      color: rgba(240, 237, 232, 0.22);
+    }
+
+    .contacto-form input:focus,
+    .contacto-form textarea:focus {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .contacto-form textarea {
+      resize: none;
+      height: 110px;
+    }
+
+    .contacto-form button {
+      background: #f0ede8;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1.5rem;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      align-self: flex-start;
+      transition: opacity 0.2s;
+    }
+
+    .contacto-form button:hover {
+      opacity: 0.85;
+    }
+
+    /* =====================
+       FOOTER
+    ===================== */
+    footer {
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-size: 12px;
+      color: rgba(240, 237, 232, 0.22);
+      letter-spacing: 0.04em;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>hijos nilo y malucinda</h1>
-    <p>dejen de mirar carmina y vayan a dormir, polo, noni,chechi.</p>
+  <!-- =====================
+       NAVEGACIÓN
+  ===================== -->
+  <nav>
+    <a href="#inicio" class="logo">TU NOMBRE</a>
+    <ul>
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#branding">Branding</a></li>
+      <li><a href="#dron">Dron</a></li>
+      <li><a href="#sobre-mi">Sobre mí</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
 
-    <button onclick="alert('Funciona!')">
-        Clic aquí
-    </button>
+  <!-- =====================
+       HERO (INICIO)
+  ===================== -->
+  <section class="hero" id="inicio">
+    <p class="hero-eyebrow">Diseño · Identidad · Movimiento</p>
+
+    <!-- EDITÁ ESTE TÍTULO: cambiá el texto dentro de las etiquetas -->
+    <h1>
+      Diseño que<br>
+      <span class="texto-contorno">habla</span><br>
+      por sí solo.
+    </h1>
+
+    <!-- EDITÁ ESTA DESCRIPCIÓN -->
+    <p class="hero-desc">
+      Creo identidades visuales y capturo perspectivas únicas desde el cielo.
+      Entre la forma y el vacío.
+    </p>
+
+    <div class="hero-botones">
+      <a href="#branding" class="btn-principal">Ver proyectos</a>
+      <a href="#contacto" class="btn-secundario">Conversemos</a>
+    </div>
+
+    <span class="hero-scroll">↓ Scroll</span>
+  </section>
+
+  <hr class="divider">
+
+  <!-- =====================
+       BRANDING
+  ===================== -->
+  <section id="branding">
+    <p class="section-tag">— Identidad Visual</p>
+    <h2 class="section-title">Branding</h2>
+
+    <div class="brand-grid">
+
+      <!-- PROYECTO 1 — Para agregar imagen: cambiá el background en CSS (.brand-card .imagen) -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 01</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>    <!-- EDITÁ -->
+          <p class="info-tipo">Identidad · Tipografía</p>  <!-- EDITÁ -->
+        </div>
+      </div>
+
+      <!-- PROYECTO 2 -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 02</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>
+          <p class="info-tipo">Logo · Sistema visual</p>
+        </div>
+      </div>
+
+      <!-- PROYECTO 3 -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 03</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>
+          <p class="info-tipo">Branding · Packaging</p>
+        </div>
+      </div>
+
+      <!-- PROYECTO 4 -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 04</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>
+          <p class="info-tipo">Identidad · Paleta</p>
+        </div>
+      </div>
+
+      <!-- PROYECTO 5 -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 05</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>
+          <p class="info-tipo">Logo · Motion</p>
+        </div>
+      </div>
+
+      <!-- PROYECTO 6 -->
+      <div class="brand-card">
+        <div class="imagen">Proyecto 06</div>
+        <div class="info">
+          <p class="info-nombre">Nombre de la marca</p>
+          <p class="info-tipo">Diseño editorial</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- =====================
+       DRON
+  ===================== -->
+  <section id="dron">
+    <p class="section-tag">— Fotografía aérea</p>
+    <h2 class="section-title">Dron</h2>
+
+    <!-- IMAGEN / VIDEO DESTACADO -->
+    <div class="dron-principal">
+      <div class="dron-placeholder">
+        <i class="ti ti-drone" aria-hidden="true"></i>
+        <span>Tu toma aérea destacada</span>
+      </div>
+    </div>
+
+    <!-- GALERÍA DE 3 MINIATURAS -->
+    <div class="dron-grid">
+      <div class="dron-miniatura">Toma 01</div>
+      <div class="dron-miniatura">Toma 02</div>
+      <div class="dron-miniatura">Toma 03</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- =====================
+       SOBRE MÍ
+  ===================== -->
+  <section id="sobre-mi">
+    <p class="section-tag">— El diseñador</p>
+    <h2 class="section-title">Sobre mí</h2>
+
+    <div class="sobre-mi-grid">
+
+      <!-- FOTO DE PERFIL -->
+      <div class="foto-perfil">Tu foto aquí</div>
+
+      <!-- TEXTO Y HABILIDADES -->
+      <div class="sobre-mi-texto">
+
+        <!-- EDITÁ ESTOS PÁRRAFOS -->
+        <p>
+          Soy diseñador/a con pasión por crear identidades que conectan.
+          Mi trabajo vive en la intersección entre lo conceptual y lo visual.
+        </p>
+        <p>
+          También capturo el mundo desde arriba. La fotografía con dron
+          me permite encontrar ángulos que nadie más ve.
+        </p>
+
+        <!-- EDITÁ ESTAS HABILIDADES -->
+        <div class="habilidades">
+          <span class="habilidad-tag">Identidad visual</span>
+          <span class="habilidad-tag">Tipografía</span>
+          <span class="habilidad-tag">Fotografía aérea</span>
+          <span class="habilidad-tag">Motion</span>
+          <span class="habilidad-tag">Packaging</span>
+          <span class="habilidad-tag">Editorial</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- =====================
+       CONTACTO
+  ===================== -->
+  <section id="contacto">
+    <p class="section-tag">— Hablemos</p>
+    <h2 class="section-title">Contacto</h2>
+
+    <div class="contacto-grid">
+
+      <div class="contacto-info">
+        <p>
+          ¿Tenés un proyecto en mente? Me encantaría escucharte
+          y explorar cómo puedo ayudarte.
+        </p>
+
+        <!-- EDITÁ TUS DATOS DE CONTACTO -->
+        <div class="contacto-links">
+          <a href="mailto:hola@tunombre.com" class="contacto-link">
+            <i class="ti ti-mail" aria-hidden="true"></i>
+            hola@tunombre.com
+          </a>
+          <a href="https://instagram.com/tunombre" class="contacto-link" target="_blank">
+            <i class="ti ti-brand-instagram" aria-hidden="true"></i>
+            @tunombre
+          </a>
+          <a href="https://behance.net/tunombre" class="contacto-link" target="_blank">
+            <i class="ti ti-brand-behance" aria-hidden="true"></i>
+            behance.net/tunombre
+          </a>
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div class="contacto-form">
+        <input type="text" placeholder="Tu nombre">
+        <input type="email" placeholder="Tu email">
+        <textarea placeholder="Contame sobre tu proyecto…"></textarea>
+        <button type="button">Enviar mensaje</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =====================
+       FOOTER
+  ===================== -->
+  <footer>
+    <span>© 2026 Tu Nombre — Diseño & Fotografía Aérea</span>  <!-- EDITÁ -->
+    <span>Hecho con intención.</span>
+  </footer>
 
 </body>
 </html>
