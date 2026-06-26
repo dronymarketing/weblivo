@@ -62,6 +62,11 @@
     }
     .nav-back:hover { color: var(--brown); }
 
+    @media (max-width: 768px) {
+      :root { --px: 1.1rem; }
+      .nav-back { font-size: 9px; letter-spacing: 0.06em; }
+    }
+
     /* PAGE HEADER */
     .page-header {
       padding: 6rem 3rem 3rem;
@@ -281,6 +286,40 @@
     }
 
     .footer-logo img { height: 100px; width: auto; opacity: 0.55; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      :root { --px: 1.1rem; }
+      nav { padding: 0 var(--px); height: 60px; }
+      .nav-logo img { height: 56px; }
+
+      .page-header { padding: 4.5rem var(--px) 2rem; }
+      .page-title { font-size: clamp(2.8rem, 12vw, 4rem); }
+
+      .about-main {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 2.5rem var(--px) 4rem;
+      }
+      .about-photo-wrap { position: static; }
+      .about-photo { aspect-ratio: 4/3; max-width: 300px; margin: 0 auto 1rem; }
+
+      .stats { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+      .stat-num { font-size: 1.9rem; }
+      .stat-box { padding: 0.9rem 0.5rem; }
+
+      .about-cta { flex-direction: column; }
+      .about-cta .btn { width: 100%; text-align: center; }
+
+      footer {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 0.75rem;
+        padding: 1.5rem var(--px);
+      }
+      footer .footer-right { text-align: center; }
+      .footer-logo img { height: 64px; }
+    }
   </style>
 </head>
 <body>
