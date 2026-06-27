@@ -60,17 +60,28 @@
       width: auto;
     }
 
-    .nav-back {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(229,225,224,0.35);
-      text-decoration: none;
-      transition: color 0.2s;
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(229,225,224,0.45); text-decoration: none;
+      position: relative; transition: color 0.25s;
     }
-
-    .nav-back:hover { color: var(--cream); }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 0.5px;
+      background: var(--cream);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.nav-active { color: var(--cream); }
+    .nav-links a.nav-active::after { width: 100%; }
+    @media (max-width: 768px) {
+      .nav-links { gap: 0.9rem; }
+      .nav-links a { font-size: 9px; font-weight: 300; letter-spacing: 0.07em; }
+    }
 
     /* PAGE HEADER */
     .page-header {
@@ -85,7 +96,7 @@
       font-weight: 600;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--olive);
+      color: rgba(229,225,224,0.5);
       margin-bottom: 1rem;
     }
 
@@ -364,7 +375,13 @@
 
   <nav>
     <a href="index.html" class="nav-logo"><img src="Blanco-02.svg" alt="LIVO"></a>
-    <a href="index.html" class="nav-back">← Volver al inicio</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="branding.html">Branding</a></li>
+      <li><a href="dron.html" class="nav-active">Dron</a></li>
+      <li><a href="sobre-mi.html">Sobre mí</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
   </nav>
 
   <div class="page-header">
