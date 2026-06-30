@@ -43,15 +43,14 @@
       background: var(--stone);
     }
 
-    /* Capa fija que pinta el área de gestos (safe-area-inset-bottom) con color dinámico */
+    /* Capa fija que pinta visualmente la zona de la barra de navegación de Android */
     .bottom-safe-area {
       position: fixed;
       left: 0; right: 0; bottom: 0;
-      height: env(safe-area-inset-bottom, 0px);
+      height: max(env(safe-area-inset-bottom, 0px), 24px);
       background: var(--stone);
       z-index: 300;
       pointer-events: none;
-      transition: background-color 0.05s linear;
     }
 
     /* ── NAV ── */
