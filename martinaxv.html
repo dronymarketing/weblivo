@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0A1A3D">
+<title>Martina — XV Años</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Marcellus&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --turquesa: #2E94A0;
+    --noche: #2D1B4E;
+    --dorado: #F0BD5C;
+    --dorado-soft: #f5d28e;
+    --magenta: #C7066E;
+    --marino: #0A1A3D;
+    --bordo: #2E0500;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--marino);
+    color: var(--dorado-soft);
+    overflow-x: hidden;
+  }
+
+  /* ====== HERO ====== */
+  .hero {
+    position: relative;
+    height: 100svh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .hero video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(10,26,61,0.1) 0%,
+      rgba(10,26,61,0.05) 30%,
+      rgba(10,26,61,0.5) 70%,
+      rgba(10,26,61,0.92) 100%
+    );
+    z-index: 2;
+  }
+
+  /* Refuerzo extra para cubrir el watermark inferior derecho con un velo radial */
+  .hero-watermark-veil {
+    position: absolute;
+    z-index: 2;
+    right: -10%;
+    bottom: -8%;
+    width: 70%;
+    height: 45%;
+    background: radial-gradient(
+      ellipse at bottom right,
+      rgba(10,26,61,0.85) 0%,
+      rgba(10,26,61,0.5) 45%,
+      rgba(10,26,61,0) 75%
+    );
+  }
+
+  .hero-content {
+    position: absolute;
+    z-index: 3;
+    right: 4%;
+    bottom: 9%;
+    width: min(78vw, 420px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    padding: 0;
+  }
+
+  /* Placeholder del nombre — reemplazar por imagen diseñada */
+  .name-wrap {
+    margin-bottom: 1rem;
+  }
+
+  .name-wrap img {
+    max-width: min(85vw, 480px);
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 24px rgba(240,189,92,0.35));
+  }
+
+  /* Fallback de texto si todavía no hay imagen */
+  .name-fallback {
+    font-family: 'Marcellus', serif;
+    font-size: clamp(3rem, 16vw, 5rem);
+    letter-spacing: 0.04em;
+    color: var(--dorado);
+    text-shadow: 0 0 30px rgba(240,189,92,0.4);
+    line-height: 1;
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-top: 0.75rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 1.6rem;
+    left: 6%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    animation: floatHint 2.2s ease-in-out infinite;
+  }
+
+  .scroll-hint span {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(240,189,92,0.7);
+  }
+
+  .scroll-hint svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--dorado);
+  }
+
+  @keyframes floatHint {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(8px); opacity: 1; }
+  }
+
+  /* ====== STARDUST BG (decorativo, sutil) ====== */
+  .stardust {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* ====== SECCIÓN DETALLES ====== */
+  .details {
+    position: relative;
+    background: var(--noche);
+    padding: 4.5rem 1.5rem 3.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .details::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(240,189,92,0.5), transparent);
+  }
+
+  .ornament {
+    font-size: 1.4rem;
+    color: var(--dorado);
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.3em;
+  }
+
+  .details-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-bottom: 0.75rem;
+  }
+
+  .details-title {
+    font-family: 'Marcellus', serif;
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+    color: var(--dorado-soft);
+    margin-bottom: 2.75rem;
+    font-weight: 400;
+  }
+
+  .info-card {
+    background: rgba(240,189,92,0.06);
+    border: 1px solid rgba(240,189,92,0.25);
+    border-radius: 18px;
+    padding: 2rem 1.5rem;
+    max-width: 420px;
+    margin: 0 auto 1.5rem;
+    backdrop-filter: blur(6px);
+  }
+
+  .info-icon {
+    width: 38px;
+    height: 38px;
+    margin: 0 auto 1rem;
+    color: var(--magenta);
+  }
+
+  .info-icon svg { width: 100%; height: 100%; }
+
+  .info-label {
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-bottom: 0.6rem;
+  }
+
+  .info-value {
+    font-family: 'Marcellus', serif;
+    font-size: 1.5rem;
+    color: var(--dorado-soft);
+    line-height: 1.3;
+  }
+
+  .info-value small {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: rgba(245,210,142,0.7);
+    margin-top: 0.3rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* ====== MAPA ====== */
+  .map-wrap {
+    max-width: 420px;
+    margin: 0 auto 0.5rem;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(240,189,92,0.25);
+    filter: grayscale(0.15) sepia(0.12) saturate(1.1);
+  }
+
+  .map-wrap iframe {
+    width: 100%;
+    height: 240px;
+    display: block;
+    border: 0;
+  }
+
+  .map-address {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(245,210,142,0.75);
+    max-width: 380px;
+    margin: 1rem auto 0;
+    line-height: 1.5;
+  }
+
+  /* ====== SECCIÓN FOTOS/VIDEOS (CTA Drive) ====== */
+  .memories {
+    position: relative;
+    background: var(--marino);
+    padding: 4.5rem 1.5rem 4.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .memories::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(46,148,160,0.5), transparent);
+  }
+
+  .memories-title {
+    font-family: 'Marcellus', serif;
+    font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+    color: var(--dorado-soft);
+    margin-bottom: 0.9rem;
+  }
+
+  .memories-text {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(245,210,142,0.7);
+    max-width: 360px;
+    margin: 0 auto 2.25rem;
+    line-height: 1.6;
+  }
+
+  .btn-drive {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: linear-gradient(135deg, var(--dorado) 0%, #d99e3a 100%);
+    color: var(--marino);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    padding: 1rem 2.2rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(240,189,92,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .btn-drive:active {
+    transform: scale(0.97);
+  }
+
+  .btn-drive svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ====== FOOTER ====== */
+  .xv-footer {
+    background: var(--bordo);
+    text-align: center;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .xv-footer p {
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,210,142,0.45);
+  }
+
+  /* ====== DESKTOP (no es el foco, pero evitamos que se vea roto) ====== */
+  @media (min-width: 769px) {
+    .hero-content { padding-bottom: 5rem; }
+    .info-card { padding: 2.5rem 2rem; }
+    .details, .memories { padding-left: 2rem; padding-right: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <!-- Reemplazar src por el video final de Aladdin -->
+    <video autoplay muted loop playsinline poster="">
+      <source src="VIDEO-ALADDIN.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-watermark-veil"></div>
+
+    <div class="hero-content">
+      <div class="name-wrap">
+        <!-- Cuando tengas el diseño del nombre, descomentá esta línea y borrá el fallback -->
+        <!-- <img src="martina-nombre.png" alt="Martina"> -->
+        <p class="name-fallback">Martina</p>
+      </div>
+      <p class="hero-sub">Mis XV Años</p>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Descubrí más</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- DETALLES -->
+  <section class="details">
+    <p class="ornament">✦</p>
+    <p class="details-eyebrow">Un mundo nuevo</p>
+    <h2 class="details-title">Te espero para celebrar</h2>
+
+    <div class="info-card">
+      <div class="info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3" y="5" width="18" height="16" rx="2"/>
+          <path d="M3 10h18M8 3v4M16 3v4"/>
+        </svg>
+      </div>
+      <p class="info-label">Fecha</p>
+      <p class="info-value">
+        Sábado 00 de Mes
+        <small>A partir de las 21:00 hs</small>
+      </p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/>
+          <circle cx="12" cy="9.5" r="2.3"/>
+        </svg>
+      </div>
+      <p class="info-label">Lugar</p>
+      <p class="info-value">
+        Nombre del salón
+        <small>Dirección completa, Ciudad</small>
+      </p>
+    </div>
+
+    <!-- MAPA — reemplazar el src del iframe con la ubicación real -->
+    <div class="map-wrap">
+      <iframe
+        src="https://www.google.com/maps?q=Montevideo,Uruguay&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+    <p class="map-address">Nombre del salón — Dirección completa, Ciudad, Uruguay</p>
+  </section>
+
+  <!-- RECUERDOS / DRIVE -->
+  <section class="memories">
+    <h2 class="memories-title">Compartí el momento</h2>
+    <p class="memories-text">Subí tus fotos y videos de la noche para que quede el recuerdo completo de la fiesta.</p>
+
+    <!-- Reemplazar href por el link real de la carpeta de Drive -->
+    <a href="https://drive.google.com/" target="_blank" rel="noopener" class="btn-drive">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7.71 3.5L1.15 15l3.43 6h6.57l-6.57-12h3.13zm8.58 0l-6.57 12h6.57l6.57-12h-6.57zm-2.83 13.5l3.29 5.5h6.57l-3.29-5.5h-6.57z"/>
+      </svg>
+      Subir fotos y videos
+    </a>
+  </section>
+
+  <footer class="xv-footer">
+    <p>Martina · 15 Años</p>
+  </footer>
+
+</body>
+</html>
