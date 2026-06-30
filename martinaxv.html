@@ -11,6 +11,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Marcellus&display=swap" rel="stylesheet">
 
 <style>
+  @font-face {
+    font-family: 'KingOfThieves';
+    src: url('fonts/kingofthieves.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   :root {
     --turquesa: #2E94A0;
     --noche: #2D1B4E;
@@ -38,7 +45,7 @@
     width: 100%;
     overflow: hidden;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
   }
 
@@ -71,27 +78,25 @@
     z-index: 2;
     right: -10%;
     bottom: -8%;
-    width: 70%;
-    height: 45%;
+    width: 65%;
+    height: 38%;
     background: radial-gradient(
       ellipse at bottom right,
-      rgba(10,26,61,0.85) 0%,
-      rgba(10,26,61,0.5) 45%,
-      rgba(10,26,61,0) 75%
+      rgba(10,26,61,0.95) 0%,
+      rgba(10,26,61,0.65) 50%,
+      rgba(10,26,61,0) 80%
     );
   }
 
   .hero-content {
-    position: absolute;
+    position: relative;
     z-index: 3;
-    right: 4%;
-    bottom: 9%;
-    width: min(78vw, 420px);
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-    padding: 0;
+    align-items: center;
+    padding: 0 1.5rem;
+    text-align: center;
   }
 
   /* Placeholder del nombre — reemplazar por imagen diseñada */
@@ -106,11 +111,11 @@
     filter: drop-shadow(0 4px 24px rgba(240,189,92,0.35));
   }
 
-  /* Fallback de texto si todavía no hay imagen */
+  /* Nombre con tipografía King of Thieves */
   .name-fallback {
-    font-family: 'Marcellus', serif;
-    font-size: clamp(3rem, 16vw, 5rem);
-    letter-spacing: 0.04em;
+    font-family: 'KingOfThieves', 'Marcellus', serif;
+    font-size: clamp(4rem, 20vw, 7rem);
+    letter-spacing: 0.03em;
     color: var(--dorado);
     text-shadow: 0 0 30px rgba(240,189,92,0.4);
     line-height: 1;
@@ -128,11 +133,12 @@
   .scroll-hint {
     position: absolute;
     bottom: 1.6rem;
-    left: 6%;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 3;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.4rem;
     animation: floatHint 2.2s ease-in-out infinite;
   }
@@ -151,8 +157,8 @@
   }
 
   @keyframes floatHint {
-    0%, 100% { transform: translateY(0); opacity: 0.6; }
-    50% { transform: translateY(8px); opacity: 1; }
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+    50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
   }
 
   /* ====== STARDUST BG (decorativo, sutil) ====== */
@@ -248,6 +254,14 @@
     color: rgba(245,210,142,0.7);
     margin-top: 0.3rem;
     letter-spacing: 0.02em;
+  }
+
+  .info-value small.note {
+    font-size: 0.92rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: rgba(245,210,142,0.6);
+    margin-top: 0.6rem;
   }
 
   /* ====== MAPA ====== */
@@ -401,8 +415,8 @@
       </div>
       <p class="info-label">Fecha</p>
       <p class="info-value">
-        Sábado 00 de Mes
-        <small>A partir de las 21:00 hs</small>
+        Sábado 15 de Agosto
+        <small>A partir de las 20:00 hs</small>
       </p>
     </div>
 
@@ -415,20 +429,33 @@
       </div>
       <p class="info-label">Lugar</p>
       <p class="info-value">
-        Nombre del salón
-        <small>Dirección completa, Ciudad</small>
+        Salón Covisa 1
+        <small>Montevideo, Uruguay</small>
       </p>
     </div>
 
     <!-- MAPA — reemplazar el src del iframe con la ubicación real -->
     <div class="map-wrap">
       <iframe
-        src="https://www.google.com/maps?q=Montevideo,Uruguay&output=embed"
+        src="https://www.google.com/maps?q=Sal%C3%B3n+Covisa+1,+-34.8258922,-56.2323259&output=embed"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
       </iframe>
     </div>
-    <p class="map-address">Nombre del salón — Dirección completa, Ciudad, Uruguay</p>
+    <p class="map-address">Salón Covisa 1 — Montevideo, Uruguay</p>
+
+    <div class="info-card" style="margin-top: 1.5rem;">
+      <div class="info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M9 3l3 2 3-2 1 3-2 2v13H8V8L6 6l3-3z"/>
+        </svg>
+      </div>
+      <p class="info-label">Vestimenta</p>
+      <p class="info-value">
+        Semi formal
+        <small class="note">Una pequeña sugerencia: el azul noche será el color del vestido de la cumpleañera, así que lo dejamos solo para ella ✨</small>
+      </p>
+    </div>
   </section>
 
   <!-- RECUERDOS / DRIVE -->
