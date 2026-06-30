@@ -111,14 +111,20 @@
     filter: drop-shadow(0 4px 24px rgba(240,189,92,0.35));
   }
 
-  /* Nombre con tipografía King of Thieves */
+  /* Nombre con tipografía King of Thieves + textura dorada metálica real */
   .name-fallback {
     font-family: 'KingOfThieves', 'Marcellus', serif;
     font-size: clamp(4rem, 20vw, 7rem);
     letter-spacing: 0.03em;
-    color: var(--dorado);
-    text-shadow: 0 0 30px rgba(240,189,92,0.4);
     line-height: 1;
+    background-image: url('Texturelabs_Metal_270M.jpg');
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5));
   }
 
   .hero-sub {
