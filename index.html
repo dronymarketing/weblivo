@@ -43,16 +43,6 @@
       background: var(--stone);
     }
 
-    /* Capa fija que pinta visualmente la zona de la barra de navegación de Android */
-    .bottom-safe-area {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: max(env(safe-area-inset-bottom, 0px), 24px);
-      background: var(--stone);
-      z-index: 300;
-      pointer-events: none;
-    }
-
     /* ── NAV ── */
     nav {
       position: fixed;
@@ -696,8 +686,6 @@
 </head>
 <body>
 
-  <div class="bottom-safe-area" id="bottom-safe-area"></div>
-
   <!-- NAV -->
   <nav>
     <a href="index.html" class="nav-logo"><img src="Blanco-02.svg" alt="LIVO"></a>
@@ -869,7 +857,6 @@
   <script>
     // Color de las barras del sistema interpolado suavemente entre secciones (efecto inmersivo premium)
     const themeMeta = document.getElementById('theme-color-meta');
-    const bottomBar = document.getElementById('bottom-safe-area');
 
     const sections = [
       { el: document.querySelector('.hero'), color: '#513D36' },
@@ -906,7 +893,6 @@
 
     const sectionData = sections.map(s => ({ ...s, rgb: hexToRgb(s.color) }));
     let lastTop = '';
-    let lastBottom = '';
     let ticking = false;
 
     // Zona de transición en píxeles: cuánto antes/después del límite entre secciones empieza el degradé
@@ -958,16 +944,10 @@
 
     function updateThemeColor() {
       const topColor = colorAtLine(0, 'down');
-      const viewportH = window.innerHeight;
-      const bottomColor = colorAtLine(viewportH, 'up');
 
       if (topColor !== lastTop) {
         lastTop = topColor;
         themeMeta.setAttribute('content', topColor);
-      }
-      if (bottomColor !== lastBottom) {
-        lastBottom = bottomColor;
-        bottomBar.style.background = bottomColor;
       }
       ticking = false;
     }
