@@ -40,8 +40,18 @@
     body {
       font-family: 'Montserrat', sans-serif;
       overflow-x: hidden;
-      padding-bottom: env(safe-area-inset-bottom);
       background: var(--stone);
+    }
+
+    /* Capa fija que pinta el área de gestos (safe-area-inset-bottom) con color dinámico */
+    .bottom-safe-area {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: env(safe-area-inset-bottom, 0px);
+      background: var(--stone);
+      z-index: 300;
+      pointer-events: none;
+      transition: background-color 0.05s linear;
     }
 
     /* ── NAV ── */
@@ -687,6 +697,8 @@
 </head>
 <body>
 
+  <div class="bottom-safe-area" id="bottom-safe-area"></div>
+
   <!-- NAV -->
   <nav>
     <a href="index.html" class="nav-logo"><img src="Blanco-02.svg" alt="LIVO"></a>
@@ -856,8 +868,9 @@
     <span class="footer-right">Hecho con intención.</span>
   </footer>
   <script>
-    // Color de la barra de notificaciones interpolado suavemente entre secciones (efecto inmersivo premium)
+    // Color de las barras del sistema interpolado suavemente entre secciones (efecto inmersivo premium)
     const themeMeta = document.getElementById('theme-color-meta');
+    const bottomBar = document.getElementById('bottom-safe-area');
 
     const sections = [
       { el: document.querySelector('.hero'), color: '#513D36' },
@@ -893,42 +906,69 @@
     }
 
     const sectionData = sections.map(s => ({ ...s, rgb: hexToRgb(s.color) }));
-    let lastHex = '';
+    let lastTop = '';
+    let lastBottom = '';
     let ticking = false;
 
     // Zona de transición en píxeles: cuánto antes/después del límite entre secciones empieza el degradé
     const TRANSITION_ZONE = 120;
 
-    function updateThemeColor() {
+    // Calcula el color en una línea horizontal de referencia (refY) cruzando las secciones,
+    // interpolando suavemente cuando esa línea está cerca del límite entre dos secciones.
+    // direction: 'down' = la transición ocurre cuando el límite se acerca desde abajo (uso: borde superior)
+    // direction: 'up'   = la transición ocurre cuando el límite se acerca desde arriba (uso: borde inferior)
+    function colorAtLine(refY, direction) {
       let result = sectionData[0].color;
 
       for (let i = 0; i < sectionData.length; i++) {
         const cur = sectionData[i];
         const rect = cur.el.getBoundingClientRect();
 
-        // La sección actual está cubriendo y=0
-        if (rect.top <= 0 && rect.bottom > 0) {
-          const next = sectionData[i + 1];
-
-          // ¿Estamos cerca del final de esta sección y hay una siguiente?
-          if (next && rect.bottom < TRANSITION_ZONE) {
-            const t = 1 - (rect.bottom / TRANSITION_ZONE); // 0 → 1 a medida que se acerca el límite
-            result = lerpColor(cur.color, next.color, Math.min(Math.max(t, 0), 1));
+        if (rect.top <= refY && rect.bottom > refY) {
+          if (direction === 'down') {
+            const next = sectionData[i + 1];
+            const distToBottom = rect.bottom - refY;
+            if (next && distToBottom < TRANSITION_ZONE) {
+              const t = 1 - (distToBottom / TRANSITION_ZONE);
+              result = lerpColor(cur.color, next.color, Math.min(Math.max(t, 0), 1));
+            } else {
+              result = cur.color;
+            }
           } else {
-            result = cur.color;
+            const prev = sectionData[i - 1];
+            const distToTop = refY - rect.top;
+            if (prev && distToTop < TRANSITION_ZONE) {
+              const t = 1 - (distToTop / TRANSITION_ZONE);
+              result = lerpColor(cur.color, prev.color, Math.min(Math.max(t, 0), 1));
+            } else {
+              result = cur.color;
+            }
           }
-          break;
+          return result;
         }
 
-        // Ya pasamos todas las secciones
-        if (i === sectionData.length - 1 && rect.bottom <= 0) {
+        if (i === sectionData.length - 1 && rect.bottom <= refY) {
+          result = cur.color;
+        }
+        if (i === 0 && rect.top >= refY) {
           result = cur.color;
         }
       }
+      return result;
+    }
 
-      if (result !== lastHex) {
-        lastHex = result;
-        themeMeta.setAttribute('content', result);
+    function updateThemeColor() {
+      const topColor = colorAtLine(0, 'down');
+      const viewportH = window.innerHeight;
+      const bottomColor = colorAtLine(viewportH, 'up');
+
+      if (topColor !== lastTop) {
+        lastTop = topColor;
+        themeMeta.setAttribute('content', topColor);
+      }
+      if (bottomColor !== lastBottom) {
+        lastBottom = bottomColor;
+        bottomBar.style.background = bottomColor;
       }
       ticking = false;
     }
@@ -941,6 +981,7 @@
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     updateThemeColor(); // estado inicial
   </script>
 
