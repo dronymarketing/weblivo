@@ -42,7 +42,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.4rem 3rem;
+      padding: 0 3rem;
+      height: 72px;
       background: rgba(255,255,255,0.05);
       backdrop-filter: blur(20px);
       border-bottom: 0.5px solid rgba(229,225,224,0.07);
@@ -55,21 +56,45 @@
     }
 
     .nav-logo img {
-      height: 34px;
+      height: 80px;
       width: auto;
     }
 
-    .nav-back {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(229,225,224,0.35);
-      text-decoration: none;
-      transition: color 0.2s;
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(229,225,224,0.45); text-decoration: none;
+      position: relative; transition: color 0.25s;
     }
-
-    .nav-back:hover { color: var(--cream); }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 0.5px;
+      background: var(--cream);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.nav-active { color: var(--cream); }
+    .nav-links a.nav-active::after { width: 100%; }
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 var(--px);
+        height: 60px;
+      }
+      .nav-logo img { height: 56px; }
+      .nav-links {
+        position: static;
+        transform: none;
+        gap: 1rem;
+      }
+      .nav-links a {
+        font-size: 9px;
+        font-weight: 300;
+        letter-spacing: 0.07em;
+      }
+    }
 
     /* PAGE HEADER */
     .page-header {
@@ -84,7 +109,7 @@
       font-weight: 600;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--olive);
+      color: rgba(229,225,224,0.5);
       margin-bottom: 1rem;
     }
 
@@ -326,14 +351,50 @@
       align-items: center;
     }
 
-    .footer-logo img { height: 100px; width: auto; opacity: 0.7; }
+    .footer-logo img { height: 100px; width: auto; opacity: 0.8; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      :root { --px: 1.1rem; }
+      nav { padding: 0 var(--px); height: 60px; }
+      .nav-logo img { height: 56px; }
+
+      .page-header { padding: 4.5rem var(--px) 2rem; }
+      .page-title { font-size: clamp(2.8rem, 12vw, 4rem); }
+
+      .gallery-section { padding: 2.5rem var(--px) 4rem; }
+      .gallery-hero { aspect-ratio: 16/9; }
+      .play-btn { width: 48px; height: 48px; font-size: 16px; }
+
+      .gallery-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+      .gallery-item.tall { grid-row: span 1; }
+      .gallery-item.r3 { aspect-ratio: 16/9; }
+
+      .gallery-grid-2 { grid-template-columns: 1fr; }
+      .gallery-wide, .gallery-square { aspect-ratio: 16/9; }
+
+      footer {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 0.75rem;
+        padding: 1.5rem var(--px);
+      }
+      footer .footer-right { text-align: center; }
+      .footer-logo img { height: 64px; }
+    }
   </style>
 </head>
 <body>
 
   <nav>
     <a href="index.html" class="nav-logo"><img src="Blanco-02.svg" alt="LIVO"></a>
-    <a href="index.html" class="nav-back">← Volver al inicio</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="branding.html">Branding</a></li>
+      <li><a href="dron.html" class="nav-active">Dron</a></li>
+      <li><a href="sobre-mi.html">Sobre mí</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
   </nav>
 
   <div class="page-header">
