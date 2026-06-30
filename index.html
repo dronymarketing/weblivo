@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#513D36" id="theme-color-meta">
   <title>LIVO — Diseño & Fotografía Aérea</title>
   <style>
     @font-face { font-family: 'Catavalo'; src: url('fonts/Catavalo-Thin.ttf'); font-weight: 100; }
@@ -32,9 +33,15 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
+    html {
+      background: var(--stone);
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--stone);
     }
 
     /* ── NAV ── */
@@ -848,6 +855,94 @@
     <span class="footer-logo"><img src="Blanco-02.svg" alt="LIVO"></span>
     <span class="footer-right">Hecho con intención.</span>
   </footer>
+  <script>
+    // Color de la barra de notificaciones interpolado suavemente entre secciones (efecto inmersivo premium)
+    const themeMeta = document.getElementById('theme-color-meta');
+
+    const sections = [
+      { el: document.querySelector('.hero'), color: '#513D36' },
+      { el: document.querySelector('.sec-branding'), color: '#E5E1E0' },
+      { el: document.querySelector('.sec-dron'), color: '#6B7161' },
+      { el: document.querySelector('.sec-sobre'), color: '#DBC7B8' },
+      { el: document.querySelector('.sec-contacto'), color: '#AEA596' },
+      { el: document.querySelector('footer'), color: '#AEA596' },
+    ].filter(s => s.el);
+
+    function hexToRgb(hex) {
+      const v = hex.replace('#', '');
+      return {
+        r: parseInt(v.substring(0, 2), 16),
+        g: parseInt(v.substring(2, 4), 16),
+        b: parseInt(v.substring(4, 6), 16)
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      const c = (n) => Math.round(n).toString(16).padStart(2, '0');
+      return `#${c(r)}${c(g)}${c(b)}`;
+    }
+
+    function lerpColor(hexA, hexB, t) {
+      const a = hexToRgb(hexA);
+      const b = hexToRgb(hexB);
+      return rgbToHex(
+        a.r + (b.r - a.r) * t,
+        a.g + (b.g - a.g) * t,
+        a.b + (b.b - a.b) * t
+      );
+    }
+
+    const sectionData = sections.map(s => ({ ...s, rgb: hexToRgb(s.color) }));
+    let lastHex = '';
+    let ticking = false;
+
+    // Zona de transición en píxeles: cuánto antes/después del límite entre secciones empieza el degradé
+    const TRANSITION_ZONE = 120;
+
+    function updateThemeColor() {
+      let result = sectionData[0].color;
+
+      for (let i = 0; i < sectionData.length; i++) {
+        const cur = sectionData[i];
+        const rect = cur.el.getBoundingClientRect();
+
+        // La sección actual está cubriendo y=0
+        if (rect.top <= 0 && rect.bottom > 0) {
+          const next = sectionData[i + 1];
+
+          // ¿Estamos cerca del final de esta sección y hay una siguiente?
+          if (next && rect.bottom < TRANSITION_ZONE) {
+            const t = 1 - (rect.bottom / TRANSITION_ZONE); // 0 → 1 a medida que se acerca el límite
+            result = lerpColor(cur.color, next.color, Math.min(Math.max(t, 0), 1));
+          } else {
+            result = cur.color;
+          }
+          break;
+        }
+
+        // Ya pasamos todas las secciones
+        if (i === sectionData.length - 1 && rect.bottom <= 0) {
+          result = cur.color;
+        }
+      }
+
+      if (result !== lastHex) {
+        lastHex = result;
+        themeMeta.setAttribute('content', result);
+      }
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(updateThemeColor);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateThemeColor(); // estado inicial
+  </script>
 
 </body>
 </html>
