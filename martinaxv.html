@@ -190,42 +190,7 @@
     50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
   }
 
-  /* ====== BARRA DE PROGRESO DE SCROLL (con brillo tipo estrella fugaz) ====== */
-  .scroll-progress {
-    position: fixed;
-    top: 0;
-    right: 5px;
-    width: 2px;
-    height: 100vh;
-    z-index: 999;
-    pointer-events: none;
-  }
-
-  .scroll-progress-thumb {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 70px;
-    border-radius: 2px;
-    background: linear-gradient(
-      180deg,
-      rgba(255,246,200,0) 0%,
-      rgba(240,189,92,0.55) 35%,
-      rgba(255,246,200,0.95) 85%,
-      rgba(255,255,255,1) 100%
-    );
-    box-shadow:
-      0 0 6px 1px rgba(240,189,92,0.7),
-      0 0 14px 3px rgba(255,246,200,0.35);
-    animation: scrollTwinkle 1.8s ease-in-out infinite;
-    will-change: transform;
-  }
-
-  @keyframes scrollTwinkle {
-    0%, 100% { opacity: 0.8; }
-    50%      { opacity: 1; }
-  }
+  /* ====== STARDUST BG (decorativo, sutil) ====== */
   .stardust {
     position: fixed;
     inset: 0;
@@ -442,11 +407,6 @@
 </style>
 </head>
 <body>
-
-  <!-- Barra de progreso de scroll personalizada, con brillo tipo estrella fugaz -->
-  <div class="scroll-progress" aria-hidden="true">
-    <div class="scroll-progress-thumb"></div>
-  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -774,41 +734,6 @@
     }, { passive: true });
 
     updateThemeColor();
-  })();
-  </script>
-
-  <!-- Barra de progreso de scroll: sigue el scroll real en tiempo real -->
-  <script>
-  (function() {
-    const thumb = document.querySelector('.scroll-progress-thumb');
-    if (!thumb) return;
-
-    const thumbHeight = 70; // debe coincidir con el height del CSS
-
-    function updateProgress() {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
-
-      const trackHeight = window.innerHeight - thumbHeight;
-      const y = progress * trackHeight;
-
-      thumb.style.transform = `translateY(${y}px)`;
-    }
-
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          updateProgress();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
-
-    window.addEventListener('resize', updateProgress);
-    updateProgress();
   })();
   </script>
 
