@@ -530,9 +530,10 @@
 
     // Timings coordinados con el CSS
     const NAME_APPEARS = 1000;  // ms — cuando empieza el fade del nombre
-    const NAME_DONE    = 3000;  // ms — cuando el nombre está completo → brillos caen
-    const BIRTH_END    = 3000;  // ms — dejan de nacer cuando empieza la caída
-    const TOTAL        = 6500;  // ms — duración total del efecto
+    const NAME_DONE    = 3000;  // ms — cuando el nombre está completo → brillos se desvanecen
+    const BIRTH_END    = 3000;  // ms — dejan de nacer cuando empieza el fade out
+    const FADEOUT_DUR  = 2000;  // ms — misma duración que el fade-in del nombre (2s)
+    const TOTAL        = 6000;
 
     let particles = [];
     let startedAt = null;
@@ -561,44 +562,31 @@
         this.rotSpd = (Math.random() - 0.5) * 0.035;
 
         this.type      = Math.random() > 0.3 ? 'star' : 'dot';
-        this.isFalling = false;
-        this.fallVy    = 0;
+        this.fadingOut = false;
       }
 
-      update() {
+      update(elapsed) {
         // Fade in
         if (this.fadeIn) {
           this.alpha += 0.05;
           if (this.alpha >= this.maxAlpha) { this.alpha = this.maxAlpha; this.fadeIn = false; }
-        } else if (!this.isFalling) {
+        } else if (!this.fadingOut) {
           // Parpadeo mientras flotan
           this.alpha += this.blinkDir * this.blinkSpd;
           if (this.alpha >= this.maxAlpha)       this.blinkDir = -1;
           if (this.alpha <= this.maxAlpha * 0.2) this.blinkDir =  1;
         }
 
-        if (!this.isFalling) {
-          // Flotación suave
-          this.x += this.vx;
-          this.y += this.vy;
-          this.vx *= 0.998;
-          this.vy *= 0.998;
+        // Flotación suave siempre (no caen nunca)
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.998;
+        this.vy *= 0.998;
 
-          // Activar caída cuando el nombre terminó
-          if (falling) {
-            this.isFalling = true;
-            this.fallVy    = 0.8 + Math.random() * 1.5;
-            this.vx        = (Math.random() - 0.5) * 0.6;
-          }
-        } else {
-          // Caída suave hacia abajo
-          this.fallVy += 0.025;
-          this.y      += this.fallVy;
-          this.x      += this.vx;
-          // Fade out gradual en la mitad inferior del hero
-          if (this.y > H() * 0.6) {
-            this.alpha -= 0.02;
-          }
+        // Fade out in-place cuando el nombre está completo
+        if (this.fadingOut) {
+          this.alpha -= this.maxAlpha / (FADEOUT_DUR / 16.7); // 60fps
+          if (this.alpha < 0) this.alpha = 0;
         }
 
         this.angle += this.rotSpd;
@@ -645,7 +633,7 @@
       }
 
       isDead() {
-        return this.y > H() + 20 || this.alpha <= 0;
+        return this.alpha <= 0;
       }
     }
 
@@ -667,9 +655,10 @@
         }
       }
 
-      // Activar caída cuando el nombre está completo
+      // Activar fade-out in-place cuando el nombre está completo
       if (elapsed >= NAME_DONE && !falling) {
         falling = true;
+        particles.forEach(p => { p.fadingOut = true; });
       }
 
       particles.forEach(p => { p.update(); p.draw(); });
