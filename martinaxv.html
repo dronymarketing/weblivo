@@ -574,6 +574,7 @@
     let particles = [];
     let startedAt = null;
     let falling   = false; // flag: cuando es true, todos caen
+    let introFinished = false; // true recién cuando termina la animación de entrada del nombre
 
     class Particle {
       constructor(cx, cy) {
@@ -704,6 +705,7 @@
         requestAnimationFrame(animate);
       } else {
         canvas.style.display = 'none';
+        introFinished = true; // recién acá se habilita el efecto al tocar el nombre
       }
     }
 
@@ -714,6 +716,64 @@
       setTimeout(() => { if (!startedAt) requestAnimationFrame(animate); }, 300);
     } else {
       setTimeout(() => requestAnimationFrame(animate), 300);
+    }
+
+    // ====== BRILLOS AL TOCAR EL NOMBRE ======
+    // Solo se activa una vez que terminó la animación de entrada.
+    // Los brillos aparecen exactamente en el punto donde se toca el nombre.
+    let touchParticles = [];
+    let touchLoopRunning = false;
+
+    function spawnTouchSparkles(x, y) {
+      canvas.style.display = 'block';
+      for (let i = 0; i < 14; i++) {
+        const p = new Particle(x, y);
+        // Dispersión chica alrededor del punto tocado, no en toda la pantalla
+        p.x = x + (Math.random() - 0.5) * 26;
+        p.y = y + (Math.random() - 0.5) * 26;
+        // Impulso leve hacia afuera para efecto "estallido"
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.4 + Math.random() * 0.9;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        touchParticles.push(p);
+      }
+
+      if (!touchLoopRunning) {
+        touchLoopRunning = true;
+        const holdStart = performance.now();
+        requestAnimationFrame(function touchLoop(ts) {
+          const elapsed = ts - holdStart;
+
+          // Después de un breve instante visible, empiezan a desvanecerse
+          if (elapsed > 350) {
+            touchParticles.forEach(p => { p.fadingOut = true; });
+          }
+
+          ctx.clearRect(0, 0, W(), H());
+          touchParticles.forEach(p => { p.update(); p.draw(); });
+          touchParticles = touchParticles.filter(p => !p.isDead());
+
+          if (touchParticles.length > 0) {
+            requestAnimationFrame(touchLoop);
+          } else {
+            ctx.clearRect(0, 0, W(), H());
+            canvas.style.display = 'none';
+            touchLoopRunning = false;
+          }
+        });
+      }
+    }
+
+    const nameEl = document.querySelector('.name-fallback');
+    if (nameEl) {
+      nameEl.addEventListener('click', (e) => {
+        if (!introFinished) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        spawnTouchSparkles(x, y);
+      });
     }
   })();
   </script>
