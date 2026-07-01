@@ -156,21 +156,25 @@
   @keyframes nameReveal {
     0% {
       opacity: 0;
-      transform: scale(0.82) translateY(12px);
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(8px) brightness(2.5);
+      transform: scale(1.35);
+      filter: drop-shadow(0 0 40px rgba(240,189,92,0.9)) drop-shadow(0 4px 18px rgba(0,0,0,0.5)) brightness(3);
     }
-    40% {
+    35% {
       opacity: 1;
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(2px) brightness(1.8);
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 20px rgba(240,189,92,0.6)) drop-shadow(0 4px 18px rgba(0,0,0,0.5)) brightness(1.8);
     }
-    70% {
-      transform: scale(1.04) translateY(-3px);
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(0px) brightness(1.2);
+    65% {
+      transform: scale(0.97);
+      filter: drop-shadow(0 0 8px rgba(240,189,92,0.3)) drop-shadow(0 4px 18px rgba(0,0,0,0.5)) brightness(1.1);
+    }
+    80% {
+      transform: scale(1.015);
     }
     100% {
       opacity: 1;
-      transform: scale(1) translateY(0);
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(0px) brightness(1);
+      transform: scale(1);
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) brightness(1);
     }
   }
 
@@ -432,8 +436,8 @@
 
     <div class="hero-watermark-veil"></div>
 
-    <!-- Canvas de partículas doradas -->
-    <canvas id="sparkles" style="position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;"></canvas>
+    <!-- Canvas de partículas doradas — fixed, cubre toda la pantalla -->
+    <canvas id="sparkles" style="position:fixed;inset:0;width:100%;height:100%;z-index:9999;pointer-events:none;"></canvas>
 
     <div class="hero-content">
       <div class="name-wrap">
@@ -531,81 +535,78 @@
     const ctx    = canvas.getContext('2d');
 
     function resize() {
-      canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      canvas.width  = window.innerWidth  * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     }
     resize();
     window.addEventListener('resize', resize);
 
-    const W = () => canvas.offsetWidth;
-    const H = () => canvas.offsetHeight;
+    const W = () => window.innerWidth;
+    const H = () => window.innerHeight;
 
-    // Tonos exactos de la textura dorada metálica
     const COLORS = [
-      [255, 246, 200],  // blanco dorado brillante
-      [240, 210, 140],  // dorado claro
-      [220, 185, 100],  // dorado medio
-      [255, 240, 180],  // champagne
-      [200, 165,  80],  // dorado oscuro
+      [255, 246, 200],
+      [240, 210, 140],
+      [220, 185, 100],
+      [255, 240, 180],
+      [200, 165,  80],
     ];
 
-    const TOTAL  = 5500;  // duración total ms
-    const BIRTH  = 3000;  // ms durante los cuales nacen partículas
+    const BIRTH  = 3200;
+    const TOTAL  = 9000; // tiempo total hasta que todas caen al fondo
 
     let particles = [];
-    let startTime = null;
+    let startedAt = null;
 
     class Particle {
       constructor(cx, cy) {
-        // Nacen en una zona horizontal centrada en el nombre
-        this.x = cx + (Math.random() - 0.5) * W() * 0.75;
-        this.y = cy + (Math.random() - 0.5) * H() * 0.18;
+        // Nacen esparcidas en zona del nombre
+        this.x = cx + (Math.random() - 0.5) * W() * 0.72;
+        this.y = cy + (Math.random() - 0.5) * H() * 0.16;
 
-        // Velocidad: deriva lateral muy leve + caída constante
-        this.vx = (Math.random() - 0.5) * 0.4;
-        this.vy = 0.4 + Math.random() * 1.1;  // siempre hacia abajo
+        // Velocidad: leve deriva lateral, caída suave constante
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = 0.5 + Math.random() * 1.2;
 
-        // Tamaño pequeño — polvo fino
-        this.r = 0.8 + Math.random() * 1.6;
+        this.r = 0.8 + Math.random() * 1.5;
 
         const c = COLORS[Math.floor(Math.random() * COLORS.length)];
         this.r0 = c[0]; this.g0 = c[1]; this.b0 = c[2];
 
-        // Parpadeo suave
         this.alpha    = 0;
-        this.maxAlpha = 0.55 + Math.random() * 0.45;
+        this.maxAlpha = 0.5 + Math.random() * 0.5;
         this.fadeIn   = true;
-        this.blinkSpd = 0.02 + Math.random() * 0.025;
+        this.blinkSpd = 0.018 + Math.random() * 0.022;
         this.blinkDir = 1;
 
-        // Pequeña rotación para la estrella
-        this.angle    = Math.random() * Math.PI;
-        this.rotSpd   = (Math.random() - 0.5) * 0.04;
+        this.angle  = Math.random() * Math.PI;
+        this.rotSpd = (Math.random() - 0.5) * 0.035;
 
-        // Tipo: 70% estrella fina, 30% punto
         this.type = Math.random() > 0.3 ? 'star' : 'dot';
       }
 
       update() {
-        // Fade in
         if (this.fadeIn) {
-          this.alpha += 0.045;
+          this.alpha += 0.05;
           if (this.alpha >= this.maxAlpha) { this.alpha = this.maxAlpha; this.fadeIn = false; }
-        }
-
-        // Parpadeo sutil
-        if (!this.fadeIn) {
+        } else {
           this.alpha += this.blinkDir * this.blinkSpd;
           if (this.alpha >= this.maxAlpha)        this.blinkDir = -1;
-          if (this.alpha <= this.maxAlpha * 0.25) this.blinkDir =  1;
+          if (this.alpha <= this.maxAlpha * 0.2)  this.blinkDir =  1;
         }
 
-        // Movimiento — caída suave con leve aceleración
-        this.vy  *= 1.012;
+        // Caída suave, sin aceleración brusca
+        this.vy  += 0.008;
         this.x   += this.vx;
         this.y   += this.vy;
         this.angle += this.rotSpd;
+
+        // Fade out gradual cuando se acercan al fondo
+        const progress = this.y / H();
+        if (progress > 0.75) {
+          this.alpha -= 0.008;
+        }
       }
 
       draw() {
@@ -616,29 +617,26 @@
         ctx.rotate(this.angle);
 
         if (this.type === 'star') {
-          // Estrella de 4 puntas muy fina y pequeña
           const s = this.r;
           ctx.fillStyle = `rgb(${this.r0},${this.g0},${this.b0})`;
           ctx.beginPath();
-          ctx.moveTo(0,        -s * 2.8);
+          ctx.moveTo(0,         -s * 2.8);
           ctx.lineTo( s * 0.28, -s * 0.28);
           ctx.lineTo( s * 2.8,   0);
           ctx.lineTo( s * 0.28,  s * 0.28);
-          ctx.lineTo(0,         s * 2.8);
+          ctx.lineTo(0,          s * 2.8);
           ctx.lineTo(-s * 0.28,  s * 0.28);
           ctx.lineTo(-s * 2.8,   0);
           ctx.lineTo(-s * 0.28, -s * 0.28);
           ctx.closePath();
           ctx.fill();
 
-          // Núcleo blanco brillante
-          ctx.globalAlpha = Math.max(0, this.alpha * 0.8);
+          ctx.globalAlpha = Math.max(0, this.alpha * 0.85);
           ctx.fillStyle = 'rgba(255,255,255,1)';
           ctx.beginPath();
           ctx.arc(0, 0, s * 0.3, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          // Punto con halo suave
           const grad = ctx.createRadialGradient(0,0,0, 0,0, this.r * 2.2);
           grad.addColorStop(0,   `rgba(255,255,240,1)`);
           grad.addColorStop(0.5, `rgba(${this.r0},${this.g0},${this.b0},0.7)`);
@@ -653,11 +651,9 @@
       }
 
       isDead() {
-        return this.y > H() + 20;
+        return this.y > H() + 30 || this.alpha <= 0;
       }
     }
-
-    let startedAt = null;
 
     function animate(ts) {
       if (!startedAt) startedAt = ts;
@@ -665,20 +661,20 @@
 
       ctx.clearRect(0, 0, W(), H());
 
+      // Zona del nombre: centro horizontal, ~42% desde arriba
       const cx = W() / 2;
-      const cy = H() * 0.45; // zona del nombre (centro-alto del hero)
+      const cy = H() * 0.42;
 
-      // Generar partículas durante BIRTH ms — densidad decreciente
       if (elapsed < BIRTH) {
         const density = 1 - (elapsed / BIRTH);
-        const count   = Math.random() < (0.4 + density * 0.6) ? 2 : 1;
+        const count = Math.random() < (0.35 + density * 0.65) ? 2 : 1;
         for (let i = 0; i < count; i++) {
-          if (particles.length < 120) particles.push(new Particle(cx, cy));
+          if (particles.length < 130) particles.push(new Particle(cx, cy));
         }
       }
 
       particles.forEach(p => { p.update(); p.draw(); });
-      particles = particles.filter(p => !p.isDead() && p.alpha > -0.1);
+      particles = particles.filter(p => !p.isDead());
 
       if (elapsed < TOTAL || particles.length > 0) {
         requestAnimationFrame(animate);
@@ -688,10 +684,10 @@
     }
 
     const video = document.querySelector('.hero video');
-    const PARTICLE_DELAY = 2000; // ms — espera a que termine la animación del nombre
+    const DELAY = 2000;
 
     function startSparkles() {
-      setTimeout(() => requestAnimationFrame(animate), PARTICLE_DELAY);
+      setTimeout(() => requestAnimationFrame(animate), DELAY);
     }
 
     if (video) {
