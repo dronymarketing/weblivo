@@ -127,6 +127,11 @@
     color: transparent;
     margin-left: -0.15em;
     filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5));
+
+    /* Estado inicial — invisible */
+    opacity: 0;
+    transform: scale(0.82) translateY(12px);
+    animation: nameReveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
   }
 
   .hero-sub {
@@ -137,6 +142,41 @@
     color: #ffffff;
     margin-top: -1rem;
     margin-bottom: 1rem;
+
+    /* Entra después del nombre */
+    opacity: 0;
+    animation: subReveal 1s ease 1.8s forwards;
+  }
+
+  .scroll-hint {
+    opacity: 0;
+    animation: subReveal 1s ease 2.4s forwards;
+  }
+
+  @keyframes nameReveal {
+    0% {
+      opacity: 0;
+      transform: scale(0.82) translateY(12px);
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(8px) brightness(2.5);
+    }
+    40% {
+      opacity: 1;
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(2px) brightness(1.8);
+    }
+    70% {
+      transform: scale(1.04) translateY(-3px);
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(0px) brightness(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.5)) blur(0px) brightness(1);
+    }
+  }
+
+  @keyframes subReveal {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   .scroll-hint {
@@ -149,7 +189,8 @@
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
-    animation: floatHint 2.2s ease-in-out infinite;
+    opacity: 0;
+    animation: subReveal 1s ease 2.4s forwards, floatHint 2.2s ease-in-out 3.4s infinite;
   }
 
   .scroll-hint span {
@@ -647,11 +688,17 @@
     }
 
     const video = document.querySelector('.hero video');
+    const PARTICLE_DELAY = 2000; // ms — espera a que termine la animación del nombre
+
+    function startSparkles() {
+      setTimeout(() => requestAnimationFrame(animate), PARTICLE_DELAY);
+    }
+
     if (video) {
-      video.addEventListener('canplay', () => requestAnimationFrame(animate), { once: true });
-      setTimeout(() => { if (!startedAt) requestAnimationFrame(animate); }, 600);
+      video.addEventListener('canplay', startSparkles, { once: true });
+      setTimeout(() => { if (!startedAt) startSparkles(); }, 800);
     } else {
-      requestAnimationFrame(animate);
+      startSparkles();
     }
   })();
   </script>
