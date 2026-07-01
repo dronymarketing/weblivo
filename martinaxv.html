@@ -385,16 +385,17 @@
 
   <!-- HERO -->
   <section class="hero">
-    <!-- Reemplazar src por el video final de Aladdin -->
     <video autoplay muted loop playsinline poster="">
       <source src="VIDEO-ALADDIN.mp4" type="video/mp4">
     </video>
 
     <div class="hero-watermark-veil"></div>
 
+    <!-- Canvas de partículas doradas -->
+    <canvas id="sparkles" style="position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;"></canvas>
+
     <div class="hero-content">
       <div class="name-wrap">
-        <!-- Cuando tengas el diseño del nombre, descomentá esta línea y borrá el fallback -->
         <!-- <img src="martina-nombre.png" alt="Martina"> -->
         <p class="name-fallback">Martina</p>
       </div>
@@ -439,7 +440,7 @@
       <p class="info-label">Lugar</p>
       <p class="info-value">
         Salón Covisa 1
-        <small>Montevideo, Sayago</small>
+        <small>Montevideo, Uruguay</small>
       </p>
     </div>
 
@@ -450,7 +451,7 @@
         referrerpolicy="no-referrer-when-downgrade">
       </iframe>
     </div>
-    <p class="map-address">Salón Covisa 1 — Montevideo, Sayago</p>
+    <p class="map-address">Salón Covisa 1 — Montevideo, Uruguay</p>
 
     <div class="info-card" style="margin-top: 1.5rem;">
       <div class="info-icon">
@@ -483,6 +484,177 @@
   <footer class="xv-footer">
     <p>Martina · 15 Años</p>
   </footer>
+  <script>
+  (function() {
+    const canvas = document.getElementById('sparkles');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const W = () => canvas.offsetWidth;
+    const H = () => canvas.offsetHeight;
+
+    // Tonos exactos de la textura dorada metálica
+    const COLORS = [
+      [255, 246, 200],  // blanco dorado brillante
+      [240, 210, 140],  // dorado claro
+      [220, 185, 100],  // dorado medio
+      [255, 240, 180],  // champagne
+      [200, 165,  80],  // dorado oscuro
+    ];
+
+    const TOTAL  = 5500;  // duración total ms
+    const BIRTH  = 3000;  // ms durante los cuales nacen partículas
+
+    let particles = [];
+    let startTime = null;
+
+    class Particle {
+      constructor(cx, cy) {
+        // Nacen en una zona horizontal centrada en el nombre
+        this.x = cx + (Math.random() - 0.5) * W() * 0.75;
+        this.y = cy + (Math.random() - 0.5) * H() * 0.18;
+
+        // Velocidad: deriva lateral muy leve + caída constante
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = 0.4 + Math.random() * 1.1;  // siempre hacia abajo
+
+        // Tamaño pequeño — polvo fino
+        this.r = 0.8 + Math.random() * 1.6;
+
+        const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.r0 = c[0]; this.g0 = c[1]; this.b0 = c[2];
+
+        // Parpadeo suave
+        this.alpha    = 0;
+        this.maxAlpha = 0.55 + Math.random() * 0.45;
+        this.fadeIn   = true;
+        this.blinkSpd = 0.02 + Math.random() * 0.025;
+        this.blinkDir = 1;
+
+        // Pequeña rotación para la estrella
+        this.angle    = Math.random() * Math.PI;
+        this.rotSpd   = (Math.random() - 0.5) * 0.04;
+
+        // Tipo: 70% estrella fina, 30% punto
+        this.type = Math.random() > 0.3 ? 'star' : 'dot';
+      }
+
+      update() {
+        // Fade in
+        if (this.fadeIn) {
+          this.alpha += 0.045;
+          if (this.alpha >= this.maxAlpha) { this.alpha = this.maxAlpha; this.fadeIn = false; }
+        }
+
+        // Parpadeo sutil
+        if (!this.fadeIn) {
+          this.alpha += this.blinkDir * this.blinkSpd;
+          if (this.alpha >= this.maxAlpha)        this.blinkDir = -1;
+          if (this.alpha <= this.maxAlpha * 0.25) this.blinkDir =  1;
+        }
+
+        // Movimiento — caída suave con leve aceleración
+        this.vy  *= 1.012;
+        this.x   += this.vx;
+        this.y   += this.vy;
+        this.angle += this.rotSpd;
+      }
+
+      draw() {
+        if (this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+
+        if (this.type === 'star') {
+          // Estrella de 4 puntas muy fina y pequeña
+          const s = this.r;
+          ctx.fillStyle = `rgb(${this.r0},${this.g0},${this.b0})`;
+          ctx.beginPath();
+          ctx.moveTo(0,        -s * 2.8);
+          ctx.lineTo( s * 0.28, -s * 0.28);
+          ctx.lineTo( s * 2.8,   0);
+          ctx.lineTo( s * 0.28,  s * 0.28);
+          ctx.lineTo(0,         s * 2.8);
+          ctx.lineTo(-s * 0.28,  s * 0.28);
+          ctx.lineTo(-s * 2.8,   0);
+          ctx.lineTo(-s * 0.28, -s * 0.28);
+          ctx.closePath();
+          ctx.fill();
+
+          // Núcleo blanco brillante
+          ctx.globalAlpha = Math.max(0, this.alpha * 0.8);
+          ctx.fillStyle = 'rgba(255,255,255,1)';
+          ctx.beginPath();
+          ctx.arc(0, 0, s * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Punto con halo suave
+          const grad = ctx.createRadialGradient(0,0,0, 0,0, this.r * 2.2);
+          grad.addColorStop(0,   `rgba(255,255,240,1)`);
+          grad.addColorStop(0.5, `rgba(${this.r0},${this.g0},${this.b0},0.7)`);
+          grad.addColorStop(1,   `rgba(${this.r0},${this.g0},${this.b0},0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(0, 0, this.r * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      isDead() {
+        return this.y > H() + 20;
+      }
+    }
+
+    let startedAt = null;
+
+    function animate(ts) {
+      if (!startedAt) startedAt = ts;
+      const elapsed = ts - startedAt;
+
+      ctx.clearRect(0, 0, W(), H());
+
+      const cx = W() / 2;
+      const cy = H() * 0.45; // zona del nombre (centro-alto del hero)
+
+      // Generar partículas durante BIRTH ms — densidad decreciente
+      if (elapsed < BIRTH) {
+        const density = 1 - (elapsed / BIRTH);
+        const count   = Math.random() < (0.4 + density * 0.6) ? 2 : 1;
+        for (let i = 0; i < count; i++) {
+          if (particles.length < 120) particles.push(new Particle(cx, cy));
+        }
+      }
+
+      particles.forEach(p => { p.update(); p.draw(); });
+      particles = particles.filter(p => !p.isDead() && p.alpha > -0.1);
+
+      if (elapsed < TOTAL || particles.length > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        canvas.style.display = 'none';
+      }
+    }
+
+    const video = document.querySelector('.hero video');
+    if (video) {
+      video.addEventListener('canplay', () => requestAnimationFrame(animate), { once: true });
+      setTimeout(() => { if (!startedAt) requestAnimationFrame(animate); }, 600);
+    } else {
+      requestAnimationFrame(animate);
+    }
+  })();
+  </script>
 
 </body>
 </html>
