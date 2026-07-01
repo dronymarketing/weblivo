@@ -34,22 +34,28 @@
   /* Scrollbar fina y minimalista (Firefox) */
   html {
     scrollbar-width: thin;
-    scrollbar-color: rgba(240,189,92,0.25) transparent;
+    scrollbar-color: rgba(240,189,92,0.5) transparent;
   }
 
   /* Scrollbar fina y minimalista (Chrome/Safari/Edge) */
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 2px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(240,189,92,0.25);
+    background: linear-gradient(
+      180deg,
+      rgba(255,246,200,0.95) 0%,
+      rgba(240,189,92,0.6) 45%,
+      rgba(240,189,92,0.05) 100%
+    );
     border-radius: 4px;
+    box-shadow: 0 0 6px rgba(240,189,92,0.7), 0 0 2px rgba(255,246,200,0.9);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(240,189,92,0.45);
+    box-shadow: 0 0 10px rgba(240,189,92,0.9), 0 0 3px rgba(255,246,200,1);
   }
 
   body {
