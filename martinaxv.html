@@ -907,5 +907,49 @@
   })();
   </script>
 
+
+  <!-- Theme-color dinámico: marino (hero) → violeta (detalles) -->
+  <script>
+  (function() {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const hero = document.querySelector('.hero');
+    if (!meta || !hero) return;
+
+    const startColor = [10, 26, 61];   // #0A1A3D marino
+    const endColor   = [45, 27, 78];   // #2D1B4E violeta
+
+    function lerp(a, b, t) {
+      return Math.round(a + (b - a) * t);
+    }
+
+    function updateThemeColor() {
+      const heroHeight = hero.offsetHeight;
+      const transitionDistance = 60;
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      // Transición empieza exactamente cuando el hero termina (línea dorada)
+      const t = Math.min(Math.max((scrollY - heroHeight) / transitionDistance, 0), 1);
+
+      const r = lerp(startColor[0], endColor[0], t);
+      const g = lerp(startColor[1], endColor[1], t);
+      const b = lerp(startColor[2], endColor[2], t);
+
+      meta.setAttribute('content', `rgb(${r}, ${g}, ${b})`);
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateThemeColor();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateThemeColor();
+  })();
+  </script>
 </body>
 </html>
