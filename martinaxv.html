@@ -200,15 +200,15 @@
   }
 
   .scroll-hint span {
-    font-size: 0.6rem;
+    font-size: 0.85rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: rgba(240,189,92,0.7);
   }
 
   .scroll-hint svg {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     color: var(--dorado);
     transform-origin: 75% 35%;
     animation: lampTip 2.2s ease-in-out 3.4s infinite;
@@ -257,8 +257,8 @@
   }
 
   .ornament svg {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     color: var(--dorado);
   }
 
@@ -789,51 +789,7 @@
   })();
   </script>
 
-  <!-- Theme-color dinámico: transición degradada de azul oscuro (hero) a violeta -->
-  <script>
-  (function() {
-    const meta = document.querySelector('meta[name="theme-color"]');
-    const hero = document.querySelector('.hero');
-    if (!meta || !hero) return;
-
-    const startColor = [10, 26, 61];   // --marino
-    const endColor   = [45, 27, 78];   // --noche
-
-    function lerp(a, b, t) {
-      return Math.round(a + (b - a) * t);
-    }
-
-    function updateThemeColor() {
-      const heroHeight = hero.offsetHeight;
-      // Distancia de scroll (tras salir el hero) para completar el degradado
-      const transitionDistance = 60;
-      const scrollY = window.scrollY || window.pageYOffset;
-
-      // Mientras el hero esté visible (scrollY <= heroHeight) → t = 0 (azul fijo)
-      // Recién cuando el hero termina de salir de pantalla empieza a avanzar el degradado
-      const t = Math.min(Math.max((scrollY - heroHeight) / transitionDistance, 0), 1);
-
-      const r = lerp(startColor[0], endColor[0], t);
-      const g = lerp(startColor[1], endColor[1], t);
-      const b = lerp(startColor[2], endColor[2], t);
-
-      meta.setAttribute('content', `rgb(${r}, ${g}, ${b})`);
-    }
-
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          updateThemeColor();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }, { passive: true });
-
-    updateThemeColor();
-  })();
-  </script>
+  
 
 </body>
 </html>
