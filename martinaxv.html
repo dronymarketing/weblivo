@@ -127,7 +127,7 @@
     justify-content: center;
     padding: 0 1.5rem;
     text-align: center;
-    transform: translateY(-4rem);
+    transform: translateY(-2rem);
   }
 
   /* Placeholder del nombre — reemplazar por imagen diseñada */
@@ -925,14 +925,13 @@
     }
 
     function updateThemeColor() {
-      const details = document.querySelector('.details');
-      const detailsTop = details ? details.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) : hero.offsetHeight;
+      const heroHeight = hero.offsetHeight;
+      const transitionStart = heroHeight * 0.98;
       const transitionDistance = 80;
       const scrollY = window.scrollY || window.pageYOffset;
 
-      // Transición empieza cuando .details ya está bien dentro de la pantalla
-      const screenH = window.innerHeight;
-      const t = Math.min(Math.max((scrollY - detailsTop + screenH * 0.5) / transitionDistance, 0), 1);
+      // Transición empieza cuando se recorrió el 98% del hero
+      const t = Math.min(Math.max((scrollY - transitionStart) / transitionDistance, 0), 1);
 
       const r = lerp(startColor[0], endColor[0], t);
       const g = lerp(startColor[1], endColor[1], t);
