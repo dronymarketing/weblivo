@@ -560,11 +560,7 @@
           <span class="countdown-num" id="cd-mins">00</span>
           <span class="countdown-unit">minutos</span>
         </div>
-        <span class="countdown-sep">·</span>
-        <div class="countdown-item">
-          <span class="countdown-num" id="cd-segs">00</span>
-          <span class="countdown-unit">segundos</span>
-        </div>
+
       </div>
     </div>
 
@@ -879,7 +875,7 @@
 
   <script>
   (function() {
-    const target = new Date('2025-08-20T20:00:00');
+    const target = new Date('2026-08-20T20:00:00');
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
@@ -891,19 +887,15 @@
         document.getElementById('cd-dias').textContent = '00';
         document.getElementById('cd-horas').textContent = '00';
         document.getElementById('cd-mins').textContent = '00';
-        document.getElementById('cd-segs').textContent = '00';
         return;
       }
 
       const dias  = Math.floor(diff / (1000 * 60 * 60 * 24));
       const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const segs  = Math.floor((diff % (1000 * 60)) / 1000);
-
       document.getElementById('cd-dias').textContent  = pad(dias);
       document.getElementById('cd-horas').textContent = pad(horas);
       document.getElementById('cd-mins').textContent  = pad(mins);
-      document.getElementById('cd-segs').textContent  = pad(segs);
     }
 
     update();
