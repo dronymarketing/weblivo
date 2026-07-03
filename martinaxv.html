@@ -442,6 +442,63 @@
     .info-card { padding: 2.5rem 2rem; }
     .details, .memories { padding-left: 2rem; padding-right: 2rem; }
   }
+
+  /* ====== CONTADOR ====== */
+  .countdown-wrap {
+    margin: 2rem auto 2.5rem;
+    text-align: center;
+  }
+
+  .countdown-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-bottom: 1rem;
+  }
+
+  .countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(240,189,92,0.06);
+    border: 0.5px solid rgba(240,189,92,0.2);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    min-width: 70px;
+    backdrop-filter: blur(8px);
+  }
+
+  .countdown-num {
+    font-family: 'Marcellus', serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    color: var(--dorado);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 20px rgba(240,189,92,0.3);
+  }
+
+  .countdown-unit {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(240,189,92,0.45);
+    margin-top: 0.4rem;
+  }
+
+  .countdown-sep {
+    font-size: 1.5rem;
+    color: rgba(240,189,92,0.25);
+    margin-bottom: 1.2rem;
+  }
 </style>
 </head>
 <body>
@@ -484,6 +541,32 @@
     </p>
     <p class="details-eyebrow">Un mundo nuevo</p>
     <h2 class="details-title">Te espero para celebrar</h2>
+
+    <!-- CONTADOR -->
+    <div class="countdown-wrap">
+      <p class="countdown-label">Faltan</p>
+      <div class="countdown">
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-dias">00</span>
+          <span class="countdown-unit">días</span>
+        </div>
+        <span class="countdown-sep">·</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-horas">00</span>
+          <span class="countdown-unit">horas</span>
+        </div>
+        <span class="countdown-sep">·</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-mins">00</span>
+          <span class="countdown-unit">minutos</span>
+        </div>
+        <span class="countdown-sep">·</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-segs">00</span>
+          <span class="countdown-unit">segundos</span>
+        </div>
+      </div>
+    </div>
 
     <div class="info-card">
       <div class="info-icon">
@@ -790,6 +873,41 @@
         spawnTouchSparkles(x, y);
       });
     }
+  })();
+  </script>
+
+
+  <script>
+  (function() {
+    const target = new Date('2025-08-20T20:00:00');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function update() {
+      const now = new Date();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        document.getElementById('cd-dias').textContent = '00';
+        document.getElementById('cd-horas').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-segs').textContent = '00';
+        return;
+      }
+
+      const dias  = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const segs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-dias').textContent  = pad(dias);
+      document.getElementById('cd-horas').textContent = pad(horas);
+      document.getElementById('cd-mins').textContent  = pad(mins);
+      document.getElementById('cd-segs').textContent  = pad(segs);
+    }
+
+    update();
+    setInterval(update, 1000);
   })();
   </script>
 
