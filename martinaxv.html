@@ -575,6 +575,7 @@
     let startedAt = null;
     let falling   = false; // flag: cuando es true, todos caen
     let introFinished = false; // true recién cuando termina la animación de entrada del nombre
+    const nameEl = document.querySelector('.name-fallback');
 
     class Particle {
       constructor(cx, cy) {
@@ -680,8 +681,10 @@
 
       ctx.clearRect(0, 0, W(), H());
 
-      const cx = W() / 2;
-      const cy = H() * 0.42;
+      const nameRect = nameEl ? nameEl.getBoundingClientRect() : null;
+      const canvasRect = canvas.getBoundingClientRect();
+      const cx = nameRect ? (nameRect.left + nameRect.width / 2) - canvasRect.left : W() / 2;
+      const cy = nameRect ? (nameRect.top + nameRect.height / 2) - canvasRect.top : H() * 0.42;
 
       // Generar brillos desde el principio hasta que el nombre esté completo
       if (elapsed < BIRTH_END) {
@@ -765,7 +768,6 @@
       }
     }
 
-    const nameEl = document.querySelector('.name-fallback');
     if (nameEl) {
       nameEl.addEventListener('click', (e) => {
         if (!introFinished) return;
