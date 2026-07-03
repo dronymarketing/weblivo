@@ -924,12 +924,13 @@
     }
 
     function updateThemeColor() {
-      const heroHeight = hero.offsetHeight;
-      const transitionDistance = 120;
+      const details = document.querySelector('.details');
+      const detailsTop = details ? details.getBoundingClientRect().top + (window.scrollY || window.pageYOffset) : hero.offsetHeight;
+      const transitionDistance = 80;
       const scrollY = window.scrollY || window.pageYOffset;
 
-      // Transición empieza 200px antes de que termine el hero
-      const t = Math.min(Math.max((scrollY - heroHeight + 200) / transitionDistance, 0), 1);
+      // Transición empieza cuando la línea dorada llega al top de la pantalla
+      const t = Math.min(Math.max((scrollY - detailsTop) / transitionDistance, 0), 1);
 
       const r = lerp(startColor[0], endColor[0], t);
       const g = lerp(startColor[1], endColor[1], t);
