@@ -459,9 +459,10 @@
 
   .countdown {
     display: grid;
-    grid-template-columns: repeat(4, 88px);
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.6rem;
-    justify-content: center;
+    max-width: 420px;
+    margin: 0 auto;
     margin: 0 auto;
   }
 
@@ -924,11 +925,11 @@
 
     function updateThemeColor() {
       const heroHeight = hero.offsetHeight;
-      const transitionDistance = 60;
+      const transitionDistance = 120;
       const scrollY = window.scrollY || window.pageYOffset;
 
-      // Transición empieza exactamente cuando el hero termina (línea dorada)
-      const t = Math.min(Math.max((scrollY - heroHeight) / transitionDistance, 0), 1);
+      // Transición empieza 200px antes de que termine el hero
+      const t = Math.min(Math.max((scrollY - heroHeight + 200) / transitionDistance, 0), 1);
 
       const r = lerp(startColor[0], endColor[0], t);
       const g = lerp(startColor[1], endColor[1], t);
