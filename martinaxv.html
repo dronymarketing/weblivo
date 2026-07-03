@@ -459,8 +459,8 @@
 
   .countdown {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
     max-width: 420px;
     margin: 0 auto;
   }
@@ -473,7 +473,7 @@
     background: rgba(240,189,92,0.06);
     border: 1px solid rgba(240,189,92,0.25);
     border-radius: 18px;
-    padding: 2rem 1.5rem;
+    padding: 1.2rem 0.5rem;
     backdrop-filter: blur(6px);
   }
 
@@ -556,6 +556,10 @@
         <div class="countdown-item">
           <span class="countdown-num" id="cd-mins">00</span>
           <span class="countdown-unit">minutos</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-segs">00</span>
+          <span class="countdown-unit">segundos</span>
         </div>
 
       </div>
@@ -890,9 +894,12 @@
       const dias  = Math.floor(diff / (1000 * 60 * 60 * 24));
       const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const segs  = Math.floor((diff % (1000 * 60)) / 1000);
+
       document.getElementById('cd-dias').textContent  = pad(dias);
       document.getElementById('cd-horas').textContent = pad(horas);
       document.getElementById('cd-mins').textContent  = pad(mins);
+      document.getElementById('cd-segs').textContent  = pad(segs);
     }
 
     update();
