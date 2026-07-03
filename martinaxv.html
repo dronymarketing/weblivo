@@ -127,7 +127,7 @@
     justify-content: center;
     padding: 0 1.5rem;
     text-align: center;
-    margin-top: -4rem;
+    margin-top: -2rem;
   }
 
   /* Placeholder del nombre — reemplazar por imagen diseñada */
@@ -929,8 +929,9 @@
       const transitionDistance = 80;
       const scrollY = window.scrollY || window.pageYOffset;
 
-      // Transición empieza cuando la línea dorada llega al top de la pantalla
-      const t = Math.min(Math.max((scrollY - detailsTop) / transitionDistance, 0), 1);
+      // Transición empieza cuando .details ya está bien dentro de la pantalla
+      const screenH = window.innerHeight;
+      const t = Math.min(Math.max((scrollY - detailsTop + screenH * 0.5) / transitionDistance, 0), 1);
 
       const r = lerp(startColor[0], endColor[0], t);
       const g = lerp(startColor[1], endColor[1], t);
