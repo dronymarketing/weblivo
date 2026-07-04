@@ -963,7 +963,7 @@
     const original = 'MIS XV AÑOS';
     const newText  = 'No hace falta ser un genio para saber que mi mayor deseo es compartir esta noche contigo';
     const deleteSpeed = 40;  // ms por caracter al borrar
-    const typeSpeed   = 35;  // ms por caracter al escribir
+    const typeSpeed   = 80;  // ms por caracter al escribir
     const startDelay  = 2800 + 1000; // espera animación inicial + 1seg extra
 
     function deleteText(cb) {
@@ -996,6 +996,9 @@
         el.style.textTransform = 'uppercase';
         el.style.letterSpacing = '0.32em';
         el.style.fontSize = '0.9rem';
+        el.style.transform = 'none';
+        el.style.marginTop = '0.5rem';
+        el.style.position = 'relative';
         typeText(newText);
       });
     }, startDelay);
