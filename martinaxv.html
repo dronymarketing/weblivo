@@ -500,7 +500,11 @@
     margin-top: 0.5rem;
   }
 
-  .countdown-sep { display: none; }
+  .regalo-dato {
+    color: var(--dorado);
+    letter-spacing: 0.05em;
+    font-style: normal;
+  }
 </style>
 </head>
 <body>
@@ -617,6 +621,26 @@
       <p class="info-value">
         Semi formal
         <small class="note">Una pequeña sugerencia: el azul noche será el color del vestido de la cumpleañera, así que lo dejamos solo para ella ✨</small>
+      </p>
+    </div>
+
+    <!-- TARJETA REGALO -->
+    <div class="info-card" style="margin-top: 1.5rem;">
+      <div class="info-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="3" y="8" width="18" height="13" rx="2"/>
+          <path d="M3 10h18M12 3c0 0-3 2-3 5h6c0-3-3-5-3-5z"/>
+          <line x1="12" y1="8" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <p class="info-label">Un detalle para ella</p>
+      <p class="info-value">
+        Si querés sumarte con un regalo, podés hacerlo a través de una transferencia.
+        <small class="note" style="margin-top: 0.75rem; display: block;">
+          — Banco: <span class="regalo-dato">···</span><br>
+          — Alias: <span class="regalo-dato">···</span><br>
+          — CBU: <span class="regalo-dato">···</span>
+        </small>
       </p>
     </div>
   </section>
