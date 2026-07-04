@@ -124,15 +124,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 0 1.5rem;
     text-align: center;
+    position: relative;
   }
 
   /* Placeholder del nombre — reemplazar por imagen diseñada */
   .name-wrap {
-    margin-bottom: 1rem;
-    transform: translateY(-1rem);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 1rem));
+    width: 100%;
+    text-align: center;
   }
 
   .name-wrap img {
@@ -163,14 +167,17 @@
   }
 
   .hero-sub {
+    position: absolute;
+    top: calc(50% + 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
     font-size: 1.4rem;
     font-weight: 300;
     letter-spacing: 0.32em;
     text-transform: uppercase;
     color: #ffffff;
-    margin-top: 0;
-    transform: translateY(-5.3rem);
-    margin-bottom: 1rem;
+    text-align: center;
     opacity: 0;
     animation: nameFadeIn 1s ease 2.8s forwards;
   }
@@ -981,30 +988,23 @@
         // Ocultar hero-sub y crear nuevo elemento en su lugar
         el.style.visibility = 'hidden';
 
-        // Obtener posición exacta de hero-sub
-        const rect = el.getBoundingClientRect();
-        const parentRect = el.parentNode.getBoundingClientRect();
-
         const frase = document.createElement('p');
         frase.style.position      = 'absolute';
-        frase.style.top           = (rect.top - parentRect.top) + 'px';
+        frase.style.top           = 'calc(50% + 2rem)';
         frase.style.left          = '50%';
         frase.style.transform     = 'translateX(-50%)';
         frase.style.width         = '80%';
-        frase.style.fontSize      = '1.4rem';
+        frase.style.fontSize      = '1rem';
         frase.style.fontWeight    = '300';
-        frase.style.letterSpacing = '0.32em';
+        frase.style.letterSpacing = '0.2em';
         frase.style.textTransform = 'uppercase';
         frase.style.color         = '#ffffff';
         frase.style.whiteSpace    = 'normal';
-        frase.style.lineHeight    = '1.6';
+        frase.style.lineHeight    = '1.8';
         frase.style.textAlign     = 'center';
         frase.style.opacity       = '1';
         frase.style.zIndex        = '10';
-        frase.textContent = '';
-
-        // El padre necesita position relative para que el absolute funcione
-        el.parentNode.style.position = 'relative';
+        frase.textContent         = '';
         el.parentNode.appendChild(frase);
 
         let i = 0;
