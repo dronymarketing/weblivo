@@ -498,6 +498,19 @@
   }
 
   .countdown-sep { display: none; }
+
+  .hero-frase {
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffffff;
+    transform: translateY(-5.3rem);
+    max-width: 320px;
+    margin: 0.3rem auto 0;
+    line-height: 1.6;
+    min-height: 0;
+  }
 </style>
 </head>
 <body>
@@ -519,6 +532,7 @@
         <p class="name-fallback">Martina</p>
       </div>
       <p class="hero-sub">Mis XV Años</p>
+      <p class="hero-frase"></p>
     </div>
 
     <div class="scroll-hint">
@@ -966,6 +980,8 @@
     const typeSpeed   = 80;  // ms por caracter al escribir
     const startDelay  = 2800 + 1000; // espera animación inicial + 1seg extra
 
+    const frase = document.querySelector('.hero-frase');
+
     function deleteText(cb) {
       let text = el.textContent;
       function step() {
@@ -979,10 +995,10 @@
 
     function typeText(str, cb) {
       let i = 0;
-      el.textContent = '';
+      frase.textContent = '';
       function step() {
         if (i >= str.length) { if (cb) cb(); return; }
-        el.textContent += str[i];
+        frase.textContent += str[i];
         i++;
         setTimeout(step, typeSpeed);
       }
@@ -990,15 +1006,7 @@
     }
 
     setTimeout(() => {
-      // Quitar white-space nowrap para que la frase larga haga wrap
       deleteText(() => {
-        el.style.whiteSpace = 'normal';
-        el.style.textTransform = 'uppercase';
-        el.style.letterSpacing = '0.32em';
-        el.style.fontSize = '0.9rem';
-        el.style.transform = 'none';
-        el.style.marginTop = '0.5rem';
-        el.style.position = 'relative';
         typeText(newText);
       });
     }, startDelay);
