@@ -498,19 +498,6 @@
   }
 
   .countdown-sep { display: none; }
-
-  .hero-frase {
-    font-size: 0.75rem;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #ffffff;
-    transform: translateY(-5.3rem);
-    max-width: 320px;
-    margin: 0.3rem auto 0;
-    line-height: 1.6;
-    min-height: 0;
-  }
 </style>
 </head>
 <body>
@@ -532,7 +519,6 @@
         <p class="name-fallback">Martina</p>
       </div>
       <p class="hero-sub">Mis XV Años</p>
-      <p class="hero-frase"></p>
     </div>
 
     <div class="scroll-hint">
@@ -974,13 +960,10 @@
     const el = document.querySelector('.hero-sub');
     if (!el) return;
 
-    const original = 'MIS XV AÑOS';
     const newText  = 'No hace falta ser un genio para saber que mi mayor deseo es compartir esta noche contigo';
-    const deleteSpeed = 40;  // ms por caracter al borrar
-    const typeSpeed   = 80;  // ms por caracter al escribir
-    const startDelay  = 2800 + 1000; // espera animación inicial + 1seg extra
-
-    const frase = document.querySelector('.hero-frase');
+    const deleteSpeed = 40;
+    const typeSpeed   = 80;
+    const startDelay  = 2800 + 1000;
 
     function deleteText(cb) {
       let text = el.textContent;
@@ -993,21 +976,45 @@
       step();
     }
 
-    function typeText(str, cb) {
-      let i = 0;
-      frase.textContent = '';
-      function step() {
-        if (i >= str.length) { if (cb) cb(); return; }
-        frase.textContent += str[i];
-        i++;
-        setTimeout(step, typeSpeed);
-      }
-      step();
-    }
-
     setTimeout(() => {
       deleteText(() => {
-        typeText(newText);
+        // Ocultar hero-sub y crear nuevo elemento en su lugar
+        el.style.visibility = 'hidden';
+
+        // Obtener posición exacta de hero-sub
+        const rect = el.getBoundingClientRect();
+        const parentRect = el.parentNode.getBoundingClientRect();
+
+        const frase = document.createElement('p');
+        frase.style.position      = 'absolute';
+        frase.style.top           = (rect.top - parentRect.top) + 'px';
+        frase.style.left          = '50%';
+        frase.style.transform     = 'translateX(-50%)';
+        frase.style.width         = '80%';
+        frase.style.fontSize      = '1.4rem';
+        frase.style.fontWeight    = '300';
+        frase.style.letterSpacing = '0.32em';
+        frase.style.textTransform = 'uppercase';
+        frase.style.color         = '#ffffff';
+        frase.style.whiteSpace    = 'normal';
+        frase.style.lineHeight    = '1.6';
+        frase.style.textAlign     = 'center';
+        frase.style.opacity       = '1';
+        frase.style.zIndex        = '10';
+        frase.textContent = '';
+
+        // El padre necesita position relative para que el absolute funcione
+        el.parentNode.style.position = 'relative';
+        el.parentNode.appendChild(frase);
+
+        let i = 0;
+        function typeStep() {
+          if (i >= newText.length) return;
+          frase.textContent += newText[i];
+          i++;
+          setTimeout(typeStep, typeSpeed);
+        }
+        typeStep();
       });
     }, startDelay);
   })();
