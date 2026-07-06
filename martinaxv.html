@@ -25,10 +25,11 @@
 
 <style>
   @font-face {
-    font-family: 'aladdin';
-    src: url('fonts/aladdin.ttf') format('truetype');
+    font-family: 'Starlight Rune';
+    src: url('fonts/starlight-rune.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
   }
 
   :root {
@@ -155,9 +156,12 @@
     filter: drop-shadow(0 4px 24px rgba(240,189,92,0.35));
   }
 
-  /* Nombre con tipografía aladdin + textura dorada metálica real */
+  /* Nombre con tipografía Starlight Rune (variante alternativa ss01) + textura dorada metálica real */
   .name-fallback {
-    font-family: 'aladdin', 'Marcellus', serif;
+    font-family: 'Starlight Rune', 'Marcellus', serif;
+    font-feature-settings: "ss01" 1;
+    font-variant-alternates: stylistic(ss01);
+    text-transform: uppercase;
     font-size: clamp(4.5rem, 24vw, 8.5rem);
     letter-spacing: 0.03em;
     line-height: 1.3;
