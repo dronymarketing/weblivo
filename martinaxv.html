@@ -205,29 +205,73 @@
     100% { opacity: 1; }
   }
 
+  .frase-wrap {
+    position: absolute;
+    top: calc(50% - 0.7rem + 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 8.5rem;
+    overflow: hidden;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
   .frase-smoke {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(90vw, 420px);
-    height: 320px;
-    transform: translate(-50%, -50%) scale(0.85);
-    pointer-events: none;
-    z-index: 5;
-    background:
-      radial-gradient(circle at 50% 55%, rgba(157,90,220,0.55) 0%, rgba(120,60,190,0.32) 32%, rgba(90,40,160,0.12) 55%, rgba(90,40,160,0) 72%);
-    filter: blur(22px);
+    inset: -30%;
+    z-index: 1;
+  }
+
+  .frase-smoke span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(16px);
+    mix-blend-mode: screen;
+    background: radial-gradient(circle, rgba(59,32,102,0.95) 0%, rgba(45,27,78,0.75) 42%, rgba(45,27,78,0) 72%);
+  }
+  .frase-smoke span:nth-child(1) { width: 65%; height: 150%; left: -12%;  top: -25%; animation: smokeDrift1 6.5s ease-in-out infinite; }
+  .frase-smoke span:nth-child(2) { width: 58%; height: 140%; right: -14%; top: -12%; animation: smokeDrift2 7.5s ease-in-out infinite 0.6s; }
+  .frase-smoke span:nth-child(3) { width: 75%; height: 160%; left: 12%;   top: -30%; animation: smokeDrift3 8.5s ease-in-out infinite 1.2s; opacity: 0.85; }
+  .frase-smoke span:nth-child(4) { width: 45%; height: 120%; left: 30%;   top: -8%;  animation: smokeDrift1 9s ease-in-out infinite 2s; opacity: 0.7; }
+
+  .frase-smoke {
     opacity: 0;
-    animation: smokeAppear 1.4s ease forwards, smokeDrift 7s ease-in-out infinite 1.4s;
+    animation: smokeFadeIn 1.6s ease forwards;
   }
 
-  @keyframes smokeAppear {
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  @keyframes smokeFadeIn {
+    to { opacity: 1; }
   }
 
-  @keyframes smokeDrift {
-    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-    50%      { transform: translate(-50%, -53%) scale(1.12) rotate(3deg); }
+  @keyframes smokeDrift1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(6%, -5%) scale(1.18); }
+  }
+  @keyframes smokeDrift2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(-7%, 6%) scale(1.12); }
+  }
+  @keyframes smokeDrift3 {
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50%      { transform: translate(3%, 5%) scale(1.2) rotate(4deg); }
+  }
+
+  .frase-text {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #F0BD5C;
+    line-height: 1.8;
+    text-align: center;
+    pointer-events: auto;
   }
 
   .scroll-hint {
@@ -1073,29 +1117,22 @@
         // Ocultar hero-sub y crear nuevo elemento en su lugar
         el.style.visibility = 'hidden';
 
-        // Humo violeta detrás del párrafo, para que resalte
+        // Contenedor que confina el humo al espacio exacto del párrafo
+        const wrap = document.createElement('div');
+        wrap.className = 'frase-wrap';
+
+        // Humo violeta oscuro con varias volutas superpuestas
         const smoke = document.createElement('div');
         smoke.className = 'frase-smoke';
-        el.parentNode.appendChild(smoke);
+        smoke.innerHTML = '<span></span><span></span><span></span><span></span>';
+        wrap.appendChild(smoke);
 
         const frase = document.createElement('p');
-        frase.style.position      = 'absolute';
-        frase.style.top           = 'calc(50% - 0.7rem + 1rem)';
-        frase.style.left          = '50%';
-        frase.style.transform     = 'translateX(-50%)';
-        frase.style.width         = '80%';
-        frase.style.fontSize      = '1rem';
-        frase.style.fontWeight    = '300';
-        frase.style.letterSpacing = '0.2em';
-        frase.style.textTransform = 'uppercase';
-        frase.style.color         = '#F0BD5C';
-        frase.style.whiteSpace    = 'normal';
-        frase.style.lineHeight    = '1.8';
-        frase.style.textAlign     = 'center';
-        frase.style.opacity       = '1';
-        frase.style.zIndex        = '10';
-        frase.textContent         = '';
-        el.parentNode.appendChild(frase);
+        frase.className = 'frase-text';
+        frase.textContent = '';
+        wrap.appendChild(frase);
+
+        el.parentNode.appendChild(wrap);
 
         let i = 0;
         function typeStep() {
