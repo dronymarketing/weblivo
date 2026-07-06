@@ -224,24 +224,56 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 90%;
-    max-width: 380px;
-    height: 130%;
-    transform: translate(-50%, -50%) scale(0.85);
+    width: 85%;
+    max-width: 340px;
+    height: 100%;
+    transform: translate(-50%, -50%);
     z-index: 1;
-    background: radial-gradient(circle at 50% 55%, rgba(90,55,155,0.65) 0%, rgba(70,40,125,0.42) 32%, rgba(45,27,78,0.2) 55%, rgba(45,27,78,0) 72%);
-    filter: blur(20px);
+    background: radial-gradient(ellipse at 50% 50%, rgba(18,32,72,0.34) 0%, rgba(18,32,72,0.16) 45%, rgba(18,32,72,0) 70%);
+    filter: blur(22px);
     opacity: 0;
-    animation: smokeAppear 1.4s ease forwards, smokeDrift 7s ease-in-out infinite 1.4s;
+    animation: smokeAppear 1.8s ease forwards;
+    pointer-events: none;
+  }
+
+  .smoke-glow::before,
+  .smoke-glow::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(26px);
+  }
+
+  .smoke-glow::before {
+    top: 42%;
+    left: 50%;
+    width: 62%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(35,42,98,0.26) 0%, rgba(35,42,98,0.12) 50%, rgba(35,42,98,0) 72%);
+    animation: smokeDriftA 9s ease-in-out infinite 1.8s;
+  }
+
+  .smoke-glow::after {
+    top: 58%;
+    left: 47%;
+    width: 50%;
+    height: 40%;
+    background: radial-gradient(circle, rgba(55,48,110,0.18) 0%, rgba(55,48,110,0.08) 55%, rgba(55,48,110,0) 75%);
+    animation: smokeDriftB 11s ease-in-out infinite 1.8s;
   }
 
   @keyframes smokeAppear {
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 1; }
   }
 
-  @keyframes smokeDrift {
+  @keyframes smokeDriftA {
     0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-    50%      { transform: translate(-50%, -53%) scale(1.12) rotate(3deg); }
+    50%      { transform: translate(-46%, -54%) scale(1.15) rotate(4deg); }
+  }
+
+  @keyframes smokeDriftB {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    50%      { transform: translate(-54%, -47%) scale(1.1) rotate(-5deg); }
   }
 
   .frase-text {
