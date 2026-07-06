@@ -1030,7 +1030,7 @@
     const newText  = 'No hace falta ser un genio para saber que mi mayor deseo es compartir esta noche contigo';
     const deleteSpeed = 40;
     const typeSpeed   = 80;
-    const startDelay  = 2800 + 1000;
+    const startDelay  = 2800 + 3000;
 
     function deleteText(cb) {
       let text = el.textContent;
@@ -1050,7 +1050,7 @@
 
         const frase = document.createElement('p');
         frase.style.position      = 'absolute';
-        frase.style.top           = 'calc(50% - 0.7rem)';
+        frase.style.top           = 'calc(50% - 0.7rem + 1rem)';
         frase.style.left          = '50%';
         frase.style.transform     = 'translateX(-50%)';
         frase.style.width         = '80%';
