@@ -220,44 +220,28 @@
     pointer-events: none;
   }
 
-  .frase-smoke {
+  .smoke-glow {
     position: absolute;
-    inset: -30%;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-width: 380px;
+    height: 130%;
+    transform: translate(-50%, -50%) scale(0.85);
     z-index: 1;
-  }
-
-  .frase-smoke span {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(16px);
-    mix-blend-mode: screen;
-    background: radial-gradient(circle, rgba(59,32,102,0.95) 0%, rgba(45,27,78,0.75) 42%, rgba(45,27,78,0) 72%);
-  }
-  .frase-smoke span:nth-child(1) { width: 65%; height: 150%; left: -12%;  top: -25%; animation: smokeDrift1 6.5s ease-in-out infinite; }
-  .frase-smoke span:nth-child(2) { width: 58%; height: 140%; right: -14%; top: -12%; animation: smokeDrift2 7.5s ease-in-out infinite 0.6s; }
-  .frase-smoke span:nth-child(3) { width: 75%; height: 160%; left: 12%;   top: -30%; animation: smokeDrift3 8.5s ease-in-out infinite 1.2s; opacity: 0.85; }
-  .frase-smoke span:nth-child(4) { width: 45%; height: 120%; left: 30%;   top: -8%;  animation: smokeDrift1 9s ease-in-out infinite 2s; opacity: 0.7; }
-
-  .frase-smoke {
+    background: radial-gradient(circle at 50% 55%, rgba(90,55,155,0.65) 0%, rgba(70,40,125,0.42) 32%, rgba(45,27,78,0.2) 55%, rgba(45,27,78,0) 72%);
+    filter: blur(20px);
     opacity: 0;
-    animation: smokeFadeIn 1.6s ease forwards;
+    animation: smokeAppear 1.4s ease forwards, smokeDrift 7s ease-in-out infinite 1.4s;
   }
 
-  @keyframes smokeFadeIn {
-    to { opacity: 1; }
+  @keyframes smokeAppear {
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 
-  @keyframes smokeDrift1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%      { transform: translate(6%, -5%) scale(1.18); }
-  }
-  @keyframes smokeDrift2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%      { transform: translate(-7%, 6%) scale(1.12); }
-  }
-  @keyframes smokeDrift3 {
-    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    50%      { transform: translate(3%, 5%) scale(1.2) rotate(4deg); }
+  @keyframes smokeDrift {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    50%      { transform: translate(-50%, -53%) scale(1.12) rotate(3deg); }
   }
 
   .frase-text {
@@ -1121,10 +1105,9 @@
         const wrap = document.createElement('div');
         wrap.className = 'frase-wrap';
 
-        // Humo violeta oscuro con varias volutas superpuestas
+        // Humo violeta oscuro (nube difusa con animación de respiración)
         const smoke = document.createElement('div');
-        smoke.className = 'frase-smoke';
-        smoke.innerHTML = '<span></span><span></span><span></span><span></span>';
+        smoke.className = 'smoke-glow';
         wrap.appendChild(smoke);
 
         const frase = document.createElement('p');
