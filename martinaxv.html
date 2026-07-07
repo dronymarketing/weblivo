@@ -378,9 +378,39 @@
   }
 
   .ornament svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     color: var(--dorado);
+    overflow: visible;
+    animation: starBreathe 3s ease-in-out infinite;
+  }
+
+  .ornament .star-main {
+    filter: drop-shadow(0 0 6px rgba(240,189,92,0.55));
+  }
+
+  .ornament .star-rays line {
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    opacity: 0.2;
+    transform-origin: 50px 50px;
+    animation: rayTwinkle 2.4s ease-in-out infinite;
+  }
+
+  .ornament .ray-1 { animation-delay: 0s; }
+  .ornament .ray-2 { animation-delay: 0.6s; }
+  .ornament .ray-3 { animation-delay: 1.2s; }
+  .ornament .ray-4 { animation-delay: 1.8s; }
+
+  @keyframes rayTwinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.8); }
+    50%      { opacity: 1;    transform: scale(1.08); }
+  }
+
+  @keyframes starBreathe {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(240,189,92,0.4)); }
+    50%      { filter: drop-shadow(0 0 10px rgba(240,189,92,0.75)); }
   }
 
   .details-eyebrow {
@@ -871,8 +901,14 @@
   <!-- DETALLES -->
   <section class="details">
     <p class="ornament">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"/>
+      <svg viewBox="0 0 100 100" fill="currentColor">
+        <path class="star-main" d="M50 4 L57 43 L96 50 L57 57 L50 96 L43 57 L4 50 L43 43 Z"/>
+        <g class="star-rays">
+          <line class="ray-1" x1="50" y1="50" x2="74" y2="26"/>
+          <line class="ray-2" x1="50" y1="50" x2="74" y2="74"/>
+          <line class="ray-3" x1="50" y1="50" x2="26" y2="74"/>
+          <line class="ray-4" x1="50" y1="50" x2="26" y2="26"/>
+        </g>
       </svg>
     </p>
     <p class="details-eyebrow">Un mundo nuevo</p>
