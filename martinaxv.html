@@ -560,7 +560,126 @@
     .details, .memories { padding-left: 2rem; padding-right: 2rem; }
   }
 
-  /* ====== CARDS CON FOTO DE FONDO ====== */
+  /* ====== REPRODUCTOR DE MUSICA ====== */
+  .player-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(240,189,92,0.06);
+    border: 1px solid rgba(240,189,92,0.25);
+    border-radius: 18px;
+    padding: 1.8rem 1.6rem 1.6rem;
+    backdrop-filter: blur(6px);
+    text-align: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .player-label {
+    font-family: 'Marcellus', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin: 0 0 0.6rem;
+  }
+
+  .player-song {
+    font-family: 'Marcellus', serif;
+    font-size: 1.3rem;
+    color: var(--dorado-soft);
+    margin: 0 0 1.4rem;
+  }
+
+  .player-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .player-time {
+    font-size: 0.85rem;
+    color: rgba(245,210,142,0.6);
+    min-width: 2.6em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .player-bar {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(240,189,92,0.2);
+    cursor: pointer;
+    padding: 10px 0;
+    margin: -10px 0;
+  }
+
+  .player-bar::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 0; right: 0;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(240,189,92,0.2);
+  }
+
+  .player-bar-fill {
+    position: absolute;
+    top: 10px; left: 0;
+    height: 3px;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--dorado));
+  }
+
+  .player-bar-handle {
+    position: absolute;
+    top: 11.5px;
+    left: 0%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--dorado-soft);
+    box-shadow: 0 0 0 4px rgba(240,189,92,0.15);
+    transform: translate(-50%, -50%);
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    margin-top: 1.3rem;
+  }
+
+  .player-btn {
+    background: none;
+    border: none;
+    color: var(--dorado-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .player-btn:hover { opacity: 1; transform: scale(1.06); }
+
+  .player-btn svg { width: 20px; height: 20px; }
+
+  .player-btn-play {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--dorado) 0%, #d99e3a 100%);
+    color: #2D1B4E;
+    box-shadow: 0 8px 20px rgba(240,189,92,0.35);
+  }
+
+  .player-btn-play svg { width: 22px; height: 22px; }
   .info-card {
     position: relative;
     overflow: hidden;
@@ -796,6 +915,37 @@
         Sábado 15 de Agosto
         <small>A partir de las 20:00 hs</small>
       </p>
+    </div>
+
+    <!-- REPRODUCTOR DE MUSICA -->
+    <div class="player-card">
+      <p class="player-label">Mi Música Favorita</p>
+      <p class="player-song" id="songName">Friend Like Me</p>
+
+      <div class="player-progress-row">
+        <span class="player-time" id="curTime">00:00</span>
+        <div class="player-bar" id="playerBar">
+          <div class="player-bar-fill" id="barFill"></div>
+          <div class="player-bar-handle" id="barHandle"></div>
+        </div>
+        <span class="player-time" id="durTime">00:00</span>
+      </div>
+
+      <div class="player-controls">
+        <button class="player-btn" id="prevBtn" aria-label="Canción anterior" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+
+        <button class="player-btn player-btn-play" id="playBtn" aria-label="Reproducir" type="button">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <button class="player-btn" id="nextBtn" aria-label="Siguiente canción" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+        </button>
+      </div>
+
+      <audio id="audioEl" preload="metadata"></audio>
     </div>
 
     <!-- COLLAGE DE FOTOS -->
@@ -1264,6 +1414,124 @@
         typeStep();
       });
     }, startDelay);
+  })();
+  </script>
+
+  <!-- ====== REPRODUCTOR DE MUSICA ====== -->
+  <script>
+  (function() {
+    const tracks = [
+      { title: 'Friend Like Me', src: 'willfriend.mp3', offset: 0 },
+      { title: 'Prince Ali',     src: 'willprince.mp3', offset: 30 }
+    ];
+
+    let currentTrack = 0;
+    let isPlaying = false;
+    let dragging = false;
+
+    const audio      = document.getElementById('audioEl');
+    const songNameEl = document.getElementById('songName');
+    const curTimeEl  = document.getElementById('curTime');
+    const durTimeEl  = document.getElementById('durTime');
+    const barFill    = document.getElementById('barFill');
+    const barHandle  = document.getElementById('barHandle');
+    const bar        = document.getElementById('playerBar');
+    const playBtn    = document.getElementById('playBtn');
+    const playIcon   = document.getElementById('playIcon');
+    const prevBtn    = document.getElementById('prevBtn');
+    const nextBtn    = document.getElementById('nextBtn');
+
+    const ICON_PLAY  = '<path d="M8 5v14l11-7z"/>';
+    const ICON_PAUSE = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+
+    function formatTime(s) {
+      if (!isFinite(s) || s < 0) s = 0;
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    function setProgress(pct, currentLabelSeconds) {
+      pct = Math.max(0, Math.min(100, pct));
+      barFill.style.width = pct + '%';
+      barHandle.style.left = pct + '%';
+      if (currentLabelSeconds !== undefined) curTimeEl.textContent = formatTime(currentLabelSeconds);
+    }
+
+    function loadTrack(index, autoplay) {
+      currentTrack = (index + tracks.length) % tracks.length;
+      const track = tracks[currentTrack];
+
+      songNameEl.textContent = track.title;
+      setProgress(0, 0);
+      durTimeEl.textContent = '00:00';
+      audio.src = track.src;
+
+      const onLoaded = function() {
+        audio.currentTime = track.offset;
+        durTimeEl.textContent = formatTime(audio.duration - track.offset);
+        audio.removeEventListener('loadedmetadata', onLoaded);
+        if (autoplay) {
+          audio.play().catch(function(){});
+          isPlaying = true;
+          playIcon.innerHTML = ICON_PAUSE;
+        }
+      };
+      audio.addEventListener('loadedmetadata', onLoaded);
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play().catch(function(){});
+        isPlaying = true;
+        playIcon.innerHTML = ICON_PAUSE;
+      } else {
+        audio.pause();
+        isPlaying = false;
+        playIcon.innerHTML = ICON_PLAY;
+      }
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+    prevBtn.addEventListener('click', function() { loadTrack(currentTrack - 1, isPlaying); });
+    nextBtn.addEventListener('click', function() { loadTrack(currentTrack + 1, isPlaying); });
+
+    audio.addEventListener('timeupdate', function() {
+      if (dragging) return;
+      const track = tracks[currentTrack];
+      const effCurrent  = Math.max(0, audio.currentTime - track.offset);
+      const effDuration = Math.max(0.01, (audio.duration || 0) - track.offset);
+      setProgress((effCurrent / effDuration) * 100, effCurrent);
+    });
+
+    audio.addEventListener('ended', function() {
+      loadTrack(currentTrack + 1, true);
+    });
+
+    function seekFromClientX(clientX) {
+      const rect = bar.getBoundingClientRect();
+      let pct = (clientX - rect.left) / rect.width;
+      pct = Math.max(0, Math.min(1, pct));
+      const track = tracks[currentTrack];
+      const effDuration = Math.max(0.01, (audio.duration || 0) - track.offset);
+      audio.currentTime = track.offset + pct * effDuration;
+      setProgress(pct * 100, pct * effDuration);
+    }
+
+    bar.addEventListener('click', function(e) { seekFromClientX(e.clientX); });
+
+    barHandle.addEventListener('mousedown', function() { dragging = true; });
+    barHandle.addEventListener('touchstart', function() { dragging = true; }, {passive: true});
+
+    window.addEventListener('mousemove', function(e) { if (dragging) seekFromClientX(e.clientX); });
+    window.addEventListener('touchmove', function(e) {
+      if (dragging && e.touches[0]) seekFromClientX(e.touches[0].clientX);
+    }, {passive: true});
+
+    window.addEventListener('mouseup', function() { dragging = false; });
+    window.addEventListener('touchend', function() { dragging = false; });
+
+    loadTrack(0, false);
   })();
   </script>
 
