@@ -561,17 +561,12 @@
   }
 
   /* ====== REPRODUCTOR DE MUSICA ====== */
-  .player-card {
+  .player-wrap {
     position: relative;
     width: 100%;
-    max-width: 420px;
-    background: rgba(240,189,92,0.06);
-    border: 1px solid rgba(240,189,92,0.25);
-    border-radius: 18px;
-    padding: 1.8rem 1.6rem 1.6rem;
-    backdrop-filter: blur(6px);
+    max-width: 340px;
     text-align: center;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 2rem;
   }
 
   .player-label {
@@ -587,6 +582,15 @@
     font-family: 'Marcellus', serif;
     font-size: 1.3rem;
     color: var(--dorado-soft);
+    margin: 0 0 0.2rem;
+  }
+
+  .player-artist {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,210,142,0.55);
     margin: 0 0 1.4rem;
   }
 
@@ -609,7 +613,7 @@
     flex: 1;
     height: 3px;
     border-radius: 2px;
-    background: rgba(240,189,92,0.2);
+    background: transparent;
     cursor: pointer;
     padding: 10px 0;
     margin: -10px 0;
@@ -621,7 +625,7 @@
     top: 10px; left: 0; right: 0;
     height: 3px;
     border-radius: 2px;
-    background: rgba(240,189,92,0.2);
+    background: rgba(255,255,255,0.15);
   }
 
   .player-bar-fill {
@@ -917,10 +921,25 @@
       </p>
     </div>
 
+    <!-- COLLAGE DE FOTOS -->
+    <div class="gallery-wrap">
+      <p class="gallery-label">Martina</p>
+
+      <div class="gallery-square">
+        <img src="fotomartina1.jpg" alt="Martina 1" loading="lazy">
+        <img src="fotomartina2.jpg" alt="Martina 2" loading="lazy">
+        <img src="fotomartina3.jpg" alt="Martina 3" loading="lazy">
+        <img src="fotomartina4.jpg" alt="Martina 4" loading="lazy">
+        <img src="fotomartina5.jpg" alt="Martina 5" loading="lazy">
+        <img src="fotomartina6.jpg" alt="Martina 6" loading="lazy">
+      </div>
+    </div>
+
     <!-- REPRODUCTOR DE MUSICA -->
-    <div class="player-card">
+    <div class="player-wrap">
       <p class="player-label">Mi Música Favorita</p>
       <p class="player-song" id="songName">Friend Like Me</p>
+      <p class="player-artist" id="songArtist">Will Smith</p>
 
       <div class="player-progress-row">
         <span class="player-time" id="curTime">00:00</span>
@@ -946,19 +965,6 @@
       </div>
 
       <audio id="audioEl" preload="metadata"></audio>
-    </div>
-
-    <!-- COLLAGE DE FOTOS -->
-    <div class="gallery-wrap">
-      <p class="gallery-label">Martina</p>
-      <div class="gallery-square">
-        <img src="fotomartina1.jpg" alt="Martina 1" loading="lazy">
-        <img src="fotomartina2.jpg" alt="Martina 2" loading="lazy">
-        <img src="fotomartina3.jpg" alt="Martina 3" loading="lazy">
-        <img src="fotomartina4.jpg" alt="Martina 4" loading="lazy">
-        <img src="fotomartina5.jpg" alt="Martina 5" loading="lazy">
-        <img src="fotomartina6.jpg" alt="Martina 6" loading="lazy">
-      </div>
     </div>
 
     <div class="info-card info-card-lugar">
@@ -1421,17 +1427,18 @@
   <script>
   (function() {
     const tracks = [
-      { title: 'Friend Like Me', src: 'willfriend.mp3', offset: 0 },
-      { title: 'Prince Ali',     src: 'willprince.mp3', offset: 30 }
+      { title: 'Friend Like Me', artist: 'Will Smith', src: 'willfriend.mp3', offset: 0 },
+      { title: 'Prince Ali',     artist: 'Will Smith', src: 'willprince.mp3', offset: 30 }
     ];
 
     let currentTrack = 0;
     let isPlaying = false;
     let dragging = false;
 
-    const audio      = document.getElementById('audioEl');
-    const songNameEl = document.getElementById('songName');
-    const curTimeEl  = document.getElementById('curTime');
+    const audio       = document.getElementById('audioEl');
+    const songNameEl  = document.getElementById('songName');
+    const songArtistEl = document.getElementById('songArtist');
+    const curTimeEl   = document.getElementById('curTime');
     const durTimeEl  = document.getElementById('durTime');
     const barFill    = document.getElementById('barFill');
     const barHandle  = document.getElementById('barHandle');
@@ -1463,6 +1470,7 @@
       const track = tracks[currentTrack];
 
       songNameEl.textContent = track.title;
+      songArtistEl.textContent = track.artist;
       setProgress(0, 0);
       durTimeEl.textContent = '00:00';
       audio.src = track.src;
