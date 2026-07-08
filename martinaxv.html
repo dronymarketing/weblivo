@@ -568,6 +568,175 @@
     height: 20px;
   }
 
+  /* MODAL DE SUBIDA */
+  .upload-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,26,61,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .upload-overlay.open {
+    display: flex;
+  }
+
+  .upload-modal {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 88vh;
+    overflow-y: auto;
+    background: linear-gradient(160deg, rgba(45,27,78,0.95), rgba(10,26,61,0.97));
+    border: 1px solid rgba(240,189,92,0.3);
+    border-radius: 20px;
+    padding: 2.2rem 1.6rem 1.8rem;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+
+  .upload-close {
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--dorado-soft);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.4rem;
+  }
+
+  .upload-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--turquesa);
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-title {
+    font-family: 'Marcellus', serif;
+    font-size: 1.4rem;
+    color: var(--dorado-soft);
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    border: 1.5px dashed rgba(240,189,92,0.45);
+    border-radius: 16px;
+    padding: 2rem 1rem;
+    cursor: pointer;
+    color: var(--dorado);
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .upload-dropzone.dragover {
+    border-color: var(--dorado);
+    background: rgba(240,189,92,0.08);
+  }
+
+  .upload-dropzone svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .upload-dropzone-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: var(--dorado-soft);
+  }
+
+  .upload-file-list {
+    margin-top: 1.2rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .upload-file-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: rgba(240,189,92,0.06);
+    border: 1px solid rgba(240,189,92,0.2);
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .upload-file-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .upload-file-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--dorado-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .upload-file-remove {
+    background: none;
+    border: none;
+    color: var(--magenta);
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .upload-file-progress {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+  }
+
+  .upload-file-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--dorado), var(--turquesa));
+    transition: width 0.2s ease;
+  }
+
+  .upload-status {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--turquesa);
+    margin: 1rem 0 0;
+    min-height: 1.2rem;
+  }
+
+  .upload-submit-btn {
+    margin-top: 1.2rem;
+    width: 100%;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    font-size: 1.05rem;
+  }
+
+  .upload-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
   /* ====== FOOTER ====== */
   .xv-footer {
     background: var(--bordo);
@@ -1070,14 +1239,41 @@
     <h2 class="memories-title">Compartí el momento</h2>
     <p class="memories-text">Subí tus fotos y videos de la noche para que quede el recuerdo completo de la fiesta.</p>
 
-    <!-- Reemplazar href por el link real de la carpeta de Drive -->
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScHg4iIAHo1Cupo99nL8Jq234MZNGnhDV9HjtPGpxAoBYVYIQ/viewform?usp=publish-editor" target="_blank" rel="noopener" class="btn-drive">
+    <!-- Botón que abre el modal de subida -->
+    <button type="button" class="btn-drive" onclick="abrirModalSubida()">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M9 3L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
       </svg>
       Subir fotos y videos
-    </a>
+    </button>
   </section>
+
+  <!-- MODAL DE SUBIDA -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-modal">
+      <button type="button" class="upload-close" onclick="cerrarModalSubida()" aria-label="Cerrar">&times;</button>
+
+      <p class="upload-eyebrow">Compartí el momento</p>
+      <h3 class="upload-title">Subí tus fotos y videos</h3>
+
+      <label class="upload-dropzone" id="uploadDropzone">
+        <input type="file" id="uploadInput" multiple accept="image/*,video/*" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M12 16V4M12 4l-4 4M12 4l4 4"/>
+          <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+        </svg>
+        <span class="upload-dropzone-text">Tocá para elegir o arrastrá tus archivos acá</span>
+      </label>
+
+      <div class="upload-file-list" id="uploadFileList"></div>
+
+      <p class="upload-status" id="uploadStatus"></p>
+
+      <button type="button" class="btn-drive upload-submit-btn" id="uploadSubmitBtn" onclick="enviarArchivos()" disabled>
+        Enviar
+      </button>
+    </div>
+  </div>
 
   <footer class="xv-footer">
     <p>Martina · 15 Años</p>
@@ -1575,6 +1771,145 @@
     window.addEventListener('touchend', function() { dragging = false; });
 
     loadTrack(0, false);
+  })();
+  </script>
+
+  <script>
+  (function() {
+    // ⚠️ Si el link de tu servidor cambia, actualizá esta línea:
+    const UPLOAD_URL = 'https://desktop-i8e4crg.taile69d98.ts.net/upload';
+
+    const overlay    = document.getElementById('uploadOverlay');
+    const dropzone   = document.getElementById('uploadDropzone');
+    const input      = document.getElementById('uploadInput');
+    const fileList   = document.getElementById('uploadFileList');
+    const statusEl   = document.getElementById('uploadStatus');
+    const submitBtn  = document.getElementById('uploadSubmitBtn');
+
+    let selectedFiles = [];
+
+    window.abrirModalSubida = function() {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.cerrarModalSubida = function() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) window.cerrarModalSubida();
+    });
+
+    input.addEventListener('change', function() {
+      agregarArchivos(Array.from(input.files));
+      input.value = '';
+    });
+
+    ['dragover', 'dragenter'].forEach(evt => {
+      dropzone.addEventListener(evt, function(e) {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, function(e) {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files) {
+        agregarArchivos(Array.from(e.dataTransfer.files));
+      }
+    });
+
+    function agregarArchivos(files) {
+      files.forEach(file => {
+        selectedFiles.push(file);
+      });
+      renderFileList();
+    }
+
+    function quitarArchivo(index) {
+      selectedFiles.splice(index, 1);
+      renderFileList();
+    }
+
+    function formatSize(bytes) {
+      const mb = bytes / (1024 * 1024);
+      return mb >= 1 ? mb.toFixed(1) + ' MB' : (bytes / 1024).toFixed(0) + ' KB';
+    }
+
+    function renderFileList() {
+      fileList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'upload-file-item';
+        item.innerHTML = `
+          <div class="upload-file-top">
+            <span class="upload-file-name">${file.name} · ${formatSize(file.size)}</span>
+            <button type="button" class="upload-file-remove" aria-label="Quitar">&times;</button>
+          </div>
+          <div class="upload-file-progress"><div class="upload-file-progress-bar"></div></div>
+        `;
+        item.querySelector('.upload-file-remove').addEventListener('click', () => quitarArchivo(index));
+        fileList.appendChild(item);
+      });
+      submitBtn.disabled = selectedFiles.length === 0;
+      statusEl.textContent = '';
+    }
+
+    window.enviarArchivos = function() {
+      if (selectedFiles.length === 0) return;
+
+      submitBtn.disabled = true;
+      statusEl.style.color = 'var(--turquesa)';
+      statusEl.textContent = 'Subiendo, no cierres esta ventana...';
+
+      const formData = new FormData();
+      selectedFiles.forEach(file => formData.append('archivos', file));
+
+      const bars = fileList.querySelectorAll('.upload-file-progress-bar');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', UPLOAD_URL, true);
+
+      xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          bars.forEach(bar => bar.style.width = pct + '%');
+        }
+      });
+
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          statusEl.style.color = 'var(--turquesa)';
+          statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
+          selectedFiles = [];
+          setTimeout(() => {
+            renderFileList();
+            statusEl.textContent = '';
+          }, 2500);
+        } else {
+          manejarError();
+        }
+      };
+
+      xhr.onerror = manejarError;
+
+      function manejarError() {
+        statusEl.style.color = 'var(--magenta)';
+        statusEl.textContent = 'No se pudo subir. Revisá tu conexión e intentá de nuevo en un momento.';
+        submitBtn.disabled = false;
+      }
+
+      xhr.send(formData);
+    };
   })();
   </script>
 
