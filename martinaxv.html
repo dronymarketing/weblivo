@@ -553,6 +553,7 @@
     font-size: 1.05rem;
     letter-spacing: 0.04em;
     text-decoration: none;
+    border: none;
     padding: 1rem 2.2rem;
     border-radius: 999px;
     box-shadow: 0 10px 30px rgba(240,189,92,0.25);
@@ -766,7 +767,19 @@
     max-width: 420px;
     text-align: center;
     margin: 0 auto 1.5rem;
-    padding: 3rem 1.5rem;
+    padding: 1.5rem 1.5rem;
+  }
+
+  .player-error {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--magenta);
+    margin-top: 0.8rem;
+    display: none;
+  }
+
+  .player-error.show {
+    display: block;
   }
 
   .player-label {
@@ -1112,6 +1125,7 @@
       </div>
 
       <audio id="audioEl" preload="metadata"></audio>
+      <p class="player-error" id="playerError"></p>
     </div>
 
     <h2 class="details-title">Te espero para celebrar</h2>
@@ -1227,9 +1241,9 @@
       <p class="info-value">
         Para sumar un detalle a esta noche tan especial.
         <small class="note" style="margin-top: 0.75rem; display: block;">
-          — Banco: <span class="regalo-dato">···</span><br>
-          — Alias: <span class="regalo-dato">···</span><br>
-          — CBU: <span class="regalo-dato">···</span>
+          — Banco: <span class="regalo-dato">Prexcard</span><br>
+          — Alias: <span class="regalo-dato">11761</span><br>
+          — Titular: <span class="regalo-dato">Mary García</span>
         </small>
       </p>
     </div>
@@ -1669,6 +1683,7 @@
     const audio       = document.getElementById('audioEl');
     const songNameEl  = document.getElementById('songName');
     const songArtistEl = document.getElementById('songArtist');
+    const errorEl     = document.getElementById('playerError');
     const curTimeEl   = document.getElementById('curTime');
     const durTimeEl  = document.getElementById('durTime');
     const barFill    = document.getElementById('barFill');
@@ -1704,6 +1719,7 @@
       songArtistEl.textContent = track.artist;
       setProgress(0, 0);
       durTimeEl.textContent = '00:00';
+      errorEl.classList.remove('show');
       audio.src = track.src;
 
       const onLoaded = function() {
@@ -1711,7 +1727,7 @@
         durTimeEl.textContent = formatTime(audio.duration - track.offset);
         audio.removeEventListener('loadedmetadata', onLoaded);
         if (autoplay) {
-          audio.play().catch(function(){});
+          audio.play().catch(mostrarErrorAudio);
           isPlaying = true;
           playIcon.innerHTML = ICON_PAUSE;
         }
@@ -1719,11 +1735,22 @@
       audio.addEventListener('loadedmetadata', onLoaded);
     }
 
+    function mostrarErrorAudio() {
+      isPlaying = false;
+      playIcon.innerHTML = ICON_PLAY;
+      errorEl.textContent = 'No se pudo reproducir la canción. Verificá que el archivo esté subido con el nombre correcto en el hosting.';
+      errorEl.classList.add('show');
+    }
+
+    audio.addEventListener('error', mostrarErrorAudio);
+
     function togglePlay() {
       if (audio.paused) {
-        audio.play().catch(function(){});
-        isPlaying = true;
-        playIcon.innerHTML = ICON_PAUSE;
+        audio.play().then(function() {
+          isPlaying = true;
+          playIcon.innerHTML = ICON_PAUSE;
+          errorEl.classList.remove('show');
+        }).catch(mostrarErrorAudio);
       } else {
         audio.pause();
         isPlaying = false;
