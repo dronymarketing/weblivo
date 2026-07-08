@@ -1080,6 +1080,39 @@
         </g>
       </svg>
     </p>
+
+    <!-- REPRODUCTOR DE MUSICA -->
+    <div class="player-wrap">
+      <p class="player-label">Mi Música Favorita</p>
+      <p class="player-song" id="songName">Friend Like Me</p>
+      <p class="player-artist" id="songArtist">Will Smith</p>
+
+      <div class="player-progress-row">
+        <span class="player-time" id="curTime">00:00</span>
+        <div class="player-bar" id="playerBar">
+          <div class="player-bar-fill" id="barFill"></div>
+          <div class="player-bar-handle" id="barHandle"></div>
+        </div>
+        <span class="player-time" id="durTime">00:00</span>
+      </div>
+
+      <div class="player-controls">
+        <button class="player-btn" id="prevBtn" aria-label="Canción anterior" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+
+        <button class="player-btn player-btn-play" id="playBtn" aria-label="Reproducir" type="button">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <button class="player-btn" id="nextBtn" aria-label="Siguiente canción" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+        </button>
+      </div>
+
+      <audio id="audioEl" preload="metadata"></audio>
+    </div>
+
     <p class="details-eyebrow">Un mundo nuevo</p>
     <h2 class="details-title">Te espero para celebrar</h2>
 
@@ -1138,38 +1171,6 @@
         <img src="fotomartina5.jpg" alt="Martina 5" loading="lazy">
         <img src="fotomartina6.jpg" alt="Martina 6" loading="lazy">
       </div>
-    </div>
-
-    <!-- REPRODUCTOR DE MUSICA -->
-    <div class="player-wrap">
-      <p class="player-label">Mi Música Favorita</p>
-      <p class="player-song" id="songName">Friend Like Me</p>
-      <p class="player-artist" id="songArtist">Will Smith</p>
-
-      <div class="player-progress-row">
-        <span class="player-time" id="curTime">00:00</span>
-        <div class="player-bar" id="playerBar">
-          <div class="player-bar-fill" id="barFill"></div>
-          <div class="player-bar-handle" id="barHandle"></div>
-        </div>
-        <span class="player-time" id="durTime">00:00</span>
-      </div>
-
-      <div class="player-controls">
-        <button class="player-btn" id="prevBtn" aria-label="Canción anterior" type="button">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-        </button>
-
-        <button class="player-btn player-btn-play" id="playBtn" aria-label="Reproducir" type="button">
-          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-
-        <button class="player-btn" id="nextBtn" aria-label="Siguiente canción" type="button">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
-        </button>
-      </div>
-
-      <audio id="audioEl" preload="metadata"></audio>
     </div>
 
     <div class="info-card info-card-lugar">
@@ -1778,6 +1779,12 @@
   (function() {
     // ⚠️ Si el link de tu servidor cambia, actualizá esta línea:
     const UPLOAD_URL = 'https://desktop-i8e4crg.taile69d98.ts.net/upload';
+    const PING_URL = 'https://desktop-i8e4crg.taile69d98.ts.net/';
+
+    // Datos de Cloudinary (respaldo automático si el servidor propio no responde)
+    const CLOUD_NAME = 'v5t6ha3o';
+    const UPLOAD_PRESET = 'martinaxv';
+    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
 
     const overlay    = document.getElementById('uploadOverlay');
     const dropzone   = document.getElementById('uploadDropzone');
@@ -1871,6 +1878,39 @@
       statusEl.style.color = 'var(--turquesa)';
       statusEl.textContent = 'Subiendo, no cierres esta ventana...';
 
+      // Primero probamos si tu PC está disponible (ping rápido, 4 segundos de margen)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      fetch(PING_URL, { method: 'GET', signal: controller.signal })
+        .then(() => {
+          clearTimeout(timeoutId);
+          subirAServidorPropio();
+        })
+        .catch(() => {
+          clearTimeout(timeoutId);
+          subirARespaldo();
+        });
+    };
+
+    function manejarErrorGeneral() {
+      statusEl.style.color = 'var(--magenta)';
+      statusEl.textContent = 'No se pudo subir. Revisá tu conexión e intentá de nuevo en un momento.';
+      submitBtn.disabled = false;
+    }
+
+    function subidaExitosa() {
+      statusEl.style.color = 'var(--turquesa)';
+      statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
+      selectedFiles = [];
+      setTimeout(() => {
+        renderFileList();
+        statusEl.textContent = '';
+      }, 2500);
+    }
+
+    // Camino principal: subir todo junto a la PC de Martina
+    function subirAServidorPropio() {
       const formData = new FormData();
       selectedFiles.forEach(file => formData.append('archivos', file));
 
@@ -1888,28 +1928,57 @@
 
       xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
-          statusEl.style.color = 'var(--turquesa)';
-          statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
-          selectedFiles = [];
-          setTimeout(() => {
-            renderFileList();
-            statusEl.textContent = '';
-          }, 2500);
+          subidaExitosa();
         } else {
-          manejarError();
+          subirARespaldo();
         }
       };
 
-      xhr.onerror = manejarError;
-
-      function manejarError() {
-        statusEl.style.color = 'var(--magenta)';
-        statusEl.textContent = 'No se pudo subir. Revisá tu conexión e intentá de nuevo en un momento.';
-        submitBtn.disabled = false;
-      }
+      xhr.onerror = function() {
+        subirARespaldo();
+      };
 
       xhr.send(formData);
-    };
+    }
+
+    // Camino de respaldo: la PC no respondió, subimos a Cloudinary (uno por uno)
+    function subirARespaldo() {
+      const bars = fileList.querySelectorAll('.upload-file-progress-bar');
+      let completados = 0;
+      let huboError = false;
+
+      selectedFiles.forEach((file, index) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', CLOUDINARY_URL, true);
+
+        xhr.upload.addEventListener('progress', function(e) {
+          if (e.lengthComputable && bars[index]) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            bars[index].style.width = pct + '%';
+          }
+        });
+
+        xhr.onload = function() {
+          completados++;
+          if (xhr.status < 200 || xhr.status >= 300) huboError = true;
+          if (completados === selectedFiles.length) {
+            huboError ? manejarErrorGeneral() : subidaExitosa();
+          }
+        };
+
+        xhr.onerror = function() {
+          completados++;
+          huboError = true;
+          if (completados === selectedFiles.length) manejarErrorGeneral();
+        };
+
+        xhr.send(formData);
+      });
+    }
   })();
   </script>
 
