@@ -770,18 +770,6 @@
     padding: 1.5rem 1.5rem;
   }
 
-  .player-error {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.9rem;
-    color: var(--magenta);
-    margin-top: 0.8rem;
-    display: none;
-  }
-
-  .player-error.show {
-    display: block;
-  }
-
   .player-label {
     font-family: 'Marcellus', serif;
     font-size: 0.9rem;
@@ -1125,7 +1113,6 @@
       </div>
 
       <audio id="audioEl" preload="metadata"></audio>
-      <p class="player-error" id="playerError"></p>
     </div>
 
     <h2 class="details-title">Te espero para celebrar</h2>
@@ -1673,8 +1660,10 @@
   <script>
   (function() {
     const tracks = [
-      { title: 'Prince Ali', artist: 'Alan Menken', src: 'Prince_Ali.mp3', offset: 140 }
+      { title: 'Prince Ali', artist: 'Alan Menken', src: 'Prince_Ali.mp3', start: 140, end: 170 }
     ];
+
+    const FADE = 1.5; // segundos de fundido al inicio y al final del tramo
 
     let currentTrack = 0;
     let isPlaying = false;
@@ -1683,7 +1672,6 @@
     const audio       = document.getElementById('audioEl');
     const songNameEl  = document.getElementById('songName');
     const songArtistEl = document.getElementById('songArtist');
-    const errorEl     = document.getElementById('playerError');
     const curTimeEl   = document.getElementById('curTime');
     const durTimeEl  = document.getElementById('durTime');
     const barFill    = document.getElementById('barFill');
@@ -1718,16 +1706,15 @@
       songNameEl.textContent = track.title;
       songArtistEl.textContent = track.artist;
       setProgress(0, 0);
-      durTimeEl.textContent = '00:00';
-      errorEl.classList.remove('show');
+      durTimeEl.textContent = formatTime(track.end - track.start);
       audio.src = track.src;
+      audio.volume = 0;
 
       const onLoaded = function() {
-        audio.currentTime = track.offset;
-        durTimeEl.textContent = formatTime(audio.duration - track.offset);
+        audio.currentTime = track.start;
         audio.removeEventListener('loadedmetadata', onLoaded);
         if (autoplay) {
-          audio.play().catch(mostrarErrorAudio);
+          audio.play().catch(function(){});
           isPlaying = true;
           playIcon.innerHTML = ICON_PAUSE;
         }
@@ -1735,22 +1722,12 @@
       audio.addEventListener('loadedmetadata', onLoaded);
     }
 
-    function mostrarErrorAudio() {
-      isPlaying = false;
-      playIcon.innerHTML = ICON_PLAY;
-      errorEl.textContent = 'No se pudo reproducir la canción. Verificá que el archivo esté subido con el nombre correcto en el hosting.';
-      errorEl.classList.add('show');
-    }
-
-    audio.addEventListener('error', mostrarErrorAudio);
-
     function togglePlay() {
       if (audio.paused) {
         audio.play().then(function() {
           isPlaying = true;
           playIcon.innerHTML = ICON_PAUSE;
-          errorEl.classList.remove('show');
-        }).catch(mostrarErrorAudio);
+        }).catch(function(){});
       } else {
         audio.pause();
         isPlaying = false;
@@ -1765,13 +1742,25 @@
     audio.addEventListener('timeupdate', function() {
       if (dragging) return;
       const track = tracks[currentTrack];
-      const effCurrent  = Math.max(0, audio.currentTime - track.offset);
-      const effDuration = Math.max(0.01, (audio.duration || 0) - track.offset);
-      setProgress((effCurrent / effDuration) * 100, effCurrent);
-    });
+      const t = audio.currentTime;
 
-    audio.addEventListener('ended', function() {
-      loadTrack(currentTrack + 1, true);
+      // Bucle: al llegar al final del tramo, volvemos al inicio
+      if (t >= track.end) {
+        audio.currentTime = track.start;
+        return;
+      }
+
+      // Fundido de volumen: sube al entrar, baja al acercarse al final
+      const distDesdeInicio = t - track.start;
+      const distHastaFinal  = track.end - t;
+      let vol = 1;
+      if (distDesdeInicio < FADE) vol = distDesdeInicio / FADE;
+      if (distHastaFinal < FADE) vol = Math.min(vol, distHastaFinal / FADE);
+      audio.volume = Math.max(0, Math.min(1, vol));
+
+      const effCurrent  = Math.max(0, t - track.start);
+      const effDuration = Math.max(0.01, track.end - track.start);
+      setProgress((effCurrent / effDuration) * 100, effCurrent);
     });
 
     function seekFromClientX(clientX) {
@@ -1779,8 +1768,8 @@
       let pct = (clientX - rect.left) / rect.width;
       pct = Math.max(0, Math.min(1, pct));
       const track = tracks[currentTrack];
-      const effDuration = Math.max(0.01, (audio.duration || 0) - track.offset);
-      audio.currentTime = track.offset + pct * effDuration;
+      const effDuration = Math.max(0.01, track.end - track.start);
+      audio.currentTime = track.start + pct * effDuration;
       setProgress(pct * 100, pct * effDuration);
     }
 
