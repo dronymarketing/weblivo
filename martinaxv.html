@@ -768,6 +768,47 @@
     cursor: not-allowed;
   }
 
+  /* ====== DESENFOQUE A FOCO (cards al hacer scroll) ====== */
+  .reveal-blur {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.03);
+    transition: opacity 0.9s ease, filter 0.9s ease, transform 0.9s ease;
+  }
+
+  .reveal-blur.in-view {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+
+  /* ====== BRILLO QUE RECORRE EL TEXTO (títulos) ====== */
+  .brillo-texto {
+    background: linear-gradient(
+      100deg,
+      var(--dorado) 30%,
+      var(--turquesa) 50%,
+      var(--dorado) 70%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .brillo-texto.in-view {
+    opacity: 1;
+    animation: recorridoBrillo 2s ease forwards;
+  }
+
+  @keyframes recorridoBrillo {
+    from { background-position: 100% 0; }
+    to   { background-position: 0% 0; }
+  }
+
   /* ====== FOOTER ====== */
   .xv-footer {
     background: var(--bordo);
@@ -1145,10 +1186,10 @@
       <audio id="audioEl" preload="metadata"></audio>
     </div>
 
-    <h2 class="details-title">Te espero para celebrar</h2>
+    <h2 class="details-title"><span class="brillo-texto">Te espero para celebrar</span></h2>
 
     <!-- CONTADOR -->
-    <div class="countdown-wrap">
+    <div class="countdown-wrap reveal-blur">
       <p class="countdown-label">Faltan</p>
       <div class="countdown">
         <div class="countdown-item">
@@ -1174,7 +1215,7 @@
     </div>
 
     <!-- FECHA -->
-    <div class="info-card">
+    <div class="info-card reveal-blur">
       <div class="card-photo-bg" style="background-image: url('aladdinalfombra.jpg');"></div>
       <div class="card-photo-overlay"></div>
       <div class="info-icon">
@@ -1185,13 +1226,13 @@
       </div>
       <p class="info-label">Fecha</p>
       <p class="info-value">
-        Sábado 15 de Agosto
+        <span class="brillo-texto">Sábado 15 de Agosto</span>
         <small>A partir de las 20:00 hs</small>
       </p>
     </div>
 
     <!-- COLLAGE DE FOTOS -->
-    <div class="gallery-wrap">
+    <div class="gallery-wrap reveal-blur">
       <p class="gallery-label">Martina</p>
 
       <div class="gallery-square">
@@ -1204,7 +1245,7 @@
       </div>
     </div>
 
-    <div class="info-card info-card-lugar">
+    <div class="info-card info-card-lugar reveal-blur">
       <div class="card-photo-bg" style="background-image: url('castilloaladdin.gif'); transform: scale(1.15);"></div>
       <div class="card-photo-overlay"></div>
       <div class="info-icon">
@@ -1215,7 +1256,7 @@
       </div>
       <p class="info-label">Lugar</p>
       <p class="info-value">
-        Salón Covisa 1
+        <span class="brillo-texto">Salón Covisa 1</span>
         <small>Montevideo, Sayago</small>
       </p>
     </div>
@@ -1228,7 +1269,7 @@
       </iframe>
     </div>
 
-    <div class="info-card">
+    <div class="info-card reveal-blur">
       <div class="card-photo-bg" style="background-image: url('noche.jpg');"></div>
       <div class="card-photo-overlay"></div>
       <div class="info-icon">
@@ -1238,13 +1279,13 @@
       </div>
       <p class="info-label">Vestimenta</p>
       <p class="info-value">
-        Semi formal
+        <span class="brillo-texto">Semi formal</span>
         <small class="note">Una pequeña sugerencia: el azul noche será el color del vestido de la cumpleañera, así que lo dejamos solo para ella ✨</small>
       </p>
     </div>
 
     <!-- TARJETA REGALO -->
-    <div class="info-card">
+    <div class="info-card reveal-blur">
       <div class="card-photo-bg" style="background-image: url('tesoro.jpg');"></div>
       <div class="card-photo-overlay"></div>
       <div class="info-icon">
@@ -1256,7 +1297,7 @@
       </div>
       <p class="info-label">Un detalle para ella</p>
       <p class="info-value">
-        Tu presencia es mi mejor regalo, si aún querés dejar un detalle
+        <span class="brillo-texto">Tu presencia es mi mejor regalo, si aún querés dejar un detalle</span>
         <small class="note" style="margin-top: 0.75rem; display: inline-block; text-align: left;">
           Banco: <span class="regalo-dato">Prexcard</span><br>
           Alias: <span class="regalo-dato">11761</span><br>
@@ -1268,7 +1309,7 @@
 
   <!-- RECUERDOS / DRIVE -->
   <section class="memories">
-    <h2 class="memories-title">Compartí el momento</h2>
+    <h2 class="memories-title"><span class="brillo-texto">Compartí el momento</span></h2>
     <p class="memories-text">Subí tus fotos y videos de la noche para que quede el recuerdo completo de la fiesta.</p>
 
     <!-- Botón que abre el modal de subida -->
@@ -2065,6 +2106,23 @@
         xhr.send(formData);
       });
     }
+  })();
+  </script>
+
+  <script>
+  (function() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.brillo-texto').forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal-blur').forEach(el => observer.observe(el));
   })();
   </script>
 
