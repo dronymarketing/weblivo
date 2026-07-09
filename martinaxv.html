@@ -1301,7 +1301,7 @@
 
       <p class="upload-status" id="uploadStatus"></p>
 
-      <button type="button" class="btn-drive upload-submit-btn" id="uploadSubmitBtn" onclick="confirmarEnvio()" disabled>
+      <button type="button" class="btn-drive upload-submit-btn" id="uploadSubmitBtn" onclick="enviarArchivos()" disabled>
         Enviar
       </button>
     </div>
@@ -1824,7 +1824,6 @@
   (function() {
     // ⚠️ Si el link de tu servidor cambia, actualizá esta línea:
     const UPLOAD_URL = 'https://desktop-i8e4crg.taile69d98.ts.net/upload';
-    const PING_URL = 'https://desktop-i8e4crg.taile69d98.ts.net/';
 
     // Datos de Cloudinary (respaldo automático si el servidor propio no responde)
     const CLOUD_NAME = 'v5t6ha3o';
@@ -1837,6 +1836,8 @@
     const fileList   = document.getElementById('uploadFileList');
     const statusEl   = document.getElementById('uploadStatus');
     const submitBtn  = document.getElementById('uploadSubmitBtn');
+
+    let entradas = []; // { file, item, bar, listo }
 
     window.abrirModalSubida = function() {
       overlay.classList.add('open');
@@ -1883,8 +1884,13 @@
       return mb >= 1 ? mb.toFixed(1) + ' MB' : (bytes / 1024).toFixed(0) + ' KB';
     }
 
-    // Apenas se elige/arrastra un archivo, arranca la subida DE VERDAD.
-    // Nada de simulaciones: la barra es el progreso real de la transferencia.
+    function actualizarBotonEnviar() {
+      submitBtn.disabled = !entradas.some(en => en.listo);
+    }
+
+    // Al elegir/arrastrar archivos: se agregan a la lista y arranca la LECTURA real
+    // del archivo en el navegador (progreso genuino, no una animación falsa).
+    // Todavía no se manda a ningún servidor: eso pasa recién al tocar "Enviar".
     function agregarArchivos(files) {
       files.forEach(file => {
         const item = document.createElement('div');
@@ -1895,7 +1901,6 @@
             <button type="button" class="upload-file-remove" aria-label="Quitar" title="Quitar">&times;</button>
           </div>
           <div class="upload-file-progress"><div class="upload-file-progress-bar"></div></div>
-          <p class="upload-file-note"></p>
         `;
         fileList.appendChild(item);
 
@@ -1903,165 +1908,163 @@
           file: file,
           item: item,
           bar: item.querySelector('.upload-file-progress-bar'),
-          note: item.querySelector('.upload-file-note'),
-          xhr: null,           // request en curso, para poder cancelarla de verdad
-          destino: null,       // 'servidor' | 'cloudinary'
-          nombreRemoto: null,  // nombre real guardado (solo si destino === 'servidor')
-          subido: false
+          listo: false
         };
+        entradas.push(entrada);
 
         item.querySelector('.upload-file-remove').addEventListener('click', function() {
-          quitarEntrada(entrada);
+          entradas = entradas.filter(en => en !== entrada);
+          item.remove();
+          actualizarBotonEnviar();
         });
 
-        subirEntrada(entrada);
+        leerArchivo(entrada);
       });
     }
 
-    function quitarEntrada(entrada) {
-      if (entrada.xhr && !entrada.subido) {
-        // Todavía se está subiendo: cancelamos la conexión real
-        entrada.xhr.abort();
-      }
+    // Lectura real del archivo en el navegador, con progreso genuino
+    function leerArchivo(entrada) {
+      const reader = new FileReader();
 
-      if (entrada.subido && entrada.destino === 'servidor' && entrada.nombreRemoto) {
-        // Ya se subió a tu PC: lo borramos de verdad del servidor
-        fetch(`${UPLOAD_URL}/${encodeURIComponent(entrada.nombreRemoto)}`, { method: 'DELETE' })
-          .catch(() => {}); // si falla el borrado igual sacamos el ítem de la vista
-      }
+      reader.onprogress = function(e) {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          entrada.bar.style.width = pct + '%';
+        }
+      };
 
-      if (entrada.subido && entrada.destino === 'cloudinary') {
-        // No se puede borrar de forma segura desde el navegador (requiere clave privada).
-        // Se avisa en vez de fingir que se borró.
-        alert('Este archivo ya se guardó en el respaldo (Cloudinary) porque tu PC no respondía. No se puede borrar automáticamente desde acá — hay que sacarlo a mano desde el panel de Cloudinary.');
-      }
+      reader.onload = function() {
+        entrada.bar.style.width = '100%';
+        entrada.listo = true;
+        entrada.item.classList.add('ready');
+        actualizarBotonEnviar();
+      };
 
-      entrada.item.remove();
+      reader.onerror = function() {
+        entrada.item.classList.add('error');
+      };
 
-      const quedaAlguno = fileList.querySelector('.upload-file-item.done');
-      if (!quedaAlguno) submitBtn.disabled = true;
-    }
-
-    // Sube un archivo individual, probando primero tu PC y usando Cloudinary si no responde
-    function subirEntrada(entrada) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      fetch(PING_URL, { method: 'GET', signal: controller.signal })
-        .then(() => {
-          clearTimeout(timeoutId);
-          subirAServidorPropio(entrada);
-        })
-        .catch(() => {
-          clearTimeout(timeoutId);
-          subirARespaldo(entrada);
-        });
+      reader.readAsArrayBuffer(entrada.file);
     }
 
     function marcarListo(entrada) {
       entrada.item.classList.remove('error');
       entrada.item.classList.add('done');
-      entrada.subido = true;
-      entrada.xhr = null;
-      submitBtn.disabled = false;
     }
 
-    function marcarError(entrada, mensaje) {
+    function marcarError(entrada) {
       entrada.item.classList.remove('done');
       entrada.item.classList.add('error');
-      entrada.note.textContent = mensaje || 'No se pudo subir.';
-      entrada.xhr = null;
     }
 
-    // Camino principal: subida real a la PC de Martina
-    function subirAServidorPropio(entrada) {
-      const formData = new FormData();
-      formData.append('archivos', entrada.file);
-
-      const xhr = new XMLHttpRequest();
-      entrada.xhr = xhr;
-      entrada.destino = 'servidor';
-      xhr.open('POST', UPLOAD_URL, true);
-
-      xhr.upload.addEventListener('progress', function(e) {
-        if (e.lengthComputable) {
-          const pct = Math.round((e.loaded / e.total) * 100);
-          entrada.bar.style.width = pct + '%';
-        }
-      });
-
-      xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            entrada.nombreRemoto = data.archivos && data.archivos[0];
-          } catch (e) {}
-          marcarListo(entrada);
-        } else {
-          subirARespaldo(entrada);
-        }
-      };
-
-      xhr.onerror = function() {
-        subirARespaldo(entrada);
-      };
-
-      xhr.onabort = function() {
-        entrada.xhr = null;
-      };
-
-      xhr.send(formData);
+    function actualizarStatusFinal(lote) {
+      const conError = lote.some(entrada => entrada.item.classList.contains('error'));
+      if (conError) {
+        statusEl.style.color = 'var(--magenta)';
+        statusEl.textContent = 'Algún archivo no se pudo subir. Revisá tu conexión e intentá de nuevo.';
+        submitBtn.disabled = false;
+      } else {
+        statusEl.style.color = 'var(--turquesa)';
+        statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
+        setTimeout(() => {
+          window.cerrarModalSubida();
+          entradas = [];
+          fileList.innerHTML = '';
+          statusEl.textContent = '';
+        }, 1800);
+      }
     }
 
-    // Camino de respaldo: la PC no respondió, subimos a Cloudinary
-    function subirARespaldo(entrada) {
-      const formData = new FormData();
-      formData.append('file', entrada.file);
-      formData.append('upload_preset', UPLOAD_PRESET);
+    // Al tocar "Enviar": recién ahí se manda de verdad todo lo que ya quedó listo
+    window.enviarArchivos = function() {
+      const lote = entradas.filter(en => en.listo);
+      if (lote.length === 0) return;
 
-      const xhr = new XMLHttpRequest();
-      entrada.xhr = xhr;
-      entrada.destino = 'cloudinary';
-      xhr.open('POST', CLOUDINARY_URL, true);
-
-      xhr.upload.addEventListener('progress', function(e) {
-        if (e.lengthComputable) {
-          const pct = Math.round((e.loaded / e.total) * 100);
-          entrada.bar.style.width = pct + '%';
-        }
-      });
-
-      xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          marcarListo(entrada);
-        } else {
-          marcarError(entrada);
-        }
-      };
-
-      xhr.onerror = function() {
-        marcarError(entrada);
-      };
-
-      xhr.onabort = function() {
-        entrada.xhr = null;
-      };
-
-      xhr.send(formData);
-    }
-
-    // Botón "Enviar": confirmación final, no dispara ninguna subida
-    // (eso ya pasó solo apenas se eligieron los archivos). Solo cierra el paso.
-    window.confirmarEnvio = function() {
+      submitBtn.disabled = true;
       statusEl.style.color = 'var(--turquesa)';
-      statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
-      setTimeout(() => {
-        window.cerrarModalSubida();
-        fileList.innerHTML = '';
-        statusEl.textContent = '';
-        submitBtn.disabled = true;
-      }, 1600);
+      statusEl.textContent = 'Subiendo, no cierres esta ventana...';
+
+      // Reiniciamos la barra para mostrar el progreso real de la subida
+      lote.forEach(entrada => entrada.bar.style.width = '0%');
+
+      subirAServidorPropio(lote);
     };
+
+    // Camino principal: subida real a la PC de Martina.
+    // Si no contesta en 2 segundos, pasa directo al respaldo.
+    function subirAServidorPropio(lote) {
+      const formData = new FormData();
+      lote.forEach(entrada => formData.append('archivos', entrada.file));
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', UPLOAD_URL, true);
+      xhr.timeout = 2000;
+
+      xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          lote.forEach(entrada => entrada.bar.style.width = pct + '%');
+        }
+      });
+
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          lote.forEach(marcarListo);
+          actualizarStatusFinal(lote);
+        } else {
+          subirARespaldo(lote);
+        }
+      };
+
+      xhr.onerror = function() {
+        subirARespaldo(lote);
+      };
+
+      xhr.ontimeout = function() {
+        subirARespaldo(lote);
+      };
+
+      xhr.send(formData);
+    }
+
+    // Camino de respaldo: la PC no respondió a tiempo, subimos a Cloudinary (uno por uno)
+    function subirARespaldo(lote) {
+      let completados = 0;
+
+      lote.forEach(entrada => {
+        const formData = new FormData();
+        formData.append('file', entrada.file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', CLOUDINARY_URL, true);
+
+        xhr.upload.addEventListener('progress', function(e) {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            entrada.bar.style.width = pct + '%';
+          }
+        });
+
+        xhr.onload = function() {
+          completados++;
+          if (xhr.status >= 200 && xhr.status < 300) {
+            marcarListo(entrada);
+          } else {
+            marcarError(entrada);
+          }
+          if (completados === lote.length) actualizarStatusFinal(lote);
+        };
+
+        xhr.onerror = function() {
+          completados++;
+          marcarError(entrada);
+          if (completados === lote.length) actualizarStatusFinal(lote);
+        };
+
+        xhr.send(formData);
+      });
+    }
   })();
   </script>
 
