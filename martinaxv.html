@@ -700,6 +700,24 @@
     font-size: 1.1rem;
     cursor: pointer;
     flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  .upload-file-remove:hover {
+    opacity: 1;
+  }
+
+  .upload-file-item.ready .upload-file-progress-bar {
+    background: var(--dorado-soft);
+  }
+
+  .upload-file-item.done .upload-file-progress-bar {
+    background: linear-gradient(90deg, var(--dorado), var(--turquesa));
+  }
+
+  .upload-file-item.error .upload-file-progress-bar {
+    background: var(--magenta);
   }
 
   .upload-file-progress {
@@ -713,7 +731,7 @@
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, var(--dorado), var(--turquesa));
-    transition: width 0.2s ease;
+    transition: width 0.15s ease;
   }
 
   .upload-status {
@@ -722,6 +740,18 @@
     color: var(--turquesa);
     margin: 1rem 0 0;
     min-height: 1.2rem;
+  }
+
+  .upload-file-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.82rem;
+    color: var(--magenta);
+    margin: 0;
+    display: none;
+  }
+
+  .upload-file-item.error .upload-file-note {
+    display: block;
   }
 
   .upload-submit-btn {
@@ -1271,7 +1301,7 @@
 
       <p class="upload-status" id="uploadStatus"></p>
 
-      <button type="button" class="btn-drive upload-submit-btn" id="uploadSubmitBtn" onclick="enviarArchivos()" disabled>
+      <button type="button" class="btn-drive upload-submit-btn" id="uploadSubmitBtn" onclick="confirmarEnvio()" disabled>
         Enviar
       </button>
     </div>
@@ -1808,8 +1838,6 @@
     const statusEl   = document.getElementById('uploadStatus');
     const submitBtn  = document.getElementById('uploadSubmitBtn');
 
-    let selectedFiles = [];
-
     window.abrirModalSubida = function() {
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1850,150 +1878,190 @@
       }
     });
 
-    function agregarArchivos(files) {
-      files.forEach(file => {
-        selectedFiles.push(file);
-      });
-      renderFileList();
-    }
-
-    function quitarArchivo(index) {
-      selectedFiles.splice(index, 1);
-      renderFileList();
-    }
-
     function formatSize(bytes) {
       const mb = bytes / (1024 * 1024);
       return mb >= 1 ? mb.toFixed(1) + ' MB' : (bytes / 1024).toFixed(0) + ' KB';
     }
 
-    function renderFileList() {
-      fileList.innerHTML = '';
-      selectedFiles.forEach((file, index) => {
+    // Apenas se elige/arrastra un archivo, arranca la subida DE VERDAD.
+    // Nada de simulaciones: la barra es el progreso real de la transferencia.
+    function agregarArchivos(files) {
+      files.forEach(file => {
         const item = document.createElement('div');
         item.className = 'upload-file-item';
         item.innerHTML = `
           <div class="upload-file-top">
             <span class="upload-file-name">${file.name} · ${formatSize(file.size)}</span>
-            <button type="button" class="upload-file-remove" aria-label="Quitar">&times;</button>
+            <button type="button" class="upload-file-remove" aria-label="Quitar" title="Quitar">&times;</button>
           </div>
           <div class="upload-file-progress"><div class="upload-file-progress-bar"></div></div>
+          <p class="upload-file-note"></p>
         `;
-        item.querySelector('.upload-file-remove').addEventListener('click', () => quitarArchivo(index));
         fileList.appendChild(item);
+
+        const entrada = {
+          file: file,
+          item: item,
+          bar: item.querySelector('.upload-file-progress-bar'),
+          note: item.querySelector('.upload-file-note'),
+          xhr: null,           // request en curso, para poder cancelarla de verdad
+          destino: null,       // 'servidor' | 'cloudinary'
+          nombreRemoto: null,  // nombre real guardado (solo si destino === 'servidor')
+          subido: false
+        };
+
+        item.querySelector('.upload-file-remove').addEventListener('click', function() {
+          quitarEntrada(entrada);
+        });
+
+        subirEntrada(entrada);
       });
-      submitBtn.disabled = selectedFiles.length === 0;
-      statusEl.textContent = '';
     }
 
-    window.enviarArchivos = function() {
-      if (selectedFiles.length === 0) return;
+    function quitarEntrada(entrada) {
+      if (entrada.xhr && !entrada.subido) {
+        // Todavía se está subiendo: cancelamos la conexión real
+        entrada.xhr.abort();
+      }
 
-      submitBtn.disabled = true;
-      statusEl.style.color = 'var(--turquesa)';
-      statusEl.textContent = 'Subiendo, no cierres esta ventana...';
+      if (entrada.subido && entrada.destino === 'servidor' && entrada.nombreRemoto) {
+        // Ya se subió a tu PC: lo borramos de verdad del servidor
+        fetch(`${UPLOAD_URL}/${encodeURIComponent(entrada.nombreRemoto)}`, { method: 'DELETE' })
+          .catch(() => {}); // si falla el borrado igual sacamos el ítem de la vista
+      }
 
-      // Primero probamos si tu PC está disponible (ping rápido, 4 segundos de margen)
+      if (entrada.subido && entrada.destino === 'cloudinary') {
+        // No se puede borrar de forma segura desde el navegador (requiere clave privada).
+        // Se avisa en vez de fingir que se borró.
+        alert('Este archivo ya se guardó en el respaldo (Cloudinary) porque tu PC no respondía. No se puede borrar automáticamente desde acá — hay que sacarlo a mano desde el panel de Cloudinary.');
+      }
+
+      entrada.item.remove();
+
+      const quedaAlguno = fileList.querySelector('.upload-file-item.done');
+      if (!quedaAlguno) submitBtn.disabled = true;
+    }
+
+    // Sube un archivo individual, probando primero tu PC y usando Cloudinary si no responde
+    function subirEntrada(entrada) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
 
       fetch(PING_URL, { method: 'GET', signal: controller.signal })
         .then(() => {
           clearTimeout(timeoutId);
-          subirAServidorPropio();
+          subirAServidorPropio(entrada);
         })
         .catch(() => {
           clearTimeout(timeoutId);
-          subirARespaldo();
+          subirARespaldo(entrada);
         });
-    };
+    }
 
-    function manejarErrorGeneral() {
-      statusEl.style.color = 'var(--magenta)';
-      statusEl.textContent = 'No se pudo subir. Revisá tu conexión e intentá de nuevo en un momento.';
+    function marcarListo(entrada) {
+      entrada.item.classList.remove('error');
+      entrada.item.classList.add('done');
+      entrada.subido = true;
+      entrada.xhr = null;
       submitBtn.disabled = false;
     }
 
-    function subidaExitosa() {
-      statusEl.style.color = 'var(--turquesa)';
-      statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
-      selectedFiles = [];
-      setTimeout(() => {
-        renderFileList();
-        statusEl.textContent = '';
-      }, 2500);
+    function marcarError(entrada, mensaje) {
+      entrada.item.classList.remove('done');
+      entrada.item.classList.add('error');
+      entrada.note.textContent = mensaje || 'No se pudo subir.';
+      entrada.xhr = null;
     }
 
-    // Camino principal: subir todo junto a la PC de Martina
-    function subirAServidorPropio() {
+    // Camino principal: subida real a la PC de Martina
+    function subirAServidorPropio(entrada) {
       const formData = new FormData();
-      selectedFiles.forEach(file => formData.append('archivos', file));
-
-      const bars = fileList.querySelectorAll('.upload-file-progress-bar');
+      formData.append('archivos', entrada.file);
 
       const xhr = new XMLHttpRequest();
+      entrada.xhr = xhr;
+      entrada.destino = 'servidor';
       xhr.open('POST', UPLOAD_URL, true);
 
       xhr.upload.addEventListener('progress', function(e) {
         if (e.lengthComputable) {
           const pct = Math.round((e.loaded / e.total) * 100);
-          bars.forEach(bar => bar.style.width = pct + '%');
+          entrada.bar.style.width = pct + '%';
         }
       });
 
       xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
-          subidaExitosa();
+          try {
+            const data = JSON.parse(xhr.responseText);
+            entrada.nombreRemoto = data.archivos && data.archivos[0];
+          } catch (e) {}
+          marcarListo(entrada);
         } else {
-          subirARespaldo();
+          subirARespaldo(entrada);
         }
       };
 
       xhr.onerror = function() {
-        subirARespaldo();
+        subirARespaldo(entrada);
+      };
+
+      xhr.onabort = function() {
+        entrada.xhr = null;
       };
 
       xhr.send(formData);
     }
 
-    // Camino de respaldo: la PC no respondió, subimos a Cloudinary (uno por uno)
-    function subirARespaldo() {
-      const bars = fileList.querySelectorAll('.upload-file-progress-bar');
-      let completados = 0;
-      let huboError = false;
+    // Camino de respaldo: la PC no respondió, subimos a Cloudinary
+    function subirARespaldo(entrada) {
+      const formData = new FormData();
+      formData.append('file', entrada.file);
+      formData.append('upload_preset', UPLOAD_PRESET);
 
-      selectedFiles.forEach((file, index) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', UPLOAD_PRESET);
+      const xhr = new XMLHttpRequest();
+      entrada.xhr = xhr;
+      entrada.destino = 'cloudinary';
+      xhr.open('POST', CLOUDINARY_URL, true);
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', CLOUDINARY_URL, true);
-
-        xhr.upload.addEventListener('progress', function(e) {
-          if (e.lengthComputable && bars[index]) {
-            const pct = Math.round((e.loaded / e.total) * 100);
-            bars[index].style.width = pct + '%';
-          }
-        });
-
-        xhr.onload = function() {
-          completados++;
-          if (xhr.status < 200 || xhr.status >= 300) huboError = true;
-          if (completados === selectedFiles.length) {
-            huboError ? manejarErrorGeneral() : subidaExitosa();
-          }
-        };
-
-        xhr.onerror = function() {
-          completados++;
-          huboError = true;
-          if (completados === selectedFiles.length) manejarErrorGeneral();
-        };
-
-        xhr.send(formData);
+      xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          entrada.bar.style.width = pct + '%';
+        }
       });
+
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          marcarListo(entrada);
+        } else {
+          marcarError(entrada);
+        }
+      };
+
+      xhr.onerror = function() {
+        marcarError(entrada);
+      };
+
+      xhr.onabort = function() {
+        entrada.xhr = null;
+      };
+
+      xhr.send(formData);
     }
+
+    // Botón "Enviar": confirmación final, no dispara ninguna subida
+    // (eso ya pasó solo apenas se eligieron los archivos). Solo cierra el paso.
+    window.confirmarEnvio = function() {
+      statusEl.style.color = 'var(--turquesa)';
+      statusEl.textContent = '¡Listo! Gracias por compartir el momento 💛';
+      setTimeout(() => {
+        window.cerrarModalSubida();
+        fileList.innerHTML = '';
+        statusEl.textContent = '';
+        submitBtn.disabled = true;
+      }, 1600);
+    };
   })();
   </script>
 
