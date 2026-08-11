@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#050505" />
+<title>VALMONT — Preview</title>
+<style>
+  @font-face { font-family: 'Inter'; font-weight: 300; src: url('assets/fonts/inter-latin-300-normal.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('assets/fonts/inter-latin-400-normal.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('assets/fonts/inter-latin-500-normal.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('assets/fonts/inter-latin-600-normal.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('assets/fonts/inter-latin-700-normal.woff2') format('woff2'); font-display: swap; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+    background: #050505;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #EDEBE8;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  #stage {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    transition: opacity 0.5s ease;
+  }
+  #stage.switching { opacity: 0.2; }
+
+  canvas { display: block; touch-action: none; }
+
+  /* ambient vignette so the car reads as "floating in darkness" like AM/Bentley heroes */
+  #vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 120% 70% at 50% 38%, transparent 40%, rgba(0,0,0,0.55) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.75) 100%);
+    z-index: 5;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+    opacity: 0;
+    transition: opacity 1.2s ease 0.4s;
+  }
+  #topbar.show { opacity: 1; }
+
+  #logo-slot {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.34em;
+    font-size: 11px;
+    font-weight: 600;
+    color: #EDEBE8;
+  }
+  /* If you drop assets/logo.png (or .svg) into this folder, it replaces the text mark automatically. */
+  #logo-slot img { height: 22px; width: auto; display: none; }
+
+  /* ── COUNTRY / MARKET SELECTOR ── */
+  .country-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid rgba(237,235,232,0.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .country-btn {
+    appearance: none;
+    border: none;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding: 8px 15px;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(237,235,232,0.5);
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+  .country-btn.active {
+    background: #EDEBE8;
+    color: #08070a;
+  }
+  .country-btn:disabled { pointer-events: none; opacity: 0.5; }
+
+  /* ── BOTTOM CONTENT ── */
+  #content {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 20;
+    padding: 0 28px calc(30px + env(safe-area-inset-bottom));
+    text-align: center;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 1.2s ease 0.6s, transform 1.2s ease 0.6s;
+  }
+  #content.show { opacity: 1; transform: translateY(0); }
+
+  .kicker {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(237,235,232,0.55);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 26px;
+    line-height: 1.22;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 22px;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 em { font-style: normal; font-weight: 300; opacity: 0.7; }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 26px;
+    border: 1px solid rgba(237,235,232,0.4);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #EDEBE8;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+  }
+
+  .swipe-hint {
+    margin-top: 20px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(237,235,232,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .swipe-hint::before, .swipe-hint::after {
+    content: '';
+    width: 16px; height: 1px;
+    background: rgba(237,235,232,0.25);
+  }
+
+  /* ── LOADER ── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #050505;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    transition: opacity 0.9s ease;
+    pointer-events: none;
+  }
+  #loader.hide { opacity: 0; }
+
+  .loader-mark {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    color: #EDEBE8;
+  }
+
+  .loader-bar {
+    width: 130px;
+    height: 1px;
+    background: rgba(237,235,232,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: #EDEBE8;
+    transition: width 0.25s ease;
+  }
+
+  .loader-pct {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(237,235,232,0.4);
+  }
+</style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="loader-mark">VALMONT</div>
+    <div class="loader-bar"><div class="loader-bar-fill" id="loaderFill"></div></div>
+    <div class="loader-pct" id="loaderPct">CARGANDO 0%</div>
+  </div>
+
+  <div id="stage"></div>
+  <div id="vignette"></div>
+
+  <div id="topbar">
+    <div id="logo-slot">
+      <img id="logoImg" alt="Valmont" />
+      <span id="logoText">VALMONT</span>
+    </div>
+    <div class="country-row" id="countryRow"></div>
+  </div>
+
+  <div id="content">
+    <div class="kicker">Acceso privado</div>
+    <h1>Una <em>selección exclusiva</em> de vehículos, aeronaves y yates de alta gama.</h1>
+    <div class="cta">Explorar</div>
+    <div class="swipe-hint">Desliza para girar</div>
+  </div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const stage = document.getElementById('stage');
+
+// ---------- renderer ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 1.35;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setClearColor(0x050505, 1);
+stage.appendChild(renderer.domElement);
+
+// ---------- scene / camera ----------
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x050505, 14, 34);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+
+// ---------- environment lighting (studio-style reflections on paint) ----------
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const hemi = new THREE.HemisphereLight(0xbfd4ff, 0x0a0a0a, 0.55);
+scene.add(hemi);
+
+const key = new THREE.DirectionalLight(0xf5f7fb, 2.2);
+key.position.set(4, 6, 3);
+scene.add(key);
+
+const rim = new THREE.DirectionalLight(0x8fb3ff, 1.4);
+rim.position.set(-5, 3, -4);
+scene.add(rim);
+
+// ---------- soft ground contact glow (reads against the black void) ----------
+function makeGlowTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+  g.addColorStop(0, 'rgba(140,150,170,0.32)');
+  g.addColorStop(0.35, 'rgba(90,95,110,0.16)');
+  g.addColorStop(0.7, 'rgba(40,40,45,0.06)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+  return new THREE.CanvasTexture(c);
+}
+const shadowMat = new THREE.MeshBasicMaterial({ map: makeGlowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const shadowMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat);
+shadowMesh.rotation.x = -Math.PI / 2;
+scene.add(shadowMesh);
+
+// tighter, darker contact shadow directly under the tires
+function makeContactTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  g.addColorStop(0, 'rgba(0,0,0,0.85)');
+  g.addColorStop(0.55, 'rgba(0,0,0,0.35)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  return new THREE.CanvasTexture(c);
+}
+const contactMat = new THREE.MeshBasicMaterial({ map: makeContactTexture(), transparent: true, depthWrite: false });
+const contactMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), contactMat);
+contactMesh.rotation.x = -Math.PI / 2;
+scene.add(contactMesh);
+
+// ---------- controls ----------
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableZoom = false;
+controls.enablePan = false;
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.1;
+controls.minPolarAngle = Math.PI / 2 - 0.35;
+controls.maxPolarAngle = Math.PI / 2 + 0.25;
+controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.ROTATE };
+
+let idleTimer = null;
+function onUserInteract() {
+  controls.autoRotate = false;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => { controls.autoRotate = true; }, 3200);
+}
+renderer.domElement.addEventListener('pointerdown', onUserInteract);
+
+// ---------- market / vehicle catalog ----------
+// Each entry stands in for a country in the future filtered catalog. rotationY
+// corrects for each downloaded model's own forward axis; TARGET_LENGTH keeps
+// every car visually consistent in scale regardless of the source file's units.
+const TARGET_LENGTH = 4.5;
+const CARS = [
+  { id: 'ferrari', label: 'Dubái',   file: 'assets/ferrari.glb',      rotationY: 0 },
+  { id: 'lambo',   label: 'Mónaco',  file: 'assets/lamborghini.glb',  rotationY: -Math.PI / 2 },
+];
+
+const stageEl = document.getElementById('stage');
+const loaderFill = document.getElementById('loaderFill');
+const loaderPct = document.getElementById('loaderPct');
+const loaderEl = document.getElementById('loader');
+const topbar = document.getElementById('topbar');
+const content = document.getElementById('content');
+const countryRow = document.getElementById('countryRow');
+
+const gltfLoader = new GLTFLoader();
+gltfLoader.setMeshoptDecoder(MeshoptDecoder);
+
+let car = null;
+let modelSize = null;
+let activeCarId = null;
+let isSwitching = false;
+
+// build the country pills
+CARS.forEach((cfg, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'country-btn' + (i === 0 ? ' active' : '');
+  btn.textContent = cfg.label;
+  btn.dataset.car = cfg.id;
+  btn.addEventListener('click', () => selectCar(cfg.id));
+  countryRow.appendChild(btn);
+});
+
+function setButtonsDisabled(disabled) {
+  countryRow.querySelectorAll('.country-btn').forEach((b) => { b.disabled = disabled; });
+}
+
+function updateActiveButton(id) {
+  countryRow.querySelectorAll('.country-btn').forEach((b) => {
+    b.classList.toggle('active', b.dataset.car === id);
+  });
+}
+
+function disposeCar(obj) {
+  if (!obj) return;
+  obj.traverse((o) => {
+    if (o.isMesh) {
+      o.geometry?.dispose();
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach((m) => {
+        if (!m) return;
+        Object.keys(m).forEach((key) => {
+          if (m[key] && m[key].isTexture) m[key].dispose();
+        });
+        m.dispose();
+      });
+    }
+  });
+}
+
+function loadCar(cfg, { isFirst = false } = {}) {
+  return new Promise((resolve, reject) => {
+    gltfLoader.load(
+      cfg.file,
+      (gltf) => {
+        const next = gltf.scene;
+        next.rotation.y = cfg.rotationY;
+
+        next.traverse((o) => {
+          if (o.isMesh) {
+            o.castShadow = false;
+            o.receiveShadow = false;
+            if (o.material) o.material.envMapIntensity = 1.15;
+          }
+        });
+
+        // normalize scale so every car reads as roughly the same real-world size
+        const rawBox = new THREE.Box3().setFromObject(next);
+        const rawSize = new THREE.Vector3();
+        rawBox.getSize(rawSize);
+        const length = Math.max(rawSize.x, rawSize.z) || 1;
+        const scale = TARGET_LENGTH / length;
+        next.scale.setScalar(scale);
+
+        // center + drop to ground
+        const box = new THREE.Box3().setFromObject(next);
+        const size = new THREE.Vector3();
+        const center = new THREE.Vector3();
+        box.getSize(size);
+        box.getCenter(center);
+        next.position.x -= center.x;
+        next.position.z -= center.z;
+        next.position.y -= box.min.y;
+
+        resolve({ object: next, size });
+      },
+      (xhr) => {
+        if (isFirst && xhr.total) {
+          const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+          loaderFill.style.width = pct + '%';
+          loaderPct.textContent = 'CARGANDO ' + pct + '%';
+        }
+      },
+      (err) => reject(err)
+    );
+  });
+}
+
+async function selectCar(id) {
+  if (isSwitching || id === activeCarId) return;
+  const cfg = CARS.find((c) => c.id === id);
+  if (!cfg) return;
+
+  isSwitching = true;
+  setButtonsDisabled(true);
+  stageEl.classList.add('switching');
+
+  try {
+    const { object, size } = await loadCar(cfg);
+    await new Promise((r) => setTimeout(r, 260)); // let the fade-out read
+
+    disposeCar(car);
+    if (car) scene.remove(car);
+
+    car = object;
+    scene.add(car);
+    placeCarInScene(size);
+    updateActiveButton(id);
+    activeCarId = id;
+  } catch (err) {
+    console.error('Error cargando el modelo 3D', err);
+  } finally {
+    stageEl.classList.remove('switching');
+    setButtonsDisabled(false);
+    isSwitching = false;
+  }
+}
+
+function placeCarInScene(size) {
+  shadowMesh.scale.set(size.z * 1.7, size.z * 1.7, 1);
+  shadowMesh.position.set(0, 0.004, 0);
+  contactMesh.scale.set(size.x * 1.5, size.z * 0.9, 1);
+  contactMesh.position.set(0, 0.006, 0);
+  controls.target.set(0, size.y * 0.42, 0);
+  modelSize = size;
+  frameCamera(size);
+}
+
+// initial load — honors ?car=lambo for direct links / testing
+const requestedCar = new URLSearchParams(location.search).get('car');
+const initialCfg = CARS.find((c) => c.id === requestedCar) || CARS[0];
+
+loadCar(initialCfg, { isFirst: true }).then(({ object, size }) => {
+  car = object;
+  scene.add(car);
+  placeCarInScene(size);
+  activeCarId = initialCfg.id;
+  updateActiveButton(initialCfg.id);
+
+  requestAnimationFrame(() => {
+    loaderEl.classList.add('hide');
+    topbar.classList.add('show');
+    content.classList.add('show');
+    setTimeout(() => { loaderEl.style.display = 'none'; }, 950);
+  });
+}).catch((err) => {
+  console.error('Error cargando el modelo 3D', err);
+  loaderPct.textContent = 'ERROR AL CARGAR';
+});
+
+function frameCamera(size) {
+  const aspect = window.innerWidth / window.innerHeight;
+  const isPortrait = aspect < 1;
+  camera.aspect = aspect;
+  camera.fov = isPortrait ? 50 : 36;
+
+  const vFov = THREE.MathUtils.degToRad(camera.fov);
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+
+  // front-three-quarter angle: shallow azimuth so the car's length foreshortens
+  // toward the camera instead of needing to fit sideways in a narrow phone FOV
+  const azimuth = isPortrait ? 0.42 : 0.62; // radians from straight-on front
+  const elevation = 0.16;                  // low, aggressive stance
+
+  // apparent lateral footprint of the box as seen from this azimuth
+  const footprint = Math.abs(size.x * Math.cos(azimuth)) + Math.abs(size.z * Math.sin(azimuth));
+  const distForWidth = (footprint / 2) / Math.tan(hFov / 2);
+  const distForHeight = (size.y / 2) / Math.tan(vFov / 2);
+  const dist = Math.max(distForWidth, distForHeight) * (isPortrait ? 0.95 : 1.3);
+
+  camera.position.set(
+    Math.sin(azimuth) * Math.cos(elevation) * dist,
+    Math.sin(elevation) * dist + size.y * 0.18,
+    Math.cos(azimuth) * Math.cos(elevation) * dist
+  );
+  // aim a bit above the car's true mid-height so the car settles into the
+  // lower portion of the frame, leaving room for the logo/text overlay
+  const lookY = isPortrait ? size.y * 1.5 : size.y * 0.4;
+  camera.lookAt(0, lookY, 0);
+  camera.updateProjectionMatrix();
+}
+
+// ---------- resize ----------
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  if (car) {
+    const box = new THREE.Box3().setFromObject(car);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    frameCamera(size);
+  }
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', () => setTimeout(onResize, 200));
+
+// ---------- optional logo swap ----------
+// Drop a file named "logo.png" (or "logo.svg") into /valmont/assets/ and it
+// will automatically replace the "VALMONT" text mark in the top bar.
+(function tryLoadLogo() {
+  const img = document.getElementById('logoImg');
+  const text = document.getElementById('logoText');
+  const candidates = ['assets/logo.png', 'assets/logo.svg'];
+  let i = 0;
+  function tryNext() {
+    if (i >= candidates.length) return;
+    const testImg = new Image();
+    testImg.onload = () => {
+      img.src = candidates[i];
+      img.style.display = 'block';
+      text.style.display = 'none';
+    };
+    testImg.onerror = () => { i++; tryNext(); };
+    testImg.src = candidates[i];
+  }
+  tryNext();
+})();
+
+// ---------- render loop ----------
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
