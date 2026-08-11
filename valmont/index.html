@@ -573,12 +573,9 @@ renderer.domElement.addEventListener('pointerdown', onUserInteract);
 // every car visually consistent in scale regardless of the source file's units.
 const TARGET_LENGTH = 4.5;
 const CARS = [
-  { id: 'ferrari', label: 'Dubái',   file: 'assets/ferrari.glb',      fileHQ: 'assets/ferrari_hq.glb',      rotationY: 0 },
-  { id: 'lambo',   label: 'Mónaco',  file: 'assets/lamborghini.glb',  fileHQ: 'assets/lamborghini_hq.glb',  rotationY: -Math.PI / 2 },
+  { id: 'ferrari', label: 'Dubái',   file: 'assets/ferrari.glb',      rotationY: 0 },
+  { id: 'lambo',   label: 'Mónaco',  file: 'assets/lamborghini.glb',  rotationY: -Math.PI / 2 },
 ];
-// temporary comparison switch — add ?q=hq to the URL to load the higher-detail
-// (heavier) model files instead of the optimized ones, to compare quality vs size
-const USE_HQ = new URLSearchParams(location.search).get('q') === 'hq';
 
 const stageEl = document.getElementById('stage');
 const loaderFill = document.getElementById('loaderFill');
@@ -636,7 +633,7 @@ function disposeCar(obj) {
 function loadCar(cfg, { isFirst = false } = {}) {
   return new Promise((resolve, reject) => {
     gltfLoader.load(
-      USE_HQ ? cfg.fileHQ : cfg.file,
+      cfg.file,
       (gltf) => {
         const next = gltf.scene;
         next.rotation.y = cfg.rotationY;
