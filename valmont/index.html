@@ -336,6 +336,7 @@ function buildCyclorama() {
   const cols = 9; // more columns so the floor can carry a radial light "pool" under the car
   const positions = [];
   const colors = [];
+  const uvs = [];
   // studio floor: a bright pool directly under/in front of the car, fading out
   // toward the edges, then the whole surface fades to black as it climbs into
   // the cove/back wall — this is what reads as "depth" instead of a flat void.
@@ -343,6 +344,8 @@ function buildCyclorama() {
   const colFloorEdge = new THREE.Color(0x0c0c0f);
   const colWallTop = new THREE.Color(0x000000);
 
+  const REPEAT_X = 7;
+  const REPEAT_Y = 10;
   for (let r = 0; r < rows; r++) {
     const z = zVals[r];
     const y = yVals[r];
@@ -358,6 +361,7 @@ function buildCyclorama() {
       const shade = floorShade.lerp(colWallTop, vertical);
       positions.push(x, y, z);
       colors.push(shade.r, shade.g, shade.b);
+      uvs.push(t * REPEAT_X, (r / (rows - 1)) * REPEAT_Y);
     }
   }
 
@@ -372,17 +376,117 @@ function buildCyclorama() {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   geo.setIndex(indices);
   geo.computeVertexNormals();
 
+  const { albedo, normal } = buildStudioSurfaceTextures();
+
   const mat = new THREE.MeshStandardMaterial({
     vertexColors: true,
-    roughness: 0.92,
-    metalness: 0.04,
-    envMapIntensity: 0.18,
+    map: albedo,
+    normalMap: normal,
+    normalScale: new THREE.Vector2(0.35, 0.35),
+    roughness: 0.88,
+    metalness: 0.06,
+    envMapIntensity: 0.22,
     side: THREE.DoubleSide,
   });
   return new THREE.Mesh(geo, mat);
+}
+
+// ---------- procedural studio-surface textures (polished concrete cyc: subtle
+// cloudy tonal variation + fine grain for the albedo, gentle micro-bump for the
+// normal map) so the floor/wall reads as an actual material instead of flat color ----------
+function buildStudioSurfaceTextures() {
+  const size = 1024;
+
+  // -- albedo: near-white base (multiplies with the vertex-color gradient,
+  // so it only ADDS texture detail, it doesn't relight the scene) --
+  const albedoCanvas = document.createElement('canvas');
+  albedoCanvas.width = albedoCanvas.height = size;
+  const actx = albedoCanvas.getContext('2d');
+  actx.fillStyle = '#dcdcdc';
+  actx.fillRect(0, 0, size, size);
+  for (let i = 0; i < 55; i++) {
+    const x = Math.random() * size;
+    const y = Math.random() * size;
+    const r = 60 + Math.random() * 260;
+    const shade = 205 + Math.random() * 35;
+    const g = actx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(${shade | 0},${shade | 0},${shade | 0},0.14)`);
+    g.addColorStop(1, 'rgba(220,220,220,0)');
+    actx.fillStyle = g;
+    actx.beginPath();
+    actx.arc(x, y, r, 0, Math.PI * 2);
+    actx.fill();
+  }
+  const aImg = actx.getImageData(0, 0, size, size);
+  const aData = aImg.data;
+  for (let i = 0; i < aData.length; i += 4) {
+    const n = (Math.random() - 0.5) * 9;
+    aData[i] = Math.min(255, Math.max(0, aData[i] + n));
+    aData[i + 1] = Math.min(255, Math.max(0, aData[i + 1] + n));
+    aData[i + 2] = Math.min(255, Math.max(0, aData[i + 2] + n));
+  }
+  actx.putImageData(aImg, 0, 0);
+
+  // -- height field for the normal map: same idea at lower res, smooth blotches --
+  const hSize = 512;
+  const heightCanvas = document.createElement('canvas');
+  heightCanvas.width = heightCanvas.height = hSize;
+  const hctx = heightCanvas.getContext('2d');
+  hctx.fillStyle = '#808080';
+  hctx.fillRect(0, 0, hSize, hSize);
+  for (let i = 0; i < 70; i++) {
+    const x = Math.random() * hSize;
+    const y = Math.random() * hSize;
+    const r = 8 + Math.random() * 46;
+    const shade = 128 + (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 22);
+    const g = hctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(${shade | 0},${shade | 0},${shade | 0},0.5)`);
+    g.addColorStop(1, 'rgba(128,128,128,0)');
+    hctx.fillStyle = g;
+    hctx.beginPath();
+    hctx.arc(x, y, r, 0, Math.PI * 2);
+    hctx.fill();
+  }
+  const hSrc = hctx.getImageData(0, 0, hSize, hSize).data;
+  const heightAt = (x, y) => hSrc[(y * hSize + x) * 4];
+
+  const normalCanvas = document.createElement('canvas');
+  normalCanvas.width = normalCanvas.height = hSize;
+  const nctx = normalCanvas.getContext('2d');
+  const nImg = nctx.createImageData(hSize, hSize);
+  const strength = 1.3;
+  for (let y = 0; y < hSize; y++) {
+    for (let x = 0; x < hSize; x++) {
+      const xl = Math.max(0, x - 1), xr = Math.min(hSize - 1, x + 1);
+      const yu = Math.max(0, y - 1), yd = Math.min(hSize - 1, y + 1);
+      const l = heightAt(xl, y) / 255, r = heightAt(xr, y) / 255;
+      const u = heightAt(x, yu) / 255, d = heightAt(x, yd) / 255;
+      const dx = (r - l) * strength, dy = (d - u) * strength;
+      const nx = -dx, ny = -dy, nz = 1;
+      const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+      const idx = (y * hSize + x) * 4;
+      nImg.data[idx] = ((nx / len) * 0.5 + 0.5) * 255;
+      nImg.data[idx + 1] = ((ny / len) * 0.5 + 0.5) * 255;
+      nImg.data[idx + 2] = ((nz / len) * 0.5 + 0.5) * 255;
+      nImg.data[idx + 3] = 255;
+    }
+  }
+  nctx.putImageData(nImg, 0, 0);
+
+  const albedo = new THREE.CanvasTexture(albedoCanvas);
+  albedo.wrapS = albedo.wrapT = THREE.RepeatWrapping;
+  albedo.colorSpace = THREE.SRGBColorSpace;
+  albedo.anisotropy = 4;
+
+  const normal = new THREE.CanvasTexture(normalCanvas);
+  normal.wrapS = normal.wrapT = THREE.RepeatWrapping;
+  normal.anisotropy = 4;
+
+  return { albedo, normal };
 }
 const cyclorama = buildCyclorama();
 scene.add(cyclorama);
@@ -432,18 +536,26 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 1.1;
-controls.minPolarAngle = Math.PI / 2 - 0.35;
-controls.maxPolarAngle = Math.PI / 2 + 0.25;
+controls.minAzimuthAngle = -Infinity; // free horizontal spin — see the car from any angle
+controls.maxAzimuthAngle = Infinity;
 controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.ROTATE };
 
-// keep the car within a comfortable showroom arc — no spinning around to the
-// back or underside, which breaks the "posed in a studio" feeling
-const ROTATE_RANGE = THREE.MathUtils.degToRad(55);
-function clampOrbitToCurrentView() {
-  const offset = new THREE.Vector3().copy(camera.position).sub(controls.target);
-  const theta = Math.atan2(offset.x, offset.z);
-  controls.minAzimuthAngle = theta - ROTATE_RANGE;
-  controls.maxAzimuthAngle = theta + ROTATE_RANGE;
+// Vertical rotation is the only thing we constrain: tilting up (bird's-eye) is
+// fine, but tilting down must stop right at the floor — past that point the
+// camera dips below the studio floor plane and you see its backside/underside,
+// which reads as broken. We solve for the exact polar angle at which the
+// camera height would hit the floor and clamp there, recomputed whenever the
+// camera distance/target changes (car swap, resize).
+function clampVerticalToFloor() {
+  const target = controls.target;
+  const radius = camera.position.distanceTo(target);
+  const floorMargin = 0.12; // stay just above the floor, never touching/crossing it
+  const cosPhiAtFloor = (floorMargin - target.y) / radius;
+  const maxPhi = Math.acos(THREE.MathUtils.clamp(cosPhiAtFloor, -1, 1));
+
+  controls.minPolarAngle = Math.PI / 2 - 0.35; // comfortable look-down-at-it angle from above
+  controls.maxPolarAngle = Math.min(maxPhi, Math.PI / 2 + 0.45);
+  if (controls.maxPolarAngle < controls.minPolarAngle) controls.minPolarAngle = controls.maxPolarAngle;
   controls.update();
 }
 
@@ -461,9 +573,12 @@ renderer.domElement.addEventListener('pointerdown', onUserInteract);
 // every car visually consistent in scale regardless of the source file's units.
 const TARGET_LENGTH = 4.5;
 const CARS = [
-  { id: 'ferrari', label: 'Dubái',   file: 'assets/ferrari.glb',      rotationY: 0 },
-  { id: 'lambo',   label: 'Mónaco',  file: 'assets/lamborghini.glb',  rotationY: -Math.PI / 2 },
+  { id: 'ferrari', label: 'Dubái',   file: 'assets/ferrari.glb',      fileHQ: 'assets/ferrari_hq.glb',      rotationY: 0 },
+  { id: 'lambo',   label: 'Mónaco',  file: 'assets/lamborghini.glb',  fileHQ: 'assets/lamborghini_hq.glb',  rotationY: -Math.PI / 2 },
 ];
+// temporary comparison switch — add ?q=hq to the URL to load the higher-detail
+// (heavier) model files instead of the optimized ones, to compare quality vs size
+const USE_HQ = new URLSearchParams(location.search).get('q') === 'hq';
 
 const stageEl = document.getElementById('stage');
 const loaderFill = document.getElementById('loaderFill');
@@ -521,7 +636,7 @@ function disposeCar(obj) {
 function loadCar(cfg, { isFirst = false } = {}) {
   return new Promise((resolve, reject) => {
     gltfLoader.load(
-      cfg.file,
+      USE_HQ ? cfg.fileHQ : cfg.file,
       (gltf) => {
         const next = gltf.scene;
         next.rotation.y = cfg.rotationY;
@@ -604,7 +719,7 @@ function placeCarInScene(size) {
   controls.target.set(0, size.y * 0.42, 0);
   modelSize = size;
   frameCamera(size);
-  clampOrbitToCurrentView();
+  clampVerticalToFloor();
 }
 
 // initial load — honors ?car=lambo for direct links / testing
@@ -671,7 +786,7 @@ function onResize() {
     const size = new THREE.Vector3();
     box.getSize(size);
     frameCamera(size);
-    clampOrbitToCurrentView();
+    clampVerticalToFloor();
   }
 }
 window.addEventListener('resize', onResize);
