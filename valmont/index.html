@@ -272,14 +272,15 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'hi
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = 1.35;
+renderer.toneMappingExposure = 1.15;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x050505, 1);
+renderer.setClearColor(0x0a0a0c, 1);
 stage.appendChild(renderer.domElement);
 
 // ---------- scene / camera ----------
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x050505, 14, 34);
+const FOG_COLOR = 0x0a0a0c;
+scene.fog = new THREE.Fog(FOG_COLOR, 16, 40);
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
 
@@ -297,6 +298,94 @@ scene.add(key);
 const rim = new THREE.DirectionalLight(0x8fb3ff, 1.4);
 rim.position.set(-5, 3, -4);
 scene.add(rim);
+
+// ---------- studio cyclorama: ONE continuous surface that folds from a flat
+// floor into a curved back wall, like a photography infinity cove. Building
+// it as a single mesh (instead of a separate floor + backdrop) avoids any
+// seam where two different materials/lighting responses would otherwise meet.
+function buildCyclorama() {
+  const halfW = 26;
+  const floorFront = 34;   // how far the floor extends toward the camera
+  const floorBack = -15;   // where the floor ends and the curve begins
+  const curveEnd = -24;    // where the curve finishes and the wall goes vertical
+  const wallTop = 34;      // wall height at the back
+  const flatFloorSegs = 5;
+  const curveSegs = 22;
+  const wallSegs = 4;
+
+  const zVals = [];
+  const yVals = [];
+  for (let i = 0; i <= flatFloorSegs; i++) {
+    const t = i / flatFloorSegs;
+    zVals.push(THREE.MathUtils.lerp(floorFront, floorBack, t));
+    yVals.push(0);
+  }
+  for (let i = 1; i <= curveSegs; i++) {
+    const t = i / curveSegs;
+    const s = t * t * (3 - 2 * t); // smoothstep fold
+    zVals.push(THREE.MathUtils.lerp(floorBack, curveEnd, t));
+    yVals.push(s * wallTop);
+  }
+  for (let i = 1; i <= wallSegs; i++) {
+    const t = i / wallSegs;
+    zVals.push(curveEnd);
+    yVals.push(THREE.MathUtils.lerp(wallTop, wallTop * 1.15, t));
+  }
+
+  const rows = zVals.length;
+  const cols = 9; // more columns so the floor can carry a radial light "pool" under the car
+  const positions = [];
+  const colors = [];
+  // studio floor: a bright pool directly under/in front of the car, fading out
+  // toward the edges, then the whole surface fades to black as it climbs into
+  // the cove/back wall — this is what reads as "depth" instead of a flat void.
+  const colFloorCenter = new THREE.Color(0x38383e);
+  const colFloorEdge = new THREE.Color(0x0c0c0f);
+  const colWallTop = new THREE.Color(0x000000);
+
+  for (let r = 0; r < rows; r++) {
+    const z = zVals[r];
+    const y = yVals[r];
+    const vertical = Math.pow(Math.min(1, y / wallTop), 2.1); // stays near the floor color, then races to black up the wall
+    for (let c = 0; c < cols; c++) {
+      const t = c / (cols - 1);
+      const x = THREE.MathUtils.lerp(-halfW, halfW, t);
+      const dx = x;
+      const dz = z - 5; // hotspot sits a touch in front of the car
+      const dist = Math.sqrt(dx * dx * 0.55 + dz * dz * 0.3);
+      const radial = THREE.MathUtils.clamp(dist / 18, 0, 1);
+      const floorShade = colFloorCenter.clone().lerp(colFloorEdge, radial);
+      const shade = floorShade.lerp(colWallTop, vertical);
+      positions.push(x, y, z);
+      colors.push(shade.r, shade.g, shade.b);
+    }
+  }
+
+  const indices = [];
+  for (let r = 0; r < rows - 1; r++) {
+    for (let c = 0; c < cols - 1; c++) {
+      const a = r * cols + c, b = a + 1, cIdx = a + cols, d = cIdx + 1;
+      indices.push(a, cIdx, b, b, cIdx, d);
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.92,
+    metalness: 0.04,
+    envMapIntensity: 0.18,
+    side: THREE.DoubleSide,
+  });
+  return new THREE.Mesh(geo, mat);
+}
+const cyclorama = buildCyclorama();
+scene.add(cyclorama);
 
 // ---------- soft ground contact glow (reads against the black void) ----------
 function makeGlowTexture() {
@@ -346,6 +435,17 @@ controls.autoRotateSpeed = 1.1;
 controls.minPolarAngle = Math.PI / 2 - 0.35;
 controls.maxPolarAngle = Math.PI / 2 + 0.25;
 controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.ROTATE };
+
+// keep the car within a comfortable showroom arc — no spinning around to the
+// back or underside, which breaks the "posed in a studio" feeling
+const ROTATE_RANGE = THREE.MathUtils.degToRad(55);
+function clampOrbitToCurrentView() {
+  const offset = new THREE.Vector3().copy(camera.position).sub(controls.target);
+  const theta = Math.atan2(offset.x, offset.z);
+  controls.minAzimuthAngle = theta - ROTATE_RANGE;
+  controls.maxAzimuthAngle = theta + ROTATE_RANGE;
+  controls.update();
+}
 
 let idleTimer = null;
 function onUserInteract() {
@@ -504,6 +604,7 @@ function placeCarInScene(size) {
   controls.target.set(0, size.y * 0.42, 0);
   modelSize = size;
   frameCamera(size);
+  clampOrbitToCurrentView();
 }
 
 // initial load — honors ?car=lambo for direct links / testing
@@ -570,6 +671,7 @@ function onResize() {
     const size = new THREE.Vector3();
     box.getSize(size);
     frameCamera(size);
+    clampOrbitToCurrentView();
   }
 }
 window.addEventListener('resize', onResize);
