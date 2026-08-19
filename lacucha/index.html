@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#24352A">
+<title>La Cucha — Pet Shop</title>
+<meta name="description" content="La Cucha — pet shop en Uruguay. Alimento, juguetes y accesorios para perros y gatos, elegidos con cariño.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  :root {
+    --cream: #EFE6D6;
+    --cream-soft: #F7F1E6;
+    --card: #FBF8F0;
+    --white: #FFFEFB;
+    --pine: #24352A;
+    --pine-deep: #182219;
+    --brick: #BC5A34;
+    --brick-dark: #9C4826;
+    --ochre: #D8A23D;
+    --ink: #23281D;
+    --ink-soft: #5B6151;
+    --line: rgba(36,53,42,0.14);
+    --shadow: 0 24px 46px -22px rgba(24,34,25,0.4);
+    --shadow-sm: 0 10px 22px -12px rgba(24,34,25,0.28);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --container: 1180px;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  h1, h2, h3, h4, p { margin: 0; }
+  ::selection { background: var(--brick); color: var(--white); }
+  :focus-visible { outline: 3px solid var(--ochre); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: 20px; }
+  @media (min-width: 900px) { .container { padding-inline: 40px; } }
+
+  #productos, #nosotros, #ubicacion { scroll-margin-top: 90px; }
+
+  /* ---------- Reveal on scroll ---------- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+    transition-delay: var(--delay, 0s);
+  }
+  [data-reveal].in-view { opacity: 1; transform: translateY(0); }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 26px; border-radius: 999px; font-weight: 700; font-size: 15px;
+    border: 2px solid transparent; transition: transform .25s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--brick); color: var(--white); box-shadow: var(--shadow-sm); }
+  .btn-primary:hover { background: var(--brick-dark); transform: translateY(-3px); box-shadow: var(--shadow); }
+  .btn-outline { border-color: var(--pine); color: var(--pine); }
+  .btn-outline:hover { background: var(--pine); color: var(--cream); transform: translateY(-3px); }
+  .btn-outline-light { border-color: rgba(239,230,214,0.5); color: var(--cream); }
+  .btn-outline-light:hover { background: var(--cream); color: var(--pine-deep); }
+
+  /* ---------- Announce bar ---------- */
+  .announce-bar {
+    background: var(--pine-deep); color: var(--cream-soft); text-align: center;
+    font-size: 12.5px; font-weight: 600; padding: 9px 16px; letter-spacing: 0.01em;
+  }
+
+  /* ---------- Header ---------- */
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(239,230,214,0.7);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .site-header.scrolled { background: rgba(251,248,240,0.92); border-color: var(--line); box-shadow: var(--shadow-sm); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; padding-block: 16px; }
+  .logo { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--pine); display: flex; align-items: center; gap: 6px; letter-spacing: -0.01em; }
+  .logo .dot { color: var(--brick); }
+  .main-nav { display: none; gap: 34px; }
+  .main-nav a { font-weight: 600; font-size: 15px; color: var(--pine); position: relative; padding-bottom: 4px; }
+  .main-nav a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--brick);
+    transform: scaleX(0); transition: transform .25s ease; transform-origin: right;
+  }
+  .main-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .header-cta { display: none; }
+  @media (min-width: 640px) { .header-cta { display: inline-flex; } }
+
+  .menu-toggle {
+    display: grid; gap: 5px; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); place-items: center;
+  }
+  .menu-toggle span { width: 18px; height: 2px; background: var(--pine); border-radius: 2px; }
+  @media (min-width: 860px) { .main-nav { display: flex; } .menu-toggle { display: none; } }
+
+  .mobile-nav {
+    position: fixed; inset: 0; background: var(--pine); z-index: 200;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+    transform: translateY(-100%); transition: transform .4s cubic-bezier(.22,.61,.36,1);
+  }
+  .mobile-nav.open { transform: translateY(0); }
+  .mobile-nav a { color: var(--cream); font-family: var(--font-display); font-size: 30px; font-weight: 500; }
+  .mobile-nav .close-btn {
+    position: absolute; top: 22px; right: 22px; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid rgba(239,230,214,0.3); background: transparent; color: var(--cream); font-size: 18px;
+  }
+
+  /* ---------- Section head ---------- */
+  .section-head { max-width: 620px; margin-bottom: 40px; }
+  .section-head .eyebrow {
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--brick-dark); margin-bottom: 10px; display: block;
+  }
+  .section-head h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 40px); color: var(--pine); font-weight: 600; line-height: 1.15; }
+  .section-head p { margin-top: 12px; color: var(--ink-soft); font-size: 16px; line-height: 1.6; }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; padding-block: 44px 70px; overflow: hidden; }
+  .hero-blob { position: absolute; border-radius: 50%; z-index: 0; pointer-events: none; }
+  .hero-blob.b1 { width: 320px; height: 320px; background: var(--ochre); opacity: .28; top: -130px; right: -110px; }
+  .hero-blob.b2 { width: 240px; height: 240px; background: var(--brick); opacity: .16; bottom: -90px; left: -90px; }
+  .hero-grid { position: relative; z-index: 1; display: grid; gap: 44px; align-items: center; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--brick-dark);
+    background: rgba(188,90,52,0.12); padding: 8px 16px; border-radius: 999px; margin-bottom: 22px;
+  }
+  .hero h1 {
+    font-family: var(--font-display); font-size: clamp(34px, 7.5vw, 56px); line-height: 1.08;
+    font-weight: 600; color: var(--pine); letter-spacing: -0.01em;
+  }
+  .hero h1 em { font-style: italic; color: var(--brick); }
+  .hero p.lead { margin-top: 20px; font-size: 17px; line-height: 1.65; color: var(--ink-soft); max-width: 46ch; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+  .trust-row { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 30px; font-size: 13px; font-weight: 600; color: var(--pine); }
+  .trust-row span { display: flex; align-items: center; gap: 6px; }
+
+  .hero-media { position: relative; }
+  .hero-media .frame { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 4/5; }
+  .hero-media .frame img { width: 100%; height: 100%; object-fit: cover; }
+
+  .badge-seal {
+    position: absolute; width: 106px; height: 106px; top: -18px; left: -18px;
+    animation: spin 20s linear infinite; filter: drop-shadow(0 8px 14px rgba(24,34,25,0.25));
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .badge-seal text { fill: var(--pine-deep); font-family: var(--font-body); font-weight: 700; }
+  .badge-seal circle.seal-bg { fill: var(--ochre); }
+  .badge-seal circle.seal-mid { fill: var(--card); }
+
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr 0.94fr; gap: 60px; }
+  }
+
+  /* ---------- Categories ---------- */
+  .categories { padding-block: 54px 20px; }
+  .cat-scroll {
+    display: flex; gap: 16px; overflow-x: auto; padding-bottom: 14px;
+    scroll-snap-type: x mandatory; margin-inline: -20px; padding-inline: 20px;
+    scrollbar-width: none;
+  }
+  .cat-scroll::-webkit-scrollbar { display: none; }
+  .cat-card { scroll-snap-align: start; flex: 0 0 138px; text-align: center; }
+  .cat-card .cat-img {
+    width: 138px; height: 138px; border-radius: var(--radius-md); overflow: hidden;
+    box-shadow: var(--shadow-sm); background: var(--card);
+  }
+  .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+  .cat-card:hover img { transform: scale(1.08); }
+  .cat-card span { display: block; margin-top: 12px; font-weight: 700; color: var(--pine); font-size: 13.5px; }
+
+  /* ---------- Products ---------- */
+  .products { padding-block: 46px 70px; }
+  .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (min-width: 720px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+
+  .product-card {
+    background: var(--card); border-radius: var(--radius-md); overflow: hidden;
+    box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+  .product-photo { position: relative; aspect-ratio: 1/1; overflow: hidden; }
+  .product-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+  .product-card:hover .product-photo img { transform: scale(1.07); }
+  .product-tag {
+    position: absolute; top: 10px; left: 10px; background: var(--ochre); color: var(--pine-deep);
+    font-size: 10.5px; font-weight: 800; padding: 5px 10px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  .product-info { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .product-info h3 { font-size: 13.5px; font-weight: 700; color: var(--pine); line-height: 1.3; min-height: 2.6em; }
+  .product-price { font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--brick-dark); }
+  .add-btn {
+    margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px; border-radius: 999px; border: 2px solid var(--pine); color: var(--pine);
+    font-weight: 700; font-size: 12.5px; background: transparent; transition: all .25s ease;
+  }
+  .add-btn:hover { background: var(--pine); color: var(--cream); }
+  .add-btn.added { background: var(--brick); border-color: var(--brick); color: var(--white); }
+  .products-footer { text-align: center; margin-top: 38px; }
+
+  /* ---------- Story (dark band) ---------- */
+  .story { padding-block: 66px; background: var(--pine); position: relative; overflow: hidden; }
+  .story-inner { display: grid; gap: 40px; align-items: center; }
+  .story-media { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/3; box-shadow: 0 30px 60px -28px rgba(0,0,0,0.5); }
+  .story-media img { width: 100%; height: 100%; object-fit: cover; }
+  .story-text .section-head { margin-bottom: 26px; }
+  .story-text .section-head h2 { color: var(--cream); }
+  .story-text .section-head .eyebrow { color: var(--ochre); background: rgba(216,162,61,0.14); }
+  .story-text .section-head p { color: rgba(239,230,214,0.82); }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+  .badge-pill {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+    border: 1px solid rgba(239,230,214,0.25); font-size: 13px; font-weight: 600; color: var(--cream);
+  }
+  @media (min-width: 900px) { .story-inner { grid-template-columns: 0.95fr 1.05fr; gap: 60px; } }
+
+  /* ---------- Location ---------- */
+  .location { padding-block: 66px; }
+  .location-grid { display: grid; gap: 24px; }
+  .map-frame { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 4/3; }
+  .map-frame iframe { width: 100%; height: 100%; border: 0; filter: sepia(6%) saturate(92%); }
+  .location-card { background: var(--card); border-radius: var(--radius-md); padding: 26px; box-shadow: var(--shadow-sm); }
+  .loc-row { display: flex; gap: 14px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+  .loc-row:last-of-type { border-bottom: none; padding-bottom: 4px; }
+  .loc-row:first-of-type { padding-top: 0; }
+  .loc-row .ico { font-size: 19px; line-height: 1.4; }
+  .loc-row h4 { font-size: 13.5px; font-weight: 700; color: var(--pine); margin-bottom: 3px; }
+  .loc-row p { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+  .loc-row .placeholder { font-style: italic; opacity: .75; }
+  .location-card .btn { margin-top: 18px; }
+  @media (min-width: 900px) { .location-grid { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--pine-deep); color: rgba(239,230,214,0.78); padding-block: 56px 26px; }
+  .footer-grid { display: grid; gap: 40px; }
+  .footer-brand .logo { color: var(--cream); }
+  .footer-brand p { margin-top: 14px; font-size: 14px; line-height: 1.65; max-width: 30ch; color: rgba(239,230,214,0.65); }
+  .footer-col h5 { color: var(--cream); font-size: 13px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .07em; }
+  .footer-col ul li { margin-bottom: 10px; font-size: 14px; }
+  .footer-col a:hover { color: var(--ochre); }
+  .newsletter-form { display: flex; gap: 8px; margin-top: 14px; }
+  .newsletter-form input {
+    flex: 1; min-width: 0; padding: 12px 16px; border-radius: 999px; border: 1px solid rgba(239,230,214,0.25);
+    background: rgba(255,255,255,0.06); color: var(--cream); font-size: 14px; font-family: var(--font-body);
+  }
+  .newsletter-form input::placeholder { color: rgba(239,230,214,0.45); }
+  .newsletter-form button { border-radius: 999px; background: var(--brick); color: white; padding: 12px 18px; font-weight: 700; border: none; font-size: 13.5px; white-space: nowrap; }
+  .newsletter-form button:hover { background: var(--brick-dark); }
+  .footer-bottom {
+    margin-top: 46px; padding-top: 22px; border-top: 1px solid rgba(239,230,214,0.12);
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(239,230,214,0.5);
+  }
+  .social-row { display: flex; gap: 10px; }
+  .social-row a { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(239,230,214,0.25); display: grid; place-items: center; font-size: 15px; }
+  .social-row a:hover { border-color: var(--ochre); color: var(--ochre); }
+  @media (min-width: 720px) { .footer-grid { grid-template-columns: 1.3fr 1fr 1fr 1.3fr; } }
+
+  /* ---------- Cart FAB + drawer ---------- */
+  .cart-fab {
+    position: fixed; bottom: 20px; right: 20px; z-index: 70; width: 58px; height: 58px; border-radius: 50%;
+    background: var(--brick); color: white; border: none; box-shadow: var(--shadow); display: grid; place-items: center;
+    font-size: 22px; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cart-fab:hover { transform: scale(1.08) rotate(-4deg); }
+  .cart-fab .fab-count {
+    position: absolute; top: -2px; right: -2px; background: var(--ochre); color: var(--pine-deep);
+    font-size: 12px; font-weight: 800; width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; border: 2px solid var(--cream); font-family: var(--font-body);
+  }
+  .cart-fab.bump { animation: bump .4s ease; }
+  @keyframes bump { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+  .cart-overlay {
+    position: fixed; inset: 0; background: rgba(24,34,25,0.5); z-index: 80; opacity: 0; pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .cart-drawer {
+    position: fixed; right: 0; top: 0; bottom: 0; width: min(420px, 100%); background: var(--cream-soft);
+    z-index: 90; box-shadow: -20px 0 50px rgba(0,0,0,0.25); transform: translateX(100%);
+    transition: transform .4s cubic-bezier(.22,.61,.36,1); display: flex; flex-direction: column;
+  }
+  .cart-drawer.open { transform: translateX(0); }
+  .cart-head { display: flex; align-items: center; justify-content: space-between; padding: 22px; border-bottom: 1px solid var(--line); }
+  .cart-head h3 { font-family: var(--font-display); font-size: 22px; color: var(--pine); font-weight: 600; }
+  .cart-head button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--white); font-size: 15px; }
+  .cart-items { flex: 1; overflow-y: auto; padding: 6px 22px; }
+  .cart-empty { text-align: center; padding: 70px 20px; color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
+  .cart-item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .cart-item img { width: 66px; height: 66px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-info h4 { font-size: 13.5px; font-weight: 700; color: var(--pine); line-height: 1.3; }
+  .cart-item-info .price { font-size: 13px; color: var(--brick-dark); font-weight: 700; margin-top: 4px; }
+  .qty-stepper { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .qty-stepper button { width: 25px; height: 25px; border-radius: 50%; border: 1px solid var(--line); background: var(--white); font-weight: 700; color: var(--pine); font-size: 14px; line-height: 1; }
+  .qty-stepper span { font-size: 13px; font-weight: 700; min-width: 14px; text-align: center; }
+  .remove-btn { align-self: flex-start; color: var(--ink-soft); font-size: 17px; line-height: 1; background: none; border: none; padding: 4px; }
+  .cart-foot { padding: 20px 22px 24px; border-top: 1px solid var(--line); }
+  .cart-subtotal { display: flex; justify-content: space-between; font-weight: 700; color: var(--pine); margin-bottom: 16px; font-size: 16px; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 30px); background: var(--pine-deep);
+    color: var(--cream); padding: 14px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
+    box-shadow: var(--shadow); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .3s ease, transform .3s ease;
+    max-width: min(320px, 86vw); text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+  <div class="announce-bar">🐾 Envío gratis en compras desde $ 2.000 dentro de Canelones y Montevideo</div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="#" class="logo">La Cucha<span class="dot">.</span></a>
+      <nav class="main-nav">
+        <a href="#">Inicio</a>
+        <a href="#productos">Productos</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#ubicacion">Ubicación</a>
+      </nav>
+      <div class="header-actions">
+        <a href="#productos" class="btn btn-outline header-cta">Ver productos</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <button class="close-btn" id="closeMenu" aria-label="Cerrar menú">✕</button>
+    <a href="#">Inicio</a>
+    <a href="#productos">Productos</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#ubicacion">Ubicación</a>
+  </div>
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="hero-blob b1" aria-hidden="true"></div>
+      <div class="hero-blob b2" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy" data-reveal>
+          <span class="hero-eyebrow">🐾 Pet shop · Uruguay</span>
+          <h1>Todo lo que tu mejor amigo necesita para sentirse <em>en casa</em></h1>
+          <p class="lead">Alimento, juguetes y accesorios elegidos con cariño para perros y gatos. Compra simple, entrega cerca tuyo.</p>
+          <div class="hero-cta">
+            <a href="#productos" class="btn btn-primary">Ver productos</a>
+            <a href="#ubicacion" class="btn btn-outline">Cómo llegar</a>
+          </div>
+          <div class="trust-row">
+            <span>🏠 Retiro en el local</span>
+            <span>🚚 Envíos a domicilio</span>
+            <span>💛 Atención personalizada</span>
+          </div>
+        </div>
+        <div class="hero-media" data-reveal style="--delay:.15s">
+          <div class="frame">
+            <img src="https://images.pexels.com/photos/16264430/pexels-photo-16264430.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Gato y perro descansando juntos, cómodos, en una cucha" loading="eager">
+          </div>
+          <svg class="badge-seal" viewBox="0 0 120 120" aria-hidden="true">
+            <defs>
+              <path id="sealCircle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" />
+            </defs>
+            <circle class="seal-bg" cx="60" cy="60" r="58"></circle>
+            <circle class="seal-mid" cx="60" cy="60" r="24"></circle>
+            <text font-size="8.6" letter-spacing="1.6">
+              <textPath href="#sealCircle" startOffset="0%">LA CUCHA · HECHO CON CARIÑO · LA CUCHA · HECHO CON CARIÑO · </textPath>
+            </text>
+            <text x="60" y="67" text-anchor="middle" font-size="20">🐾</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATEGORIES ================= -->
+    <section class="categories">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Categorías</span>
+          <h2>Explorá La Cucha</h2>
+          <p>Encontrá justo lo que tu mascota necesita.</p>
+        </div>
+        <div class="cat-scroll" data-reveal style="--delay:.1s">
+          <a class="cat-card" href="#productos">
+            <div class="cat-img"><img src="https://images.pexels.com/photos/8473516/pexels-photo-8473516.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Alimento para mascotas" loading="lazy"></div>
+            <span>Alimento</span>
+          </a>
+          <a class="cat-card" href="#productos">
+            <div class="cat-img"><img src="https://images.pexels.com/photos/1073126/pexels-photo-1073126.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Juguetes para perros" loading="lazy"></div>
+            <span>Juguetes</span>
+          </a>
+          <a class="cat-card" href="#productos">
+            <div class="cat-img"><img src="https://images.pexels.com/photos/5647073/pexels-photo-5647073.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Collares y correas" loading="lazy"></div>
+            <span>Accesorios</span>
+          </a>
+          <a class="cat-card" href="#productos">
+            <div class="cat-img"><img src="https://images.pexels.com/photos/16395150/pexels-photo-16395150.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Camas y descanso" loading="lazy"></div>
+            <span>Camas y descanso</span>
+          </a>
+          <a class="cat-card" href="#productos">
+            <div class="cat-img"><img src="https://images.pexels.com/photos/1786960/pexels-photo-1786960.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Paseo y accesorios de salida" loading="lazy"></div>
+            <span>Paseo</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRODUCTS ================= -->
+    <section class="products" id="productos">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Más pedidos</span>
+          <h2>Los favoritos de la casa</h2>
+          <p>Una selección pensada para el día a día de tu mascota.</p>
+        </div>
+
+        <div class="product-grid">
+          <div class="product-card" data-reveal style="--delay:0s"
+               data-id="p1" data-name="Alimento Premium Adulto 15kg" data-price="2890"
+               data-img="https://images.pexels.com/photos/8473516/pexels-photo-8473516.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <span class="product-tag">Favorito</span>
+              <img src="https://images.pexels.com/photos/8473516/pexels-photo-8473516.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Alimento Premium Adulto 15kg" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Alimento Premium Adulto 15kg</h3>
+              <div class="product-price">$ 2.890</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+
+          <div class="product-card" data-reveal style="--delay:.06s"
+               data-id="p2" data-name="Pelota Interactiva con Sonido" data-price="450"
+               data-img="https://images.pexels.com/photos/11512309/pexels-photo-11512309.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <img src="https://images.pexels.com/photos/11512309/pexels-photo-11512309.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Pelota Interactiva con Sonido" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Pelota Interactiva con Sonido</h3>
+              <div class="product-price">$ 450</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+
+          <div class="product-card" data-reveal style="--delay:.12s"
+               data-id="p3" data-name="Cama Cucha Redonda Talle M" data-price="1690"
+               data-img="https://images.pexels.com/photos/16395150/pexels-photo-16395150.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <img src="https://images.pexels.com/photos/16395150/pexels-photo-16395150.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Cama Cucha Redonda Talle M" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Cama Cucha Redonda Talle M</h3>
+              <div class="product-price">$ 1.690</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+
+          <div class="product-card" data-reveal style="--delay:0s"
+               data-id="p4" data-name="Correa + Collar Reflectante" data-price="890"
+               data-img="https://images.pexels.com/photos/5647073/pexels-photo-5647073.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <img src="https://images.pexels.com/photos/5647073/pexels-photo-5647073.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Correa + Collar Reflectante" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Correa + Collar Reflectante</h3>
+              <div class="product-price">$ 890</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+
+          <div class="product-card" data-reveal style="--delay:.06s"
+               data-id="p5" data-name="Kit Bienvenida Cachorro" data-price="990"
+               data-img="https://images.pexels.com/photos/18956761/pexels-photo-18956761.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <span class="product-tag">Nuevo</span>
+              <img src="https://images.pexels.com/photos/18956761/pexels-photo-18956761.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Kit Bienvenida Cachorro" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Kit Bienvenida Cachorro</h3>
+              <div class="product-price">$ 990</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+
+          <div class="product-card" data-reveal style="--delay:.12s"
+               data-id="p6" data-name="Snacks Naturales Mixtos" data-price="320"
+               data-img="https://images.pexels.com/photos/46024/pexels-photo-46024.jpeg?auto=compress&cs=tinysrgb&w=500">
+            <div class="product-photo">
+              <img src="https://images.pexels.com/photos/46024/pexels-photo-46024.jpeg?auto=compress&cs=tinysrgb&w=500" alt="Snacks Naturales Mixtos" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3>Snacks Naturales Mixtos</h3>
+              <div class="product-price">$ 320</div>
+              <button class="add-btn">+ Agregar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="products-footer" data-reveal>
+          <button class="btn btn-outline" id="viewCatalogBtn">Ver todo el catálogo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STORY ================= -->
+    <section class="story" id="nosotros">
+      <div class="container story-inner">
+        <div class="story-media" data-reveal>
+          <img src="https://images.pexels.com/photos/4214919/pexels-photo-4214919.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Perro y gato descansando juntos en el piso, tranquilos" loading="lazy">
+        </div>
+        <div class="story-text" data-reveal style="--delay:.1s">
+          <div class="section-head">
+            <span class="eyebrow">Nuestra historia</span>
+            <h2>Una segunda cucha para cada mascota</h2>
+            <p>La Cucha nació de una idea simple: que cuidar a tu mascota sea tan cómodo como su rincón favorito de la casa. Elegimos cada producto a mano, pensando primero en su bienestar. Perros, gatos y sus familias son parte de esta manada.</p>
+          </div>
+          <div class="badge-row">
+            <span class="badge-pill">🏠 Retiro en el local</span>
+            <span class="badge-pill">🚚 Envíos a Canelones y Montevideo</span>
+            <span class="badge-pill">💬 Atención personalizada, siempre</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LOCATION ================= -->
+    <section class="location" id="ubicacion">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">Visitanos</span>
+          <h2>Te esperamos en la cucha</h2>
+          <p>Vení a conocernos y traé a tu mascota.</p>
+        </div>
+        <div class="location-grid">
+          <div class="map-frame" data-reveal>
+            <iframe src="https://www.google.com/maps?q=-34.8557895,-56.0004586&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación de La Cucha Pet Shop"></iframe>
+          </div>
+          <div class="location-card" data-reveal style="--delay:.1s">
+            <div class="loc-row">
+              <span class="ico">📍</span>
+              <div><h4>Dirección</h4><p class="placeholder">Uruguay — [completar dirección exacta]</p></div>
+            </div>
+            <div class="loc-row">
+              <span class="ico">🕒</span>
+              <div><h4>Horario</h4><p class="placeholder">[completar horario de atención]</p></div>
+            </div>
+            <div class="loc-row">
+              <span class="ico">📞</span>
+              <div><h4>Contacto</h4><p class="placeholder">[completar teléfono / WhatsApp]</p></div>
+            </div>
+            <a class="btn btn-primary" href="https://www.google.com/maps/place/La+Cucha+Pet+shop/@-34.8614642,-55.9972422,14.38z/data=!4m6!3m5!1s0x959f88f241177dff:0xca214c76315f90a!8m2!3d-34.8557895!4d-56.0004586!16s%2Fg%2F11g8nwjjs7" target="_blank" rel="noopener">Cómo llegar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">La Cucha<span class="dot">.</span></a>
+          <p>Pet shop de barrio hecho con cariño, para que cada perro y gato tenga su propia cucha.</p>
+          <div class="social-row" style="margin-top:18px;">
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="WhatsApp">💬</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Tienda</h5>
+          <ul>
+            <li><a href="#productos">Alimento</a></li>
+            <li><a href="#productos">Juguetes</a></li>
+            <li><a href="#productos">Accesorios</a></li>
+            <li><a href="#productos">Camas y descanso</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Ayuda</h5>
+          <ul>
+            <li><a href="#">Envíos</a></li>
+            <li><a href="#">Cambios y devoluciones</a></li>
+            <li><a href="#">Preguntas frecuentes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Sumate a la manada</h5>
+          <p style="font-size:13.5px; color:rgba(239,230,214,0.6);">Novedades, lanzamientos y promos, sin spam.</p>
+          <form class="newsletter-form" id="newsletterForm">
+            <input type="email" placeholder="Tu email" required aria-label="Tu email">
+            <button type="submit">Sumarme</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 La Cucha Pet Shop. Todos los derechos reservados.</span>
+        <span>Vista previa de diseño</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= CART ================= -->
+  <button class="cart-fab js-open-cart" id="cartFab" aria-label="Ver carrito">
+    🛒
+    <span class="fab-count js-cart-count" style="display:none;">0</span>
+  </button>
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Carrito de compras">
+    <div class="cart-head">
+      <h3>Tu carrito</h3>
+      <button id="closeCart" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot">
+      <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">$ 0</span></div>
+      <button class="btn btn-primary" style="width:100%;" id="checkoutBtn">Finalizar compra</button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  // ---------- Mobile menu ----------
+  var menuToggle = document.getElementById('menuToggle');
+  var mobileNav = document.getElementById('mobileNav');
+  var closeMenu = document.getElementById('closeMenu');
+
+  function openMobileNav() { mobileNav.classList.add('open'); menuToggle.setAttribute('aria-expanded', 'true'); }
+  function closeMobileNav() { mobileNav.classList.remove('open'); menuToggle.setAttribute('aria-expanded', 'false'); }
+
+  if (menuToggle) menuToggle.addEventListener('click', openMobileNav);
+  if (closeMenu) closeMenu.addEventListener('click', closeMobileNav);
+  mobileNav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', closeMobileNav);
+  });
+
+  // ---------- Header scroll state ----------
+  var header = document.getElementById('siteHeader');
+  function onScroll() {
+    if (window.scrollY > 12) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+  }
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- Reveal on scroll ----------
+  var revealEls = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('in-view'); });
+  }
+
+  // ---------- Toast ----------
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  // ---------- Cart ----------
+  var cart = [];
+
+  function formatUYU(n) {
+    return '$ ' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  var cartItemsEl = document.getElementById('cartItems');
+  var cartCountEls = document.querySelectorAll('.js-cart-count');
+  var cartSubtotalEl = document.getElementById('cartSubtotal');
+  var cartFab = document.getElementById('cartFab');
+
+  function renderCart() {
+    var count = cart.reduce(function (s, i) { return s + i.qty; }, 0);
+    cartCountEls.forEach(function (el) {
+      el.textContent = count;
+      el.style.display = count > 0 ? 'grid' : 'none';
+    });
+
+    if (cart.length === 0) {
+      cartItemsEl.innerHTML = '<div class="cart-empty">🐾<br>Todavía no agregaste productos.<br>¡Elegí algo para tu mascota!</div>';
+    } else {
+      cartItemsEl.innerHTML = cart.map(function (item) {
+        return '' +
+          '<div class="cart-item">' +
+            '<img src="' + item.img + '" alt="' + item.name + '">' +
+            '<div class="cart-item-info">' +
+              '<h4>' + item.name + '</h4>' +
+              '<div class="price">' + formatUYU(item.price * item.qty) + '</div>' +
+              '<div class="qty-stepper">' +
+                '<button data-action="dec" data-id="' + item.id + '" aria-label="Restar">−</button>' +
+                '<span>' + item.qty + '</span>' +
+                '<button data-action="inc" data-id="' + item.id + '" aria-label="Sumar">+</button>' +
+              '</div>' +
+            '</div>' +
+            '<button class="remove-btn" data-action="remove" data-id="' + item.id + '" aria-label="Quitar">×</button>' +
+          '</div>';
+      }).join('');
+    }
+
+    var subtotal = cart.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
+    cartSubtotalEl.textContent = formatUYU(subtotal);
+  }
+
+  function addToCart(id, name, price, img, btn) {
+    var existing = cart.filter(function (i) { return i.id === id; })[0];
+    if (existing) existing.qty += 1;
+    else cart.push({ id: id, name: name, price: price, img: img, qty: 1 });
+    renderCart();
+
+    cartFab.classList.remove('bump');
+    void cartFab.offsetWidth;
+    cartFab.classList.add('bump');
+    showToast(name + ' agregado al carrito');
+
+    if (btn) {
+      var original = btn.textContent;
+      btn.textContent = 'Agregado ✓';
+      btn.classList.add('added');
+      setTimeout(function () { btn.textContent = original; btn.classList.remove('added'); }, 1300);
+    }
+  }
+
+  document.querySelectorAll('.add-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = btn.closest('.product-card');
+      addToCart(card.dataset.id, card.dataset.name, parseFloat(card.dataset.price), card.dataset.img, btn);
+    });
+  });
+
+  cartItemsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    var id = btn.dataset.id;
+    var item = cart.filter(function (i) { return i.id === id; })[0];
+    if (!item) return;
+    if (btn.dataset.action === 'inc') item.qty += 1;
+    if (btn.dataset.action === 'dec') {
+      item.qty -= 1;
+      if (item.qty <= 0) cart = cart.filter(function (i) { return i.id !== id; });
+    }
+    if (btn.dataset.action === 'remove') cart = cart.filter(function (i) { return i.id !== id; });
+    renderCart();
+  });
+
+  // ---------- Drawer open/close ----------
+  var drawer = document.getElementById('cartDrawer');
+  var overlay = document.getElementById('cartOverlay');
+  function openDrawer() { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  document.querySelectorAll('.js-open-cart').forEach(function (el) { el.addEventListener('click', openDrawer); });
+  document.getElementById('closeCart').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  document.getElementById('checkoutBtn').addEventListener('click', function () {
+    if (cart.length === 0) { showToast('Agregá productos antes de continuar'); return; }
+    showToast('Pedido simulado ✓ — así se vería el checkout');
+  });
+
+  var viewCatalogBtn = document.getElementById('viewCatalogBtn');
+  if (viewCatalogBtn) {
+    viewCatalogBtn.addEventListener('click', function () { showToast('Catálogo completo próximamente'); });
+  }
+
+  var newsletterForm = document.getElementById('newsletterForm');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      showToast('¡Gracias por sumarte! (demo)');
+      newsletterForm.reset();
+    });
+  }
+
+  renderCart();
+})();
+</script>
+</body>
+</html>
