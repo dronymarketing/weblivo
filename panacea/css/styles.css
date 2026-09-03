@@ -304,6 +304,7 @@ button {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 .btn-primario:hover { background: var(--terracota-hondo); transform: translateY(-1px); }
+.btn-primario svg { width: 18px; height: 18px; flex-shrink: 0; }
 
 /* --- Servicios --- */
 .hero__servicios {
