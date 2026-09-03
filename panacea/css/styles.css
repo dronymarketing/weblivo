@@ -309,8 +309,8 @@ button {
 /* --- Servicios --- */
 .hero__servicios {
   position: relative;
-  background: var(--verde);
-  color: var(--verde-texto);
+  background: var(--oliva);
+  color: var(--tinta);
   padding: 10px 0 8px;
   flex: 1 1 0;
   display: flex;
@@ -579,7 +579,7 @@ button {
 
 /* ============ Servicios (detalle extendido) ============ */
 .servicios-detalle {
-  background: var(--verde);
+  background: var(--oliva);
   padding: 48px 20px 12px;
 }
 .servicios-detalle h2 { margin-bottom: 4px; }
