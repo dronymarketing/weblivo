@@ -4,22 +4,27 @@
   var NUMERO_WHATSAPP = "59898611582";
   var CLAVE_STORAGE = "panacea-carrito";
 
-  /* ---------- Alto real del nav (para que el hero de pantalla completa
-     se ajuste exacto a cada dispositivo, sin valores fijos adivinados) ---------- */
+  /* ---------- Alto real de pantalla y del nav (para que el hero de
+     pantalla completa se ajuste exacto a cada dispositivo). En Chrome
+     Android, 100vh/100svh no siempre coincide con el alto visible real
+     porque la barra de direcciones se esconde y muestra, así que se
+     mide con JS en vez de confiar solo en la unidad CSS. ---------- */
   var navEl = document.querySelector(".nav");
-  function medirAltoNav() {
+  function medirAlto() {
+    var alto = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    document.documentElement.style.setProperty("--vh-real", alto + "px");
     if (navEl) {
       document.documentElement.style.setProperty("--nav-h", navEl.offsetHeight + "px");
     }
   }
-  medirAltoNav();
-  window.addEventListener("resize", medirAltoNav);
-  window.addEventListener("orientationchange", medirAltoNav);
+  medirAlto();
+  window.addEventListener("resize", medirAlto);
+  window.addEventListener("orientationchange", medirAlto);
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", medirAltoNav);
+    window.visualViewport.addEventListener("resize", medirAlto);
   }
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(medirAltoNav);
+    document.fonts.ready.then(medirAlto);
   }
 
   /* ---------- Menú móvil ---------- */

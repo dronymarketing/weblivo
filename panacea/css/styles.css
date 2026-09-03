@@ -275,6 +275,7 @@ button {
   flex-direction: column;
   min-height: calc(100vh - var(--nav-h) - 4px);
   min-height: calc(100svh - var(--nav-h) - 4px);
+  min-height: calc(var(--vh-real, 100svh) - var(--nav-h) - 4px);
 }
 
 .hero__intro {
