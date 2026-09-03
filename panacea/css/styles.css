@@ -576,6 +576,93 @@ button {
   color: #fff;
 }
 
+/* ============ Servicios (detalle extendido) ============ */
+.servicios-detalle {
+  background: var(--crema);
+  padding: 48px 20px 12px;
+}
+.servicios-detalle h2 { margin-bottom: 4px; }
+
+.servicios-detalle__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.servicio-detalle {
+  background: var(--crema-alta);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 26px -18px var(--sombra);
+  display: flex;
+  flex-direction: column;
+}
+.servicio-detalle__img { aspect-ratio: 16 / 10; overflow: hidden; }
+.servicio-detalle__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.servicio-detalle__cuerpo {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.servicio-detalle__cuerpo h3 {
+  font-family: var(--fuente-display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--verde-hondo);
+}
+.servicio-detalle__cuerpo p {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--tinta-suave);
+}
+.servicio-detalle .btn-primario {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  padding: 11px 20px;
+}
+
+/* ============ Productos (detalle extendido) ============ */
+.productos-detalle {
+  background: var(--crema-alta);
+  padding: 40px 20px 48px;
+}
+.productos-detalle h2 { margin-bottom: 4px; }
+
+.productos-detalle__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.tarjeta--detalle {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  flex: none;
+}
+.tarjeta--detalle .tarjeta__img {
+  flex: none;
+  aspect-ratio: 1 / 1;
+}
+.tarjeta--detalle .tarjeta__desc {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  -webkit-line-clamp: unset;
+  display: block;
+  overflow: visible;
+}
+.tarjeta--detalle .tarjeta__cuerpo {
+  padding: 14px 16px 16px;
+  gap: 5px;
+}
+.tarjeta--detalle .tarjeta__categoria { font-size: 0.68rem; }
+.tarjeta--detalle .tarjeta__cuerpo h3 { font-size: 1rem; }
+.tarjeta--detalle .tarjeta__precio { font-size: 1rem; }
+
 /* ============ Testimonios ============ */
 .testimonios {
   position: relative;
@@ -830,9 +917,14 @@ button {
   .carrusel { padding-left: 32px; padding-right: 32px; scroll-padding-left: 32px; scroll-padding-right: 32px; }
 
   .tarjeta, .servicio-card { width: clamp(200px, 27vw, 300px); }
+  .tarjeta--detalle { width: auto; }
 
   .testimonios__grid { flex-direction: row; }
   .testimonio { flex: 1; }
+
+  .servicios-detalle, .productos-detalle { padding-left: 32px; padding-right: 32px; }
+  .servicios-detalle__grid { grid-template-columns: repeat(3, 1fr); }
+  .productos-detalle__grid { grid-template-columns: repeat(3, 1fr); }
 
   .carrito { left: 24px; right: auto; bottom: 24px; width: 340px; }
 }
@@ -855,6 +947,15 @@ button {
   .carrusel { padding-left: 60px; padding-right: 60px; scroll-padding-left: 60px; scroll-padding-right: 60px; }
 
   .tarjeta, .servicio-card { width: clamp(220px, 19.5vw, 300px); }
+  .tarjeta--detalle { width: auto; }
 
   .hero__hoja { width: 140px; top: 4px; right: 30px; }
+
+  .servicios-detalle, .productos-detalle { padding-left: 60px; padding-right: 60px; }
+  .servicios-detalle__grid, .productos-detalle__grid {
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .productos-detalle__grid { grid-template-columns: repeat(4, 1fr); }
 }
