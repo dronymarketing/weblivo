@@ -273,9 +273,9 @@ button {
 .hero {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--nav-h) - 32px);
-  min-height: calc(100svh - var(--nav-h) - 32px);
-  min-height: calc(100dvh - var(--nav-h) - 32px);
+  min-height: calc(100vh - var(--nav-h) - 60px);
+  min-height: calc(100svh - var(--nav-h) - 60px);
+  min-height: calc(100dvh - var(--nav-h) - 60px);
 }
 
 .hero__intro {
