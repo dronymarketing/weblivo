@@ -116,43 +116,12 @@ button {
   background-repeat: no-repeat;
 }
 
-/* Adorno dorado bajo los títulos de sección */
-.adorno-oro {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0 20px;
-}
-.adorno-oro::before,
-.adorno-oro::after {
-  content: "";
-  height: 1.5px;
-  width: 28px;
-  background: var(--degradado-oro);
-}
-.adorno-oro span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--degradado-oro);
-  transform: rotate(45deg);
-  flex-shrink: 0;
-}
-
 .titulo-oro {
   background-image: var(--degradado-oro);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-}
-
-/* Hojita de línea junto a los adornos de título, mismo trazo que hero__hoja */
-.adorno-oro__hoja {
-  width: 14px;
-  height: 14px;
-  color: var(--dorado);
-  flex-shrink: 0;
 }
 
 /* Esquirla de pan de oro, acento decorativo en esquinas de tarjetas */
@@ -352,8 +321,7 @@ button {
   flex-direction: column;
 }
 
-.hero__servicios > h2,
-.hero__servicios > .adorno-oro {
+.hero__servicios > h2 {
   padding-left: 20px;
   padding-right: 20px;
   flex: 0 0 auto;
@@ -361,9 +329,8 @@ button {
 
 .hero__servicios h2 {
   font-size: clamp(1rem, 4.4vw, 1.35rem);
+  margin-bottom: 10px;
 }
-
-.hero__servicios .adorno-oro { margin: 4px 0 0; }
 
 .carrusel--servicios { padding-top: 8px; }
 
@@ -470,8 +437,6 @@ button {
   display: flex;
   flex-direction: column;
 }
-.hero__productos .productos__header .adorno-oro { margin: 4px 0 0; }
-
 .productos__header {
   display: flex;
   align-items: flex-start;
@@ -740,8 +705,8 @@ button {
 
 .ubicacion h2 {
   font-size: clamp(1.5rem, 6vw, 2rem);
+  margin-bottom: 22px;
 }
-.ubicacion .adorno-oro { justify-content: center; margin: 12px 0 22px; }
 
 .ubicacion__direccion {
   display: flex;
@@ -881,7 +846,7 @@ button {
   .hero__intro h1 { font-size: clamp(2rem, 5.5vw, 2.7rem); }
   .hero__intro .hero__desc { display: block; overflow: visible; }
   .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
-  .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 32px; padding-right: 32px; }
+  .hero__servicios > h2 { padding-left: 32px; padding-right: 32px; }
   .productos__header { padding-left: 32px; padding-right: 32px; }
   .carrusel { padding-left: 32px; padding-right: 32px; scroll-padding-left: 32px; scroll-padding-right: 32px; }
 
@@ -905,7 +870,7 @@ button {
   .hero__intro { max-width: none; padding: 34px 60px 16px; }
   .hero__intro > h1, .hero__intro > .hero__rol, .hero__intro > .hero__desc { max-width: 640px; }
   .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
-  .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 60px; padding-right: 60px; }
+  .hero__servicios > h2 { padding-left: 60px; padding-right: 60px; }
   .productos__header { padding-left: 60px; padding-right: 60px; }
 
   .carrusel { padding-left: 60px; padding-right: 60px; scroll-padding-left: 60px; scroll-padding-right: 60px; }
