@@ -13,6 +13,7 @@
   --dorado: #a9843f;
   --dorado-suave: #c9a35f;
   --dorado-linea: rgba(169, 132, 63, 0.45);
+  --degradado-oro: linear-gradient(135deg, #8a6b2f, #d9b667, #f5e6b8, #b8923f);
   --borde: rgba(42, 35, 24, 0.14);
   --sombra: rgba(32, 26, 16, 0.22);
 
@@ -21,6 +22,8 @@
 
   --radio: 14px;
   --radio-chico: 10px;
+
+  --nav-h: 66px;
 }
 
 * { box-sizing: border-box; }
@@ -91,19 +94,51 @@ button {
   border: 2px solid var(--papel);
 }
 
-/* Divisores rasgados tipo "recorte de papel" (bordes festoneados, no zigzag) */
+/* Divisores rasgados: SVG de puntos irregulares (papel arrancado a mano) */
 .rasgado {
+  display: block;
   width: 100%;
-  height: 30px;
-  background-repeat: repeat-x;
-  background-position: top center;
-  background-size: 48px 30px;
+  height: 38px;
+  flex-shrink: 0;
 }
-.rasgado--crema-verde   { background-color: var(--verde);       background-image: radial-gradient(circle at 24px 0, var(--crema) 21px, transparent 21.5px); }
-.rasgado--verde-crema   { background-color: var(--crema);       background-image: radial-gradient(circle at 24px 0, var(--verde) 21px, transparent 21.5px); }
-.rasgado--crema-terracota { background-color: var(--terracota); background-image: radial-gradient(circle at 24px 0, var(--crema) 21px, transparent 21.5px); }
-.rasgado--terracota-verdehondo { background-color: var(--verde-hondo); background-image: radial-gradient(circle at 24px 0, var(--terracota) 21px, transparent 21.5px); }
-.rasgado--terracota-cremaalta  { background-color: var(--crema-alta); background-image: radial-gradient(circle at 20px 0, var(--terracota) 17px, transparent 17.5px); height: 24px; background-size: 40px 24px; }
+.rasgado--chico { height: 26px; }
+.rasgado path {
+  stroke: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.14));
+}
+
+.rasgado--crema-verde          { background: var(--crema); }
+.rasgado--crema-verde path     { fill: var(--verde); }
+.rasgado--verde-crema          { background: var(--verde); }
+.rasgado--verde-crema path     { fill: var(--crema); }
+.rasgado--crema-terracota      { background: var(--crema); }
+.rasgado--crema-terracota path { fill: var(--terracota); }
+.rasgado--terracota-verdehondo      { background: var(--terracota); }
+.rasgado--terracota-verdehondo path { fill: var(--verde-hondo); }
+.rasgado--terracota-cremaalta      { background: var(--terracota); }
+.rasgado--terracota-cremaalta path { fill: var(--crema-alta); }
+
+/* Textura de grano de papel, superpuesta a todo el sitio */
+.grano {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+  background: #000;
+  filter: url(#textura-grano);
+}
+
+/* Viñeta suave en los bordes de cada bloque de sección */
+.hero__intro,
+.hero__servicios,
+.hero__productos,
+.testimonios,
+.ubicacion {
+  background-image: radial-gradient(130% 100% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.14) 100%);
+  background-repeat: no-repeat;
+}
 
 /* Adorno dorado bajo los títulos de sección */
 .adorno-oro {
@@ -117,19 +152,50 @@ button {
   content: "";
   height: 1.5px;
   width: 28px;
-  background: var(--dorado);
+  background: var(--degradado-oro);
 }
 .adorno-oro span {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--dorado);
+  background: var(--degradado-oro);
   transform: rotate(45deg);
   flex-shrink: 0;
 }
-.adorno-oro--claro::before,
-.adorno-oro--claro::after,
-.adorno-oro--claro span { background: var(--dorado-suave); }
+
+.titulo-oro {
+  background-image: var(--degradado-oro);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hojita de línea junto a los adornos de título, mismo trazo que hero__hoja */
+.adorno-oro__hoja {
+  width: 14px;
+  height: 14px;
+  color: var(--dorado);
+  flex-shrink: 0;
+}
+
+/* Esquirla de pan de oro, acento decorativo en esquinas de tarjetas */
+.flourish-oro {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(20, 15, 5, 0.3));
+}
+.flourish-oro--tarjeta { top: 8px; right: 10px; width: 20px; height: 20px; }
+.flourish-oro--servicio { top: 10px; right: 10px; width: 18px; height: 18px; }
+.flourish-oro--testimonio { top: 16px; left: 12px; width: 16px; height: 16px; }
+
+.tarjeta:nth-child(3n+2) .flourish-oro { transform: rotate(18deg); }
+.tarjeta:nth-child(3n+3) .flourish-oro { transform: rotate(-14deg); }
+.servicio-card:nth-child(2) .flourish-oro { transform: rotate(-16deg); }
+.servicio-card:nth-child(3) .flourish-oro { transform: rotate(12deg); }
+.testimonio:nth-child(2) .flourish-oro { transform: rotate(20deg); }
+.testimonio:nth-child(3) .flourish-oro { transform: rotate(-18deg); }
 
 .nota-ejemplo {
   font-size: 0.78rem;
@@ -234,9 +300,19 @@ button {
 .nav__menu a:last-child { border-bottom: none; }
 
 /* ============ Hero ============ */
+/* El bloque completo (intro + servicios + productos) ocupa la primera pantalla;
+   recién al hacer scroll aparecen testimonios y contacto. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h));
+}
+
 .hero__intro {
   position: relative;
-  padding: 26px 22px 22px;
+  flex: 0 0 auto;
+  padding: 14px 20px 8px;
   max-width: 640px;
   margin: 0 auto;
   text-align: left;
@@ -245,32 +321,37 @@ button {
 
 .hero__hoja {
   position: absolute;
-  top: -10px;
-  right: -18px;
-  width: 100px;
+  top: -6px;
+  right: -14px;
+  width: 64px;
   height: auto;
   color: var(--dorado);
   opacity: 0.6;
 }
 
 .hero__intro h1 {
-  font-size: clamp(2rem, 8vw, 2.7rem);
+  font-size: clamp(1.5rem, 6.5vw, 2.3rem);
   color: var(--verde-hondo);
   position: relative;
 }
 
 .hero__rol {
-  margin-top: 8px;
-  font-size: 0.96rem;
+  margin-top: 4px;
+  font-size: 0.82rem;
   color: var(--terracota-hondo);
   font-weight: 600;
 }
 
 .hero__desc {
-  margin-top: 10px;
-  font-size: 0.96rem;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  line-height: 1.42;
   color: var(--tinta-suave);
   max-width: 46ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .btn-primario {
@@ -292,35 +373,39 @@ button {
   position: relative;
   background: var(--verde);
   color: var(--verde-texto);
-  padding: 24px 0;
+  padding: 10px 0 8px;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .hero__servicios > h2,
 .hero__servicios > .adorno-oro,
 .hero__servicios > .nota-ejemplo {
-  padding-left: 22px;
-  padding-right: 22px;
+  padding-left: 20px;
+  padding-right: 20px;
+  flex: 0 0 auto;
 }
 
 .hero__servicios h2 {
-  color: var(--crema-alta);
-  font-size: clamp(1.4rem, 5.5vw, 1.7rem);
+  font-size: clamp(1rem, 4.4vw, 1.35rem);
 }
 
-.hero__servicios .adorno-oro { margin: 8px 0 0; }
-.hero__servicios .nota-ejemplo { color: rgba(223,233,224,0.65); margin-top: 12px; }
+.hero__servicios .adorno-oro { margin: 4px 0 0; }
+.hero__servicios .nota-ejemplo { color: rgba(223,233,224,0.65); margin-top: 6px; font-size: 0.68rem; }
 
-.carrusel--servicios { padding-top: 14px; }
+.carrusel--servicios { padding-top: 8px; }
 
 .servicio-card {
   position: relative;
   scroll-snap-align: start;
-  flex: 0 0 62vw;
-  max-width: 235px;
-  aspect-ratio: 4 / 4.6;
-  border-radius: 20px;
+  flex: 0 0 auto;
+  width: clamp(130px, 40vw, 220px);
+  height: 100%;
+  min-height: 165px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 14px 28px -14px rgba(10, 8, 5, 0.5);
+  box-shadow: 0 10px 22px -12px rgba(10, 8, 5, 0.5);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -366,19 +451,27 @@ button {
 .servicio-card__texto {
   position: relative;
   z-index: 2;
-  padding: 16px;
+  padding: 12px;
   color: #fff;
 }
 .servicio-card__texto h3 {
   font-family: var(--fuente-display);
-  font-size: 1.05rem;
-  line-height: 1.18;
+  font-size: 0.92rem;
+  line-height: 1.16;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .servicio-card__texto p {
-  margin-top: 6px;
-  font-size: 0.78rem;
-  line-height: 1.35;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.8);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .btn-reservar-card {
@@ -386,13 +479,13 @@ button {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 12px;
+  margin-top: 8px;
   background: var(--crema-alta);
   color: var(--verde-hondo);
-  padding: 9px;
+  padding: 7px;
   border-radius: var(--radio-chico);
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   transition: transform 0.2s ease;
 }
 .btn-reservar-card svg { width: 16px; height: 16px; color: var(--terracota); flex-shrink: 0; }
@@ -401,53 +494,78 @@ button {
 /* --- Productos --- */
 .hero__productos {
   background: var(--crema);
-  padding: 24px 0 30px;
+  padding: 10px 0 8px;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
 }
-.hero__productos .productos__header .adorno-oro { margin: 6px 0 0; }
+.hero__productos .productos__header .adorno-oro { margin: 4px 0 0; }
 
 .productos__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 22px;
-  margin-bottom: 16px;
+  padding: 0 20px;
+  margin-bottom: 8px;
+  flex: 0 0 auto;
 }
 .productos__header h2 {
-  font-size: clamp(1.4rem, 5.5vw, 1.7rem);
-  color: var(--verde-hondo);
+  font-size: clamp(1rem, 4.4vw, 1.35rem);
 }
 .productos__hint {
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   color: var(--tinta-suave);
   white-space: nowrap;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .carrusel {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 4px 22px 18px;
+  padding: 4px 20px 10px;
+  flex: 1;
+  min-height: 165px;
 }
 
+.hero__productos .carrusel { min-height: 190px; }
+
 .tarjeta {
+  position: relative;
   scroll-snap-align: start;
-  flex: 0 0 74vw;
-  max-width: 300px;
+  flex: 0 0 auto;
+  width: clamp(120px, 34vw, 190px);
+  height: 100%;
+  min-height: 190px;
   background: var(--crema-alta);
-  border-radius: var(--radio);
+  border-radius: 12px 12px 12px 4px;
   overflow: hidden;
-  box-shadow: 0 10px 26px -14px var(--sombra);
+  box-shadow: 0 8px 18px -12px var(--sombra);
   display: flex;
   flex-direction: column;
 }
 
+/* Filete dorado por dentro del borde, como una etiqueta pegada */
+.tarjeta::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 10px 10px 10px 2px;
+  padding: 1px;
+  background: var(--degradado-oro);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 3;
+}
+
 .tarjeta__img {
-  aspect-ratio: 1 / 1;
+  flex: 1 1 0;
+  min-height: 0;
   overflow: hidden;
-  border-bottom: 3px solid var(--dorado);
 }
 .tarjeta__img img {
   width: 100%;
@@ -456,54 +574,61 @@ button {
 }
 
 .tarjeta__cuerpo {
-  padding: 16px 16px 18px;
+  padding: 10px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  flex: 1;
+  gap: 3px;
+  flex: 0 0 auto;
 }
 
 .tarjeta__categoria {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--terracota-hondo);
   font-weight: 700;
 }
 
 .tarjeta__cuerpo h3 {
-  font-size: 1.08rem;
+  font-size: 0.86rem;
+  line-height: 1.2;
   color: var(--verde-hondo);
-  margin-top: 2px;
+  margin-top: 1px;
+  font-variant: small-caps;
+  letter-spacing: 0.03em;
 }
 
 .tarjeta__desc {
-  font-size: 0.87rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
   color: var(--tinta-suave);
-  flex: 1;
-  margin-top: 2px;
+  margin-top: 1px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tarjeta__pie {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .tarjeta__precio {
   font-weight: 700;
   color: var(--tinta);
-  font-size: 1.02rem;
+  font-size: 0.88rem;
 }
 
 .btn-agregar {
   background: transparent;
   border: 1.5px solid var(--terracota);
   color: var(--terracota-hondo);
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: var(--radio-chico);
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 700;
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -563,8 +688,28 @@ button {
   font-style: italic;
 }
 
+.testimonio__autor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.testimonio__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--degradado-oro);
+  color: var(--verde-hondo);
+  font-family: var(--fuente-display);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
 .testimonio figcaption {
-  margin-top: 12px;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--terracota-hondo);
@@ -585,7 +730,6 @@ button {
 }
 
 .ubicacion h2 {
-  color: var(--crema-alta);
   font-size: clamp(1.5rem, 6vw, 2rem);
 }
 .ubicacion .adorno-oro { justify-content: center; margin: 12px 0 22px; }
@@ -726,15 +870,21 @@ button {
 
 /* ============ Responsive: tablet / desktop ============ */
 @media (min-width: 720px) {
+  :root { --nav-h: 68px; }
+
   .nav__inner { padding: 14px 32px; }
   .btn-whatsapp-nav span { display: inline; }
 
-  .hero__intro { padding: 76px 32px 60px; max-width: 720px; }
+  .hero__intro { padding: 26px 32px 14px; max-width: 720px; }
+  .hero__intro h1 { font-size: clamp(2rem, 5.5vw, 2.7rem); }
+  .hero__intro .hero__desc { display: block; overflow: visible; }
   .hero__productos, .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
   .hero__servicios > h2, .hero__servicios > .adorno-oro, .hero__servicios > .nota-ejemplo { padding-left: 32px; padding-right: 32px; }
+  .productos__header { padding-left: 32px; padding-right: 32px; }
+  .carrusel { padding-left: 32px; padding-right: 32px; }
 
-  .tarjeta { flex: 0 0 320px; max-width: 320px; }
-  .servicio-card { flex: 0 0 260px; max-width: 260px; aspect-ratio: 4 / 4.8; }
+  .tarjeta { width: clamp(190px, 26vw, 300px); }
+  .servicio-card { width: clamp(200px, 28vw, 300px); }
 
   .testimonios__grid { flex-direction: row; }
   .testimonio { flex: 1; }
@@ -743,15 +893,21 @@ button {
 }
 
 @media (min-width: 1080px) {
+  :root { --nav-h: 76px; }
+
   .nav__inner, .hero__servicios > *, .hero__productos > *, .testimonios > *, .ubicacion__caja {
     max-width: 1080px;
   }
-  .hero__intro { max-width: none; padding: 96px 60px 70px; }
+  .hero__intro { max-width: none; padding: 34px 60px 16px; }
   .hero__intro > h1, .hero__intro > .hero__rol, .hero__intro > .hero__desc { max-width: 640px; }
   .hero__productos, .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
   .hero__servicios > h2, .hero__servicios > .adorno-oro, .hero__servicios > .nota-ejemplo { padding-left: 60px; padding-right: 60px; }
+  .productos__header { padding-left: 60px; padding-right: 60px; }
 
   .carrusel { padding-left: 60px; padding-right: 60px; }
 
-  .hero__hoja { width: 200px; top: 10px; right: 40px; }
+  .tarjeta { width: clamp(220px, 19vw, 300px); }
+  .servicio-card { width: clamp(220px, 20vw, 300px); }
+
+  .hero__hoja { width: 140px; top: 4px; right: 30px; }
 }
