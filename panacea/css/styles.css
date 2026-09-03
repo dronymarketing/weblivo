@@ -94,30 +94,6 @@ button {
   border: 2px solid var(--papel);
 }
 
-/* Divisores rasgados: SVG de puntos irregulares (papel arrancado a mano) */
-.rasgado {
-  display: block;
-  width: 100%;
-  height: 38px;
-  flex-shrink: 0;
-}
-.rasgado--chico { height: 26px; }
-.rasgado path {
-  stroke: none;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.14));
-}
-
-.rasgado--crema-verde          { background: var(--crema); }
-.rasgado--crema-verde path     { fill: var(--verde); }
-.rasgado--verde-crema          { background: var(--verde); }
-.rasgado--verde-crema path     { fill: var(--crema); }
-.rasgado--crema-terracota      { background: var(--crema); }
-.rasgado--crema-terracota path { fill: var(--terracota); }
-.rasgado--terracota-verdehondo      { background: var(--terracota); }
-.rasgado--terracota-verdehondo path { fill: var(--verde-hondo); }
-.rasgado--terracota-cremaalta      { background: var(--terracota); }
-.rasgado--terracota-cremaalta path { fill: var(--crema-alta); }
-
 /* Textura de grano de papel, superpuesta a todo el sitio */
 .grano {
   position: fixed;
@@ -196,14 +172,6 @@ button {
 .servicio-card:nth-child(3) .flourish-oro { transform: rotate(12deg); }
 .testimonio:nth-child(2) .flourish-oro { transform: rotate(20deg); }
 .testimonio:nth-child(3) .flourish-oro { transform: rotate(-18deg); }
-
-.nota-ejemplo {
-  font-size: 0.78rem;
-  color: var(--tinta-suave);
-  font-style: italic;
-  margin-top: 14px;
-}
-.nota-ejemplo--clara { color: rgba(244,234,217,0.75); }
 
 /* ============ Nav ============ */
 .nav {
@@ -380,8 +348,7 @@ button {
 }
 
 .hero__servicios > h2,
-.hero__servicios > .adorno-oro,
-.hero__servicios > .nota-ejemplo {
+.hero__servicios > .adorno-oro {
   padding-left: 20px;
   padding-right: 20px;
   flex: 0 0 auto;
@@ -392,7 +359,6 @@ button {
 }
 
 .hero__servicios .adorno-oro { margin: 4px 0 0; }
-.hero__servicios .nota-ejemplo { color: rgba(223,233,224,0.65); margin-top: 6px; font-size: 0.68rem; }
 
 .carrusel--servicios { padding-top: 8px; }
 
@@ -659,16 +625,31 @@ button {
   margin-top: 24px;
 }
 
+/* Textura de papel viejo tipo cartel "se busca": base envejecida + manchas + grano fino */
 .testimonio {
   position: relative;
-  background: var(--crema-alta);
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgba(120, 88, 40, 0.16), transparent 55%),
+    radial-gradient(100% 90% at 90% 85%, rgba(90, 62, 28, 0.18), transparent 60%),
+    radial-gradient(140% 120% at 50% 50%, transparent 60%, rgba(60, 42, 20, 0.16) 100%),
+    var(--crema-alta);
   color: var(--tinta);
   padding: 0;
   margin: 0;
   overflow: hidden;
   border-radius: 4px;
 }
-.testimonio__cuerpo { padding: 18px 20px 20px; position: relative; }
+.testimonio::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.36 0 0 0 0 0.29 0 0 0 0 0.16 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.testimonio__cuerpo { padding: 18px 20px 20px; position: relative; z-index: 1; }
 
 .testimonio-esquina {
   position: absolute;
@@ -778,13 +759,6 @@ button {
   flex-direction: column;
   gap: 4px;
 }
-.pie__nota {
-  margin-top: 10px;
-  font-size: 0.72rem;
-  color: rgba(223,233,224,0.45);
-  font-style: italic;
-}
-
 /* ============ Carrito flotante ============ */
 .carrito {
   position: fixed;
@@ -879,7 +853,7 @@ button {
   .hero__intro h1 { font-size: clamp(2rem, 5.5vw, 2.7rem); }
   .hero__intro .hero__desc { display: block; overflow: visible; }
   .hero__productos, .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
-  .hero__servicios > h2, .hero__servicios > .adorno-oro, .hero__servicios > .nota-ejemplo { padding-left: 32px; padding-right: 32px; }
+  .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 32px; padding-right: 32px; }
   .productos__header { padding-left: 32px; padding-right: 32px; }
   .carrusel { padding-left: 32px; padding-right: 32px; }
 
@@ -901,7 +875,7 @@ button {
   .hero__intro { max-width: none; padding: 34px 60px 16px; }
   .hero__intro > h1, .hero__intro > .hero__rol, .hero__intro > .hero__desc { max-width: 640px; }
   .hero__productos, .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
-  .hero__servicios > h2, .hero__servicios > .adorno-oro, .hero__servicios > .nota-ejemplo { padding-left: 60px; padding-right: 60px; }
+  .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 60px; padding-right: 60px; }
   .productos__header { padding-left: 60px; padding-right: 60px; }
 
   .carrusel { padding-left: 60px; padding-right: 60px; }
