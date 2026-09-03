@@ -236,16 +236,17 @@ button {
 /* ============ Hero ============ */
 /* El bloque completo (intro + servicios + productos) ocupa la primera pantalla;
    recién al hacer scroll aparecen testimonios y contacto.
-   svh (no dvh) tiene que ser la última declaración: dvh se redimensiona en
-   vivo mientras el navegador esconde/muestra su barra durante el scroll
-   (eso causaba el salto), mientras que svh asume la barra siempre visible
-   -el alto mínimo garantizado- y nunca deja que la sección de abajo asome. */
+   svh (no dvh) va antes que nada porque asume la barra del navegador
+   siempre visible -el alto mínimo garantizado- sin saltos durante el
+   scroll. --vh-real (medido por JS una sola vez al cargar, ver script.js)
+   gana al final porque cubre navegadores donde dvh/svh no se soportan
+   bien y caen al 100vh viejo, que deja más alto de lo visible real. */
 .hero {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - var(--nav-h) - 8px);
-  min-height: calc(100dvh - var(--nav-h) - 8px);
   min-height: calc(100svh - var(--nav-h) - 8px);
+  min-height: calc(var(--vh-real, 100svh) - var(--nav-h) - 8px);
 }
 
 .hero__intro {
