@@ -236,17 +236,18 @@ button {
 /* ============ Hero ============ */
 /* El bloque completo (intro + servicios + productos) ocupa la primera pantalla;
    recién al hacer scroll aparecen testimonios y contacto.
-   svh (no dvh) va antes que nada porque asume la barra del navegador
-   siempre visible -el alto mínimo garantizado- sin saltos durante el
-   scroll. --vh-real (medido por JS una sola vez al cargar, ver script.js)
-   gana al final porque cubre navegadores donde dvh/svh no se soportan
-   bien y caen al 100vh viejo, que deja más alto de lo visible real. */
+   Es "height" (no "min-height") + overflow:hidden a propósito: así, sin
+   importar qué esté haciendo mal el cálculo en un dispositivo puntual
+   (fuente del sistema más grande, barra de navegador, lo que sea), es
+   IMPOSIBLE que la sección de abajo se vea. En el peor caso se recorta
+   un poco el contenido interno, nunca asoma un color que no corresponde. */
 .hero {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--nav-h) - 8px);
-  min-height: calc(100svh - var(--nav-h) - 8px);
-  min-height: calc(var(--vh-real, 100svh) - var(--nav-h) - 8px);
+  overflow: hidden;
+  height: calc(100vh - var(--nav-h));
+  height: calc(100svh - var(--nav-h));
+  height: calc(var(--vh-real, 100svh) - var(--nav-h));
 }
 
 .hero__intro {
