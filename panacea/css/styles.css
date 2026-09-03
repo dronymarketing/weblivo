@@ -317,16 +317,18 @@ button {
   flex-direction: column;
 }
 
-.hero__servicios > h2 {
-  padding-left: 20px;
-  padding-right: 20px;
+.servicios__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 8px;
   flex: 0 0 auto;
-  align-self: flex-start;
 }
 
 .hero__servicios h2 {
   font-size: clamp(1rem, 4.4vw, 1.35rem);
-  margin-bottom: 10px;
 }
 
 .carrusel--servicios { padding-top: 8px; }
@@ -435,6 +437,7 @@ button {
   white-space: nowrap;
   margin-top: 4px;
 }
+.servicios__header .productos__hint { color: rgba(223, 233, 224, 0.75); }
 
 .carrusel {
   display: flex;
@@ -913,7 +916,7 @@ button {
   .hero__intro h1 { font-size: clamp(2rem, 5.5vw, 2.7rem); }
   .hero__intro .hero__desc { display: block; overflow: visible; }
   .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
-  .hero__servicios > h2 { padding-left: 32px; padding-right: 32px; }
+  .servicios__header { padding-left: 32px; padding-right: 32px; }
   .productos__header { padding-left: 32px; padding-right: 32px; }
   .carrusel { padding-left: 32px; padding-right: 32px; scroll-padding-left: 32px; scroll-padding-right: 32px; }
 
@@ -942,7 +945,7 @@ button {
   .hero__intro { max-width: none; padding: 34px 60px 16px; }
   .hero__intro > h1, .hero__intro > .hero__rol, .hero__intro > .hero__desc { max-width: 640px; }
   .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
-  .hero__servicios > h2 { padding-left: 60px; padding-right: 60px; }
+  .servicios__header { padding-left: 60px; padding-right: 60px; }
   .productos__header { padding-left: 60px; padding-right: 60px; }
 
   .carrusel { padding-left: 60px; padding-right: 60px; scroll-padding-left: 60px; scroll-padding-right: 60px; }
