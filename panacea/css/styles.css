@@ -107,9 +107,6 @@ button {
 }
 
 /* Viñeta suave en los bordes de cada bloque de sección */
-.hero__intro,
-.hero__servicios,
-.hero__productos,
 .testimonios,
 .ubicacion {
   background-image: radial-gradient(130% 100% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.14) 100%);
