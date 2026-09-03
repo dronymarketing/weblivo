@@ -437,7 +437,7 @@ button {
   white-space: nowrap;
   margin-top: 4px;
 }
-.servicios__header .productos__hint { color: rgba(223, 233, 224, 0.75); }
+.servicios__header .productos__hint { color: var(--crema); }
 
 .carrusel {
   display: flex;
