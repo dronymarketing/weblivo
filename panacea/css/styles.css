@@ -186,7 +186,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
+  padding: 12px 20px;
   max-width: 1180px;
   margin: 0 auto;
 }
@@ -488,9 +488,12 @@ button {
 
 .carrusel {
   display: flex;
+  width: 100%;
   gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-padding-left: 20px;
+  scroll-padding-right: 20px;
   padding: 4px 20px 10px;
   flex: 1;
   min-height: 180px;
@@ -872,10 +875,10 @@ button {
   .hero__intro { padding: 26px 32px 14px; max-width: 720px; }
   .hero__intro h1 { font-size: clamp(2rem, 5.5vw, 2.7rem); }
   .hero__intro .hero__desc { display: block; overflow: visible; }
-  .hero__productos, .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
+  .testimonios, .ubicacion { padding-left: 32px; padding-right: 32px; }
   .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 32px; padding-right: 32px; }
   .productos__header { padding-left: 32px; padding-right: 32px; }
-  .carrusel { padding-left: 32px; padding-right: 32px; }
+  .carrusel { padding-left: 32px; padding-right: 32px; scroll-padding-left: 32px; scroll-padding-right: 32px; }
 
   .tarjeta, .servicio-card { width: clamp(200px, 27vw, 300px); }
 
@@ -890,14 +893,17 @@ button {
 
   .nav__inner, .hero__servicios > *, .hero__productos > *, .testimonios > *, .ubicacion__caja {
     max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
   }
+  .nav__inner { padding-left: 60px; padding-right: 60px; }
   .hero__intro { max-width: none; padding: 34px 60px 16px; }
   .hero__intro > h1, .hero__intro > .hero__rol, .hero__intro > .hero__desc { max-width: 640px; }
-  .hero__productos, .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
+  .testimonios, .ubicacion { padding-left: 60px; padding-right: 60px; }
   .hero__servicios > h2, .hero__servicios > .adorno-oro { padding-left: 60px; padding-right: 60px; }
   .productos__header { padding-left: 60px; padding-right: 60px; }
 
-  .carrusel { padding-left: 60px; padding-right: 60px; }
+  .carrusel { padding-left: 60px; padding-right: 60px; scroll-padding-left: 60px; scroll-padding-right: 60px; }
 
   .tarjeta, .servicio-card { width: clamp(220px, 19.5vw, 300px); }
 
