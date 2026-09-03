@@ -4,6 +4,24 @@
   var NUMERO_WHATSAPP = "59898611582";
   var CLAVE_STORAGE = "panacea-carrito";
 
+  /* ---------- Alto real del nav (para que el hero de pantalla completa
+     se ajuste exacto a cada dispositivo, sin valores fijos adivinados) ---------- */
+  var navEl = document.querySelector(".nav");
+  function medirAltoNav() {
+    if (navEl) {
+      document.documentElement.style.setProperty("--nav-h", navEl.offsetHeight + "px");
+    }
+  }
+  medirAltoNav();
+  window.addEventListener("resize", medirAltoNav);
+  window.addEventListener("orientationchange", medirAltoNav);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", medirAltoNav);
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(medirAltoNav);
+  }
+
   /* ---------- Menú móvil ---------- */
   var btnMenu = document.getElementById("btn-menu");
   var menu = document.getElementById("menu-movil");
