@@ -4,27 +4,29 @@
   var NUMERO_WHATSAPP = "59898611582";
   var CLAVE_STORAGE = "panacea-carrito";
 
-  /* ---------- Alto real de pantalla y del nav (para que el hero de
-     pantalla completa se ajuste exacto a cada dispositivo). En Chrome
-     Android, 100vh/100svh no siempre coincide con el alto visible real
-     porque la barra de direcciones se esconde y muestra, así que se
-     mide con JS en vez de confiar solo en la unidad CSS. ---------- */
+  /* ---------- Alto real del nav (para que el hero de pantalla completa
+     se ajuste exacto a cada dispositivo). El alto de pantalla lo maneja
+     100dvh en el CSS; acá solo medimos el nav, y solo volvemos a medir
+     ante cambios reales de layout (ancho, rotación, fuente cargada) —
+     nunca en el resize que dispara el navegador al esconder/mostrar la
+     barra de direcciones durante el scroll, para no generar saltos. ---------- */
   var navEl = document.querySelector(".nav");
-  function medirAlto() {
-    var alto = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-    document.documentElement.style.setProperty("--vh-real", alto + "px");
+  var anchoAnterior = window.innerWidth;
+  function medirAltoNav() {
     if (navEl) {
       document.documentElement.style.setProperty("--nav-h", navEl.offsetHeight + "px");
     }
   }
-  medirAlto();
-  window.addEventListener("resize", medirAlto);
-  window.addEventListener("orientationchange", medirAlto);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", medirAlto);
-  }
+  medirAltoNav();
+  window.addEventListener("resize", function () {
+    if (window.innerWidth !== anchoAnterior) {
+      anchoAnterior = window.innerWidth;
+      medirAltoNav();
+    }
+  });
+  window.addEventListener("orientationchange", medirAltoNav);
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(medirAlto);
+    document.fonts.ready.then(medirAltoNav);
   }
 
   /* ---------- Menú móvil ---------- */
