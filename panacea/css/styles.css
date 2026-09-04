@@ -378,6 +378,7 @@ button {
   font-family: var(--fuente-display);
   font-size: 0.92rem;
   line-height: 1.16;
+  color: var(--crema);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
