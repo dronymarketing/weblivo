@@ -147,8 +147,15 @@ Replicando el nav, el menú, el sprite y el pie del `index.html`:
 4. `nosotros.html` — historia desde 1992, equipo, cámaras
 5. `contacto.html` — formulario, mapa, las tres oficinas
 6. `propiedad.html` — ficha con galería, datos y el botón **Agendar visita**
+7. `area-clientes.html` — pantalla de muestra, sin backend: login + beneficios de la cuenta
+8. `favoritos.html` — pantalla de muestra, sin backend: grilla de propiedades guardadas
 
 En las internas el hero es más bajo y el nav puede arrancar directamente en `.es-solido`.
+
+Los íconos de corazón (favoritos) y usuario (área clientes) del nav ya apuntan
+a `favoritos.html` y `area-clientes.html`. Ambos formularios se resuelven con
+la misma clase genérica `.mock-form` de `js/main.js`: al enviar, esconden el
+`<form>` y muestran el `.form-ok` que le sigue en el HTML — no hay backend.
 
 ---
 
@@ -156,5 +163,4 @@ En las internas el hero es más bajo y el nav puede arrancar directamente en `.e
 
 - **Las URLs de las fotos no están verificadas.** El entorno donde se construyó no tenía salida a Unsplash. Cada `<img>` lleva `data-fallback` y su contenedor `data-rotulo`: si una no carga, queda un bloque con degradado azul y el nombre de la zona en vez de un hueco roto. Revisar al abrir y reemplazar las que fallen
 - **El buscador ocupa del 67% al 87% del alto en móvil**, no exactamente el último cuarto. Con tres filas de campos no da para menos sin recortar texto. Si se quiere que entre justo, hay que sacar un campo de la vista principal
-- Área Clientes y Favoritos son botones sin destino todavía
 - El buscador no filtra de verdad: el submit lleva a `venta.html`

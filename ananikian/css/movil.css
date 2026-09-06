@@ -575,6 +575,11 @@ body.menu-abierto .nav{
    Utilidad — grilla genérica de 1 a 3 columnas
    ============================================================ */
 .dos-columnas{ display:grid; gap:40px; }
+.lista-beneficios{ display:grid; gap:20px; margin-top:28px; }
+.beneficio{ display:flex; gap:14px; align-items:flex-start; }
+.beneficio .ico{ flex:none; width:24px; height:24px; color:var(--azul); margin-top:2px; }
+.beneficio h3{ font-size:17px; }
+.beneficio p{ color:var(--gris); margin:4px 0 0; }
 .columnas-3{ display:grid; gap:28px; margin-top:32px; }
 .columnas-3 h3{ margin-bottom:8px; }
 .columnas-3 p{ color:var(--gris); margin:0; }

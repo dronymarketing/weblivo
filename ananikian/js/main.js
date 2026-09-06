@@ -198,17 +198,18 @@
   }
 
   /* ----------------------------------------------------------
-     FORMULARIO DE CONTACTO — sin backend, confirmación en pantalla
+     FORMULARIOS SIN BACKEND — contacto, login de área clientes
+     Cualquier <form class="mock-form"> muestra el .form-ok que
+     le sigue en el DOM en lugar de enviar de verdad.
   ---------------------------------------------------------- */
-  var formContacto = document.getElementById('form-contacto');
-  if (formContacto) {
-    formContacto.addEventListener('submit', function (e) {
+  document.querySelectorAll('.mock-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var ok = document.getElementById('form-contacto-ok');
-      formContacto.hidden = true;
-      if (ok) ok.hidden = false;
+      var ok = form.nextElementSibling;
+      form.hidden = true;
+      if (ok && ok.classList.contains('form-ok')) ok.hidden = false;
     });
-  }
+  });
 
   /* ----------------------------------------------------------
      MODAL "AGENDAR VISITA" — arma el mensaje y abre WhatsApp
