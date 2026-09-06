@@ -212,13 +212,15 @@ body.menu-abierto .nav{
    ============================================================ */
 .hero{
   position:relative;
-  min-height:calc(100vh - var(--nav-alto));
-  min-height:calc(100svh - var(--nav-alto));
+  min-height:100vh;   /* respaldo */
+  min-height:100svh;  /* el que manda */
   display:flex; flex-direction:column; justify-content:flex-end;
   padding-bottom:0;
   background:var(--azul-900);
   isolation:isolate;
 }
+/* el nav es fixed y transparente sobre el hero: no resta su alto,
+   flota encima. Si restara, el hero quedaría "nav-alto" corto abajo. */
 .hero__fotos{ position:absolute; inset:0; z-index:-2; }
 .hero__foto{
   position:absolute; inset:0;
@@ -372,8 +374,8 @@ body.menu-abierto .nav{
    ============================================================ */
 .hero-interna{
   position:relative;
-  min-height:calc(100vh - var(--nav-alto));   /* respaldo */
-  min-height:calc(100svh - var(--nav-alto));  /* el que manda */
+  min-height:100vh;   /* respaldo */
+  min-height:100svh;  /* el que manda — el nav es fixed, no resta su alto */
   display:flex; flex-direction:column; justify-content:flex-end;
   padding-bottom:56px;
   background:var(--azul-900);
