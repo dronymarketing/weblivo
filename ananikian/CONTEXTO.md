@@ -98,7 +98,7 @@ Los seis campos del sitio viejo que no entran a la vista (moneda, precio mín/m�
 - Proyectos con nombre real: City Homes, Deco Maggiolo, Alzira, Green Concept Carrasco, Icon 26, Montevideo Harbour, Noir Vista, Nostrum Plaza 3, Nostrum Uruguay
 - Zonas: Pocitos, Punta Carretas, Carrasco, Centro, Cordón, Malvín
 
-Las propiedades, precios y fotos son **de muestra** y así está declarado en pantalla, en el bloque `.aviso` bajo el hero y en el pie.
+Las propiedades, precios y fotos son **de muestra**. Decisión de Santi (revisada tras ver el sitio publicado): un borrador no debe decirle al cliente "esto es falso" en pantalla — el bloque `.aviso` bajo el hero se sacó de todas las páginas. La aclaración de muestra queda solo en este documento, para uso interno de Livo.
 
 ---
 

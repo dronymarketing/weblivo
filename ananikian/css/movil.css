@@ -403,15 +403,6 @@ body.menu-abierto .nav{
 .migas-barra .migas [aria-current]{ color:var(--azul); }
 
 /* ============================================================
-   Aviso de borrador
-   ============================================================ */
-.aviso{
-  background:var(--azul-900); color:var(--blanco);
-  padding:14px var(--margen); font-size:13px; line-height:1.45;
-}
-.aviso strong{ color:#FFD9D6; }
-
-/* ============================================================
    Tarjetas de propiedad
    ============================================================ */
 .encabezado{ margin-bottom:28px; }
