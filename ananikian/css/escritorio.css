@@ -48,11 +48,10 @@
   body.menu-abierto .nav{ opacity:1; pointer-events:auto; }
 
   /* ---------- Hero interna ---------- */
-  .hero-interna{ padding-top:calc(var(--nav-alto) + 90px); padding-bottom:56px; min-height:360px; }
-  .hero-interna--busc{ padding-bottom:0; min-height:440px; }
+  .hero-interna__cuerpo{ padding-top:calc(var(--nav-alto) + 22vh); }
   .hero-interna__cuerpo,.hero-interna__pie{ max-width:var(--contenedor); margin-inline:auto; width:100%; }
   .hero-interna__cuerpo h1{ font-size:56px; }
-  .hero-interna--busc .hero-interna__pie{ padding:28px var(--margen) 44px; }
+  .hero-interna--busc .hero-interna__pie{ padding:28px var(--margen) 64px; }
   .migas-barra{ padding-top:calc(var(--nav-alto) + 20px); padding-bottom:20px; }
 
   /* ---------- Hero ---------- */

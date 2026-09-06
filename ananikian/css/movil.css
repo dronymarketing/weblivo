@@ -364,32 +364,37 @@ body.menu-abierto .nav{
 }
 
 /* ============================================================
-   HERO INTERNA — banner corto de las páginas internas
+   HERO INTERNA — a pantalla completa, igual que el .hero del inicio
    A propósito SIN la clase .hero: main.js no encuentra `.hero`
    y el nav arranca directo en es-solido (así lo pidió Santi).
+   Innegociable: min-height (nunca height, nunca dvh), sin overflow:hidden,
+   con su propio scroll cue real.
    ============================================================ */
 .hero-interna{
   position:relative;
-  padding-top:calc(var(--nav-alto) + 64px);
-  padding-bottom:40px;
+  min-height:calc(100vh - var(--nav-alto));   /* respaldo */
+  min-height:calc(100svh - var(--nav-alto));  /* el que manda */
   display:flex; flex-direction:column; justify-content:flex-end;
-  min-height:280px;
+  padding-bottom:56px;
   background:var(--azul-900);
   isolation:isolate;
-  overflow:hidden;
 }
-.hero-interna--busc{ padding-bottom:0; min-height:460px; }
 .hero-interna__foto{ position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center; }
 .hero-interna__foto img{ width:100%; height:100%; object-fit:cover; }
 .hero-interna__velo{
   position:absolute; inset:0; z-index:-1;
   background:linear-gradient(180deg,rgba(15,20,34,.58) 0%,rgba(15,20,34,.32) 55%,rgba(15,20,34,.74) 100%);
 }
-.hero-interna__cuerpo{ padding:0 var(--margen); color:var(--blanco); }
+.hero-interna__cuerpo{
+  padding:0 var(--margen); margin-bottom:auto;
+  padding-top:calc(var(--nav-alto) + 26vh);
+  color:var(--blanco);
+}
 .hero-interna__cuerpo .antetitulo{ color:#FFD9D6; }
 .hero-interna__cuerpo h1{ font-size:36px; color:var(--blanco); text-shadow:0 2px 14px rgba(0,0,0,.35); }
 .hero-interna__cuerpo p{ max-width:var(--lectura); margin:10px 0 0; color:rgba(255,255,255,.9); }
-.hero-interna--busc .hero-interna__pie{ padding:24px var(--margen) 32px; }
+.hero-interna--busc{ padding-bottom:0; }
+.hero-interna--busc .hero-interna__pie{ padding:24px var(--margen) 40px; }
 
 /* migas de pan — sobre foto */
 .migas{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:14px; font-size:12px; color:rgba(255,255,255,.78); }
