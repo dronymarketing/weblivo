@@ -212,8 +212,9 @@ body.menu-abierto .nav{
    ============================================================ */
 .hero{
   position:relative;
-  min-height:100vh;   /* respaldo */
-  min-height:100svh;  /* el que manda */
+  min-height:100vh;                  /* respaldo */
+  min-height:100svh;                 /* mejor */
+  min-height:var(--vh100, 100svh);   /* alto real medido por JS, cubre el bug de Chrome Android */
   display:flex; flex-direction:column; justify-content:flex-end;
   padding-bottom:0;
   background:var(--azul-900);
@@ -374,8 +375,9 @@ body.menu-abierto .nav{
    ============================================================ */
 .hero-interna{
   position:relative;
-  min-height:100vh;   /* respaldo */
-  min-height:100svh;  /* el que manda — el nav es fixed, no resta su alto */
+  min-height:100vh;                  /* respaldo */
+  min-height:100svh;                 /* mejor — el nav es fixed, no resta su alto */
+  min-height:var(--vh100, 100svh);   /* alto real medido por JS, cubre el bug de Chrome Android */
   display:flex; flex-direction:column; justify-content:flex-end;
   padding-bottom:56px;
   background:var(--azul-900);

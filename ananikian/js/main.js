@@ -12,6 +12,19 @@
   var cerrarBtn= document.querySelector('.menu__cerrar');
 
   /* ----------------------------------------------------------
+     ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
+     100svh en el primer pintado (la barra de direcciones tarda
+     en asentarse). Se mide con innerHeight y se pisa por CSS
+     var(--vh100, 100svh): sigue siendo min-height, nunca height.
+  ---------------------------------------------------------- */
+  function fijarAltoReal() {
+    document.documentElement.style.setProperty('--vh100', window.innerHeight + 'px');
+  }
+  fijarAltoReal();
+  window.addEventListener('resize', fijarAltoReal);
+  window.addEventListener('orientationchange', fijarAltoReal);
+
+  /* ----------------------------------------------------------
      NAV — tres estados
      tope   : arriba del todo, transparente, logo blanco
      glass  : scrolleando todavía dentro del hero
