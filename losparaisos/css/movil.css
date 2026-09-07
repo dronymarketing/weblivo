@@ -143,35 +143,24 @@ button{ font:inherit; color:inherit; }
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
   -webkit-touch-callout:none;
 }
+/* un solo elemento, recortado con clip-path: path().
+   En reposo son 3 subtrazados rectangulares (las líneas del menú).
+   Activo, los mismos 3 subtrazados —con la misma cantidad de puntos,
+   para que interpolen suave— arman la silueta real de una llama,
+   partida en 3 franjas que encastran sin costuras (es un solo
+   recorte, no 3 elementos superpuestos). */
 .nav__hamburguesa-icono{
-  position:relative; width:22px; height:22px;
+  position:relative; width:24px; height:24px;
+  background:currentColor;
+  transition:clip-path 480ms var(--curva), background-color 700ms var(--curva);
+  clip-path:path("M12 7L20 7L20 9L4 9L4 7Z M20 13L20 14L20 15L4 15L4 14.5L4 13.5L4 13Z M20 19L20 20L20 21L4 21L4 20L4 19Z");
 }
 .nav__llama .nav__hamburguesa-icono{
-  animation:llama-flicker 2.4s ease-in-out .42s infinite;
+  background:var(--rosado);
+  clip-path:path("M11.9 3L13.7 7L15.4 9L10 9L9.5 7Z M15.4 9L18.9 15L18.8 16L5.1 16L5.6 12.5L11 12L10 9Z M18.8 16L17.6 19L14.4 21.5L9.5 21.5L6.3 19L5.1 16Z");
+  animation:llama-flicker 2.4s ease-in-out .5s infinite;
 }
-.nav__hamburguesa-barra{
-  position:absolute; left:50%; top:50%; background:currentColor;
-  transition:width 420ms var(--curva), height 420ms var(--curva),
-             border-radius 420ms var(--curva), transform 420ms var(--curva),
-             background-color 700ms var(--curva);
-}
-.nav__hamburguesa-barra--1{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%) translateY(-7px); }
-.nav__hamburguesa-barra--2{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%); }
-.nav__hamburguesa-barra--3{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%) translateY(7px); }
 
-.nav__llama .nav__hamburguesa-barra{ background:var(--rosado); }
-.nav__llama .nav__hamburguesa-barra--1{
-  width:8px; height:11px; border-radius:8% 60% 60% 60%;
-  transform:translate(-50%,-50%) translateY(-5px) rotate(-6deg);
-}
-.nav__llama .nav__hamburguesa-barra--2{
-  width:15px; height:14px; border-radius:50%;
-  transform:translate(-50%,-50%) translateY(0px);
-}
-.nav__llama .nav__hamburguesa-barra--3{
-  width:19px; height:11px; border-radius:50% 50% 50% 50% / 60% 60% 100% 100%;
-  transform:translate(-50%,-50%) translateY(4.5px);
-}
 @keyframes llama-flicker{
   0%,100%{ transform:scale(1) skewX(0deg); }
   25%    { transform:scale(1.05,.94) skewX(-3deg); }
