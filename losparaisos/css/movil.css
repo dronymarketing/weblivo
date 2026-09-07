@@ -133,20 +133,29 @@ button{ font:inherit; color:inherit; }
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
+/* botón dibujado con 3 barras CSS — nada de svg/img acá, para que
+   Android no lo confunda con una foto al mantenerlo presionado */
 .nav__hamburguesa{
-  width:44px; height:44px; display:grid; place-items:center;
+  width:44px; height:44px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
+  -webkit-touch-callout:none;
 }
-.nav__hamburguesa .ico{ width:24px; height:24px; }
-.nav__llama{
+.nav__hamburguesa span{
+  width:20px; height:2px; border-radius:1px;
+  background:currentColor;
+  transition:background-color 700ms var(--curva), transform 260ms var(--curva);
+}
+.nav__llama span{
+  background:var(--rosado);
   animation:llama-flicker 2.2s ease-in-out infinite;
-  transform-origin:50% 92%;
 }
+.nav__llama span:nth-child(1){ animation-delay:-.3s; }
+.nav__llama span:nth-child(3){ animation-delay:-.6s; }
 @keyframes llama-flicker{
-  0%,100%{ transform:scale(1) skewX(0deg); }
-  20%    { transform:scale(1.05,.96) skewX(-2deg); }
-  45%    { transform:scale(.95,1.05) skewX(2deg); }
-  70%    { transform:scale(1.03,.98) skewX(-1deg); }
+  0%,100%{ transform:scaleX(1); }
+  30%    { transform:scaleX(.72); }
+  60%    { transform:scaleX(1.15); }
 }
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */

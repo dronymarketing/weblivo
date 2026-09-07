@@ -75,7 +75,6 @@
   var iconoUso   = document.getElementById('hero-icono');
   var detalleEl  = document.getElementById('hero-detalle');
   var precioEl   = document.getElementById('hero-precio');
-  var hamIco     = document.getElementById('nav-hamburguesa-ico');
   var lentoMov   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var actual = 0, reloj = null;
 
@@ -94,7 +93,6 @@
 
     var esVioleta = foto.dataset.violeta === 'true';
     hero.classList.toggle('hero--violeta', esVioleta);
-    if (hamIco) hamIco.setAttribute('href', esVioleta ? '#i-flame' : '#i-menu');
     if (abrirBtn) abrirBtn.classList.toggle('nav__llama', esVioleta);
   }
 
