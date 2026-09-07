@@ -121,8 +121,8 @@ button{ font:inherit; color:inherit; }
   background:var(--verde-oscuro);
   border-bottom-color:rgba(255,255,255,.14);
 }
-.nav__logo{ display:block; height:26px; }
-.nav__logo img{ height:26px; width:auto; }
+.nav__logo{ display:block; height:34px; }
+.nav__logo img{ height:34px; width:auto; }
 
 .nav__enlaces{ display:none; }
 

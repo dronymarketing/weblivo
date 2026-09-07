@@ -16,7 +16,7 @@
   body{ font-size:17px; }
 
   /* ---------- Nav ---------- */
-  .nav__logo,.nav__logo img{ height:32px; }
+  .nav__logo,.nav__logo img{ height:44px; }
   .nav__enlaces{
     display:flex; align-items:center; gap:2px;
     margin-left:auto; margin-right:24px;
