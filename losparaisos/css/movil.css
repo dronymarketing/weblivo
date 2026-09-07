@@ -129,10 +129,10 @@ button{ font:inherit; color:inherit; }
 .nav__acciones{ display:flex; align-items:center; gap:8px; }
 .nav__wa{
   min-height:40px; padding:0 16px 0 12px; font-size:13px; gap:7px;
-  background:var(--whatsapp);
+  background:transparent; color:var(--blanco);
   border:1px solid rgba(255,255,255,.55);
 }
-.nav__wa:active{ background:#1FAD56; }
+.nav__wa:active{ background:rgba(255,255,255,.12); }
 .nav__wa .ico{ width:17px; height:17px; }
 .nav__hamburguesa{
   width:44px; height:44px; display:grid; place-items:center end;
