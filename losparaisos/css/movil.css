@@ -133,29 +133,41 @@ button{ font:inherit; color:inherit; }
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
-/* botón dibujado con 3 barras CSS — nada de svg/img acá, para que
-   Android no lo confunda con una foto al mantenerlo presionado */
+/* botón hamburguesa — barras CSS que se convierten en llama.
+   Las fotos de fondo ya bloquean el toque (pointer-events:none),
+   así que el svg de la llama acá no vuelve a disparar el menú de
+   "adjuntar imagen" de Android. */
 .nav__hamburguesa{
-  width:44px; height:44px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  position:relative;
+  width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
   -webkit-touch-callout:none;
 }
-.nav__hamburguesa span{
-  width:20px; height:2px; border-radius:1px;
-  background:currentColor;
-  transition:background-color 700ms var(--curva), transform 260ms var(--curva);
+.nav__hamburguesa-barras{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  transition:opacity 320ms var(--curva), transform 320ms var(--curva);
 }
-.nav__llama span{
-  background:var(--rosado);
-  animation:llama-flicker 2.2s ease-in-out infinite;
+.nav__hamburguesa-barras span{
+  width:20px; height:2px; border-radius:1px; background:currentColor;
 }
-.nav__llama span:nth-child(1){ animation-delay:-.3s; }
-.nav__llama span:nth-child(3){ animation-delay:-.6s; }
+.nav__hamburguesa-llama{
+  position:absolute; width:22px; height:22px;
+  opacity:0; transform:scale(.4) rotate(-35deg);
+  transition:opacity 320ms var(--curva), transform 320ms var(--curva);
+  color:var(--rosado);
+}
+.nav__llama .nav__hamburguesa-barras{
+  opacity:0; transform:scale(.4) rotate(35deg);
+}
+.nav__llama .nav__hamburguesa-llama{
+  opacity:1; transform:scale(1) rotate(0deg);
+  animation:llama-flicker 2.2s ease-in-out .32s infinite;
+}
 @keyframes llama-flicker{
-  0%,100%{ transform:scaleX(1); }
-  30%    { transform:scaleX(.72); }
-  60%    { transform:scaleX(1.15); }
+  0%,100%{ transform:scale(1) rotate(0deg); }
+  25%    { transform:scale(1.08,.92) rotate(-4deg); }
+  55%    { transform:scale(.9,1.1) rotate(4deg); }
+  80%    { transform:scale(1.04,.96) rotate(-2deg); }
 }
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */
