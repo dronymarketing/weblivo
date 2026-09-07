@@ -17,6 +17,11 @@
   --borde-claro:  1px solid rgba(255,255,255,.20);
   --borde-verde:  1px solid rgba(0,87,19,.20);
 
+  /* Acentos puntuales fuera de la paleta base, a pedido */
+  --whatsapp:     #25D366;  /* verde oficial de WhatsApp, solo en los botones de reservar del nav */
+  --violeta:      #4A1F6B;  /* tiñe el hero cuando la promo activa es "Kit para dos" */
+  --rosado:       #C23E7A;
+
   /* Medidas móvil */
   --nav-alto:     72px;
   --margen:       22px;
@@ -124,13 +129,25 @@ button{ font:inherit; color:inherit; }
 .nav__acciones{ display:flex; align-items:center; gap:8px; }
 .nav__wa{
   min-height:40px; padding:0 16px 0 12px; font-size:13px; gap:7px;
+  background:var(--whatsapp);
 }
+.nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
 .nav__hamburguesa{
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
 }
 .nav__hamburguesa .ico{ width:24px; height:24px; }
+.nav__llama{
+  animation:llama-flicker 2.2s ease-in-out infinite;
+  transform-origin:50% 92%;
+}
+@keyframes llama-flicker{
+  0%,100%{ transform:scale(1) skewX(0deg); }
+  20%    { transform:scale(1.05,.96) skewX(-2deg); }
+  45%    { transform:scale(.95,1.05) skewX(2deg); }
+  70%    { transform:scale(1.03,.98) skewX(-1deg); }
+}
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */
 .menu__velo{
@@ -166,7 +183,7 @@ button{ font:inherit; color:inherit; }
   font-family:"Catavalo",serif; font-size:22px; color:var(--blanco);
 }
 .menu__pie{ margin-top:auto; padding-top:24px; }
-.menu__wa{ margin-bottom:16px; }
+.menu__wa{ margin-bottom:16px; background:var(--whatsapp); color:var(--blanco); }
 .menu__datos{ font-size:13px; color:rgba(255,255,255,.78); line-height:1.7; }
 .menu__redes{ display:flex; gap:8px; margin-top:16px; }
 .menu__redes a{
@@ -196,13 +213,25 @@ button{ font:inherit; color:inherit; }
     rgba(0,20,6,.55) 75%,
     rgba(0,20,6,.86) 100%);
 }
+/* tiñe el hero de violeta/rosado mientras la promo activa es "Kit para dos" */
+.hero__velo--violeta{
+  opacity:0;
+  transition:opacity 900ms var(--curva);
+  background:linear-gradient(165deg,
+    rgba(74,31,107,.70) 0%,
+    rgba(194,62,122,.30) 45%,
+    rgba(74,31,107,.60) 78%,
+    rgba(30,10,45,.88) 100%);
+}
+.hero.hero--violeta .hero__velo--violeta{ opacity:1; }
 .hero__cuerpo{
   padding:0 var(--margen);
   margin-bottom:auto;
   padding-top:calc(var(--nav-alto) + 20vh);
   color:var(--blanco);
 }
-.hero__cuerpo .antetitulo{ color:var(--verde); }
+.hero__cuerpo .antetitulo{ color:var(--verde); transition:color 700ms var(--curva); }
+.hero.hero--violeta .hero__cuerpo .antetitulo{ color:var(--rosado); }
 .hero__cuerpo h1{
   font-size:42px; color:var(--blanco);
   text-shadow:0 2px 16px rgba(0,0,0,.4);
@@ -214,9 +243,58 @@ button{ font:inherit; color:inherit; }
 }
 .hero__pie{
   padding:0 var(--margen) 40px;
-  display:flex; flex-direction:column; gap:12px;
+  display:flex; flex-direction:column; gap:14px;
 }
+.hero__botones{ display:flex; flex-direction:column; gap:12px; }
 .hero__pie .btn{ font-size:16px; min-height:56px; }
+
+/* ---------- Rotador de promos del hero — reborde animado ---------- */
+.hero__promo{
+  --anillo: var(--verde);
+  position:relative; isolation:isolate;
+  border-radius:var(--radio);
+  overflow:hidden;
+}
+.hero__promo::before{
+  content:""; position:absolute; z-index:0;
+  inset:-60%;
+  background:conic-gradient(from 0deg,
+    transparent 0deg, var(--anillo) 45deg, transparent 130deg,
+    var(--anillo) 220deg, transparent 300deg, var(--anillo) 360deg);
+  animation:anillo-gira 5s linear infinite;
+  transition:background 700ms var(--curva);
+}
+.hero.hero--violeta .hero__promo{ --anillo: var(--rosado); }
+@keyframes anillo-gira{ to{ transform:rotate(360deg); } }
+.hero__promo-cuerpo{
+  position:relative; z-index:1; margin:2px;
+  border-radius:calc(var(--radio) - 2px);
+  background:rgba(0,16,5,.62);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  backdrop-filter:blur(16px) saturate(160%);
+  padding:14px 18px;
+  color:var(--blanco);
+}
+.hero__promo-etiqueta{
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--verde);
+  transition:opacity 260ms var(--curva);
+}
+.hero.hero--violeta .hero__promo-etiqueta{ color:var(--rosado); }
+.hero__promo-ico{ width:16px; height:16px; }
+.hero__promo-detalle{
+  font-size:13.5px; color:rgba(255,255,255,.9);
+  margin:6px 0 8px; text-shadow:none;
+  transition:opacity 260ms var(--curva);
+}
+.hero__promo-precio{
+  font-family:"Catavalo",serif; font-size:24px; color:var(--blanco);
+  transition:opacity 260ms var(--curva);
+}
+.hero__promo.cambia .hero__promo-etiqueta,
+.hero__promo.cambia .hero__promo-detalle,
+.hero__promo.cambia .hero__promo-precio{ opacity:0; }
 
 .cue{
   position:absolute; left:50%; bottom:14px; transform:translateX(-50%);

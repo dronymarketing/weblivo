@@ -63,7 +63,7 @@
       Reservar
     </a>
     <button class="nav__hamburguesa" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
-      <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
+      <svg class="ico nav__llama" aria-hidden="true"><use href="#i-flame"/></svg>
     </button>
   </div>
 </header>
@@ -111,6 +111,7 @@
     <img src="img/hero-habitacion.jpg" alt="Habitación temática del Hotel Los Paraísos, con mural de playa tropical" data-fallback>
   </div>
   <div class="hero__velo" aria-hidden="true"></div>
+  <div class="hero__velo hero__velo--violeta" aria-hidden="true"></div>
 
   <div class="hero__cuerpo">
     <p class="antetitulo">Hotel Los Paraísos · Montevideo</p>
@@ -119,11 +120,24 @@
   </div>
 
   <div class="hero__pie">
-    <a class="btn btn--verde" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
-      <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
-      Reservar por WhatsApp
-    </a>
-    <a class="btn btn--linea-blanca" href="#tarifas">Ver tarifas</a>
+    <div class="hero__promo" id="hero-promo">
+      <div class="hero__promo-cuerpo">
+        <span class="hero__promo-etiqueta">
+          <svg class="ico hero__promo-ico" aria-hidden="true"><use href="#i-percent"/></svg>
+          <span class="hero__promo-nombre">Promo 3x1</span>
+        </span>
+        <p class="hero__promo-detalle">3 horas por el precio de 1 · de 12:00 a 21:00hs</p>
+        <span class="hero__promo-precio">$1590</span>
+      </div>
+    </div>
+
+    <div class="hero__botones">
+      <a class="btn btn--verde" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+        <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+        Reservar por WhatsApp
+      </a>
+      <a class="btn btn--linea-blanca" href="#tarifas">Ver tarifas</a>
+    </div>
   </div>
 
   <a class="cue" href="#tarifas" aria-label="Bajar a Tarifas">

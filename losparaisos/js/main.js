@@ -63,6 +63,51 @@
   });
 
   /* ----------------------------------------------------------
+     ROTADOR DE PROMOS DEL HERO
+     Arranca en el 3x1 (la más pedida) y va rotando. Con el
+     "Kit para dos" el hero se tiñe de violeta/rosado.
+  ---------------------------------------------------------- */
+  var hero      = document.querySelector('.hero');
+  var heroPromo = document.getElementById('hero-promo');
+  var lentoMov  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var promos = [
+    { icono:'i-percent', etiqueta:'Promo 3x1',    detalle:'3 horas por el precio de 1 · de 12:00 a 21:00hs',           precio:'$1590', violeta:false },
+    { icono:'i-gift',    etiqueta:'Frigobar Free', detalle:'3 horas + todo el frigobar, en habitación 27',              precio:'$2400', violeta:false },
+    { icono:'i-flame',   etiqueta:'Kit para dos',  detalle:'3 horas + vibrador, disfraz, gel íntimo y anillo vibrador', precio:'$2400', violeta:true  }
+  ];
+
+  if (hero && heroPromo) {
+    var usoIco    = heroPromo.querySelector('.hero__promo-ico use');
+    var nombreEl  = heroPromo.querySelector('.hero__promo-nombre');
+    var detalleEl = heroPromo.querySelector('.hero__promo-detalle');
+    var precioEl  = heroPromo.querySelector('.hero__promo-precio');
+    var actual    = 0;
+
+    function pintarPromo(p) {
+      if (usoIco)    usoIco.setAttribute('href', '#' + p.icono);
+      if (nombreEl)  nombreEl.textContent = p.etiqueta;
+      if (detalleEl) detalleEl.textContent = p.detalle;
+      if (precioEl)  precioEl.textContent = p.precio;
+      hero.classList.toggle('hero--violeta', !!p.violeta);
+    }
+
+    function irAPromo(i) {
+      actual = (i + promos.length) % promos.length;
+      heroPromo.classList.add('cambia');
+      setTimeout(function () {
+        pintarPromo(promos[actual]);
+        heroPromo.classList.remove('cambia');
+      }, 260);
+    }
+
+    pintarPromo(promos[0]);
+    if (!lentoMov && promos.length > 1) {
+      setInterval(function () { irAPromo(actual + 1); }, 4800);
+    }
+  }
+
+  /* ----------------------------------------------------------
      APARICIONES AL SCROLL
      El opacity 0 lo pone acá: si este archivo no carga, se ve todo.
   ---------------------------------------------------------- */
