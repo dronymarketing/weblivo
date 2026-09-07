@@ -1,0 +1,403 @@
+/* ============================================================
+   HOTEL LOS PARAÍSOS — BORRADOR
+   movil.css · base 375px · SIN media queries
+   Colores en tokens-proyecto.css (manda sobre el registro).
+   ============================================================ */
+
+:root{
+  /* Neutros derivados de la paleta (solo verde-oscuro/verde/blanco/negro) */
+  --tinta:        var(--negro);
+  --tinta-suave:  rgba(0,0,0,.64);
+  --tinta-tenue:  rgba(0,0,0,.46);
+  --fondo:        var(--blanco);
+  --fondo-alt:    #F5F7F5;
+
+  /* Firma Livo: reborde 1px en currentColor 12–18%, reemplaza a la sombra */
+  --borde:        1px solid rgba(0,0,0,.14);
+  --borde-claro:  1px solid rgba(255,255,255,.20);
+  --borde-verde:  1px solid rgba(0,87,19,.20);
+
+  /* Medidas móvil */
+  --nav-alto:     72px;
+  --margen:       22px;
+  --seccion:      64px;
+  --contenedor:   1180px;
+  --lectura:      480px;
+  --radio:        10px;
+  --radio-chico:  6px;
+  --radio-pill:   999px;
+
+  /* Movimiento — sutil */
+  --curva:        cubic-bezier(.16, 1, .3, 1);
+  --dur:          800ms;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--fondo);
+  color:var(--tinta);
+  font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+h1,h2,h3{
+  font-family:"Catavalo","Georgia",serif;
+  font-weight:600;
+  line-height:1.08;
+  margin:0;
+  letter-spacing:-.01em;
+}
+h1{ font-size:38px; }
+h2{ font-size:30px; }
+h3{ font-size:20px; }
+p{ margin:0 0 1em; }
+a{ color:inherit; text-decoration:none; }
+img{ max-width:100%; display:block; }
+ul{ margin:0; padding:0; list-style:none; }
+button{ font:inherit; color:inherit; }
+
+.ico{ width:20px; height:20px; flex:none; }
+.antetitulo{
+  display:flex; align-items:center; gap:8px;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  font-weight:700; color:var(--verde-oscuro); margin:0 0 12px;
+}
+.contenedor{
+  width:100%; max-width:var(--contenedor);
+  margin-inline:auto; padding-inline:var(--margen);
+}
+.seccion{ padding-block:var(--seccion); }
+.seccion--alt{ background:var(--fondo-alt); }
+.seccion--oscura{ background:var(--verde-oscuro); color:var(--blanco); }
+.seccion--oscura h2{ color:var(--blanco); }
+.seccion__encabezado{ margin-bottom:32px; max-width:var(--lectura); }
+.seccion__encabezado p{ color:var(--tinta-suave); margin-top:12px; }
+.seccion--oscura .seccion__encabezado p{ color:rgba(255,255,255,.82); }
+[id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
+
+/* ---------- Botones ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  min-height:52px; padding:0 24px;
+  border-radius:var(--radio-pill); border:0;
+  font-size:15px; font-weight:700; letter-spacing:.01em;
+  cursor:pointer; text-align:center;
+  transition:background-color 220ms var(--curva), color 220ms var(--curva), border-color 220ms var(--curva);
+}
+.btn--verde{ background:var(--verde-oscuro); color:var(--blanco); }
+.btn--verde:active{ background:#003d0d; }
+.btn--linea{ background:transparent; color:var(--verde-oscuro); border:1px solid rgba(0,87,19,.35); }
+.btn--linea-blanca{ background:transparent; color:var(--blanco); border:1px solid rgba(255,255,255,.45); }
+.btn--claro{ background:var(--blanco); color:var(--verde-oscuro); }
+.btn--bloque{ display:flex; width:100%; }
+
+/* ============================================================
+   NAV — transparente sobre el hero, sólido (verde oscuro) al bajar
+   ============================================================ */
+.nav{
+  position:fixed; inset:0 0 auto 0; z-index:80;
+  height:var(--nav-alto);
+  display:flex; align-items:center; justify-content:space-between;
+  padding-inline:var(--margen);
+  transition:background-color 420ms var(--curva), border-color 420ms var(--curva);
+  border-bottom:1px solid transparent;
+}
+.nav.es-tope{ background:transparent; }
+.nav.es-solido{
+  background:var(--verde-oscuro);
+  border-bottom-color:rgba(255,255,255,.14);
+}
+.nav__logo{ display:block; height:26px; }
+.nav__logo img{ height:26px; width:auto; }
+
+.nav__enlaces{ display:none; }
+
+.nav__acciones{ display:flex; align-items:center; gap:8px; }
+.nav__wa{
+  min-height:40px; padding:0 16px 0 12px; font-size:13px; gap:7px;
+}
+.nav__wa .ico{ width:17px; height:17px; }
+.nav__hamburguesa{
+  width:44px; height:44px; display:grid; place-items:center;
+  background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
+}
+.nav__hamburguesa .ico{ width:24px; height:24px; }
+
+/* ---------- Menú — drawer lateral desde la derecha ---------- */
+.menu__velo{
+  position:fixed; inset:0; z-index:95;
+  background:rgba(0,0,0,.5);
+  opacity:0; pointer-events:none;
+  transition:opacity 420ms var(--curva);
+}
+.menu__velo.abierto{ opacity:1; pointer-events:auto; }
+
+.menu{
+  position:fixed; top:0; right:0; bottom:0; z-index:96;
+  width:min(340px, 86vw);
+  display:flex; flex-direction:column;
+  padding:24px var(--margen) 28px;
+  background:var(--verde-oscuro); color:var(--blanco);
+  transform:translateX(100%);
+  transition:transform 460ms var(--curva);
+  overflow-y:auto;
+  border-left:1px solid rgba(255,255,255,.12);
+}
+.menu.abierto{ transform:translateX(0); }
+.menu__cabecera{ display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.menu__logo{ height:24px; }
+.menu__logo img{ height:24px; width:auto; }
+.menu__cerrar{
+  width:40px; height:40px; display:grid; place-items:center;
+  background:none; border:0; cursor:pointer; color:var(--blanco); margin-right:-8px;
+}
+.menu__lista li + li{ border-top:1px solid rgba(255,255,255,.14); }
+.menu__lista a{
+  display:block; padding:15px 0;
+  font-family:"Catavalo",serif; font-size:22px; color:var(--blanco);
+}
+.menu__pie{ margin-top:auto; padding-top:24px; }
+.menu__wa{ margin-bottom:16px; }
+.menu__datos{ font-size:13px; color:rgba(255,255,255,.78); line-height:1.7; }
+.menu__redes{ display:flex; gap:8px; margin-top:16px; }
+.menu__redes a{
+  width:40px; height:40px; display:grid; place-items:center;
+  border:1px solid rgba(255,255,255,.22); border-radius:var(--radio-chico); color:var(--blanco);
+}
+
+/* ============================================================
+   HERO — pantalla completa, foto de habitación
+   ============================================================ */
+.hero{
+  position:relative;
+  min-height:100vh;
+  min-height:100svh;
+  min-height:var(--vh100, 100svh);
+  display:flex; flex-direction:column; justify-content:flex-end;
+  background:var(--verde-oscuro);
+  isolation:isolate;
+}
+.hero__foto{ position:absolute; inset:0; z-index:-2; }
+.hero__foto img{ width:100%; height:100%; object-fit:cover; }
+.hero__velo{
+  position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(180deg,
+    rgba(0,20,6,.62) 0%,
+    rgba(0,20,6,.22) 32%,
+    rgba(0,20,6,.55) 75%,
+    rgba(0,20,6,.86) 100%);
+}
+.hero__cuerpo{
+  padding:0 var(--margen);
+  margin-bottom:auto;
+  padding-top:calc(var(--nav-alto) + 20vh);
+  color:var(--blanco);
+}
+.hero__cuerpo .antetitulo{ color:var(--verde); }
+.hero__cuerpo h1{
+  font-size:42px; color:var(--blanco);
+  text-shadow:0 2px 16px rgba(0,0,0,.4);
+}
+.hero__cuerpo p{
+  max-width:var(--lectura); margin:14px 0 0;
+  font-size:15.5px; color:rgba(255,255,255,.92);
+  text-shadow:0 1px 8px rgba(0,0,0,.35);
+}
+.hero__pie{
+  padding:0 var(--margen) 40px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.hero__pie .btn{ font-size:16px; min-height:56px; }
+
+.cue{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+  z-index:5;
+  width:44px; height:44px; display:grid; place-items:center;
+  color:var(--blanco);
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.4));
+}
+.cue .ico{ width:22px; height:22px; animation:cue 2.4s ease-in-out infinite; }
+@keyframes cue{
+  0%,100%{ transform:translateY(0); opacity:.75; }
+  50%    { transform:translateY(5px); opacity:1; }
+}
+
+/* ============================================================
+   TARIFAS
+   ============================================================ */
+.tarifa-principal{
+  border:var(--borde-verde); border-radius:var(--radio);
+  padding:24px; margin-bottom:32px;
+  background:var(--fondo-alt);
+  display:flex; flex-direction:column; gap:6px;
+}
+.tarifa-principal__rotulo{
+  font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  font-weight:700; color:var(--tinta-suave);
+}
+.tarifa-principal__precio{
+  font-family:"Catavalo",serif; font-size:44px; color:var(--verde-oscuro); line-height:1;
+}
+.tarifa-principal__detalle{ font-size:14px; color:var(--tinta-suave); }
+
+.tarifas-grilla{ display:grid; gap:16px; }
+.tarifa{
+  border:var(--borde); border-radius:var(--radio);
+  padding:20px; background:var(--blanco);
+  display:flex; flex-direction:column; gap:10px;
+}
+.tarifa__cabecera{ display:flex; align-items:center; gap:10px; }
+.tarifa__cabecera .ico{ color:var(--verde-oscuro); }
+.tarifa__nombre{ font-weight:700; font-size:15px; }
+.tarifa__lista{ display:flex; flex-direction:column; gap:8px; }
+.tarifa__fila{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  padding-top:8px; border-top:var(--borde);
+}
+.tarifa__fila:first-child{ border-top:0; padding-top:0; }
+.tarifa__fila-rotulo{ font-size:13.5px; color:var(--tinta-suave); }
+.tarifa__fila-precio{ font-family:"Catavalo",serif; font-size:19px; color:var(--verde-oscuro); white-space:nowrap; }
+
+.tarifas-nota{
+  display:flex; align-items:flex-start; gap:10px;
+  margin-top:24px; padding:16px; border-radius:var(--radio);
+  background:var(--fondo-alt); font-size:13.5px; color:var(--tinta-suave);
+}
+.tarifas-nota .ico{ color:var(--verde-oscuro); margin-top:1px; }
+
+.medios-pago{ margin-top:32px; }
+.medios-pago__rotulo{
+  font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  font-weight:700; color:var(--tinta-suave); margin-bottom:14px;
+}
+.medios-pago img{ max-width:340px; }
+
+/* ============================================================
+   PROMOCIONES
+   ============================================================ */
+.promos{ display:grid; gap:20px; }
+.promo{
+  position:relative; overflow:hidden;
+  border-radius:var(--radio); aspect-ratio:4/5;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  background:var(--verde-oscuro);
+}
+.promo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.promo__velo{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,20,6,.05) 0%, rgba(0,20,6,.30) 45%, rgba(0,20,6,.90) 100%);
+}
+.promo__cuerpo{
+  position:relative; padding:20px;
+  color:var(--blanco);
+}
+.promo__etiqueta{
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:var(--radio-pill);
+  padding:6px 12px; margin-bottom:12px;
+  font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+}
+.promo__etiqueta .ico{ width:14px; height:14px; }
+.promo__nombre{ font-size:22px; margin-bottom:6px; }
+.promo__detalle{ font-size:13.5px; color:rgba(255,255,255,.9); margin-bottom:10px; }
+.promo__precio-fila{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.promo__precio{ font-family:"Catavalo",serif; font-size:28px; }
+.promo__restriccion{ font-size:11.5px; color:rgba(255,255,255,.7); margin-top:8px; }
+
+/* ============================================================
+   HABITACIONES — amenities + desayuno
+   ============================================================ */
+.amenities{ display:grid; gap:14px; }
+.amenity{
+  display:flex; gap:14px; align-items:flex-start;
+  border:var(--borde); border-radius:var(--radio); padding:16px; background:var(--blanco);
+}
+.amenity .ico{ flex:none; width:24px; height:24px; color:var(--verde-oscuro); margin-top:2px; }
+.amenity h3{ font-size:16px; font-family:"Montserrat",sans-serif; font-weight:700; }
+.amenity p{ color:var(--tinta-suave); margin:4px 0 0; font-size:13.5px; }
+
+.desayuno{
+  margin-top:32px;
+  border-radius:var(--radio); overflow:hidden;
+  border:var(--borde);
+}
+.desayuno__foto{ aspect-ratio:16/10; }
+.desayuno__foto img{ width:100%; height:100%; object-fit:cover; }
+.desayuno__cuerpo{ padding:22px; background:var(--fondo-alt); }
+.desayuno__cuerpo h3{ font-family:"Catavalo",serif; font-size:22px; margin-bottom:8px; }
+.desayuno__cuerpo p{ color:var(--tinta-suave); margin-bottom:0; }
+
+/* ============================================================
+   TESTIMONIOS
+   ============================================================ */
+.resenas__resumen{
+  display:flex; align-items:center; gap:14px; margin-bottom:24px;
+}
+.resenas__estrellas{ display:flex; gap:2px; color:var(--verde); }
+.resenas__estrellas .ico{ width:18px; height:18px; }
+.resenas__texto strong{ display:block; font-size:15px; }
+.resenas__texto span{ font-size:13px; color:var(--tinta-suave); }
+
+.resenas{ display:grid; gap:16px; }
+.resena{
+  border:var(--borde); border-radius:var(--radio); padding:20px; background:var(--blanco);
+}
+.resena__estrellas{ display:flex; gap:2px; color:var(--verde-oscuro); margin-bottom:10px; }
+.resena__estrellas .ico{ width:15px; height:15px; }
+.resena p{ font-size:14.5px; color:var(--tinta); margin-bottom:14px; }
+.resena__autor{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--tinta-suave); }
+.resena__autor strong{ color:var(--tinta); font-weight:700; }
+
+/* ============================================================
+   CTA + CONTACTO + FOOTER
+   ============================================================ */
+.cta{ text-align:left; }
+.cta p{ max-width:var(--lectura); }
+.cta__botones{ display:flex; flex-direction:column; gap:12px; margin-top:24px; }
+
+.contacto-grilla{ display:grid; gap:28px; margin-top:8px; }
+.contacto-datos{ display:flex; flex-direction:column; gap:18px; }
+.contacto-dato{ display:flex; gap:12px; align-items:flex-start; }
+.contacto-dato .ico{ flex:none; width:20px; height:20px; color:var(--blanco); margin-top:2px; }
+.contacto-dato div{ font-size:14.5px; color:rgba(255,255,255,.92); line-height:1.6; }
+.contacto-dato strong{ display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:3px; font-weight:700; }
+.contacto-redes{ display:flex; gap:10px; margin-top:6px; }
+.contacto-redes a{
+  width:44px; height:44px; display:grid; place-items:center;
+  border:1px solid rgba(255,255,255,.22); border-radius:var(--radio-chico); color:var(--blanco);
+}
+.mapa-marco{ border-radius:var(--radio); overflow:hidden; aspect-ratio:4/3; background:rgba(255,255,255,.08); }
+.mapa-marco iframe{ width:100%; height:100%; border:0; display:block; }
+
+.pie{ background:#001f08; color:rgba(255,255,255,.78); padding-block:36px 24px; font-size:13.5px; }
+.pie__logo{ height:24px; margin-bottom:18px; }
+.pie__legal{
+  margin-top:28px; padding-top:18px; border-top:1px solid rgba(255,255,255,.14);
+  font-size:12px; color:rgba(255,255,255,.55);
+}
+
+/* ============================================================
+   Animaciones al scroll — el opacity:0 lo pone el JS
+   ============================================================ */
+.aparece{
+  transition:opacity var(--dur) var(--curva), transform var(--dur) var(--curva);
+}
+.aparece.oculto{ opacity:0; transform:translateY(20px); }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  html{ scroll-behavior:auto; }
+}

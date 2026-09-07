@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hotel Los Paraísos — Alojamiento por horas en Montevideo</title>
+<meta name="description" content="Hotel Los Paraísos, alojamiento por horas en Montevideo. Habitaciones temáticas, total discreción, WiFi ilimitado, frigobar y cochera privada. Reservá por WhatsApp.">
+<meta name="theme-color" content="#005713">
+<link rel="icon" href="img/logo-blanco.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens-proyecto.css">
+<link rel="stylesheet" href="css/fuentes.css">
+<link rel="stylesheet" href="css/movil.css">
+<link rel="stylesheet" href="css/escritorio.css">
+</head>
+<body>
+
+<!-- ============ SPRITE DE ÍCONOS · Lucide + Simple Icons ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol>
+<symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></symbol>
+<symbol id="i-thermometer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol>
+<symbol id="i-tv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2-5 5-5-5"/><rect width="20" height="15" x="2" y="7" rx="2"/></symbol>
+<symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"/><rect x="3" y="7" width="18" height="4" rx="1"/></symbol>
+<symbol id="i-percent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-utensils" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></symbol>
+<symbol id="i-instagram" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol>
+<symbol id="i-facebook" viewBox="0 0 24 24" fill="currentColor"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+<symbol id="i-whatsapp" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol>
+</defs>
+</svg>
+
+<!-- ============ NAV ============ -->
+<header class="nav es-tope" id="nav-principal">
+  <a class="nav__logo" href="#inicio" aria-label="Hotel Los Paraísos, ir al inicio">
+    <img src="img/logo-blanco.png" alt="Hotel Los Paraísos">
+  </a>
+
+  <ul class="nav__enlaces">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#tarifas">Tarifas</a></li>
+    <li><a href="#habitaciones">Habitaciones</a></li>
+    <li><a href="#promociones">Promociones</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+
+  <div class="nav__acciones">
+    <a class="btn btn--verde nav__wa" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+      <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+      Reservar
+    </a>
+    <button class="nav__hamburguesa" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+      <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============ MENÚ — drawer lateral ============ -->
+<div class="menu__velo"></div>
+<nav class="menu" id="menu" aria-label="Menú principal">
+  <div class="menu__cabecera">
+    <a class="menu__logo" href="#inicio" aria-label="Ir al inicio">
+      <img src="img/logo-blanco.png" alt="Hotel Los Paraísos">
+    </a>
+    <button class="menu__cerrar" type="button" aria-label="Cerrar menú">
+      <svg class="ico" aria-hidden="true"><use href="#i-x"/></svg>
+    </button>
+  </div>
+
+  <ul class="menu__lista">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#tarifas">Tarifas</a></li>
+    <li><a href="#habitaciones">Habitaciones</a></li>
+    <li><a href="#promociones">Promociones</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+
+  <div class="menu__pie">
+    <a class="btn btn--claro btn--bloque menu__wa" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+      <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+      Reservar por WhatsApp
+    </a>
+    <p class="menu__datos">Andrés Spikerman 3737, Montevideo<br>2336 1959 · 2336 1979 · 2336 1813</p>
+    <div class="menu__redes">
+      <a href="https://www.instagram.com/losparaisosuy/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>
+      </a>
+      <a href="https://www.facebook.com/losparaisosuy" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg class="ico" aria-hidden="true"><use href="#i-facebook"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="inicio">
+  <div class="hero__foto">
+    <img src="img/hero-habitacion.jpg" alt="Habitación temática del Hotel Los Paraísos, con mural de playa tropical" data-fallback>
+  </div>
+  <div class="hero__velo" aria-hidden="true"></div>
+
+  <div class="hero__cuerpo">
+    <p class="antetitulo">Hotel Los Paraísos · Montevideo</p>
+    <h1>Viví la experiencia<br>Los Paraísos</h1>
+    <p>Habitaciones temáticas, total discreción y todo lo necesario para desconectar sin salir de Montevideo. WiFi ilimitado, frigobar y cochera privada incluidos.</p>
+  </div>
+
+  <div class="hero__pie">
+    <a class="btn btn--verde" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+      <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+      Reservar por WhatsApp
+    </a>
+    <a class="btn btn--linea-blanca" href="#tarifas">Ver tarifas</a>
+  </div>
+
+  <a class="cue" href="#tarifas" aria-label="Bajar a Tarifas">
+    <svg class="ico" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+  </a>
+</section>
+
+<!-- ============ TARIFAS ============ -->
+<section class="seccion" id="tarifas">
+  <div class="contenedor">
+    <div class="seccion__encabezado aparece" data-orden="0">
+      <p class="antetitulo">Tarifas</p>
+      <h2>Tu estadía, sin sorpresas</h2>
+      <p>Tarifa diaria única, entrada a las 10 de la mañana y salida a las 10 del día siguiente.</p>
+    </div>
+
+    <div class="tarifas-layout">
+      <div class="tarifa-principal aparece" data-orden="1">
+        <span class="tarifa-principal__rotulo">Suite Standard y Suite Real</span>
+        <span class="tarifa-principal__precio">$7500</span>
+        <span class="tarifa-principal__detalle">Tarifa diaria única · de 10:00 a 10:00 del día siguiente</span>
+      </div>
+
+      <div>
+        <div class="tarifas-grilla">
+          <div class="tarifa aparece" data-orden="2">
+            <div class="tarifa__cabecera">
+              <svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>
+              <span class="tarifa__nombre">Habitación decorada</span>
+            </div>
+            <div class="tarifa__lista">
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">3 horas</span>
+                <span class="tarifa__fila-precio">$3870</span>
+              </div>
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">6 horas</span>
+                <span class="tarifa__fila-precio">$5460</span>
+              </div>
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">Nocturna · domingo a jueves, 20 a 12hs</span>
+                <span class="tarifa__fila-precio">$4880</span>
+              </div>
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">Nocturna · viernes y sábado, 00 a 13hs</span>
+                <span class="tarifa__fila-precio">$5430</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tarifa aparece" data-orden="3">
+            <div class="tarifa__cabecera">
+              <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+              <span class="tarifa__nombre">Suite Real</span>
+            </div>
+            <div class="tarifa__lista">
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">3 horas</span>
+                <span class="tarifa__fila-precio">$7030</span>
+              </div>
+              <div class="tarifa__fila">
+                <span class="tarifa__fila-rotulo">Nocturna · 22 a 10hs</span>
+                <span class="tarifa__fila-precio">$7780</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tarifas-nota aparece" data-orden="4">
+          <svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>
+          <p style="margin:0">Desayuno incluido con reserva anticipada, previo pago o Abitab. No acumulable con otras promociones.</p>
+        </div>
+
+        <div class="medios-pago aparece" data-orden="5">
+          <p class="medios-pago__rotulo">Formas de pago</p>
+          <img src="img/medios-de-pago.png" alt="Aceptamos Visa, Mastercard, OCA, Anda, Cabal, Diners Club y American Express" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROMOCIONES ============ -->
+<section class="seccion seccion--alt" id="promociones">
+  <div class="contenedor">
+    <div class="seccion__encabezado aparece" data-orden="0">
+      <p class="antetitulo">Promociones</p>
+      <h2>Ofertas del momento</h2>
+      <p>No acumulables entre sí. Consultá disponibilidad por WhatsApp antes de venir.</p>
+    </div>
+
+    <div class="promos">
+      <article class="promo aparece" data-orden="1">
+        <img src="img/promo-3x1-textura.jpg" alt="" aria-hidden="true">
+        <div class="promo__velo"></div>
+        <div class="promo__cuerpo">
+          <span class="promo__etiqueta"><svg class="ico" aria-hidden="true"><use href="#i-percent"/></svg>Promo 3x1</span>
+          <h3 class="promo__nombre">3 horas por el precio de 1</h3>
+          <p class="promo__detalle">De 12:00 a 21:00hs</p>
+          <div class="promo__precio-fila">
+            <span class="promo__precio">$1590</span>
+          </div>
+          <p class="promo__restriccion">No acumulable entre promociones</p>
+        </div>
+      </article>
+
+      <article class="promo aparece" data-orden="2">
+        <img src="img/frigobar.jpg" alt="Frigobar con snacks y bebidas del hotel">
+        <div class="promo__velo"></div>
+        <div class="promo__cuerpo">
+          <span class="promo__etiqueta"><svg class="ico" aria-hidden="true"><use href="#i-gift"/></svg>Frigobar Free</span>
+          <h3 class="promo__nombre">Frigobar libre</h3>
+          <p class="promo__detalle">3 horas + todos los productos del frigobar, en habitación 27</p>
+          <div class="promo__precio-fila">
+            <span class="promo__precio">$2400</span>
+          </div>
+          <p class="promo__restriccion">No acumulable entre promociones</p>
+        </div>
+      </article>
+
+      <article class="promo aparece" data-orden="3">
+        <img src="img/sexshop.jpg" alt="Productos de sex shop disponibles en la suite">
+        <div class="promo__velo"></div>
+        <div class="promo__cuerpo">
+          <span class="promo__etiqueta"><svg class="ico" aria-hidden="true"><use href="#i-flame"/></svg>Sex Shop</span>
+          <h3 class="promo__nombre">Kit para dos</h3>
+          <p class="promo__detalle">3 horas + vibrador, disfraz, gel íntimo y anillo vibrador</p>
+          <div class="promo__precio-fila">
+            <span class="promo__precio">$2400</span>
+          </div>
+          <p class="promo__restriccion">No acumulable entre promociones · No válido para Suite Real</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HABITACIONES ============ -->
+<section class="seccion" id="habitaciones">
+  <div class="contenedor">
+    <div class="seccion__encabezado aparece" data-orden="0">
+      <p class="antetitulo">Habitaciones</p>
+      <h2>Todo lo que necesitás, en la suite</h2>
+      <p>Seis comodidades pensadas para que no falte nada durante tu estadía.</p>
+    </div>
+
+    <div class="habitaciones-layout">
+      <div class="amenities">
+        <div class="amenity aparece" data-orden="1">
+          <svg class="ico" aria-hidden="true"><use href="#i-gift"/></svg>
+          <div>
+            <h3>Sex Shop</h3>
+            <p>Catálogos de productos de sex shop disponibles en la suite, para acompañar tu estadía con juguetes y accesorios.</p>
+          </div>
+        </div>
+        <div class="amenity aparece" data-orden="2">
+          <svg class="ico" aria-hidden="true"><use href="#i-wifi"/></svg>
+          <div>
+            <h3>WiFi ilimitado</h3>
+            <p>Conexión a internet totalmente gratis en todas las habitaciones, desde cualquier dispositivo.</p>
+          </div>
+        </div>
+        <div class="amenity aparece" data-orden="3">
+          <svg class="ico" aria-hidden="true"><use href="#i-utensils"/></svg>
+          <div>
+            <h3>Fast Bar 24hs</h3>
+            <p>Snacks, bebidas importadas y aperitivos, con servicio a la suite las 24 horas.</p>
+          </div>
+        </div>
+        <div class="amenity aparece" data-orden="4">
+          <svg class="ico" aria-hidden="true"><use href="#i-car"/></svg>
+          <div>
+            <h3>Cochera privada</h3>
+            <p>Cada suite cuenta con cochera propia, con playa de estacionamiento adicional para camiones.</p>
+          </div>
+        </div>
+        <div class="amenity aparece" data-orden="5">
+          <svg class="ico" aria-hidden="true"><use href="#i-thermometer"/></svg>
+          <div>
+            <h3>Aire acondicionado y calefacción</h3>
+            <p>Climatización en todas las habitaciones, para el mejor confort en cualquier estación.</p>
+          </div>
+        </div>
+        <div class="amenity aparece" data-orden="6">
+          <svg class="ico" aria-hidden="true"><use href="#i-tv"/></svg>
+          <div>
+            <h3>TV cable</h3>
+            <p>LCD con canales por cable, señales para adultos y audio centralizado.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="desayuno aparece" data-orden="2">
+        <div class="desayuno__foto">
+          <img src="img/desayuno.jpg" alt="Bandeja de desayuno del Hotel Los Paraísos" loading="lazy">
+        </div>
+        <div class="desayuno__cuerpo">
+          <h3>Desayuno incluido</h3>
+          <p>Deleitate con nuestro desayuno incluido en algunas de nuestras ofertas. Consultá la tarifa con desayuno incluido.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIOS ============ -->
+<section class="seccion seccion--alt" id="opiniones">
+  <div class="contenedor">
+    <div class="seccion__encabezado aparece" data-orden="0">
+      <p class="antetitulo">Opiniones</p>
+      <h2>Lo que dicen de nosotros</h2>
+    </div>
+
+    <div class="resenas__resumen aparece" data-orden="1">
+      <svg class="ico" aria-hidden="true" style="width:28px;height:28px;color:var(--verde-oscuro)"><use href="#i-star"/></svg>
+      <div class="resenas__texto">
+        <strong>Bueno</strong>
+        <span>833 reseñas · Publicado en Google</span>
+      </div>
+    </div>
+
+    <div class="resenas">
+      <div class="resena aparece" data-orden="2">
+        <div class="resena__estrellas">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <span style="font-size:12px;font-weight:700;margin-left:4px">Reseña de Google</span>
+        </div>
+        <p>"Espectacular! El confort de las habitaciones y la atención recibida, muy recomendables"</p>
+        <div class="resena__autor">
+          <strong>Rafa Ayala</strong>
+          <span>26/10/2023</span>
+        </div>
+      </div>
+
+      <div class="resena aparece" data-orden="3">
+        <div class="resena__estrellas">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <span style="font-size:12px;font-weight:700;margin-left:4px">Reseña de Google</span>
+        </div>
+        <p>"Muy buena higiene e impecable habitación… total discreción"</p>
+        <div class="resena__autor">
+          <strong>Luz Cardinal</strong>
+          <span>13/10/2023</span>
+        </div>
+      </div>
+
+      <div class="resena aparece" data-orden="4">
+        <div class="resena__estrellas">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <span style="font-size:12px;font-weight:700;margin-left:4px">Reseña de Google</span>
+        </div>
+        <p>"Muy comodo recomendable, no me faltan peines jiji"</p>
+        <div class="resena__autor">
+          <strong>Alexander Mieres</strong>
+          <span>26/10/2023</span>
+        </div>
+      </div>
+
+      <div class="resena aparece" data-orden="5">
+        <div class="resena__estrellas">
+          <svg class="ico" aria-hidden="true"><use href="#i-star"/></svg>
+          <span style="font-size:12px;font-weight:700;margin-left:4px">Reseña de Google</span>
+        </div>
+        <p>"Exelente higiene"</p>
+        <div class="resena__autor">
+          <strong>Rosario Demello</strong>
+          <span>02/11/2023</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA + CONTACTO ============ -->
+<section class="seccion seccion--oscura" id="contacto">
+  <div class="contenedor cta aparece" data-orden="0">
+    <p class="antetitulo" style="color:var(--verde)">Contacto</p>
+    <h2>Reservá tu momento</h2>
+    <p>Escribinos por WhatsApp o llamanos directo. Te confirmamos disponibilidad al instante.</p>
+    <div class="cta__botones">
+      <a class="btn btn--claro" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+        <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+        Reservar por WhatsApp
+      </a>
+      <a class="btn btn--linea-blanca" href="tel:+59823361959">
+        <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>
+        Llamar ahora
+      </a>
+    </div>
+  </div>
+
+  <div class="contenedor contacto-grilla">
+    <div class="contacto-datos aparece" data-orden="1">
+      <div class="contacto-dato">
+        <svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>
+        <div>
+          <strong>Dirección</strong>
+          Andrés Spikerman 3737, Montevideo, Uruguay
+        </div>
+      </div>
+      <div class="contacto-dato">
+        <svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>
+        <div>
+          <strong>Teléfonos</strong>
+          2336 1959 · 2336 1979 · 2336 1813
+        </div>
+      </div>
+      <div class="contacto-dato">
+        <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+        <div>
+          <strong>WhatsApp</strong>
+          +598 99 619 360
+        </div>
+      </div>
+      <div class="contacto-redes">
+        <a href="https://www.instagram.com/losparaisosuy/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>
+        </a>
+        <a href="https://www.facebook.com/losparaisosuy" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg class="ico" aria-hidden="true"><use href="#i-facebook"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="mapa-marco aparece" data-orden="2">
+      <iframe src="https://maps.google.com/maps?q=Andres%20Spikerman%203737%2C%20Montevideo%20-%20Uruguay&amp;t=m&amp;z=15&amp;output=embed&amp;iwloc=near" title="Ubicación del Hotel Los Paraísos" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="pie">
+  <div class="contenedor">
+    <img class="pie__logo" src="img/logo-blanco.png" alt="Hotel Los Paraísos">
+    <div class="pie__legal">
+      <span>© Hotel Los Paraísos — Montevideo, Uruguay</span>
+      <span>Andrés Spikerman 3737</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* ============================================================
+   HOTEL LOS PARAÍSOS — escritorio.css
+   Solo desde 900px. El móvil vive entero en movil.css.
+   ============================================================ */
+
+@media (min-width:900px){
+
+  :root{
+    --margen:   48px;
+    --seccion:  112px;
+  }
+
+  h1{ font-size:66px; }
+  h2{ font-size:42px; }
+  h3{ font-size:24px; }
+  body{ font-size:17px; }
+
+  /* ---------- Nav ---------- */
+  .nav__logo,.nav__logo img{ height:32px; }
+  .nav__enlaces{
+    display:flex; align-items:center; gap:2px;
+    margin-left:auto; margin-right:24px;
+  }
+  .nav__enlaces a{
+    display:flex; align-items:center; padding:10px 16px;
+    font-size:14px; font-weight:700; letter-spacing:.02em; color:var(--blanco);
+    text-shadow:0 1px 3px rgba(0,0,0,.3);
+    border-radius:var(--radio-pill);
+    transition:background-color 260ms var(--curva);
+  }
+  .nav__enlaces a:hover{ background:rgba(255,255,255,.14); }
+  .nav.es-solido .nav__enlaces a{ text-shadow:none; }
+  .nav.es-solido .nav__enlaces a:hover{ background:rgba(255,255,255,.12); }
+
+  .nav__wa{ min-height:44px; font-size:14px; padding:0 20px 0 16px; }
+  .menu,.menu__velo,.nav__hamburguesa{ display:none; }
+
+  /* ---------- Hero ---------- */
+  .hero__cuerpo{
+    padding-top:calc(var(--nav-alto) + 24vh);
+    max-width:var(--contenedor); margin-inline:auto; width:100%;
+  }
+  .hero__cuerpo p{ font-size:17px; }
+  .hero__pie{
+    padding:0 var(--margen) 56px;
+    max-width:var(--contenedor); margin-inline:auto; width:100%;
+  }
+  .hero__pie{ flex-direction:row; }
+  .hero__pie .btn{ width:auto; }
+
+  /* ---------- Contenedor de secciones ---------- */
+  .seccion__encabezado{ margin-bottom:48px; }
+
+  /* ---------- Tarifas ---------- */
+  .tarifas-layout{ display:grid; grid-template-columns:.85fr 1.15fr; gap:48px; align-items:start; }
+  .tarifa-principal{ padding:36px; }
+  .tarifa-principal__precio{ font-size:56px; }
+  .tarifas-grilla{ grid-template-columns:repeat(2,1fr); }
+  .medios-pago{ margin-top:0; }
+
+  /* ---------- Promociones ---------- */
+  .promos{ grid-template-columns:repeat(3,1fr); gap:24px; }
+  .promo{ aspect-ratio:3/4; }
+  .promo:hover .promo__velo{ background:linear-gradient(180deg, rgba(0,20,6,.10) 0%, rgba(0,20,6,.38) 45%, rgba(0,20,6,.92) 100%); }
+
+  /* ---------- Habitaciones ---------- */
+  .habitaciones-layout{ display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; }
+  .amenities{ gap:16px; }
+  .desayuno{ margin-top:0; display:flex; flex-direction:column; }
+  .desayuno__foto{ aspect-ratio:4/3; }
+
+  /* ---------- Testimonios ---------- */
+  .resenas{ grid-template-columns:repeat(2,1fr); gap:20px; }
+
+  /* ---------- CTA + Contacto ---------- */
+  .cta__botones{ flex-direction:row; }
+  .cta .btn{ min-width:240px; }
+  .contacto-grilla{ grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+
+  .pie__cols{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; }
+  .pie__legal{ display:flex; justify-content:space-between; gap:24px; }
+}
+
+@media (min-width:1400px){
+  .hero__cuerpo h1{ font-size:78px; }
+}
