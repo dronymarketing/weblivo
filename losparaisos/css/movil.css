@@ -137,7 +137,17 @@ button{ font:inherit; color:inherit; }
   width:44px; height:44px; display:grid; place-items:center end;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
 }
-.nav__hamburguesa .ico{ width:24px; height:24px; }
+.nav__hamburguesa-icono{ width:24px; height:24px; transition:color 700ms var(--curva); }
+.nav__llama .nav__hamburguesa-icono{
+  color:var(--rosado);
+  animation:llama-flicker 2.2s ease-in-out .55s infinite;
+}
+@keyframes llama-flicker{
+  0%,100%{ transform:scale(1) skewX(0deg); }
+  25%    { transform:scale(1.1,.9) skewX(-5deg); }
+  55%    { transform:scale(.88,1.12) skewX(5deg); }
+  80%    { transform:scale(1.06,.95) skewX(-2deg); }
+}
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */
 .menu__velo{
