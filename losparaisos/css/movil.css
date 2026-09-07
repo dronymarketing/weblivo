@@ -279,24 +279,29 @@ button{ font:inherit; color:inherit; }
 }
 
 .hero__pie{
-  padding:0 var(--margen) 40px;
+  padding:0 var(--margen) 82px;
   display:flex; flex-direction:column; gap:18px;
 }
 .hero__botones{ display:flex; flex-direction:column; gap:10px; }
 .hero__pie .btn{ font-size:13.5px; min-height:42px; padding:0 18px; font-weight:600; }
 
 .cue{
-  position:absolute; left:50%; bottom:6px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:4px; transform:translateX(-50%);
   z-index:5;
-  width:42px; height:42px; display:grid; place-items:center;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.08);
-  -webkit-backdrop-filter:blur(6px);
-  backdrop-filter:blur(6px);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
   color:var(--blanco);
 }
-.cue .ico{ width:18px; height:18px; animation:cue 2.4s ease-in-out infinite; }
+.cue__texto{
+  font-size:13px; font-weight:600; letter-spacing:.02em;
+  text-shadow:0 1px 4px rgba(0,0,0,.4);
+}
+.cue__circulo{
+  width:42px; height:42px; display:grid; place-items:center;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.5);
+  background:rgba(0,0,0,.28);
+}
+.cue .ico{ width:16px; height:16px; animation:cue 2.4s ease-in-out infinite; }
 @keyframes cue{
   0%,100%{ transform:translateY(0); opacity:.75; }
   50%    { transform:translateY(4px); opacity:1; }
