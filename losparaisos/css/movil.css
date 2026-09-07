@@ -133,29 +133,9 @@ button{ font:inherit; color:inherit; }
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
-/* botón hamburguesa — la forma del ícono (menú ↔ llama) la anima
-   la librería morphicons (js/vendor/morphicons), que interpola el
-   trazado real entre los dos íconos. Acá solo el color/tamaño y el
-   parpadeo una vez que termina de convertirse en llama. */
 .nav__hamburguesa{
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
-  -webkit-touch-callout:none;
-}
-.nav__hamburguesa-icono{
-  width:24px; height:24px;
-  transition:color 700ms var(--curva);
-}
-.nav__llama .nav__hamburguesa-icono{
-  color:var(--rosado);
-  animation:llama-flicker 2.4s ease-in-out .5s infinite;
-}
-
-@keyframes llama-flicker{
-  0%,100%{ transform:scale(1) skewX(0deg); }
-  25%    { transform:scale(1.05,.94) skewX(-3deg); }
-  55%    { transform:scale(.94,1.06) skewX(3deg); }
-  80%    { transform:scale(1.02,.98) skewX(-1deg); }
 }
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */

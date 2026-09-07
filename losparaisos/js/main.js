@@ -2,8 +2,6 @@
    HOTEL LOS PARAÍSOS — BORRADOR
    Scroll nativo. Sin librerías de scroll.
    ============================================================ */
-import { createMorph } from './vendor/morphicons/dom.js';
-
 (function () {
   'use strict';
 
@@ -12,15 +10,6 @@ import { createMorph } from './vendor/morphicons/dom.js';
   var velo      = document.querySelector('.menu__velo');
   var abrirBtn  = document.querySelector('.nav__hamburguesa');
   var cerrarBtn = document.querySelector('.menu__cerrar');
-
-  /* ----------------------------------------------------------
-     HAMBURGUESA → LLAMA — morph real del trazado (librería
-     morphicons), no un ícono que se cambia por otro.
-  ---------------------------------------------------------- */
-  var MENU_D  = 'M4 5h16M4 12h16M4 19h16';
-  var FLAME_D = 'M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4';
-  var hamPath  = document.getElementById('nav-hamburguesa-path');
-  var hamMorph = hamPath ? createMorph(hamPath, MENU_D) : null;
 
   /* ----------------------------------------------------------
      ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
@@ -104,8 +93,6 @@ import { createMorph } from './vendor/morphicons/dom.js';
 
     var esVioleta = foto.dataset.violeta === 'true';
     hero.classList.toggle('hero--violeta', esVioleta);
-    if (abrirBtn) abrirBtn.classList.toggle('nav__llama', esVioleta);
-    if (hamMorph) hamMorph.morphTo(esVioleta ? FLAME_D : MENU_D, 'snappy');
   }
 
   function irAHero(i) {
