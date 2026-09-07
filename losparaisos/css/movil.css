@@ -130,6 +130,7 @@ button{ font:inherit; color:inherit; }
 .nav__wa{
   min-height:40px; padding:0 16px 0 12px; font-size:13px; gap:7px;
   background:var(--whatsapp);
+  border:1px solid rgba(255,255,255,.55);
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
