@@ -133,41 +133,50 @@ button{ font:inherit; color:inherit; }
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
-/* botón hamburguesa — barras CSS que se convierten en llama.
-   Las fotos de fondo ya bloquean el toque (pointer-events:none),
-   así que el svg de la llama acá no vuelve a disparar el menú de
-   "adjuntar imagen" de Android. */
+/* botón hamburguesa — las 3 barras cambian de forma y se
+   convierten en llama (no es un ícono que aparece encima, son las
+   mismas barras deformándose). Las fotos de fondo ya bloquean el
+   toque (pointer-events:none), esto no dispara el menú de imagen
+   de Android porque no hay ningún <svg>/<img> en el botón. */
 .nav__hamburguesa{
-  position:relative;
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
   -webkit-touch-callout:none;
 }
-.nav__hamburguesa-barras{
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
-  transition:opacity 320ms var(--curva), transform 320ms var(--curva);
+.nav__hamburguesa-icono{
+  position:relative; width:22px; height:22px;
 }
-.nav__hamburguesa-barras span{
-  width:20px; height:2px; border-radius:1px; background:currentColor;
+.nav__llama .nav__hamburguesa-icono{
+  animation:llama-flicker 2.4s ease-in-out .42s infinite;
 }
-.nav__hamburguesa-llama{
-  position:absolute; width:22px; height:22px;
-  opacity:0; transform:scale(.4) rotate(-35deg);
-  transition:opacity 320ms var(--curva), transform 320ms var(--curva);
-  color:var(--rosado);
+.nav__hamburguesa-barra{
+  position:absolute; left:50%; top:50%; background:currentColor;
+  transition:width 420ms var(--curva), height 420ms var(--curva),
+             border-radius 420ms var(--curva), transform 420ms var(--curva),
+             background-color 700ms var(--curva);
 }
-.nav__llama .nav__hamburguesa-barras{
-  opacity:0; transform:scale(.4) rotate(35deg);
+.nav__hamburguesa-barra--1{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%) translateY(-7px); }
+.nav__hamburguesa-barra--2{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%); }
+.nav__hamburguesa-barra--3{ width:20px; height:2px; border-radius:1px; transform:translate(-50%,-50%) translateY(7px); }
+
+.nav__llama .nav__hamburguesa-barra{ background:var(--rosado); }
+.nav__llama .nav__hamburguesa-barra--1{
+  width:8px; height:11px; border-radius:8% 60% 60% 60%;
+  transform:translate(-50%,-50%) translateY(-5px) rotate(-6deg);
 }
-.nav__llama .nav__hamburguesa-llama{
-  opacity:1; transform:scale(1) rotate(0deg);
-  animation:llama-flicker 2.2s ease-in-out .32s infinite;
+.nav__llama .nav__hamburguesa-barra--2{
+  width:15px; height:14px; border-radius:50%;
+  transform:translate(-50%,-50%) translateY(0px);
+}
+.nav__llama .nav__hamburguesa-barra--3{
+  width:19px; height:11px; border-radius:50% 50% 50% 50% / 60% 60% 100% 100%;
+  transform:translate(-50%,-50%) translateY(4.5px);
 }
 @keyframes llama-flicker{
-  0%,100%{ transform:scale(1) rotate(0deg); }
-  25%    { transform:scale(1.08,.92) rotate(-4deg); }
-  55%    { transform:scale(.9,1.1) rotate(4deg); }
-  80%    { transform:scale(1.04,.96) rotate(-2deg); }
+  0%,100%{ transform:scale(1) skewX(0deg); }
+  25%    { transform:scale(1.05,.94) skewX(-3deg); }
+  55%    { transform:scale(.94,1.06) skewX(3deg); }
+  80%    { transform:scale(1.02,.98) skewX(-1deg); }
 }
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */
