@@ -98,8 +98,8 @@ button{ font:inherit; color:inherit; }
   cursor:pointer; text-align:center;
   transition:background-color 220ms var(--curva), color 220ms var(--curva), border-color 220ms var(--curva);
 }
-.btn--verde{ background:var(--verde-oscuro); color:var(--blanco); }
-.btn--verde:active{ background:#003d0d; }
+.btn--verde{ background:var(--whatsapp); color:var(--blanco); }
+.btn--verde:active{ background:#1FAD56; }
 .btn--linea{ background:transparent; color:var(--verde-oscuro); border:1px solid rgba(0,87,19,.35); }
 .btn--linea-blanca{ background:transparent; color:var(--blanco); border:1px solid rgba(255,255,255,.45); }
 .btn--claro{ background:var(--blanco); color:var(--verde-oscuro); }
@@ -286,8 +286,8 @@ button{ font:inherit; color:inherit; }
   padding:0 var(--margen) 40px;
   display:flex; flex-direction:column; gap:18px;
 }
-.hero__botones{ display:flex; flex-direction:column; gap:12px; }
-.hero__pie .btn{ font-size:16px; min-height:56px; }
+.hero__botones{ display:flex; flex-direction:column; gap:10px; }
+.hero__pie .btn{ font-size:13.5px; min-height:42px; padding:0 18px; font-weight:600; }
 
 .hero__puntos{ display:flex; gap:8px; }
 .hero__punto{
