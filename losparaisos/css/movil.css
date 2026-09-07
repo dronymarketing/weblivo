@@ -134,9 +134,10 @@ button{ font:inherit; color:inherit; }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
 .nav__hamburguesa{
-  width:44px; height:44px; display:grid; place-items:center;
+  width:44px; height:44px; display:grid; place-items:center end;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
 }
+.nav__hamburguesa .ico{ width:24px; height:24px; }
 
 /* ---------- Menú — drawer lateral desde la derecha ---------- */
 .menu__velo{
