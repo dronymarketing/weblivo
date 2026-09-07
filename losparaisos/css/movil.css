@@ -203,7 +203,12 @@ button{ font:inherit; color:inherit; }
   background:var(--verde-oscuro);
   isolation:isolate;
 }
-.hero__foto{ position:absolute; inset:0; z-index:-2; }
+.hero__fotos{ position:absolute; inset:0; z-index:-2; }
+.hero__foto{
+  position:absolute; inset:0;
+  opacity:0; transition:opacity 1100ms var(--curva);
+}
+.hero__foto.activa{ opacity:1; }
 .hero__foto img{ width:100%; height:100%; object-fit:cover; }
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
@@ -225,76 +230,71 @@ button{ font:inherit; color:inherit; }
 }
 .hero.hero--violeta .hero__velo--violeta{ opacity:1; }
 .hero__cuerpo{
+  --anillo: var(--verde);
   padding:0 var(--margen);
   margin-bottom:auto;
   padding-top:calc(var(--nav-alto) + 20vh);
   color:var(--blanco);
 }
+.hero.hero--violeta .hero__cuerpo{ --anillo: var(--rosado); }
 .hero__cuerpo .antetitulo{ color:var(--verde); transition:color 700ms var(--curva); }
 .hero.hero--violeta .hero__cuerpo .antetitulo{ color:var(--rosado); }
 .hero__cuerpo h1{
-  font-size:42px; color:var(--blanco);
+  display:flex; align-items:center; gap:12px;
+  font-size:38px; color:var(--blanco);
   text-shadow:0 2px 16px rgba(0,0,0,.4);
+  transition:opacity 280ms var(--curva);
 }
+.hero__promo-ico{
+  width:.72em; height:.72em; flex:none; color:var(--verde);
+  transition:color 700ms var(--curva);
+}
+.hero.hero--violeta .hero__promo-ico{ color:var(--rosado); }
 .hero__cuerpo p{
   max-width:var(--lectura); margin:14px 0 0;
   font-size:15.5px; color:rgba(255,255,255,.92);
   text-shadow:0 1px 8px rgba(0,0,0,.35);
+  transition:opacity 280ms var(--curva);
 }
+.hero.cambia .hero__cuerpo h1,
+.hero.cambia .hero__cuerpo p,
+.hero.cambia .hero__precio{ opacity:0; }
+
+/* reborde animado — raya que gira entre verde y rosado según la promo */
+.hero__raya{
+  position:relative; height:2px; width:120px; margin:20px 0 14px;
+  overflow:hidden; border-radius:2px;
+  background:rgba(255,255,255,.18);
+}
+.hero__raya::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, var(--anillo), transparent);
+  background-size:200% 100%;
+  animation:raya-corre 2.6s linear infinite;
+}
+@keyframes raya-corre{
+  0%{ background-position:200% 0; }
+  100%{ background-position:-200% 0; }
+}
+.hero__precio{
+  font-family:"Catavalo",serif; font-size:30px; color:var(--blanco);
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
+  transition:opacity 280ms var(--curva);
+}
+
 .hero__pie{
   padding:0 var(--margen) 40px;
-  display:flex; flex-direction:column; gap:14px;
+  display:flex; flex-direction:column; gap:18px;
 }
 .hero__botones{ display:flex; flex-direction:column; gap:12px; }
 .hero__pie .btn{ font-size:16px; min-height:56px; }
 
-/* ---------- Rotador de promos del hero — reborde animado ---------- */
-.hero__promo{
-  --anillo: var(--verde);
-  position:relative; isolation:isolate;
-  border-radius:var(--radio);
-  overflow:hidden;
+.hero__puntos{ display:flex; gap:8px; }
+.hero__punto{
+  width:28px; height:4px; border:0; padding:0; cursor:pointer; border-radius:2px;
+  background:rgba(255,255,255,.35); transition:background-color 420ms var(--curva);
 }
-.hero__promo::before{
-  content:""; position:absolute; z-index:0;
-  inset:-60%;
-  background:conic-gradient(from 0deg,
-    transparent 0deg, var(--anillo) 45deg, transparent 130deg,
-    var(--anillo) 220deg, transparent 300deg, var(--anillo) 360deg);
-  animation:anillo-gira 5s linear infinite;
-  transition:background 700ms var(--curva);
-}
-.hero.hero--violeta .hero__promo{ --anillo: var(--rosado); }
-@keyframes anillo-gira{ to{ transform:rotate(360deg); } }
-.hero__promo-cuerpo{
-  position:relative; z-index:1; margin:2px;
-  border-radius:calc(var(--radio) - 2px);
-  background:rgba(0,16,5,.62);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  backdrop-filter:blur(16px) saturate(160%);
-  padding:14px 18px;
-  color:var(--blanco);
-}
-.hero__promo-etiqueta{
-  display:flex; align-items:center; gap:8px;
-  font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--verde);
-  transition:opacity 260ms var(--curva);
-}
-.hero.hero--violeta .hero__promo-etiqueta{ color:var(--rosado); }
-.hero__promo-ico{ width:16px; height:16px; }
-.hero__promo-detalle{
-  font-size:13.5px; color:rgba(255,255,255,.9);
-  margin:6px 0 8px; text-shadow:none;
-  transition:opacity 260ms var(--curva);
-}
-.hero__promo-precio{
-  font-family:"Catavalo",serif; font-size:24px; color:var(--blanco);
-  transition:opacity 260ms var(--curva);
-}
-.hero__promo.cambia .hero__promo-etiqueta,
-.hero__promo.cambia .hero__promo-detalle,
-.hero__promo.cambia .hero__promo-precio{ opacity:0; }
+.hero__punto.activo{ background:var(--blanco); }
 
 .cue{
   position:absolute; left:50%; bottom:14px; transform:translateX(-50%);

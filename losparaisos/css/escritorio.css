@@ -46,7 +46,8 @@
     max-width:var(--contenedor); margin-inline:auto; width:100%;
     flex-direction:row; align-items:center; flex-wrap:wrap; gap:28px;
   }
-  .hero__promo{ flex:1 1 360px; max-width:420px; }
+  .hero__puntos{ gap:10px; }
+  .hero__punto{ width:36px; }
   .hero__botones{ flex-direction:row; margin-left:auto; }
   .hero__pie .btn{ width:auto; }
 

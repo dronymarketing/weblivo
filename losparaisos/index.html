@@ -63,7 +63,7 @@
       Reservar
     </a>
     <button class="nav__hamburguesa" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
-      <svg class="ico nav__llama" aria-hidden="true"><use href="#i-flame"/></svg>
+      <svg class="ico" aria-hidden="true"><use href="#i-menu" id="nav-hamburguesa-ico"/></svg>
     </button>
   </div>
 </header>
@@ -105,30 +105,44 @@
   </div>
 </nav>
 
-<!-- ============ HERO ============ -->
+<!-- ============ HERO — carrusel de promos ============ -->
 <section class="hero" id="inicio">
-  <div class="hero__foto">
-    <img src="img/hero-habitacion.jpg" alt="Habitación temática del Hotel Los Paraísos, con mural de playa tropical" data-fallback>
+  <div class="hero__fotos" aria-hidden="true">
+    <div class="hero__foto activa"
+         data-icono="i-percent" data-nombre="Promo 3x1"
+         data-detalle="3 horas por el precio de 1 · de 12:00 a 21:00hs" data-precio="$1590" data-violeta="false">
+      <img src="img/hero-habitacion.jpg" alt="" data-fallback>
+    </div>
+    <div class="hero__foto"
+         data-icono="i-gift" data-nombre="Frigobar Free"
+         data-detalle="3 horas + todo el frigobar, en habitación 27" data-precio="$2400" data-violeta="false">
+      <img src="img/frigobar.jpg" alt="" data-fallback>
+    </div>
+    <div class="hero__foto"
+         data-icono="i-flame" data-nombre="Kit para dos"
+         data-detalle="3 horas + vibrador, disfraz, gel íntimo y anillo vibrador" data-precio="$2400" data-violeta="true">
+      <img src="img/sexshop.jpg" alt="" data-fallback>
+    </div>
   </div>
   <div class="hero__velo" aria-hidden="true"></div>
   <div class="hero__velo hero__velo--violeta" aria-hidden="true"></div>
 
   <div class="hero__cuerpo">
     <p class="antetitulo">Hotel Los Paraísos · Montevideo</p>
-    <h1>Viví la experiencia<br>Los Paraísos</h1>
-    <p>Habitaciones temáticas, total discreción y todo lo necesario para desconectar sin salir de Montevideo. WiFi ilimitado, frigobar y cochera privada incluidos.</p>
+    <h1 id="hero-nombre">
+      <svg class="ico hero__promo-ico" aria-hidden="true"><use href="#i-percent" id="hero-icono"/></svg>
+      <span id="hero-nombre-txt">Promo 3x1</span>
+    </h1>
+    <p id="hero-detalle">3 horas por el precio de 1 · de 12:00 a 21:00hs</p>
+    <div class="hero__raya" aria-hidden="true"></div>
+    <span class="hero__precio" id="hero-precio">$1590</span>
   </div>
 
   <div class="hero__pie">
-    <div class="hero__promo" id="hero-promo">
-      <div class="hero__promo-cuerpo">
-        <span class="hero__promo-etiqueta">
-          <svg class="ico hero__promo-ico" aria-hidden="true"><use href="#i-percent"/></svg>
-          <span class="hero__promo-nombre">Promo 3x1</span>
-        </span>
-        <p class="hero__promo-detalle">3 horas por el precio de 1 · de 12:00 a 21:00hs</p>
-        <span class="hero__promo-precio">$1590</span>
-      </div>
+    <div class="hero__puntos" role="tablist" aria-label="Promociones">
+      <button class="hero__punto activo" type="button" role="tab" aria-label="Promo 3x1"></button>
+      <button class="hero__punto" type="button" role="tab" aria-label="Frigobar Free"></button>
+      <button class="hero__punto" type="button" role="tab" aria-label="Kit para dos"></button>
     </div>
 
     <div class="hero__botones">

@@ -63,49 +63,66 @@
   });
 
   /* ----------------------------------------------------------
-     ROTADOR DE PROMOS DEL HERO
-     Arranca en el 3x1 (la más pedida) y va rotando. Con el
-     "Kit para dos" el hero se tiñe de violeta/rosado.
+     HERO — carrusel de promos
+     Arranca en el 3x1 (la más pedida), la foto de fondo cambia
+     con cada promo. Con "Kit para dos" el hero se tiñe de
+     violeta/rosado y la hamburguesa pasa a ser una llamita.
   ---------------------------------------------------------- */
-  var hero      = document.querySelector('.hero');
-  var heroPromo = document.getElementById('hero-promo');
-  var lentoMov  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hero       = document.querySelector('.hero');
+  var heroFotos  = Array.prototype.slice.call(document.querySelectorAll('.hero__foto'));
+  var heroPuntos = Array.prototype.slice.call(document.querySelectorAll('.hero__punto'));
+  var nombreEl   = document.getElementById('hero-nombre-txt');
+  var iconoUso   = document.getElementById('hero-icono');
+  var detalleEl  = document.getElementById('hero-detalle');
+  var precioEl   = document.getElementById('hero-precio');
+  var hamIco     = document.getElementById('nav-hamburguesa-ico');
+  var lentoMov   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var actual = 0, reloj = null;
 
-  var promos = [
-    { icono:'i-percent', etiqueta:'Promo 3x1',    detalle:'3 horas por el precio de 1 · de 12:00 a 21:00hs',           precio:'$1590', violeta:false },
-    { icono:'i-gift',    etiqueta:'Frigobar Free', detalle:'3 horas + todo el frigobar, en habitación 27',              precio:'$2400', violeta:false },
-    { icono:'i-flame',   etiqueta:'Kit para dos',  detalle:'3 horas + vibrador, disfraz, gel íntimo y anillo vibrador', precio:'$2400', violeta:true  }
-  ];
+  function pintarHero(i) {
+    var foto = heroFotos[i];
+    if (!foto) return;
+    heroFotos.forEach(function (f, n) { f.classList.toggle('activa', n === i); });
+    heroPuntos.forEach(function (p, n) {
+      p.classList.toggle('activo', n === i);
+      p.setAttribute('aria-selected', n === i ? 'true' : 'false');
+    });
+    if (nombreEl)  nombreEl.textContent = foto.dataset.nombre;
+    if (iconoUso)  iconoUso.setAttribute('href', '#' + foto.dataset.icono);
+    if (detalleEl) detalleEl.textContent = foto.dataset.detalle;
+    if (precioEl)  precioEl.textContent = foto.dataset.precio;
 
-  if (hero && heroPromo) {
-    var usoIco    = heroPromo.querySelector('.hero__promo-ico use');
-    var nombreEl  = heroPromo.querySelector('.hero__promo-nombre');
-    var detalleEl = heroPromo.querySelector('.hero__promo-detalle');
-    var precioEl  = heroPromo.querySelector('.hero__promo-precio');
-    var actual    = 0;
-
-    function pintarPromo(p) {
-      if (usoIco)    usoIco.setAttribute('href', '#' + p.icono);
-      if (nombreEl)  nombreEl.textContent = p.etiqueta;
-      if (detalleEl) detalleEl.textContent = p.detalle;
-      if (precioEl)  precioEl.textContent = p.precio;
-      hero.classList.toggle('hero--violeta', !!p.violeta);
-    }
-
-    function irAPromo(i) {
-      actual = (i + promos.length) % promos.length;
-      heroPromo.classList.add('cambia');
-      setTimeout(function () {
-        pintarPromo(promos[actual]);
-        heroPromo.classList.remove('cambia');
-      }, 260);
-    }
-
-    pintarPromo(promos[0]);
-    if (!lentoMov && promos.length > 1) {
-      setInterval(function () { irAPromo(actual + 1); }, 4800);
-    }
+    var esVioleta = foto.dataset.violeta === 'true';
+    hero.classList.toggle('hero--violeta', esVioleta);
+    if (hamIco) hamIco.setAttribute('href', esVioleta ? '#i-flame' : '#i-menu');
+    if (abrirBtn) abrirBtn.classList.toggle('nav__llama', esVioleta);
   }
+
+  function irAHero(i) {
+    if (!heroFotos.length) return;
+    actual = (i + heroFotos.length) % heroFotos.length;
+    if (hero) hero.classList.add('cambia');
+    setTimeout(function () {
+      pintarHero(actual);
+      if (hero) hero.classList.remove('cambia');
+    }, 260);
+  }
+
+  function arrancarHero() {
+    if (lentoMov || heroFotos.length < 2) return;
+    detenerHero();
+    reloj = setInterval(function () { irAHero(actual + 1); }, 5200);
+  }
+  function detenerHero() { if (reloj) { clearInterval(reloj); reloj = null; } }
+
+  heroPuntos.forEach(function (p, n) {
+    p.addEventListener('click', function () { irAHero(n); arrancarHero(); });
+  });
+  document.addEventListener('visibilitychange', function () {
+    document.hidden ? detenerHero() : arrancarHero();
+  });
+
+  if (hero && heroFotos.length) { pintarHero(0); arrancarHero(); }
 
   /* ----------------------------------------------------------
      APARICIONES AL SCROLL
