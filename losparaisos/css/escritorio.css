@@ -46,9 +46,7 @@
     max-width:var(--contenedor); margin-inline:auto; width:100%;
     flex-direction:row; align-items:center; flex-wrap:wrap; gap:28px;
   }
-  .hero__puntos{ gap:10px; }
-  .hero__punto{ width:36px; }
-  .hero__botones{ flex-direction:row; margin-left:auto; }
+  .hero__botones{ flex-direction:row; }
   .hero__pie .btn{ width:auto; }
 
   /* ---------- Contenedor de secciones ---------- */

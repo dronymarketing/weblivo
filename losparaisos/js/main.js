@@ -66,11 +66,10 @@
      HERO — carrusel de promos
      Arranca en el 3x1 (la más pedida), la foto de fondo cambia
      con cada promo. Con "Kit para dos" el hero se tiñe de
-     violeta/rosado y la hamburguesa pasa a ser una llamita.
+     violeta/rosado.
   ---------------------------------------------------------- */
   var hero       = document.querySelector('.hero');
   var heroFotos  = Array.prototype.slice.call(document.querySelectorAll('.hero__foto'));
-  var heroPuntos = Array.prototype.slice.call(document.querySelectorAll('.hero__punto'));
   var nombreEl   = document.getElementById('hero-nombre-txt');
   var iconoUso   = document.getElementById('hero-icono');
   var detalleEl  = document.getElementById('hero-detalle');
@@ -82,10 +81,6 @@
     var foto = heroFotos[i];
     if (!foto) return;
     heroFotos.forEach(function (f, n) { f.classList.toggle('activa', n === i); });
-    heroPuntos.forEach(function (p, n) {
-      p.classList.toggle('activo', n === i);
-      p.setAttribute('aria-selected', n === i ? 'true' : 'false');
-    });
     if (nombreEl)  nombreEl.textContent = foto.dataset.nombre;
     if (iconoUso)  iconoUso.setAttribute('href', '#' + foto.dataset.icono);
     if (detalleEl) detalleEl.textContent = foto.dataset.detalle;
@@ -112,9 +107,6 @@
   }
   function detenerHero() { if (reloj) { clearInterval(reloj); reloj = null; } }
 
-  heroPuntos.forEach(function (p, n) {
-    p.addEventListener('click', function () { irAHero(n); arrancarHero(); });
-  });
   document.addEventListener('visibilitychange', function () {
     document.hidden ? detenerHero() : arrancarHero();
   });
