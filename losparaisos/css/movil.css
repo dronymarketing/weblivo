@@ -133,31 +133,21 @@ button{ font:inherit; color:inherit; }
 }
 .nav__wa:active{ background:#1FAD56; }
 .nav__wa .ico{ width:17px; height:17px; }
-/* botón hamburguesa — las 3 barras cambian de forma y se
-   convierten en llama (no es un ícono que aparece encima, son las
-   mismas barras deformándose). Las fotos de fondo ya bloquean el
-   toque (pointer-events:none), esto no dispara el menú de imagen
-   de Android porque no hay ningún <svg>/<img> en el botón. */
+/* botón hamburguesa — la forma del ícono (menú ↔ llama) la anima
+   la librería morphicons (js/vendor/morphicons), que interpola el
+   trazado real entre los dos íconos. Acá solo el color/tamaño y el
+   parpadeo una vez que termina de convertirse en llama. */
 .nav__hamburguesa{
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0; color:var(--blanco);
   -webkit-touch-callout:none;
 }
-/* un solo elemento, recortado con clip-path: path().
-   En reposo son 3 subtrazados rectangulares (las líneas del menú).
-   Activo, los mismos 3 subtrazados —con la misma cantidad de puntos,
-   para que interpolen suave— arman la silueta real de una llama,
-   partida en 3 franjas que encastran sin costuras (es un solo
-   recorte, no 3 elementos superpuestos). */
 .nav__hamburguesa-icono{
-  position:relative; width:24px; height:24px;
-  background:currentColor;
-  transition:clip-path 480ms var(--curva), background-color 700ms var(--curva);
-  clip-path:path("M12 7L20 7L20 9L4 9L4 7Z M20 13L20 14L20 15L4 15L4 14.5L4 13.5L4 13Z M20 19L20 20L20 21L4 21L4 20L4 19Z");
+  width:24px; height:24px;
+  transition:color 700ms var(--curva);
 }
 .nav__llama .nav__hamburguesa-icono{
-  background:var(--rosado);
-  clip-path:path("M11.9 3L13.7 7L15.4 9L10 9L9.5 7Z M15.4 9L18.9 15L18.8 16L5.1 16L5.6 12.5L11 12L10 9Z M18.8 16L17.6 19L14.4 21.5L9.5 21.5L6.3 19L5.1 16Z");
+  color:var(--rosado);
   animation:llama-flicker 2.4s ease-in-out .5s infinite;
 }
 
