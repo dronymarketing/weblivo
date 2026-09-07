@@ -218,7 +218,13 @@ button{ font:inherit; color:inherit; }
   opacity:0; transition:opacity 1100ms var(--curva);
 }
 .hero__foto.activa{ opacity:1; }
-.hero__foto img{ width:100%; height:100%; object-fit:cover; }
+.hero__foto img{
+  width:100%; height:100%; object-fit:cover;
+  /* decorativa: sin esto, Android detecta la foto al mantener
+     presionado el nav (que flota encima) y ofrece "adjuntar imagen" */
+  pointer-events:none; -webkit-touch-callout:none;
+  -webkit-user-select:none; user-select:none; -webkit-user-drag:none;
+}
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
   background:linear-gradient(180deg,
@@ -378,7 +384,11 @@ button{ font:inherit; color:inherit; }
   display:flex; flex-direction:column; justify-content:flex-end;
   background:var(--verde-oscuro);
 }
-.promo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.promo img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  pointer-events:none; -webkit-touch-callout:none;
+  -webkit-user-select:none; user-select:none; -webkit-user-drag:none;
+}
 .promo__velo{
   position:absolute; inset:0;
   background:linear-gradient(180deg, rgba(0,20,6,.05) 0%, rgba(0,20,6,.30) 45%, rgba(0,20,6,.90) 100%);
