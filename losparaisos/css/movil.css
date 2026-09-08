@@ -239,23 +239,6 @@ button{ font:inherit; color:inherit; }
 .hero__cuerpo .antetitulo{ color:var(--verde); transition:color 700ms var(--curva); }
 .hero.hero--violeta .hero__cuerpo .antetitulo{ color:var(--rosado); }
 
-/* insignia de la promo — pegada arriba a la derecha del bloque de
-   texto (no del nav), ancla del "patrón Z": el ojo la ve primero,
-   luego baja en diagonal al título justo debajo */
-.hero__promo-badge{
-  position:absolute; right:var(--margen);
-  top:calc(var(--nav-alto) + 20vh - 60px);
-  width:44px; height:44px; display:grid; place-items:center;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.4);
-  background:rgba(0,0,0,.24);
-  transition:opacity 280ms var(--curva);
-}
-.hero__promo-ico{
-  width:20px; height:20px; flex:none; color:var(--verde);
-  transition:color 700ms var(--curva);
-}
-.hero.hero--violeta .hero__promo-ico{ color:var(--rosado); }
 .hero__cuerpo h1{
   font-size:38px; color:var(--blanco);
   text-shadow:0 2px 16px rgba(0,0,0,.4);
@@ -267,10 +250,9 @@ button{ font:inherit; color:inherit; }
   text-shadow:0 1px 8px rgba(0,0,0,.35);
   transition:opacity 280ms var(--curva);
 }
-.hero.cambia .hero__promo-badge,
 .hero.cambia .hero__cuerpo h1,
 .hero.cambia .hero__cuerpo p,
-.hero.cambia .hero__precio{ opacity:0; }
+.hero.cambia .hero__precio-chip{ opacity:0; }
 
 /* reborde animado — raya que gira entre verde y rosado según la promo */
 .hero__raya{
@@ -288,10 +270,24 @@ button{ font:inherit; color:inherit; }
   0%{ background-position:200% 0; }
   100%{ background-position:-200% 0; }
 }
-.hero__precio{
-  font-family:"Catavalo",serif; font-size:30px; color:var(--blanco);
-  text-shadow:0 2px 12px rgba(0,0,0,.4);
+/* insignia + precio, en una sola placa — el ícono que identifica
+   la oferta vive pegado al número que importa, no suelto en el aire */
+.hero__precio-chip{
+  display:inline-flex; align-items:center; gap:12px;
+  padding:10px 20px 10px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.30);
   transition:opacity 280ms var(--curva);
+}
+.hero__promo-ico{
+  width:22px; height:22px; flex:none; color:var(--verde);
+  transition:color 700ms var(--curva);
+}
+.hero.hero--violeta .hero__promo-ico{ color:var(--rosado); }
+.hero__precio{
+  font-family:"Catavalo",serif; font-size:28px; color:var(--blanco); line-height:1;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
 }
 
 .hero__pie{
