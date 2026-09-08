@@ -281,7 +281,7 @@ button{ font:inherit; color:inherit; }
 }
 
 .hero__pie{
-  padding:0 var(--margen) 64px;
+  padding:0 var(--margen) 42px;
   display:flex; flex-direction:column; align-items:center; gap:16px;
 }
 .hero__botones{ display:flex; flex-direction:column; gap:16px; width:100%; }
