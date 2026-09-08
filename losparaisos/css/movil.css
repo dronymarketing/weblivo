@@ -281,15 +281,13 @@ button{ font:inherit; color:inherit; }
 }
 
 .hero__pie{
-  padding:0 var(--margen) 50px;
-  display:flex; flex-direction:column; gap:18px;
+  padding:0 var(--margen) 64px;
+  display:flex; flex-direction:column; align-items:center; gap:16px;
 }
-.hero__botones{ display:flex; flex-direction:column; gap:10px; }
+.hero__botones{ display:flex; flex-direction:column; gap:16px; width:100%; }
 .hero__pie .btn{ font-size:13.5px; min-height:42px; padding:0 18px; font-weight:600; }
 
 .cue{
-  position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
-  z-index:5;
   color:var(--blanco);
 }
 .cue__circulo{

@@ -48,6 +48,7 @@
   }
   .hero__botones{ flex-direction:row; }
   .hero__pie .btn{ width:auto; }
+  .cue{ position:absolute; left:50%; bottom:20px; transform:translateX(-50%); }
 
   /* ---------- Contenedor de secciones ---------- */
   .seccion__encabezado{ margin-bottom:48px; }
