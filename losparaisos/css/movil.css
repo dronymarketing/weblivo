@@ -239,11 +239,13 @@ button{ font:inherit; color:inherit; }
 .hero__cuerpo .antetitulo{ color:var(--verde); transition:color 700ms var(--curva); }
 .hero.hero--violeta .hero__cuerpo .antetitulo{ color:var(--rosado); }
 
-/* insignia de la promo — arriba a la derecha, ancla del "patrón Z":
-   el ojo la ve primero, luego baja en diagonal al bloque de texto */
+/* insignia de la promo — pegada arriba a la derecha del bloque de
+   texto (no del nav), ancla del "patrón Z": el ojo la ve primero,
+   luego baja en diagonal al título justo debajo */
 .hero__promo-badge{
-  position:absolute; top:calc(var(--nav-alto) + 20px); right:var(--margen);
-  width:48px; height:48px; display:grid; place-items:center;
+  position:absolute; right:var(--margen);
+  top:calc(var(--nav-alto) + 20vh - 60px);
+  width:44px; height:44px; display:grid; place-items:center;
   border-radius:50%;
   border:1px solid rgba(255,255,255,.4);
   background:rgba(0,0,0,.24);

@@ -41,7 +41,7 @@
     max-width:var(--contenedor); margin-inline:auto; width:100%;
   }
   .hero__cuerpo p{ font-size:17px; }
-  .hero__promo-badge{ top:calc(var(--nav-alto) + 28px); width:60px; height:60px; }
+  .hero__promo-badge{ top:calc(var(--nav-alto) + 24vh - 76px); width:60px; height:60px; }
   .hero__promo-ico{ width:26px; height:26px; }
   .hero__pie{
     padding:0 var(--margen) 56px;
