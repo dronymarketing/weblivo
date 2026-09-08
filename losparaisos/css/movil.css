@@ -219,7 +219,7 @@ button{ font:inherit; color:inherit; }
    mientras la promo está activa — solo móvil, arranca del centro
    que ya tenían las fotos */
 .hero__foto.activa img{
-  animation:hero-pan 6s linear forwards;
+  animation:hero-pan 8s linear forwards;
 }
 @keyframes hero-pan{
   0%   { object-position:50% 50%; }
