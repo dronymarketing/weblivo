@@ -130,7 +130,7 @@ import { createMorph } from './vendor/morphicons/dom.js';
   function arrancarHero() {
     if (lentoMov || heroFotos.length < 2) return;
     detenerHero();
-    reloj = setInterval(function () { irAHero(actual + 1); }, 5200);
+    reloj = setInterval(function () { irAHero(actual + 1); }, 6000);
   }
   function detenerHero() { if (reloj) { clearInterval(reloj); reloj = null; } }
 

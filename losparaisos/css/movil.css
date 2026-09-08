@@ -209,11 +209,21 @@ button{ font:inherit; color:inherit; }
 }
 .hero__foto.activa{ opacity:1; }
 .hero__foto img{
-  width:100%; height:100%; object-fit:cover;
+  width:100%; height:100%; object-fit:cover; object-position:50% 50%;
   /* decorativa: sin esto, Android detecta la foto al mantener
      presionado el nav (que flota encima) y ofrece "adjuntar imagen" */
   pointer-events:none; -webkit-touch-callout:none;
   -webkit-user-select:none; user-select:none; -webkit-user-drag:none;
+}
+/* paneo sutil hacia la izquierda (se revela la derecha de la foto)
+   mientras la promo está activa — solo móvil, arranca del centro
+   que ya tenían las fotos */
+.hero__foto.activa img{
+  animation:hero-pan 6s ease-in-out forwards;
+}
+@keyframes hero-pan{
+  0%   { object-position:50% 50%; }
+  100% { object-position:64% 50%; }
 }
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
