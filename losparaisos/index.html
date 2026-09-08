@@ -10,10 +10,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=47">
-<link rel="stylesheet" href="css/fuentes.css?v=47">
-<link rel="stylesheet" href="css/movil.css?v=47">
-<link rel="stylesheet" href="css/escritorio.css?v=47">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=48">
+<link rel="stylesheet" href="css/fuentes.css?v=48">
+<link rel="stylesheet" href="css/movil.css?v=48">
+<link rel="stylesheet" href="css/escritorio.css?v=48">
 </head>
 <body>
 
@@ -113,17 +113,20 @@
   <div class="hero__fotos" aria-hidden="true">
     <div class="hero__foto activa"
          data-icono="i-percent" data-nombre="Promo 3x1"
-         data-detalle="3 horas por el precio de 1 · de 12:00 a 21:00hs" data-precio="$1590" data-violeta="false">
+         data-detalle="3 horas por el precio de 1 · de 12:00 a 21:00hs" data-precio="$1590" data-violeta="false"
+         data-mensaje="¡Hola! Quiero reservar la Promo 3x1 (3 horas por el precio de 1).">
       <img src="img/hero-habitacion.jpg" alt="" data-fallback>
     </div>
     <div class="hero__foto"
          data-icono="i-gift" data-nombre="Frigobar Free"
-         data-detalle="3 horas + todo el frigobar, en habitación 27" data-precio="$2400" data-violeta="false">
+         data-detalle="3 horas + todo el frigobar, en habitación 27" data-precio="$2400" data-violeta="false"
+         data-mensaje="¡Hola! Quiero reservar la promo Frigobar Free (3 horas + todo el frigobar).">
       <img src="img/frigobar.jpg" alt="" data-fallback>
     </div>
     <div class="hero__foto"
          data-icono="i-flame" data-nombre="Kit para dos"
-         data-detalle="3 horas + vibrador, disfraz, gel íntimo y anillo vibrador" data-precio="$2400" data-violeta="true">
+         data-detalle="3 horas + vibrador, disfraz, gel íntimo y anillo vibrador" data-precio="$2400" data-violeta="true"
+         data-mensaje="¡Hola! Quiero reservar el Kit para dos.">
       <img src="img/sexshop.jpg" alt="" data-fallback>
     </div>
   </div>
@@ -141,7 +144,7 @@
 
   <div class="hero__pie">
     <div class="hero__botones">
-      <a class="btn btn--verde" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
+      <a class="btn btn--verde" id="hero-wa-btn" href="https://wa.link/7cp9f4" target="_blank" rel="noopener">
         <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
         Reservar por WhatsApp
       </a>
@@ -490,6 +493,6 @@
   </div>
 </footer>
 
-<script type="module" src="js/main.js?v=47"></script>
+<script type="module" src="js/main.js?v=48"></script>
 </body>
 </html>

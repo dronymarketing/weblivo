@@ -99,6 +99,8 @@ import { createMorph } from './vendor/morphicons/dom.js';
   var iconoUso   = document.getElementById('hero-icono');
   var detalleEl  = document.getElementById('hero-detalle');
   var precioEl   = document.getElementById('hero-precio');
+  var heroWaBtn  = document.getElementById('hero-wa-btn');
+  var WA_NUMERO  = '59899619360';
   var lentoMov   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var actual = 0, reloj = null;
 
@@ -110,6 +112,9 @@ import { createMorph } from './vendor/morphicons/dom.js';
     if (iconoUso)  iconoUso.setAttribute('href', '#' + foto.dataset.icono);
     if (detalleEl) detalleEl.textContent = foto.dataset.detalle;
     if (precioEl)  precioEl.textContent = foto.dataset.precio;
+    if (heroWaBtn && foto.dataset.mensaje) {
+      heroWaBtn.href = 'https://wa.me/' + WA_NUMERO + '?text=' + encodeURIComponent(foto.dataset.mensaje);
+    }
 
     var esVioleta = foto.dataset.violeta === 'true';
     hero.classList.toggle('hero--violeta', esVioleta);
