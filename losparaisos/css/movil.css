@@ -223,7 +223,7 @@ button{ font:inherit; color:inherit; }
 }
 @keyframes hero-pan{
   0%   { object-position:50% 50%; }
-  100% { object-position:64% 50%; }
+  100% { object-position:57% 50%; }
 }
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
