@@ -245,7 +245,7 @@ button{ font:inherit; color:inherit; }
   transition:opacity 280ms var(--curva);
 }
 .hero__cuerpo p{
-  max-width:var(--lectura); margin:16px 0 0;
+  max-width:var(--lectura); margin:10px 0 0;
   font-size:15.5px; color:rgba(255,255,255,.92);
   text-shadow:0 1px 8px rgba(0,0,0,.35);
   transition:opacity 280ms var(--curva);
@@ -261,7 +261,7 @@ button{ font:inherit; color:inherit; }
 .hero__precio-chip{
   position:relative; isolation:isolate; overflow:hidden;
   display:inline-flex; align-items:center; gap:12px;
-  margin-top:16px;
+  margin-top:10px;
   padding:10px 20px 10px 14px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.16);
