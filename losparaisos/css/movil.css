@@ -113,13 +113,16 @@ button{ font:inherit; color:inherit; }
   height:var(--nav-alto);
   display:flex; align-items:center; justify-content:space-between;
   padding-inline:var(--margen);
-  transition:background-color 420ms var(--curva), border-color 420ms var(--curva);
+  transition:background-color 420ms var(--curva), border-color 420ms var(--curva),
+             backdrop-filter 420ms var(--curva);
   border-bottom:1px solid transparent;
 }
 .nav.es-tope{ background:transparent; }
 .nav.es-solido{
-  background:var(--verde-oscuro);
-  border-bottom-color:rgba(255,255,255,.14);
+  background:rgba(63,128,80,.52);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border-bottom-color:rgba(255,255,255,.16);
 }
 .nav__logo{ display:block; height:34px; }
 .nav__logo img{ height:34px; width:auto; }
