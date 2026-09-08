@@ -229,6 +229,7 @@ button{ font:inherit; color:inherit; }
 .hero.hero--violeta .hero__velo--violeta{ opacity:1; }
 .hero__cuerpo{
   --anillo: var(--verde);
+  position:relative;
   padding:0 var(--margen);
   margin-bottom:auto;
   padding-top:calc(var(--nav-alto) + 20vh);
@@ -237,23 +238,34 @@ button{ font:inherit; color:inherit; }
 .hero.hero--violeta .hero__cuerpo{ --anillo: var(--rosado); }
 .hero__cuerpo .antetitulo{ color:var(--verde); transition:color 700ms var(--curva); }
 .hero.hero--violeta .hero__cuerpo .antetitulo{ color:var(--rosado); }
+
+/* insignia de la promo — arriba a la derecha, ancla del "patrón Z":
+   el ojo la ve primero, luego baja en diagonal al bloque de texto */
+.hero__promo-badge{
+  position:absolute; top:calc(var(--nav-alto) + 20px); right:var(--margen);
+  width:48px; height:48px; display:grid; place-items:center;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.4);
+  background:rgba(0,0,0,.24);
+  transition:opacity 280ms var(--curva);
+}
+.hero__promo-ico{
+  width:20px; height:20px; flex:none; color:var(--verde);
+  transition:color 700ms var(--curva);
+}
+.hero.hero--violeta .hero__promo-ico{ color:var(--rosado); }
 .hero__cuerpo h1{
-  display:flex; align-items:center; gap:12px;
   font-size:38px; color:var(--blanco);
   text-shadow:0 2px 16px rgba(0,0,0,.4);
   transition:opacity 280ms var(--curva);
 }
-.hero__promo-ico{
-  width:.72em; height:.72em; flex:none; color:var(--verde);
-  transition:color 700ms var(--curva);
-}
-.hero.hero--violeta .hero__promo-ico{ color:var(--rosado); }
 .hero__cuerpo p{
   max-width:var(--lectura); margin:14px 0 0;
   font-size:15.5px; color:rgba(255,255,255,.92);
   text-shadow:0 1px 8px rgba(0,0,0,.35);
   transition:opacity 280ms var(--curva);
 }
+.hero.cambia .hero__promo-badge,
 .hero.cambia .hero__cuerpo h1,
 .hero.cambia .hero__cuerpo p,
 .hero.cambia .hero__precio{ opacity:0; }
