@@ -279,6 +279,11 @@ button{ font:inherit; color:inherit; }
   border:1px solid rgba(255,255,255,.22);
   background:rgba(0,0,0,.30);
   transition:opacity 280ms var(--curva);
+  animation:chip-reborde 2.6s ease-in-out infinite;
+}
+@keyframes chip-reborde{
+  0%,100%{ border-color:rgba(255,255,255,.22); }
+  50%{ border-color:var(--anillo); }
 }
 .hero__promo-ico{
   width:22px; height:22px; flex:none; color:var(--verde);
