@@ -254,22 +254,6 @@ button{ font:inherit; color:inherit; }
 .hero.cambia .hero__cuerpo p,
 .hero.cambia .hero__precio-chip{ opacity:0; }
 
-/* reborde animado — raya que gira entre verde y rosado según la promo */
-.hero__raya{
-  position:relative; height:2px; width:120px; margin:20px 0 14px;
-  overflow:hidden; border-radius:2px;
-  background:rgba(255,255,255,.18);
-}
-.hero__raya::after{
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(90deg, transparent, var(--anillo), transparent);
-  background-size:200% 100%;
-  animation:raya-corre 2.6s linear infinite;
-}
-@keyframes raya-corre{
-  0%{ background-position:200% 0; }
-  100%{ background-position:-200% 0; }
-}
 /* insignia + precio, en una sola placa — el ícono que identifica
    la oferta vive pegado al número que importa, no suelto en el aire.
    Reborde quieto y sobrio; un filo de luz muy fino recorre solo el
@@ -277,6 +261,7 @@ button{ font:inherit; color:inherit; }
 .hero__precio-chip{
   position:relative; isolation:isolate; overflow:hidden;
   display:inline-flex; align-items:center; gap:12px;
+  margin-top:32px;
   padding:10px 20px 10px 14px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.16);
