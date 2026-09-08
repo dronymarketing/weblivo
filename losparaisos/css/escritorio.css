@@ -37,7 +37,7 @@
 
   /* ---------- Hero ---------- */
   .hero__cuerpo{
-    padding-top:calc(var(--nav-alto) + 24vh);
+    padding-top:calc(var(--nav-alto) + 29vh);
     max-width:var(--contenedor); margin-inline:auto; width:100%;
   }
   .hero__cuerpo p{ font-size:17px; }
