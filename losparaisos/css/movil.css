@@ -271,30 +271,32 @@ button{ font:inherit; color:inherit; }
   100%{ background-position:-200% 0; }
 }
 /* insignia + precio, en una sola placa — el ícono que identifica
-   la oferta vive pegado al número que importa, no suelto en el aire */
+   la oferta vive pegado al número que importa, no suelto en el aire.
+   Reborde quieto y sobrio; un filo de luz muy fino recorre solo el
+   borde en loop — el acento vive en el detalle, no en toda la placa. */
 .hero__precio-chip{
-  position:relative; overflow:hidden; isolation:isolate;
+  position:relative;
   display:inline-flex; align-items:center; gap:12px;
   padding:10px 20px 10px 14px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,.22);
+  border:1px solid rgba(255,255,255,.16);
   background:rgba(0,0,0,.30);
   transition:opacity 280ms var(--curva);
-  animation:chip-reborde 2.6s ease-in-out infinite;
 }
-.hero__precio-chip::before{
-  content:""; position:absolute; inset:0; z-index:-1;
-  background:linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--anillo) 45%, transparent) 50%, transparent 65%);
-  background-size:220% 100%;
-  animation:chip-brillo 3.2s ease-in-out infinite;
+.hero__precio-chip::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border-radius:inherit; padding:1px;
+  background:linear-gradient(115deg, transparent 32%, var(--anillo) 50%, transparent 68%);
+  background-size:280% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:.85;
+  animation:chip-filo 4.8s ease-in-out infinite;
 }
-@keyframes chip-reborde{
-  0%,100%{ border-color:rgba(255,255,255,.22); }
-  50%{ border-color:var(--anillo); }
-}
-@keyframes chip-brillo{
-  0%{ background-position:160% 0; }
-  100%{ background-position:-60% 0; }
+@keyframes chip-filo{
+  0%{ background-position:220% 0; }
+  55%,100%{ background-position:-120% 0; }
 }
 .hero__promo-ico{
   width:22px; height:22px; flex:none; color:var(--verde);
