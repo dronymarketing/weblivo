@@ -34,14 +34,27 @@ import { createMorph } from './vendor/morphicons/dom.js';
   window.addEventListener('orientationchange', fijarAltoReal);
 
   /* ----------------------------------------------------------
-     NAV — transparente en el tope, glass apenas arranca el
-     scroll (todavía dentro del hero)
+     NAV — 3 estados: transparente en el tope, glass sin tono
+     apenas arranca el scroll (todavía dentro del hero), verde
+     sólido puro al llegar a Tarifas.
   ---------------------------------------------------------- */
+  var tarifasEl = document.getElementById('tarifas');
+  var umbralSolido = Infinity;
+  function fijarUmbralSolido() {
+    if (tarifasEl) umbralSolido = Math.max(0, tarifasEl.offsetTop - (nav ? nav.offsetHeight : 0));
+  }
+  fijarUmbralSolido();
+  window.addEventListener('resize', fijarUmbralSolido);
+  window.addEventListener('orientationchange', fijarUmbralSolido);
+
   function estadoNav() {
     if (!nav) return;
     var y = window.scrollY || window.pageYOffset;
-    nav.classList.toggle('es-solido', y >= 80);
-    nav.classList.toggle('es-tope', y < 80);
+    var tope   = y < 80;
+    var solido = y >= umbralSolido;
+    nav.classList.toggle('es-tope', tope);
+    nav.classList.toggle('es-solido', solido);
+    nav.classList.toggle('es-glass', !tope && !solido);
   }
   var pendiente = false;
   function alScrollear() {
