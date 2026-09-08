@@ -275,13 +275,28 @@ button{ font:inherit; color:inherit; }
    Reborde quieto y sobrio; un filo de luz muy fino recorre solo el
    borde en loop — el acento vive en el detalle, no en toda la placa. */
 .hero__precio-chip{
-  position:relative;
+  position:relative; isolation:isolate; overflow:hidden;
   display:inline-flex; align-items:center; gap:12px;
   padding:10px 20px 10px 14px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.30);
+  background:rgba(0,0,0,.34);
+  backdrop-filter:blur(10px) saturate(140%);
+  -webkit-backdrop-filter:blur(10px) saturate(140%);
   transition:opacity 280ms var(--curva);
+}
+/* aura — mancha de luz difusa que respira despacio detrás del texto,
+   del color de la promo activa; el fondo vive, sin gritar */
+.hero__precio-chip::before{
+  content:""; position:absolute; z-index:-1; pointer-events:none;
+  width:140%; height:220%; left:-20%; top:-60%;
+  background:radial-gradient(closest-side, var(--anillo), transparent 72%);
+  opacity:.32; filter:blur(6px);
+  animation:chip-aura 7s ease-in-out infinite alternate;
+}
+@keyframes chip-aura{
+  0%{ transform:translate(-8%,-4%) scale(.9); }
+  100%{ transform:translate(10%,6%) scale(1.15); }
 }
 .hero__precio-chip::after{
   content:""; position:absolute; inset:0; pointer-events:none;
