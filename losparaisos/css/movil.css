@@ -264,7 +264,6 @@ button{ font:inherit; color:inherit; }
   margin-top:10px;
   padding:10px 20px 10px 14px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,.16);
   background:rgba(0,0,0,.34);
   backdrop-filter:blur(10px) saturate(140%);
   -webkit-backdrop-filter:blur(10px) saturate(140%);
@@ -287,9 +286,9 @@ button{ font:inherit; color:inherit; }
   content:""; position:absolute; inset:0; pointer-events:none;
   border-radius:inherit; padding:1px;
   background-image:repeating-linear-gradient(115deg,
-    transparent 0px, transparent 110px,
+    rgba(255,255,255,.16) 0px, rgba(255,255,255,.16) 110px,
     var(--anillo) 150px,
-    transparent 190px, transparent 300px);
+    rgba(255,255,255,.16) 190px, rgba(255,255,255,.16) 300px);
   background-size:300px 100%;
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
