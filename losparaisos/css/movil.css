@@ -301,17 +301,20 @@ button{ font:inherit; color:inherit; }
 .hero__precio-chip::after{
   content:""; position:absolute; inset:0; pointer-events:none;
   border-radius:inherit; padding:1px;
-  background:linear-gradient(115deg, transparent 32%, var(--anillo) 50%, transparent 68%);
-  background-size:280% 100%;
+  background-image:repeating-linear-gradient(115deg,
+    transparent 0px, transparent 110px,
+    var(--anillo) 150px,
+    transparent 190px, transparent 300px);
+  background-size:300px 100%;
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
-  opacity:.85;
-  animation:chip-filo 4.8s ease-in-out infinite;
+  opacity:.75;
+  animation:chip-filo 7s linear infinite;
 }
 @keyframes chip-filo{
-  0%{ background-position:220% 0; }
-  55%,100%{ background-position:-120% 0; }
+  from{ background-position-x:0px; }
+  to{ background-position-x:-300px; }
 }
 .hero__promo-ico{
   width:22px; height:22px; flex:none; color:var(--verde);
