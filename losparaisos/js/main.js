@@ -21,6 +21,17 @@ import { createMorph } from './vendor/morphicons/dom.js';
   var FLAME_D = 'M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4';
   var hamPath  = document.getElementById('nav-hamburguesa-path');
   var hamMorph = hamPath ? createMorph(hamPath, MENU_D) : null;
+  var heroEsVioleta = false;
+
+  /* Llama solo mientras el nav todavía está sobre el hero (tope o
+     glass); al llegar a Tarifas (es-solido) vuelve a la hamburguesa,
+     con la misma lógica que hace cambiar de color al nav. */
+  function actualizarIconoNav() {
+    var enTarifas = nav && nav.classList.contains('es-solido');
+    var llama = heroEsVioleta && !enTarifas;
+    if (abrirBtn) abrirBtn.classList.toggle('nav__llama', llama);
+    if (hamMorph) hamMorph.morphTo(llama ? FLAME_D : MENU_D, 'bouncy');
+  }
 
   /* ----------------------------------------------------------
      ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
@@ -55,6 +66,7 @@ import { createMorph } from './vendor/morphicons/dom.js';
     nav.classList.toggle('es-tope', tope);
     nav.classList.toggle('es-solido', solido);
     nav.classList.toggle('es-glass', !tope && !solido);
+    actualizarIconoNav();
   }
   var pendiente = false;
   function alScrollear() {
@@ -116,10 +128,9 @@ import { createMorph } from './vendor/morphicons/dom.js';
       heroWaBtn.href = 'https://wa.me/' + WA_NUMERO + '?text=' + encodeURIComponent(foto.dataset.mensaje);
     }
 
-    var esVioleta = foto.dataset.violeta === 'true';
-    hero.classList.toggle('hero--violeta', esVioleta);
-    if (abrirBtn) abrirBtn.classList.toggle('nav__llama', esVioleta);
-    if (hamMorph) hamMorph.morphTo(esVioleta ? FLAME_D : MENU_D, 'bouncy');
+    heroEsVioleta = foto.dataset.violeta === 'true';
+    hero.classList.toggle('hero--violeta', heroEsVioleta);
+    actualizarIconoNav();
   }
 
   function irAHero(i) {
