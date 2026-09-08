@@ -232,7 +232,7 @@ button{ font:inherit; color:inherit; }
   position:relative;
   padding:0 var(--margen);
   margin-bottom:auto;
-  padding-top:calc(var(--nav-alto) + 25vh);
+  padding-top:calc(var(--nav-alto) + 30vh);
   color:var(--blanco);
 }
 .hero.hero--violeta .hero__cuerpo{ --anillo: var(--rosado); }
