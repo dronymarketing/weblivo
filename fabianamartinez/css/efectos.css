@@ -58,7 +58,7 @@
 /* El color vive acá, en el nombre de la clase — JS solo lee
    estas variables, nunca las hardcodea. */
 .tema-crema{      --tema-fondo:#EDE1D2; --tema-texto:#412F26; }
-.tema-marron{     --tema-fondo:#412F26; --tema-texto:#FFFFFF; }
+.tema-marron{     --tema-fondo:#412F26; --tema-texto:#EDE1D2; }
 .tema-terracota{  --tema-fondo:#5D2510; --tema-texto:#FFFFFF; }
 .tema-oliva{      --tema-fondo:#424530; --tema-texto:#FFFFFF; }
 .tema-mostaza{    --tema-fondo:#EBC383; --tema-texto:#412F26; }
@@ -78,9 +78,9 @@
    con línea en terracota). Sobre una sección oscura (.tema-marron,
    .tema-terracota) hace falta la variante clara para que no se
    pierdan contra el fondo. */
-.tema-marron .antetitulo,
+.tema-marron .antetitulo{ color:rgba(237,225,210,.8); }
 .tema-terracota .antetitulo{ color:#EEC3B3; }
-.tema-marron .btn--linea,
+.tema-marron .btn--linea{ color:var(--fondo-alt); border-color:rgba(237,225,210,.4); }
 .tema-terracota .btn--linea{ color:var(--blanco); border-color:rgba(255,255,255,.35); }
 
 /* ---------- H · Carrusel con fundido ---------- */

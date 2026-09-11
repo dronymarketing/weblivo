@@ -143,12 +143,32 @@
     <p class="hero__meta">Venta · Alquiler · Montevideo &amp; Costa de Oro</p>
   </div>
 
-  <a class="cue" href="#destacadas" aria-label="Ver propiedades destacadas">
+  <a class="cue" href="#nosotros" aria-label="Ver quién te acompaña">
     <svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg>
   </a>
 </section>
 
-<!-- ============ DESTACADAS — galería anclada por propiedad (efecto E + F · tema-marron) ============ -->
+<!-- ============ NOSOTROS / QUIÉNES SOMOS (efecto F · tema-crema) ============ -->
+<section class="seccion tema-crema" id="nosotros">
+  <div class="contenedor">
+    <div class="aparece" data-orden="0">
+      <p class="antetitulo">Quiénes somos</p>
+      <h2>Fabiana Martínez</h2>
+      <p style="max-width:var(--lectura);margin-top:14px">
+        Asesora inmobiliaria en Montevideo y Costa de Oro. Trabajo en equipo con vos,
+        acompañándote desde lo humano y lo profesional en cada etapa: venta, compra o alquiler.
+      </p>
+      <a class="btn btn--linea" href="nosotros.html" style="margin-top:20px">Conocer más</a>
+    </div>
+
+    <div class="cifras aparece" data-orden="1">
+      <div class="cifra"><p class="cifra__num">2</p><p class="cifra__txt">Zonas de cobertura</p></div>
+      <div class="cifra"><p class="cifra__num">100%</p><p class="cifra__txt">Acompañamiento directo</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DESTACADAS — foto fija con tinte de marca (efecto D + C + F) ============ -->
 <section class="seccion tema-marron" id="destacadas">
   <div class="contenedor">
     <div class="encabezado aparece" data-orden="0">
@@ -161,10 +181,19 @@
     </div>
   </div>
 
-  <div class="galeria-anclada">
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/pocitos-living.jpg" alt="Living de un apartamento de muestra en Cordón" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/cordon-apto-2.jpg" alt="Cocina de un apartamento de muestra en Cordón" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/cordon-apto-3.jpg" alt="Dormitorio de un apartamento de muestra en Cordón" data-fallback loading="lazy"></div></div>
+  <div class="propiedad-fija">
+    <div class="propiedad-fija__pin">
+      <div class="propiedad-fija__base">
+        <img src="img/propiedades/pocitos-living.jpg" alt="Living de un apartamento de muestra en Cordón" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__tinte"></div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--1">
+        <img src="img/propiedades/cordon-apto-2.jpg" alt="Cocina de un apartamento de muestra en Cordón" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--2">
+        <img src="img/propiedades/cordon-apto-3.jpg" alt="Dormitorio de un apartamento de muestra en Cordón" data-fallback loading="lazy">
+      </div>
+    </div>
   </div>
   <div class="contenedor proyecto-destacado__cuerpo">
     <p class="proyecto-destacado__zona">Cordón · Venta</p>
@@ -173,10 +202,19 @@
     <a class="btn btn--linea" href="propiedad.html">Ver propiedad</a>
   </div>
 
-  <div class="galeria-anclada">
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/carrasco-interior.jpg" alt="Living de una casa de muestra en Nuevo París" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/nuevoparis-2.jpg" alt="Patio de una casa de muestra en Nuevo París" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/nuevoparis-3.jpg" alt="Cocina de una casa de muestra en Nuevo París" data-fallback loading="lazy"></div></div>
+  <div class="propiedad-fija">
+    <div class="propiedad-fija__pin">
+      <div class="propiedad-fija__base">
+        <img src="img/propiedades/carrasco-interior.jpg" alt="Living de una casa de muestra en Nuevo París" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__tinte"></div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--1">
+        <img src="img/propiedades/nuevoparis-2.jpg" alt="Patio de una casa de muestra en Nuevo París" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--2">
+        <img src="img/propiedades/nuevoparis-3.jpg" alt="Cocina de una casa de muestra en Nuevo París" data-fallback loading="lazy">
+      </div>
+    </div>
   </div>
   <div class="contenedor proyecto-destacado__cuerpo">
     <p class="proyecto-destacado__zona">Nuevo París · Venta</p>
@@ -185,10 +223,19 @@
     <a class="btn btn--linea" href="propiedad.html">Ver propiedad</a>
   </div>
 
-  <div class="galeria-anclada">
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/malvin-living.jpg" alt="Living de una casa de muestra en Carrasco Norte" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/carrasconorte-2.jpg" alt="Exterior de una casa de muestra en Carrasco Norte" data-fallback loading="lazy"></div></div>
-    <div class="galeria-anclada__item"><div class="galeria-anclada__foto"><img src="img/propiedades/carrasconorte-3.jpg" alt="Jardín de una casa de muestra en Carrasco Norte" data-fallback loading="lazy"></div></div>
+  <div class="propiedad-fija">
+    <div class="propiedad-fija__pin">
+      <div class="propiedad-fija__base">
+        <img src="img/propiedades/malvin-living.jpg" alt="Living de una casa de muestra en Carrasco Norte" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__tinte"></div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--1">
+        <img src="img/propiedades/carrasconorte-2.jpg" alt="Exterior de una casa de muestra en Carrasco Norte" data-fallback loading="lazy">
+      </div>
+      <div class="propiedad-fija__extra propiedad-fija__extra--2">
+        <img src="img/propiedades/carrasconorte-3.jpg" alt="Jardín de una casa de muestra en Carrasco Norte" data-fallback loading="lazy">
+      </div>
+    </div>
   </div>
   <div class="contenedor proyecto-destacado__cuerpo">
     <p class="proyecto-destacado__zona">Carrasco Norte · Venta</p>
@@ -244,28 +291,8 @@
   </div>
 </section>
 
-<!-- ============ NOSOTROS (efecto F · tema-marron) ============ -->
-<section class="seccion tema-marron" id="nosotros">
-  <div class="contenedor">
-    <div class="aparece" data-orden="0">
-      <p class="antetitulo">Quién te acompaña</p>
-      <h2>Fabiana Martínez</h2>
-      <p style="max-width:var(--lectura);margin-top:14px">
-        Asesora inmobiliaria en Montevideo y Costa de Oro. Trabajo en equipo con vos,
-        acompañándote desde lo humano y lo profesional en cada etapa: venta, compra o alquiler.
-      </p>
-      <a class="btn btn--linea" href="nosotros.html" style="margin-top:20px">Conocer más</a>
-    </div>
-
-    <div class="cifras aparece" data-orden="1">
-      <div class="cifra"><p class="cifra__num">2</p><p class="cifra__txt">Zonas de cobertura</p></div>
-      <div class="cifra"><p class="cifra__num">100%</p><p class="cifra__txt">Acompañamiento directo</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CTA (efecto F · tema-crema) ============ -->
-<section class="seccion cta tema-crema" id="contacto">
+<!-- ============ CTA (efecto F · tema-marron) ============ -->
+<section class="seccion cta tema-marron" id="contacto">
   <div class="contenedor">
     <div class="aparece" data-orden="0">
       <p class="antetitulo">Contacto</p>
