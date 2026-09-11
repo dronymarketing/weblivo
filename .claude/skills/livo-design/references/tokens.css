@@ -1,0 +1,165 @@
+/* ============================================================
+   LIVO — Tokens de diseño
+
+   Las medidas salen de medir livo.com.uy, livo.com.uy/martinaxv
+   y nexalegales.com en 375px.
+
+   Móvil primero. El bloque de escritorio del final solo escala.
+   ============================================================ */
+
+:root {
+
+  /* ---------- Tipografía: tamaños ---------- */
+  --fs-h1:      40px;   /* constante Livo: 41.6 en Livo, 40 en Panacea */
+  --fs-h2:      28px;   /* PENDIENTE: Livo usa 32, martinaxv 28.8 */
+  --fs-h3:      22px;
+  --fs-body:    16px;   /* piso, nunca menos */
+  --fs-small:   14px;
+  --fs-micro:   11px;   /* antetítulos en mayúsculas */
+
+  /* ---------- Tipografía: ritmo ---------- */
+  --lh-titulo:  1.15;
+  --lh-body:    1.6;
+  --lh-amplio:  1.8;      /* registro ceremonial */
+
+  --ls-titulo:  -0.02em;  /* tracking negativo en títulos grandes */
+  --ls-micro:    0.12em;  /* mayúsculas espaciadas */
+  --ls-ceremonial: 0.2em; /* cuerpo espaciado, estilo invitación */
+
+  /* ---------- Espaciado (base 8) ---------- */
+  --sp-1:  8px;
+  --sp-2:  16px;
+  --sp-3:  24px;
+  --sp-4:  32px;
+  --sp-5:  48px;
+  --sp-6:  64px;
+  --sp-7:  96px;
+
+  --sp-seccion:      72px;
+  --sp-seccion-peso: 80px;
+
+  /* ---------- Medidas ---------- */
+  --max-contenedor: 1200px;
+  --max-lectura:     460px;  /* nunca líneas más largas */
+  --margen-lateral:   24px;  /* el mismo del header, para que alineen */
+
+  --alto-boton: 52px;        /* mínimo absoluto 44 */
+
+  --radio-capsula: 999px;    /* diseño, celebración, juvenil, innovador */
+  --radio-recto:     4px;    /* legal, institucional, tradicional */
+
+  /* ---------- Nav ---------- */
+  --nav-alto:          60px;  /* fijo (por defecto) */
+  --nav-alto-absoluto: 68px;  /* si el header se va con el scroll */
+  --nav-logo-alto:     28px;  /* 32px si el header es de 68 */
+
+  /* ---------- Movimiento ---------- */
+  --dur-scroll:  800ms;       /* apariciones al hacer scroll */
+  --dur-menu:    550ms;       /* apertura del panel de menú */
+  --dur-cierre:  350ms;       /* cerrar siempre más rápido que abrir */
+  --dur-micro:   300ms;       /* hover, foco, ícono */
+  --ease:        cubic-bezier(.16, 1, .3, 1);
+  --stagger:     90ms;
+
+  /* ---------- Rebordes ---------- */
+  --borde: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+
+/* ============================================================
+   PALETAS POR TONO
+   Activá una con la clase en <body>.
+   Si el proyecto tiene paleta propia, va en css/tokens-proyecto.css
+   y pisa a estas.
+   ============================================================ */
+
+/* --- Ceremonial y celebración — medido en livo.com.uy/martinaxv --- */
+.tono-ceremonial {
+  --fondo:        #0A1A3D;
+  --fondo-alt:    #2D1B4E;
+  --acento:       #F0BD5C;
+  --acento-claro: #F5D28E;
+  --texto:        #F5F2EC;
+  --texto-suave:  rgba(245, 242, 236, .72);
+  --velo:         rgba(240, 189, 92, .06);
+}
+
+/* --- Sobrio e institucional — medido en nexalegales.com --- */
+.tono-sobrio {
+  --fondo:        #FFFFFF;
+  --fondo-alt:    #0F193A;
+  --acento:       #0F193A;
+  --acento-claro: #3A4A7A;
+  --texto:        #0F193A;
+  --texto-suave:  rgba(15, 25, 58, .70);
+  --velo:         rgba(0, 0, 0, .05);
+}
+
+/* --- Cálido y artesanal — paleta de marca Livo --- */
+.tono-calido {
+  --fondo:        #E5E1E0;  /* cream */
+  --fondo-alt:    #513D36;  /* brown */
+  --acento:       #6B7161;  /* olive */
+  --acento-claro: #DBC7B8;  /* beige */
+  --neutro:       #AEA596;  /* stone */
+  --texto:        #0F0D0C;  /* dark  */
+  --texto-suave:  rgba(81, 61, 54, .78);
+  --velo:         rgba(174, 165, 150, .18);
+}
+
+/* --- Fresco y juvenil — PROPUESTA, sin validar --- */
+.tono-fresco {
+  --fondo:        #FBF9F4;
+  --fondo-alt:    #1F4D3F;
+  --acento:       #E5642F;
+  --acento-claro: #F2B544;
+  --texto:        #16201A;
+  --texto-suave:  rgba(22, 32, 26, .72);
+  --velo:         rgba(229, 100, 47, .08);
+}
+
+/* --- Romántico y suave — PROPUESTA, sin validar --- */
+.tono-romantico {
+  --fondo:        #FAF4F1;
+  --fondo-alt:    #7A5C63;
+  --acento:       #C98F91;
+  --acento-claro: #E8CFC6;
+  --texto:        #3A2B2E;
+  --texto-suave:  rgba(58, 43, 46, .70);
+  --velo:         rgba(201, 143, 145, .10);
+}
+
+
+/* ============================================================
+   ESCRITORIO — solo escala, no rediseño
+   ============================================================ */
+@media (min-width: 768px) {
+  :root {
+    --fs-h1: 64px;
+    --fs-h2: 40px;
+    --fs-h3: 28px;
+
+    --sp-seccion:      96px;
+    --sp-seccion-peso: 120px;
+
+    --margen-lateral: 40px;
+
+    --nav-alto:          76px;
+    --nav-alto-absoluto: 88px;
+    --nav-logo-alto:     36px;
+  }
+}
+
+
+/* ============================================================
+   ACCESIBILIDAD
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-scroll: 1ms;
+    --dur-menu:   1ms;
+    --dur-cierre: 1ms;
+    --dur-micro:  1ms;
+    --stagger:    0ms;
+  }
+}
