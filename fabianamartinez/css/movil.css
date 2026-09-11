@@ -519,22 +519,20 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
-   Propiedad destacada — mosaico de fotos + ficha (paquete HB,
-   efecto C en cada foto). Cada <article> ocupa el ancho completo
-   de la sección, sin --contenedor: el mosaico va de punta a punta.
+   Propiedad destacada — galería anclada (paquete HB efecto E)
+   + ficha. Las fotos de cada propiedad se suceden mientras el
+   bloque queda fijo (pin real, vía efectos.js); recién al final
+   aparecen el nombre y el botón, ya en flujo normal.
    ============================================================ */
-.proyecto-destacado{ padding-top:var(--seccion); }
-.proyecto-destacado:first-of-type{ padding-top:56px; }
-.proyecto-destacado__mosaico{
-  display:grid; grid-template-columns:2fr 1fr; grid-template-rows:1fr 1fr;
-  gap:4px; aspect-ratio:3/4;
+.galeria-anclada{ height:72vh; padding-inline:var(--margen); margin-top:32px; }
+.galeria-anclada__foto{
+  position:absolute; inset:16px var(--margen); border-radius:var(--radio);
+  overflow:hidden;
 }
-.proyecto-destacado__foto{ position:relative; overflow:hidden; }
-.proyecto-destacado__foto--grande{ grid-row:span 2; }
-.proyecto-destacado__foto img{
+.galeria-anclada__foto img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
 }
-.proyecto-destacado__cuerpo{ padding-top:24px; }
+.proyecto-destacado__cuerpo{ padding-top:28px; padding-bottom:8px; }
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
   color:#EEC3B3; margin:0 0 10px;
