@@ -94,16 +94,13 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
-/* Misma fórmula del hero (min-height:var(--vh100,100svh), el
-   alto real medido por JS que cubre el bug de la barra de Chrome
-   Android), pero descontando --nav-alto: a diferencia del hero,
-   esta sección no es lo primero de la página — el nav ya está
-   sólido cuando se llega acá, y el contenido tiene que caber
-   entre el nav y el borde de la pantalla, no debajo del nav. */
+/* Fórmula exacta del .hero / .hero-interna de Ananikian y Livo,
+   letra por letra, sin descontar --nav-alto (el nav es fixed, no
+   resta su alto — restarlo es lo que rompía esto). */
 .seccion--completa{
-  min-height:calc(100vh - var(--nav-alto));
-  min-height:calc(100svh - var(--nav-alto));
-  min-height:calc(var(--vh100,100svh) - var(--nav-alto));
+  min-height:100vh;                  /* respaldo */
+  min-height:100svh;                 /* mejor — el nav es fixed, no resta su alto */
+  min-height:var(--vh100, 100svh);   /* alto real medido por JS, cubre el bug de Chrome Android */
   display:flex; align-items:center;
 }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
