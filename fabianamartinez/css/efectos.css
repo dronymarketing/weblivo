@@ -74,6 +74,15 @@
   color:var(--tema-texto);
 }
 
+/* El resto del sitio da por hecho fondo claro (antetítulo y botón
+   con línea en terracota). Sobre una sección oscura (.tema-marron,
+   .tema-terracota) hace falta la variante clara para que no se
+   pierdan contra el fondo. */
+.tema-marron .antetitulo,
+.tema-terracota .antetitulo{ color:#EEC3B3; }
+.tema-marron .btn--linea,
+.tema-terracota .btn--linea{ color:var(--blanco); border-color:rgba(255,255,255,.35); }
+
 /* ---------- H · Carrusel con fundido ---------- */
 /* Splide se auto-oculta (visibility:hidden) hasta que su JS
    monta — eso viola la regla del paquete. Lo neutralizamos: */

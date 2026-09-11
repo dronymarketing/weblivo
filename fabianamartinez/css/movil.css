@@ -165,7 +165,7 @@ button{ font:inherit; color:inherit; }
 /* estado 3 — pasado el hero */
 .nav.es-solido{
   background:var(--blanco);
-  border-bottom-color:rgba(15,20,34,.14);
+  border-bottom-color:rgba(65,47,38,.14);
 }
 .nav.es-solido .logo--blanco{ display:none; }
 .nav.es-solido .logo--color{ display:block; }
@@ -254,10 +254,10 @@ body.menu-abierto .nav{
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
   background:linear-gradient(180deg,
-    rgba(15,20,34,.55) 0%,
-    rgba(15,20,34,.18) 34%,
-    rgba(15,20,34,.62) 78%,
-    rgba(15,20,34,.80) 100%);
+    rgba(65,47,38,.55) 0%,
+    rgba(65,47,38,.18) 34%,
+    rgba(65,47,38,.62) 78%,
+    rgba(65,47,38,.80) 100%);
 }
 .hero__titulo{
   padding:0 var(--margen);
@@ -407,7 +407,7 @@ body.menu-abierto .nav{
 .hero-interna__foto img{ width:100%; height:100%; object-fit:cover; }
 .hero-interna__velo{
   position:absolute; inset:0; z-index:-1;
-  background:linear-gradient(180deg,rgba(15,20,34,.58) 0%,rgba(15,20,34,.32) 55%,rgba(15,20,34,.74) 100%);
+  background:linear-gradient(180deg,rgba(65,47,38,.58) 0%,rgba(65,47,38,.32) 55%,rgba(65,47,38,.74) 100%);
 }
 .hero-interna__cuerpo{
   padding:0 var(--margen); margin-bottom:auto;
@@ -488,7 +488,7 @@ body.menu-abierto .nav{
 .zona img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .zona__velo{
   position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(15,20,34,0) 40%,rgba(15,20,34,.72) 100%);
+  background:linear-gradient(180deg,rgba(65,47,38,0) 40%,rgba(65,47,38,.72) 100%);
 }
 .zona__txt{ position:relative; padding:14px; color:var(--blanco); }
 .zona__nombre{ font-family:"Hello Branch",cursive; font-weight:400; font-size:20px; line-height:1.1; }
@@ -505,7 +505,7 @@ body.menu-abierto .nav{
 .proyecto img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .proyecto__velo{
   position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(15,20,34,0) 35%,rgba(15,20,34,.78) 100%);
+  background:linear-gradient(180deg,rgba(65,47,38,0) 35%,rgba(65,47,38,.78) 100%);
 }
 .proyecto__txt{ position:relative; padding:18px; color:var(--blanco); }
 .proyecto__estado{
@@ -542,7 +542,7 @@ body.menu-abierto .nav{
 .proyecto-ficha__foto img{ width:100%; height:100%; object-fit:cover; }
 .proyecto-ficha__estado{
   position:absolute; top:12px; left:12px;
-  background:rgba(15,20,34,.55); color:var(--blanco);
+  background:rgba(65,47,38,.55); color:var(--blanco);
   -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
   font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
   padding:5px 10px; border-radius:3px;
@@ -595,7 +595,7 @@ body.menu-abierto .nav{
 /* ============================================================
    Nosotros / cifras
    ============================================================ */
-.cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(15,20,34,.14); margin-top:32px; }
+.cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14); margin-top:32px; }
 .cifra{ background:var(--fondo-alt); padding:20px 16px; }
 .cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; }
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
@@ -694,7 +694,7 @@ body.menu-abierto .nav{
 .ficha-accion__botones{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
 
 .ficha__specs{
-  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(15,20,34,.14);
+  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14);
   border:var(--borde); border-radius:var(--radio); overflow:hidden; margin-bottom:28px;
 }
 .ficha__spec{ background:var(--blanco); padding:14px 16px; display:flex; align-items:center; gap:10px; }
@@ -708,7 +708,7 @@ body.menu-abierto .nav{
 
 /* modal Agendar visita */
 .modal-velo{
-  position:fixed; inset:0; z-index:150; background:rgba(15,20,34,.6);
+  position:fixed; inset:0; z-index:150; background:rgba(65,47,38,.6);
   opacity:0; pointer-events:none; transition:opacity 300ms var(--curva);
 }
 .modal-velo.abierto{ opacity:1; pointer-events:auto; }
