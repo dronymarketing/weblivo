@@ -104,7 +104,9 @@
   }
 
   /* ============================================================
-     E · GALERÍA ANCLADA
+     E · GALERÍA ANCLADA (+ C combinado, así se mide en HBA: cada
+     foto entra tapando a la anterior con el mismo reveal de
+     máscara + zoom del efecto C, no un crossfade plano)
      pin:true, scrub:.4, recorrido +=90% (nunca 140%: en móvil
      con el pulgar se hace eterno).
      ============================================================ */
@@ -112,15 +114,25 @@
     var galerias = document.querySelectorAll('.galeria-anclada');
     if (!galerias.length) return;
 
+    var esMovil = window.matchMedia('(max-width:899px)').matches;
+    var zoomInicial = esMovil ? 1.15 : 1.3;
+
     galerias.forEach(function (galeria) {
       var items = Array.prototype.slice.call(
         galeria.querySelectorAll('.galeria-anclada__item')
       );
       if (items.length < 2) return;
 
-      gsap.set(items, { autoAlpha: 0, position: 'absolute', inset: 0 });
-      gsap.set(items[0], { autoAlpha: 1 });
       gsap.set(galeria, { position: 'relative' });
+      gsap.set(items, { position: 'absolute', inset: 0 });
+
+      // el primero ya se ve entero; el resto arranca tapado y
+      // acercado, como cualquier foto en reveal-scroll (efecto C)
+      for (var i = 1; i < items.length; i++) {
+        var contenido = items[i].querySelector('.galeria-anclada__foto') || items[i];
+        gsap.set(items[i], { clipPath: 'inset(0 0 100% 0)' });
+        gsap.set(contenido, { scale: zoomInicial });
+      }
 
       var tl = gsap.timeline({
         scrollTrigger: {
@@ -131,9 +143,10 @@
         }
       });
 
-      for (var i = 0; i < items.length - 1; i++) {
-        tl.to(items[i], { autoAlpha: 0, ease: 'none' })
-          .to(items[i + 1], { autoAlpha: 1, ease: 'none' }, '<');
+      for (var j = 1; j < items.length; j++) {
+        var foto = items[j].querySelector('.galeria-anclada__foto') || items[j];
+        tl.to(items[j], { clipPath: 'inset(0)', ease: 'none' }, j - 1)
+          .to(foto, { scale: 1, ease: 'none' }, j - 1);
       }
     });
   }
