@@ -131,6 +131,14 @@ button{ font:inherit; color:inherit; }
 .nav__logo .logo--blanco{ display:block; }
 .nav__logo .logo--color{ display:none; }
 
+/* Wordmark de texto — provisorio hasta tener el isotipo/logo real */
+.nav__logo--texto{
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
+  color:var(--blanco); line-height:28px;
+  text-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.nav.es-solido .nav__logo--texto{ color:var(--azul); text-shadow:none; }
+
 .nav__acciones{ display:flex; align-items:center; gap:4px; }
 .nav__btn{
   width:44px; height:44px; display:grid; place-items:center;
@@ -183,6 +191,11 @@ button{ font:inherit; color:inherit; }
   position:absolute; top:16px; left:var(--margen); height:28px;
 }
 .menu__logo img{ height:28px; width:auto; }
+.menu__logo--texto{
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:22px;
+  color:var(--azul); line-height:28px;
+}
+.menu.sobre-hero .menu__logo--texto{ color:var(--blanco); text-shadow:0 1px 3px rgba(0,0,0,.3); }
 /* con el menú abierto el nav se retira: no se ven dos logos superpuestos */
 body.menu-abierto .nav{
   opacity:0; pointer-events:none;
@@ -725,6 +738,10 @@ body.menu-abierto .nav{
 
 .pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:48px 32px; font-size:14px; }
 .pie__logo{ height:26px; margin-bottom:20px; }
+.pie__logo--texto{
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:26px;
+  color:var(--blanco); margin:0 0 20px;
+}
 .pie__bloque + .pie__bloque{ margin-top:28px; }
 .pie h3{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-size:11px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--blanco); margin-bottom:12px; }

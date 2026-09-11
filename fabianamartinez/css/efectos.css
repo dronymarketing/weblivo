@@ -12,13 +12,23 @@
 
 /* ---------- D · Hero fijo ---------- */
 /* El alto lo sigue poniendo .hero/.hero-interna (min-height).
-   El spacer que preserva el scroll lo inyecta efectos.js. */
+   El spacer que preserva el scroll lo inyecta efectos.js.
+   z-index bajo a propósito: un position:fixed pinta por encima
+   del flujo normal aunque tenga z-index:auto, así que hace falta
+   un z-index explícito acá Y uno más alto en lo que le pasa por
+   encima (ver más abajo) para que el efecto funcione de verdad. */
 .hero--fijo{
   position:relative; /* JS lo pasa a fixed recién si puede animar */
-  z-index:1;
+  z-index:0;
 }
 .hero--fijo-spacer{
   pointer-events:none;
+}
+/* Todo lo que va después de un hero fijo necesita ganarle el
+   stacking para taparlo de verdad al pasar por encima. */
+.hero--fijo ~ *{
+  position:relative;
+  z-index:1;
 }
 
 /* ---------- C · Reveal atado al scroll ---------- */
@@ -54,17 +64,14 @@
 .tema-mostaza{    --tema-fondo:#EBC383; --tema-texto:#412F26; }
 .tema-bronce{     --tema-fondo:#987145; --tema-texto:#FFFFFF; }
 
-/* Cada sección con tema mantiene su propio fondo pintado (para
-   que se vea completa sin JS); con JS activo el <body> además
-   se tiñe de fondo a fondo mientras esa sección está al medio,
-   así el lienzo entre secciones no queda con un borde duro. */
+/* Cada sección con tema pinta su propio fondo, siempre opaco:
+   así tapa correctamente al hero fijo (efecto D) cuando pasa por
+   encima. Lo que cambia con el scroll no es este fondo — ya es
+   fijo por sección — sino el meta theme-color del navegador,
+   que si depende de JS (ver efectos.js). */
 [class*="tema-"]{
   background:var(--tema-fondo);
   color:var(--tema-texto);
-}
-.js-efectos [class*="tema-"]{
-  background:transparent; /* deja ver el <body> animado por debajo */
-  transition:color .3s var(--curva, ease);
 }
 
 /* ---------- H · Carrusel con fundido ---------- */

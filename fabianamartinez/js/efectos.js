@@ -141,17 +141,20 @@
   /* ============================================================
      F · SECCIONES CON NOMBRE DE COLOR
      El color vive en el nombre de la clase (.tema-crema,
-     .tema-terracota, ...), definido en efectos.css. Acá solo se
-     lee --tema-fondo/--tema-texto de la sección centrada y se
-     aplica al <body> + al meta theme-color.
+     .tema-terracota, ...), definido en efectos.css — cada
+     sección ya pinta su propio fondo opaco (necesario para que
+     el efecto D la tape correctamente contra el hero fijo). Lo
+     único que el CSS no puede resolver solo es el meta
+     theme-color del navegador: acá se lee --tema-fondo de la
+     sección centrada y se lo pasamos, sin hardcodear ningún
+     color en este archivo.
      ============================================================ */
   function initSeccionesColor() {
     var secciones = Array.prototype.slice.call(
       document.querySelectorAll('[class*="tema-"]')
     );
-    if (!secciones.length) return;
-
     var metaTema = document.querySelector('meta[name="theme-color"]');
+    if (!secciones.length || !metaTema) return;
 
     secciones.forEach(function (sec) {
       ScrollTrigger.create({
@@ -164,19 +167,8 @@
     });
 
     function aplicar(sec) {
-      var estilo = getComputedStyle(sec);
-      var fondo = estilo.getPropertyValue('--tema-fondo').trim();
-      var texto = estilo.getPropertyValue('--tema-texto').trim();
-      if (!fondo) return;
-
-      gsap.to(document.body, {
-        backgroundColor: fondo,
-        color: texto,
-        duration: 0.4,
-        ease: 'none',
-        overwrite: 'auto'
-      });
-      if (metaTema) metaTema.setAttribute('content', fondo);
+      var fondo = getComputedStyle(sec).getPropertyValue('--tema-fondo').trim();
+      if (fondo) metaTema.setAttribute('content', fondo);
     }
   }
 
