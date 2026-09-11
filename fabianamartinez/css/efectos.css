@@ -1,0 +1,93 @@
+/* ============================================================
+   FABIANA MARTÍNEZ — Paquete HB (hba.com), estándar Livo
+   Solo define hooks visuales para los efectos C, D, E, F, H.
+   No toca color de marca ni tipografía (eso vive en movil.css).
+
+   Regla obligatoria del paquete: ningún estado inicial "oculto"
+   vive acá. Todo lo que un efecto necesita esconder antes de
+   animar se aplica por JS (efectos.js), gateado por la clase
+   .js-efectos que solo aparece si GSAP + ScrollTrigger cargaron.
+   Si el script no corre, esta hoja deja todo visible tal cual.
+   ============================================================ */
+
+/* ---------- D · Hero fijo ---------- */
+/* El alto lo sigue poniendo .hero/.hero-interna (min-height).
+   El spacer que preserva el scroll lo inyecta efectos.js.
+   z-index bajo a propósito: un position:fixed pinta por encima
+   del flujo normal aunque tenga z-index:auto, así que hace falta
+   un z-index explícito acá Y uno más alto en lo que le pasa por
+   encima (ver más abajo) para que el efecto funcione de verdad. */
+.hero--fijo{
+  position:relative; /* JS lo pasa a fixed recién si puede animar */
+  z-index:0;
+}
+.hero--fijo-spacer{
+  pointer-events:none;
+}
+/* Todo lo que va después de un hero fijo necesita ganarle el
+   stacking para taparlo de verdad al pasar por encima. */
+.hero--fijo ~ *{
+  position:relative;
+  z-index:1;
+}
+
+/* ---------- C · Reveal atado al scroll ---------- */
+.reveal-scroll{
+  display:block;
+  overflow:hidden; /* resguardo: si clip-path no corre por CSS legado, no se derrama la imagen */
+}
+.reveal-scroll img,
+.reveal-scroll__img{
+  display:block; width:100%; height:100%; object-fit:cover;
+}
+
+/* ---------- E · Galería anclada ---------- */
+.galeria-anclada{
+  position:relative;
+}
+.galeria-anclada__item{
+  position:relative;
+}
+/* Con JS activo, ScrollTrigger apila los ítems para sucederse;
+   sin JS, quedan uno debajo del otro — se puede scrollear igual. */
+.js-efectos .galeria-anclada__item + .galeria-anclada__item{
+  margin-top:0;
+}
+
+/* ---------- F · Secciones con nombre de color ---------- */
+/* El color vive acá, en el nombre de la clase — JS solo lee
+   estas variables, nunca las hardcodea. */
+.tema-crema{      --tema-fondo:#EDE1D2; --tema-texto:#412F26; }
+.tema-marron{     --tema-fondo:#412F26; --tema-texto:#FFFFFF; }
+.tema-terracota{  --tema-fondo:#5D2510; --tema-texto:#FFFFFF; }
+.tema-oliva{      --tema-fondo:#424530; --tema-texto:#FFFFFF; }
+.tema-mostaza{    --tema-fondo:#EBC383; --tema-texto:#412F26; }
+.tema-bronce{     --tema-fondo:#987145; --tema-texto:#FFFFFF; }
+
+/* Cada sección con tema pinta su propio fondo, siempre opaco:
+   así tapa correctamente al hero fijo (efecto D) cuando pasa por
+   encima. Lo que cambia con el scroll no es este fondo — ya es
+   fijo por sección — sino el meta theme-color del navegador,
+   que si depende de JS (ver efectos.js). */
+[class*="tema-"]{
+  background:var(--tema-fondo);
+  color:var(--tema-texto);
+}
+
+/* ---------- H · Carrusel con fundido ---------- */
+/* Splide se auto-oculta (visibility:hidden) hasta que su JS
+   monta — eso viola la regla del paquete. Lo neutralizamos: */
+.splide{ visibility:visible; }
+/* Sin JS: mostramos todas las fotos apiladas, se puede scrollear.
+   Con JS activo, Splide arma el carrusel con fundido real. */
+.splide:not(.is-initialized) .splide__slide + .splide__slide{
+  margin-top:8px;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+/* efectos.js ya no crea ScrollTriggers si el sistema pide
+   reducir movimiento; esto es un resguardo extra a nivel CSS
+   para cualquier transición que haya quedado declarada arriba. */
+@media (prefers-reduced-motion: reduce){
+  [class*="tema-"]{ transition:none; }
+}
