@@ -57,8 +57,8 @@
 /* ---------- F · Secciones con nombre de color ---------- */
 /* El color vive acá, en el nombre de la clase — JS solo lee
    estas variables, nunca las hardcodea. */
-.tema-crema{      --tema-fondo:#EDE1D2; --tema-texto:#412F26; }
-.tema-marron{     --tema-fondo:#412F26; --tema-texto:#EDE1D2; }
+.tema-crema{      --tema-fondo:var(--fondo-alt); --tema-texto:var(--azul-900); }
+.tema-marron{     --tema-fondo:var(--azul-900);  --tema-texto:var(--fondo-alt); }
 .tema-terracota{  --tema-fondo:#5D2510; --tema-texto:#FFFFFF; }
 .tema-oliva{      --tema-fondo:#424530; --tema-texto:#FFFFFF; }
 .tema-mostaza{    --tema-fondo:#EBC383; --tema-texto:#412F26; }
