@@ -94,6 +94,11 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
+.seccion--completa{
+  min-height:100vh; min-height:100svh; min-height:var(--vh100,100svh);
+  display:flex; align-items:center;
+}
+.seccion--completa .contenedor{ width:100%; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
