@@ -35,11 +35,12 @@
     return;
   }
 
-  initRevealScroll();   // C
-  initHeroFijo();        // D
-  initGaleriaAnclada();  // E
-  initSeccionesColor();  // F
-  initCarruselFundido(); // H
+  initRevealScroll();     // C
+  initHeroFijo();          // D
+  initGaleriaAnclada();    // E (infraestructura genérica, sin uso en esta página por ahora)
+  initPropiedadFija();     // D + C combinados, como en hba.com
+  initSeccionesColor();    // F
+  initCarruselFundido();   // H
 
   /* ============================================================
      C · REVEAL ATADO AL SCROLL
@@ -148,6 +149,48 @@
         tl.to(items[j], { clipPath: 'inset(0)', ease: 'none' }, j - 1)
           .to(foto, { scale: 1, ease: 'none' }, j - 1);
       }
+    });
+  }
+
+  /* ============================================================
+     D + C combinados · Propiedad destacada con foto fija
+     La foto base queda sticky (CSS puro, se ve igual sin JS). Acá
+     solo se anima, atado al scroll de todo el bloque: el velo de
+     marca se tiñe de 0 a ~.82 de opacidad, y las dos fotos extra
+     entran con el mismo reveal de máscara + zoom del efecto C.
+     ============================================================ */
+  function initPropiedadFija() {
+    var bloques = document.querySelectorAll('.propiedad-fija');
+    if (!bloques.length) return;
+
+    var esMovil = window.matchMedia('(max-width:899px)').matches;
+    var zoomInicial = esMovil ? 1.15 : 1.3;
+
+    bloques.forEach(function (bloque) {
+      var tinte = bloque.querySelector('.propiedad-fija__tinte');
+      var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
+      if (!tinte || !extras.length) return;
+
+      extras.forEach(function (extra) {
+        gsap.set(extra, { clipPath: 'inset(0 0 100% 0)' });
+        gsap.set(extra.querySelector('img'), { scale: zoomInicial });
+      });
+
+      var tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: bloque,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.5
+        }
+      });
+
+      tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
+      extras.forEach(function (extra, i) {
+        var arranca = 0.15 + i * 0.32;
+        tl.to(extra, { clipPath: 'inset(0)', ease: 'none' }, arranca)
+          .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
+      });
     });
   }
 

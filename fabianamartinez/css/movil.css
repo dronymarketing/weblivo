@@ -519,29 +519,39 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
-   Propiedad destacada — galería anclada (paquete HB efecto E)
-   + ficha. Las fotos de cada propiedad se suceden mientras el
-   bloque queda fijo (pin real, vía efectos.js); recién al final
-   aparecen el nombre y el botón, ya en flujo normal.
+   Propiedad destacada — foto fija con tinte de marca (paquete
+   HB, D + C combinados). La foto base queda pegada (sticky) al
+   tope mientras dura el bloque; un velo de --azul-900 se va
+   tiñendo encima con el scroll y dos fotos más de la misma
+   propiedad aparecen sobre esa base ya teñida. Al soltarse el
+   sticky, en flujo normal, aparecen nombre + precio + botón.
    ============================================================ */
-.galeria-anclada{ height:72vh; padding-inline:var(--margen); margin-top:32px; }
-.galeria-anclada__foto{
-  position:absolute; inset:16px var(--margen); border-radius:var(--radio);
-  overflow:hidden;
+.propiedad-fija{ position:relative; height:220vh; }
+.propiedad-fija:first-of-type{ margin-top:32px; }
+.propiedad-fija__pin{ position:sticky; top:0; height:100vh; overflow:hidden; }
+.propiedad-fija__base{ position:absolute; inset:0; }
+.propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.propiedad-fija__tinte{
+  position:absolute; inset:0; background:var(--azul-900); opacity:0;
 }
-.galeria-anclada__foto img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+.propiedad-fija__extra{
+  position:absolute; left:6%; right:6%; aspect-ratio:16/10;
+  border-radius:var(--radio); overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.35);
 }
+.propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.propiedad-fija__extra--1{ bottom:36%; }
+.propiedad-fija__extra--2{ bottom:6%; }
+
 .proyecto-destacado__cuerpo{ padding-top:28px; padding-bottom:8px; }
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
-  color:#EEC3B3; margin:0 0 10px;
+  color:rgba(237,225,210,.75); margin:0 0 10px;
 }
 .proyecto-destacado__nombre{
   font-family:"Hello Branch",cursive; font-weight:400; font-size:36px; line-height:1.05;
-  margin:0 0 10px;
+  color:var(--fondo-alt); margin:0 0 10px;
 }
-.proyecto-destacado__precio{ font-size:15px; color:rgba(255,255,255,.82); margin:0 0 20px; }
+.proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
 
 /* ============================================================
    Tabs de estado — a-estrenar / en-construcción / lanzamiento
