@@ -94,11 +94,12 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
-.seccion--completa{
-  min-height:100vh; min-height:100svh; min-height:var(--vh100,100svh);
-  display:flex; align-items:center;
-}
-.seccion--completa .contenedor{ width:100%; }
+/* No fuerza min-height ni viewport units: en hba.com "Quiénes
+   somos" llena la pantalla por el largo natural de su propio
+   contenido (título + texto + botón), no por un bloque rígido a
+   100vh — eso evita el lío de la barra de Chrome que aparece y
+   desaparece al scrollear. */
+.seccion--completa{ padding-block:30vh 26vh; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
