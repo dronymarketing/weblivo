@@ -519,6 +519,33 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
+   Propiedad destacada — mosaico de fotos + ficha (paquete HB,
+   efecto C en cada foto). Cada <article> ocupa el ancho completo
+   de la sección, sin --contenedor: el mosaico va de punta a punta.
+   ============================================================ */
+.proyecto-destacado{ padding-top:var(--seccion); }
+.proyecto-destacado:first-of-type{ padding-top:56px; }
+.proyecto-destacado__mosaico{
+  display:grid; grid-template-columns:2fr 1fr; grid-template-rows:1fr 1fr;
+  gap:4px; aspect-ratio:3/4;
+}
+.proyecto-destacado__foto{ position:relative; overflow:hidden; }
+.proyecto-destacado__foto--grande{ grid-row:span 2; }
+.proyecto-destacado__foto img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.proyecto-destacado__cuerpo{ padding-top:24px; }
+.proyecto-destacado__zona{
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:#EEC3B3; margin:0 0 10px;
+}
+.proyecto-destacado__nombre{
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:36px; line-height:1.05;
+  margin:0 0 10px;
+}
+.proyecto-destacado__precio{ font-size:15px; color:rgba(255,255,255,.82); margin:0 0 20px; }
+
+/* ============================================================
    Tabs de estado — a-estrenar / en-construcción / lanzamiento
    ============================================================ */
 .tabs-estado{
