@@ -94,12 +94,18 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
-/* No fuerza min-height ni viewport units: en hba.com "Quiénes
-   somos" llena la pantalla por el largo natural de su propio
-   contenido (título + texto + botón), no por un bloque rígido a
-   100vh — eso evita el lío de la barra de Chrome que aparece y
-   desaparece al scrollear. */
-.seccion--completa{ padding-block:30vh 26vh; }
+/* Misma fórmula del hero (min-height:var(--vh100,100svh), el
+   alto real medido por JS que cubre el bug de la barra de Chrome
+   Android), pero descontando --nav-alto: a diferencia del hero,
+   esta sección no es lo primero de la página — el nav ya está
+   sólido cuando se llega acá, y el contenido tiene que caber
+   entre el nav y el borde de la pantalla, no debajo del nav. */
+.seccion--completa{
+  min-height:calc(100vh - var(--nav-alto));
+  min-height:calc(100svh - var(--nav-alto));
+  min-height:calc(var(--vh100,100svh) - var(--nav-alto));
+  display:flex; align-items:center;
+}
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
