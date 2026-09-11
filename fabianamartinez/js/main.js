@@ -18,11 +18,19 @@
      var(--vh100, 100svh): sigue siendo min-height, nunca height.
   ---------------------------------------------------------- */
   function fijarAltoReal() {
-    document.documentElement.style.setProperty('--vh100', window.innerHeight + 'px');
+    var alto = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--vh100', alto + 'px');
   }
   fijarAltoReal();
   window.addEventListener('resize', fijarAltoReal);
   window.addEventListener('orientationchange', fijarAltoReal);
+  /* window.resize no siempre dispara cuando Chrome Android
+     esconde/muestra la barra de direcciones al scrollear —
+     visualViewport.resize sí, y es lo que de verdad cambia el
+     alto visible en ese momento. */
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fijarAltoReal);
+  }
 
   /* ----------------------------------------------------------
      NAV — tres estados
