@@ -122,6 +122,74 @@ es exactamente lo que produce el salto.
 - Con `prefers-reduced-motion`, la animación se apaga pero el cue sigue visible.
 - **El cue va también en móvil.** No se esconde.
 
+### Sección a pantalla completa que no es el hero
+
+Se pide así: *"esta sección a pantalla completa, como en fabianamartinez"*.
+
+Validado en dispositivo real (Android/Chrome) sobre el proyecto Fabiana
+Martínez, después de tres intentos fallidos con otras fórmulas — incluida
+la del propio hero de esta página, sin modificar. Es la receta a usar
+siempre que una sección deba ocupar la pantalla completa **y no sea la
+primera de la página**: por ejemplo un "Quiénes somos" que va después del
+hero.
+
+**Por qué no alcanza con copiar la fórmula del hero:** el hero arranca en
+`scrollY:0`, así que nada le corre el punto de partida. Cualquier otra
+sección, en cambio, se llega a ella por scroll o por ancla — y este estándar
+ya define `[id]{ scroll-margin-top: calc(var(--nav-alto) + 12px); }` en todo
+sitio con nav fijo. Ese `scroll-margin-top` corre el destino del scroll esa
+distancia. Si la sección mide exactamente `100vh`/`100svh` sin descontarlo,
+sobra un tramo del tamaño del nav — asoma la sección siguiente en un extremo,
+o queda un resto de scroll de más en el otro. Restar `--nav-alto` del alto de
+la sección es lo que cierra esa cuenta.
+
+```css
+.seccion--completa{
+  min-height:100vh;
+  min-height:100svh;
+  min-height:var(--vh100, 100svh);
+  min-height:calc(100vh - var(--nav-alto));
+  min-height:calc(100svh - var(--nav-alto));
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  display:flex; align-items:center;
+}
+```
+
+Las primeras tres líneas son respaldo (nunca se aplican solas si las últimas
+tres cargan); quedan igual por si `--nav-alto` no está definido en algún
+contexto. `--vh100` es el alto real medido por JS — acá sí hace falta, a
+diferencia de lo que dice más arriba la sección del hero: en la práctica,
+`100svh` solo no resolvió el bug en Chrome Android real para esta sección,
+y `--vh100` sí. Se define en `main.js` y hay que actualizarla con los tres
+eventos, no solo los primeros dos — Chrome Android no siempre dispara
+`resize` cuando la barra de direcciones se esconde o aparece al scrollear,
+pero sí dispara `visualViewport.resize`:
+
+```js
+function fijarAltoReal() {
+  var alto = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty('--vh100', alto + 'px');
+}
+fijarAltoReal();
+window.addEventListener('resize', fijarAltoReal);
+window.addEventListener('orientationchange', fijarAltoReal);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', fijarAltoReal);
+}
+```
+
+**Reglas**
+
+- Clase reusable, no repetir la fórmula a mano cada vez: `.seccion--completa`.
+- `min-height`, nunca `height` — mismo motivo que en el hero.
+- Si esta sección va justo después de un hero con `position:fixed` (efecto D
+  del paquete HB), también necesita el z-index más alto que ya pide ese
+  efecto para taparlo, o el hero fijo pinta por encima igual.
+- No confundir con el hero: si la sección en cuestión es la primera de la
+  página, usar la fórmula del hero (sin restar `--nav-alto`) — restarlo ahí
+  sí produce un hueco, porque el hero no tiene `scroll-margin-top` que lo
+  compense.
+
 ---
 
 ## Scroll
