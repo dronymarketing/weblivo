@@ -24,7 +24,8 @@
   --gris:        #6A6F4C;
   --gris-suave:  #8C8471;
   --fondo:       #FFFFFF;
-  --fondo-alt:   #EDE1D2;   /* crema — muestreado del branding */
+  --arena:       #EDE1D2;   /* crema del branding original — sigue disponible, ya no es --fondo-alt */
+  --fondo-alt:   #F6F0E8;   /* punto medio exacto entre blanco y --arena, pedido por el cliente */
   --blanco:      #FFFFFF;
 
   /* Firma Livo: reborde 1px en currentColor 12–18%, reemplaza a la sombra */
