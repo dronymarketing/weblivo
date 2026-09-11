@@ -94,13 +94,20 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
-/* Fórmula exacta del .hero / .hero-interna de Ananikian y Livo,
-   letra por letra, sin descontar --nav-alto (el nav es fixed, no
-   resta su alto — restarlo es lo que rompía esto). */
+/* Base: la fórmula exacta del hero. Con el descuento de
+   --nav-alto porque esta sección, a diferencia del hero, no
+   arranca en scrollY:0 — [id] le suma scroll-margin-top de
+   nav-alto+12px, así que sin descontar queda una sobra de scroll
+   del tamaño del nav al final (ya confirmado en el celular real:
+   sin descontar → sobra arriba/abajo; la vez anterior que se
+   descontó, el caché viejo tapaba el cambio real). */
 .seccion--completa{
-  min-height:100vh;                  /* respaldo */
-  min-height:100svh;                 /* mejor — el nav es fixed, no resta su alto */
-  min-height:var(--vh100, 100svh);   /* alto real medido por JS, cubre el bug de Chrome Android */
+  min-height:100vh;
+  min-height:100svh;
+  min-height:var(--vh100, 100svh);
+  min-height:calc(100vh - var(--nav-alto));
+  min-height:calc(100svh - var(--nav-alto));
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
   display:flex; align-items:center;
 }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
