@@ -84,6 +84,11 @@
   .filtros__grilla{ grid-template-columns:repeat(6,1fr); }
   .filtros__campo--ancho{ grid-column:auto; }
 
+  /* ---------- Propiedad destacada (mosaico) ---------- */
+  .proyecto-destacado__mosaico{ aspect-ratio:21/9; gap:6px; }
+  .proyecto-destacado__nombre{ font-size:56px; }
+  .proyecto-destacado__precio{ font-size:16px; }
+
   /* ---------- Grillas ---------- */
   .tarjetas{ grid-template-columns:repeat(3,1fr); gap:28px; }
   .zonas{ grid-template-columns:repeat(3,1fr); gap:20px; }
