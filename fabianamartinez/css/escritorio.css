@@ -16,37 +16,25 @@
   h3{ font-size:24px; }
   body{ font-size:17px; }
 
-  /* ---------- Nav ---------- */
+  /* ---------- Nav ----------
+     Minimal, a la hba.com: logo + "MENÚ" + buscador. Nada de
+     enlaces sueltos permanentes — todo vive en el menú a pantalla
+     completa, en mobile y en escritorio por igual. */
   .nav__logo,.nav__logo img{ height:34px; }
   .nav__logo--texto{ font-size:29px; line-height:34px; }
-  .nav__enlaces{
-    display:flex; align-items:center; gap:4px;
-    margin-left:auto; margin-right:18px;
-  }
-  .nav__enlaces > li{ position:relative; }
-  .nav__enlaces a,.nav__enlaces button{
-    display:flex; align-items:center; gap:5px;
-    padding:10px 14px; background:none; border:0; cursor:pointer;
-    font-size:14px; font-weight:500; letter-spacing:.02em; color:var(--blanco);
-    text-shadow:0 1px 3px rgba(0,0,0,.3);
-  }
-  .nav.es-solido .nav__enlaces a,
-  .nav.es-solido .nav__enlaces button{ color:var(--azul); text-shadow:none; }
-  .nav__enlaces .ico{ width:16px; height:16px; }
+  .nav__enlaces{ display:none; }
 
-  .nav__drop{
-    position:absolute; top:calc(100% + 6px); left:0; min-width:210px;
-    background:var(--blanco); border:var(--borde); border-radius:var(--radio);
-    padding:6px; opacity:0; visibility:hidden; transform:translateY(-6px);
-    transition:opacity 260ms var(--curva), transform 260ms var(--curva), visibility 260ms;
+  .nav__hamburguesa{
+    width:auto; height:auto; display:flex; flex-direction:row; align-items:center; gap:8px; padding:8px 4px;
+    font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
   }
-  .nav__enlaces li:hover .nav__drop,
-  .nav__enlaces li:focus-within .nav__drop{ opacity:1; visibility:visible; transform:translateY(0); }
-  .nav__drop a{ color:var(--azul) !important; text-shadow:none !important; padding:10px 12px; border-radius:4px; }
-  .nav__drop a:hover{ background:var(--fondo-alt); }
+  .nav__hamburguesa::before{ content:"Menú"; }
+  .nav__hamburguesa .ico{ width:20px; height:20px; }
 
-  .menu,.nav__hamburguesa,.menu__logo{ display:none; }
+  /* el menú a pantalla completa también existe en escritorio */
+  .menu__logo{ display:block; }
   body.menu-abierto .nav{ opacity:1; pointer-events:auto; }
+  .menu__lista a,.menu__lista button{ font-size:34px; }
 
   /* ---------- Hero interna ---------- */
   .hero-interna__cuerpo{ padding-top:calc(var(--nav-alto) + 22vh); }
@@ -57,7 +45,7 @@
 
   /* ---------- Hero ---------- */
   .hero__titulo{ padding-top:calc(var(--nav-alto) + 22vh); }
-  .hero__zona{ font-size:72px; }
+  .hero__zona{ font-size:96px; }
   .hero__bajada{ font-size:17px; }
   .hero__pie{
     padding:0 var(--margen) 64px;
@@ -95,8 +83,6 @@
   }
   .filtros__grilla{ grid-template-columns:repeat(6,1fr); }
   .filtros__campo--ancho{ grid-column:auto; }
-
-  .hero__puntos{ justify-content:flex-start; }
 
   /* ---------- Grillas ---------- */
   .tarjetas{ grid-template-columns:repeat(3,1fr); gap:28px; }
@@ -172,5 +158,5 @@
 }
 
 @media (min-width:1400px){
-  .hero__zona{ font-size:86px; }
+  .hero__zona{ font-size:130px; }
 }
