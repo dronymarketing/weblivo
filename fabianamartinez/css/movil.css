@@ -737,6 +737,51 @@ body.menu-abierto .nav{
 .cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; }
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
 
+/* Dentro de #nosotros (.seccion--completa) el contenido tiene un
+   presupuesto de altura fijo (una pantalla) — en pantallas bajas
+   este contenido no puede usar los mismos espacios fijos que en
+   nosotros.html, o se estira más allá del min-height en silencio
+   (ver CONTEXTO.md sección 6). @media(max-height) comprime los
+   espacios y, si aun así no alcanza, esconde lo menos esencial
+   (las cifras) antes que dejar que la sección se desalinee. */
+#nosotros .cifras{ margin-top:18px; }
+#nosotros .cifra{ padding-block:14px; }
+#nosotros .nosotros__intro p{ margin-top:8px; }
+#nosotros .nosotros__intro .btn{ margin-top:14px; }
+
+/* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
+   un segundo bloque completo (título+párrafo+botón), para que el
+   presupuesto de altura de #nosotros nunca dependa de dos bloques
+   grandes compitiendo por el mismo espacio. */
+.nosotros__destacadas{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  margin-top:22px;
+  padding-top:18px;
+  border-top:var(--borde);
+  text-decoration:none; color:inherit;
+}
+.nosotros__destacadas h3{ margin:0; }
+.nosotros__destacadas p{ font-size:14px; color:var(--gris); margin:4px 0 0; }
+.nosotros__destacadas .ico{ width:20px; height:20px; color:var(--azul); flex:none; }
+
+/* Pantallas bajas (celulares chicos, o cualquiera con la barra de
+   direcciones visible): comprimir espacios primero. Esta regla
+   siempre gana por especificidad/orden — no hay estilos inline
+   compitiendo, todo el espaciado de #nosotros vive en clases. */
+@media (max-height:760px){
+  #nosotros .nosotros__intro p{ margin-top:4px; }
+  #nosotros .nosotros__intro .btn{ margin-top:8px; }
+  #nosotros .cifras{ margin-top:8px; }
+  #nosotros .cifra{ padding-block:8px; }
+  .nosotros__destacadas{ margin-top:8px; padding-top:10px; }
+}
+/* Si todavía no entra (pantallas muy bajas), las cifras son lo
+   menos esencial de los tres bloques — se esconden antes que dejar
+   que la sección se estire más allá de una pantalla. */
+@media (max-height:655px){
+  #nosotros .cifras{ display:none; }
+}
+
 /* ============================================================
    Utilidad — grilla genérica de 1 a 3 columnas
    ============================================================ */

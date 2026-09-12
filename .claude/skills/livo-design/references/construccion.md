@@ -217,6 +217,40 @@ if (window.visualViewport) {
   rondas de tocar CSS y JS antes de encontrar que el problema real era
   contenido de más, no la fórmula.
 
+**Cómo agregar contenido a una `.seccion--completa` sin volver a romperla**
+
+Si hace falta sumar un bloque más (un aviso, un teaser a la sección
+siguiente, lo que sea) a una sección que ya está justa de espacio:
+
+1. **No agregues un bloque grande más** (título + párrafo + botón aparte)
+   compitiendo por el mismo presupuesto de una pantalla. Un teaser chico
+   alcanza: un `h3` (no un segundo `h2`), un párrafo corto de una línea, y
+   una flecha en vez de un botón separado — todo en una fila con
+   `display:flex;justify-content:space-between` y un `border-top` como
+   separador. Mucho más liviano que duplicar la jerarquía visual del
+   bloque principal.
+2. **Comprimí los espacios en pantallas bajas con `@media (max-height:…)`,
+   no con `clamp()` + unidades `vh`/`svh`.** Se probó clamp primero en
+   Fabiana Martínez y no sirvió: para que el mínimo del clamp realmente
+   se alcance en el rango de alturas que importa (600-700px), el
+   porcentaje tiene que ser tan chico que en pantallas altas el clamp
+   nunca despega del máximo — o tan grande que en pantallas bajas nunca
+   baja del máximo tampoco. Un breakpoint fijo (`@media (max-height:760px)`
+   con valores la mitad o menos de los normales) es más simple, más
+   predecible, y se ajusta a mano viendo el resultado real.
+3. **Si comprimir espacios no alcanza, escondé lo menos esencial antes que
+   dejar que la sección se estire.** En Fabiana Martínez, un bloque de
+   cifras decorativas (2 zonas / 100% acompañamiento) se esconde por
+   completo debajo de cierto alto (`@media (max-height:655px){ .cifras{
+   display:none; } }`) — se pierde ese dato en los celulares más chicos,
+   pero la sección sigue midiendo exactamente una pantalla, que es lo que
+   no se puede negociar.
+4. **Verificar con un barrido de alturas con Playwright** (algo como
+   400px a 950px, de a pasos de 20-40px), no solo el tamaño que tenés a
+   mano para probar — el bug de Fabiana Martínez nunca se notó a 412×844
+   (el tamaño más común para probar) y sólo aparecía por debajo de los
+   ~700px de alto.
+
 **Si el cliente dice "sigue igual" con esta fórmula ya pusheada, en este
 orden:**
 1. Primero descartar caché: pedir que pruebe en una pestaña de incógnito

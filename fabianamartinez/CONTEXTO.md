@@ -283,6 +283,34 @@ mantienen — no está de más, pero no era la causa de este síntoma puntual.
    con fórmulas de CSS y fixes de JS, cuando la causa real era contenido
    de más.
 
+5. **El cliente confirmó que esto lo resolvió**, y pidió agregar de nuevo
+   un aviso de "Propiedades destacadas" en la pantalla de "Quiénes somos"
+   — pero sin volver a romper la lógica del punto 4. La solución no fue
+   copiar el mismo bloque grande (título h2 + párrafo + botón aparte, el
+   que desbordaba) sino agregar una versión chica, pensada desde el
+   principio para caber en el presupuesto de una pantalla:
+   - **`.nosotros__destacadas`**: un teaser de una sola fila (`h3` en vez
+     de `h2`, un párrafo corto, una flecha en vez de un botón aparte),
+     con un separador (`border-top`) arriba. Bastante más chico que un
+     segundo bloque completo compitiendo por el mismo espacio que el
+     bloque de "Quiénes somos" y las cifras.
+   - **`@media (max-height:760px)`**: en pantallas bajas (celular con la
+     barra de direcciones visible, o un teléfono chico) se comprimen los
+     márgenes/paddings de los tres bloques (intro, cifras, teaser) a la
+     mitad o menos — nada de `clamp()` con `svh` (se probó primero y no
+     alcanzaba: los porcentajes elegidos casi siempre tocaban el techo
+     del `clamp`, sin comprimir de verdad en el rango de alturas que
+     importa — un breakpoint fijo fue más simple y más predecible).
+   - **`@media (max-height:655px)`**: si ni comprimiendo alcanza, las
+     cifras (2 zonas / 100% acompañamiento) son lo menos esencial de los
+     tres bloques y se esconden — mejor que dejar que la sección se
+     estire más allá de una pantalla otra vez.
+
+   Verificado con Playwright sin desborde en un barrido denso de alturas
+   de 480px a 915px (el único resto es un desborde chico en un tamaño ya
+   extinto, 320×480). Capturas de pantalla a 412×844 y 360×640 confirman
+   que se ve bien en ambos extremos, cifras incluidas o escondidas.
+
 ---
 
 ## 7. Hero como catálogo — chip de precio (copiado de losparaisos)
