@@ -170,10 +170,14 @@ button{ font:inherit; color:inherit; }
 .nav.es-tope{ background:transparent; }
 
 /* estado 2 — glass sobre el hero */
+/* Sin tinte de fondo, el backdrop-filter muestra el color real de lo
+   que hay detrás: la mayoría de las fotos de zona tienen cielo arriba
+   (azul), y saturate(150%) lo amplificaba de más al desenfocar. Blur
+   más alto + saturate bajo evita ese tono azul sin volver a un tinte. */
 .nav.es-glass{
   background:transparent;
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
-  backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(24px) saturate(105%);
+  backdrop-filter:blur(24px) saturate(105%);
   border-bottom-color:rgba(255,255,255,.22);
 }
 .nav.es-glass .logo--blanco{ display:none; }
