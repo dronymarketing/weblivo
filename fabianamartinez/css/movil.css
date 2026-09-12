@@ -320,7 +320,7 @@ body.menu-abierto .nav{
 .hero__precio-chip::before{
   content:""; position:absolute; z-index:-1; pointer-events:none;
   width:140%; height:220%; left:-20%; top:-60%;
-  background:radial-gradient(closest-side, var(--azul), transparent 72%);
+  background:radial-gradient(closest-side, var(--fondo-alt), transparent 72%);
   opacity:.32; filter:blur(6px);
   animation:chip-aura 7s ease-in-out infinite alternate;
 }
@@ -332,9 +332,9 @@ body.menu-abierto .nav{
   content:""; position:absolute; inset:0; pointer-events:none;
   border-radius:inherit; padding:1px;
   background-image:repeating-linear-gradient(115deg,
-    rgba(255,255,255,.16) 0px, rgba(255,255,255,.16) 110px,
-    var(--azul) 150px,
-    rgba(255,255,255,.16) 190px, rgba(255,255,255,.16) 300px);
+    rgba(255,255,255,.16) 0px, rgba(255,255,255,.16) 135px,
+    var(--fondo-alt) 150px,
+    rgba(255,255,255,.16) 165px, rgba(255,255,255,.16) 300px);
   background-size:300px 100%;
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
