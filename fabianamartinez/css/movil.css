@@ -338,26 +338,25 @@ body.menu-abierto .nav{
 .hero.cambia .hero__bajada,
 .hero.cambia .hero__precio-chip{ opacity:0; }
 
-/* precio-chip: botón línea sobre foto, como el "NUESTRA PRÁCTICA" de
-   hba.com — cápsula con borde fino, sin relleno de vidrio. El glow
-   detrás y el filo de luz recorriendo el borde (los efectos que tenía
-   antes, copiados de losparaisos) se mantienen, adaptados a la forma
-   de cápsula transparente en vez de la placa oscura de antes. */
+/* precio-chip: insignia + precio en una placa de vidrio (como losparaisos)
+   — glow del acento de marca detrás, filo de luz recorriendo el borde en
+   loop. El acento vive en el detalle, no en toda la placa. */
 .hero__precio-chip{
   position:relative; isolation:isolate; overflow:hidden;
-  display:inline-flex; align-items:center; gap:10px;
+  display:inline-flex; align-items:center; gap:12px;
   margin-top:14px;
-  padding:14px 26px;
-  border-radius:999px;
-  border:var(--borde-claro);
-  background:transparent;
+  padding:10px 20px 10px 14px;
+  border-radius:14px;
+  background:rgba(0,0,0,.34);
+  backdrop-filter:blur(10px) saturate(140%);
+  -webkit-backdrop-filter:blur(10px) saturate(140%);
   text-decoration:none;
 }
 .hero__precio-chip::before{
   content:""; position:absolute; z-index:-1; pointer-events:none;
-  width:160%; height:280%; left:-30%; top:-90%;
+  width:140%; height:220%; left:-20%; top:-60%;
   background:radial-gradient(closest-side, var(--fondo-alt), transparent 72%);
-  opacity:.22; filter:blur(6px);
+  opacity:.32; filter:blur(6px);
   animation:chip-aura 7s ease-in-out infinite alternate;
 }
 @keyframes chip-aura{
@@ -375,18 +374,18 @@ body.menu-abierto .nav{
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
-  opacity:.6;
+  opacity:.75;
   animation:chip-filo 7s linear infinite;
 }
 @keyframes chip-filo{
   from{ background-position-x:0px; }
   to{ background-position-x:-300px; }
 }
-.hero__promo-ico{ width:18px; height:18px; flex:none; color:var(--blanco); }
+.hero__promo-ico{ width:20px; height:20px; flex:none; color:var(--blanco); }
 .hero__precio{
-  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
-  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--blanco); line-height:1;
+  font-family:"Hello Branch",cursive; font-weight:400;
+  font-size:24px; color:var(--blanco); line-height:1;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
 }
 /* el cuarto inferior */
 .hero__pie{

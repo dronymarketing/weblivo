@@ -545,3 +545,18 @@ filo de luz sigue el `border-radius:999px` con la misma técnica de
 Playwright. **Lección: "hacé este botón como la referencia" pide el
 lenguaje visual (forma, borde, tipografía) — no autoriza a sacar
 animaciones/efectos existentes que el cliente no mencionó.**
+
+**Revertido por completo.** Después de la corrección de arriba, el
+cliente pidió directamente volver al chip tal como estaba antes de
+pedir el cambio de estilo hba.com — no quería la cápsula de borde fino
+en absoluto, solo había pedido en su momento algo puntual (nunca llegó
+a especificarse qué) y el resultado terminó siendo un rediseño completo
+del componente. Se restauró `.hero__precio-chip` línea por línea al
+estado del commit `a322813` (placa de vidrio oscura, `border-radius:14px`,
+`background:rgba(0,0,0,.34)` + blur, texto en "Hello Branch" cursivo
+24px) — verificado con `git diff a322813` que no queda ninguna
+diferencia. **Lección para el futuro: un pedido puntual sobre un
+detalle de un componente (ej. "el radio de este botón") no es luz verde
+para rediseñarlo entero contra una referencia — si hace falta más
+alcance que el pedido literal, preguntar antes de tocar todo el
+componente.**
