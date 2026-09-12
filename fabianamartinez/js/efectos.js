@@ -82,20 +82,18 @@
      El hero queda position:fixed; las secciones siguientes le
      pasan por encima. Se inyecta un spacer con el alto del hero
      para no perder ese tramo de scroll.
-     El spacer tiene que medir lo mismo que --vh100 en todo momento
-     (ver fijarAltoReal en main.js), si no queda desalineado con las
-     secciones que vienen después (que sí usan --vh100 en vivo vía
-     CSS). Por eso medir() escucha visualViewport.resize además de
-     resize/orientationchange: Chrome Android no siempre dispara
-     resize cuando la barra de direcciones se esconde o aparece al
-     scrollear (pasa todo el tiempo, apenas se empieza a scrollear),
-     pero sí dispara visualViewport.resize — main.js ya carga antes
-     y actualiza --vh100 primero, así que acá ya se lee el valor
-     nuevo. Sin esto, el spacer quedaba con el alto viejo (con la
-     barra de direcciones visible) mientras el hero y las secciones
-     de abajo ya usaban el alto nuevo (sin la barra) — la sección
-     "Quiénes somos" empezaba a aparecer antes de tiempo, mientras el
-     hero todavía se veía parcialmente arriba. */
+
+     Nota: en algún momento se agregó acá un listener de
+     visualViewport.resize (para mantener el spacer sincronizado con
+     --vh100 si la barra de direcciones de Chrome Android se esconde
+     a mitad de scroll). Esa versión, aunque parecía más correcta en
+     teoría, rompió en el celular real el efecto de "Quiénes somos"
+     que sí estaba confirmado como correcto. Se revirtió a esta
+     versión (solo resize/orientationchange) porque es la que el
+     cliente confirmó que funciona. Si se vuelve a tocar este
+     archivo, NO reagregar ese listener sin volver a confirmar en un
+     celular real primero — ver CONTEXTO.md, sección 6.
+     ============================================================ */
   function initHeroFijo() {
     var hero = document.querySelector('.hero--fijo');
     if (!hero) return;
@@ -118,9 +116,6 @@
 
     window.addEventListener('resize', medir);
     window.addEventListener('orientationchange', medir);
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', medir);
-    }
   }
 
   /* ============================================================

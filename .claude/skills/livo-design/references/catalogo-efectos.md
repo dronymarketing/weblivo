@@ -188,21 +188,28 @@ hero todavía se ve parcialmente arriba de la pantalla — se ve como una
 sección "que no llena la pantalla completa" aunque la fórmula CSS de esa
 sección esté bien.
 
-**Fix:** cualquier medición de alto por JS en este efecto (el spacer,
-o cualquier otra) tiene que escuchar `visualViewport.resize` además de
-`resize`/`orientationchange` — el mismo trato que ya requiere `--vh100`:
+**Fix intentado, y REVERTIDO — no aplicar sin confirmar antes en celular
+real:** la solución obvia es que `medir()` escuche también
+`visualViewport.resize`, no solo `resize`/`orientationchange`:
 
 ```js
-function medir() {
-  spacer.style.height = hero.getBoundingClientRect().height + 'px';
-}
-medir();
-window.addEventListener('resize', medir);
-window.addEventListener('orientationchange', medir);
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', medir);
 }
 ```
+
+Suena correcto y en teoría lo es (sincroniza el spacer con `--vh100` en
+todo momento), pero en Fabiana Martínez, al agregarlo, el cliente reportó
+que el efecto de "Quiénes somos" (que SÍ estaba confirmado como correcto
+sin este listener) dejó de funcionar en su celular real. No se llegó a
+entender el mecanismo exacto — la hipótesis es que el bug original
+(spacer desincronizado) y la fórmula de `.seccion--completa` que restaba
+`--nav-alto` se "cancelaban" parcialmente entre sí en la práctica, y
+sincronizar el spacer sin tocar nada más rompió ese equilibrio. Se
+revirtió a la versión de dos listeners (sin `visualViewport.resize`) en
+Fabiana Martínez. **Antes de agregar este listener en un proyecto nuevo:
+probarlo en un celular real primero, no asumir que es una mejora segura
+solo porque el razonamiento es correcto.**
 
 ---
 

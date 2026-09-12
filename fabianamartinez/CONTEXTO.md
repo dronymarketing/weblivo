@@ -186,46 +186,36 @@ para no repetirlo:**
 Chrome Android esconde/muestra la barra de direcciones al scrollear (`resize`
 solo no alcanza).
 
-**La causa real (encontrada recién, analizando un video del celular real del
-cliente frame por frame):** el intento 3 (fórmulas de CSS) estaba bien, pero
-el **spacer del hero fijo** (`initHeroFijo()` en `efectos.js`, el div que
-reserva el scroll del hero mientras éste es `position:fixed`) se mide UNA
+**Una hipótesis que se probó y se revirtió — analizando un video del
+celular real del cliente frame por frame, en un momento se sospechó del
+**spacer del hero fijo** (`initHeroFijo()` en `efectos.js`, el div que
+reserva el scroll del hero mientras éste es `position:fixed`): se mide UNA
 sola vez con `hero.getBoundingClientRect().height` y solo se vuelve a medir
-con `resize`/`orientationchange` — nunca con `visualViewport.resize`. Es el
-MISMO bug de Chrome Android que ya se había resuelto para `--vh100` en
-`main.js`, pero nunca se aplicó acá, en un lugar distinto del código que
-también depende del alto real de la pantalla.
+con `resize`/`orientationchange` — nunca con `visualViewport.resize`, que
+es el evento que de verdad dispara Chrome Android cuando la barra de
+direcciones se esconde al scrollear. Se agregó ese listener pensando que
+sincronizaba el spacer con `--vh100` (que sí escucha ese evento en
+`main.js`) y se verificó con Playwright que los tres valores quedaban
+sincronizados en cualquier punto del scroll.
 
-En la práctica: apenas empezás a scrollear, la barra de direcciones de
-Chrome Android se esconde (dispara `visualViewport.resize`, casi nunca
-`resize`), la pantalla real se hace más alta, `--vh100` sube — y como
-`.hero` y `.seccion--completa` usan `--vh100` en vivo por CSS, los dos
-crecen igual, en sincronía. Pero el spacer del hero, medido por JS y
-congelado en un valor fijo en píxeles, se queda con el alto VIEJO (barra
-de direcciones todavía visible) — más chico que el `--vh100` nuevo. Esa
-diferencia hace que "Quiénes somos" arranque en el documento ANTES de lo
-que debería (el spacer es más corto de lo que el hero mide de verdad), así
-que la sección empieza a asomar mientras el hero todavía se ve
-parcialmente arriba — exactamente lo que se ve en el video: contenido de
-"Quiénes somos" ya bien avanzado (hasta el botón "Ver todas") con la foto
-del hero todavía visible detrás, arriba de la pantalla.
+**Pero el cliente confirmó que, con ese listener agregado, el efecto de
+"Quiénes somos" — que ya estaba resuelto y confirmado ANTES de agregarlo —
+dejó de funcionar en su celular real.** Se revirtió: `initHeroFijo()`
+volvió a la versión con solo `resize`/`orientationchange` (la que el
+cliente había confirmado como correcta originalmente). No se terminó de
+entender el mecanismo exacto de por qué agregar una sincronización
+"más correcta" empeoró el resultado — la hipótesis es que el bug del
+spacer desincronizado y la fórmula de `.seccion--completa` (que resta
+`--nav-alto`) se compensaban parcialmente entre sí en la práctica, y
+sincronizar una punta sin la otra rompió ese equilibrio. Documentado en el
+skill Livo (`catalogo-efectos.md`, Efecto D, "Ojo 2") como un fix que NO
+hay que reaplicar sin confirmar antes en un celular real.
 
-**Fix:** agregar el mismo listener que le faltaba, en `efectos.js`:
-
-```js
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', medir);
-}
-```
-
-Verificado con Playwright simulando el crecimiento real de viewport (700px
-→ 844px, como pasa cuando se esconde la barra de direcciones): antes del
-fix el spacer quedaba congelado en 700px mientras `--vh100` y el hero ya
-medían 844px; después del fix, los tres valores quedan sincronizados
-siempre. **Lección para el futuro:** cualquier medición de alto hecha con
-JS (no solo `--vh100`) en un sitio con nav fijo tiene que escuchar
-`visualViewport.resize`, no solo `resize`/`orientationchange` — Chrome
-Android dispara el primero mucho más seguido que los otros dos.
+**Lección para el futuro:** un razonamiento técnicamente correcto
+(sincronizar con `visualViewport.resize`) no garantiza una mejora — en
+este proyecto puntual, la confirmación del cliente en su celular real
+pesa más que cualquier verificación con Playwright, headless o de
+escritorio.
 
 **Lección aparte, no relacionada con CSS:** varias veces el cliente reportó
 "sigue igual" después de un fix real porque los `<link>`/`<script>` no tenían
@@ -233,22 +223,27 @@ cache-busting. Todo `css/*.css` y `js/*.js` de este proyecto se referencia con
 `?v=N` en `index.html` — **subir el número cada vez que se toque un CSS/JS y
 se necesite que el cambio se vea sí o sí**, no asumir que alcanza con pushear.
 
-**Repaso post-fix (12/set):** después de dos capturas del cliente mostrando
-que "no se resolvió", se llegó a sospechar caché y se probó también
-`scroll-snap` como red de seguridad — **descartado**: en las pruebas entra
-en conflicto con los `ScrollTrigger` de GSAP que ya usa la página (el pin de
-Destacadas), produciendo saltos de scroll impredecibles. Nunca se llegó a
-subir a producción.
+**Repaso post-fix (12/set) — cronología de esta vuelta, para no repetirla:**
+1. Se sospechó caché y se probó `scroll-snap` como red de seguridad —
+   **descartado**: entra en conflicto con los `ScrollTrigger` de GSAP que
+   ya usa la página (el pin de Destacadas), produce saltos de scroll
+   impredecibles. Nunca se subió a producción.
+2. Se encontró que esta sesión había reemplazado el fix real (restar
+   `--nav-alto`) por "sin restar nada", basado en medición con Playwright.
+   Se restauró la fórmula de restar `--nav-alto` — el cliente mandó la
+   captura de la sesión original donde se confirmó y documentó, señalando
+   justamente ese cambio como el error.
+3. El cliente igual reportó que seguía sin funcionar. Comparando archivo
+   por archivo contra el commit de esa sesión (`f387c4f`), la fórmula de
+   `.seccion--completa` ya coincidía exacto — la diferencia real estaba en
+   `efectos.js`: el listener de `visualViewport.resize` agregado en el
+   spacer del hero (ver más arriba, "una hipótesis que se probó y se
+   revirtió"), que no existía en el momento confirmado. Se revirtió
+   también ese listener.
 
-La causa real del "no se resolvió" era mucho más simple: en esta misma
-sesión se había reemplazado el fix real (restar `--nav-alto`, paso 2 de la
-lista de arriba) por "sin restar nada" (paso 3), basado en medición con
-Playwright — que no reproduce un celular real. El cliente mandó la captura
-de la sesión original donde se resolvió y se documentó en el skill (con la
-fórmula de restar `--nav-alto`), confirmando que el paso 3 fue un
-retroceso. Se restauró la fórmula del paso 2. El meta `Cache-Control` y el
-bump de versión (`?v=33`) agregados en el camino se mantienen — no está de
-más, pero no era la causa de este síntoma puntual.
+El meta `Cache-Control` y el bump de versión agregados en el camino se
+mantienen — no está de más, pero no era la causa de este síntoma puntual.
+Bump a `?v=35` con este último cambio.
 
 ---
 
