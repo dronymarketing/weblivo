@@ -172,6 +172,38 @@ el hero simplemente no se mueve.
 **Ojo:** el contenido que pasa por encima necesita fondo opaco, o se ve el hero
 por detrás y queda sucio.
 
+**Ojo 2 — bug real encontrado en Fabiana Martínez, en dispositivo Android
+real (no se veía en Playwright/desktop):** la implementación típica de este
+efecto agrega un spacer (`position:fixed` en el hero saca espacio del
+documento, así que un div invisible reserva ese scroll) medido una sola vez
+con JS (`hero.getBoundingClientRect().height`). Si ese spacer solo se
+vuelve a medir con `resize`/`orientationchange`, queda desincronizado en
+Chrome Android: apenas empezás a scrollear, la barra de direcciones se
+esconde (la pantalla real se agranda) disparando `visualViewport.resize`
+— casi nunca `resize` — y el hero (si su alto depende de una variable CSS
+tipo `--vh100` medida en vivo) crece con la pantalla real, pero el spacer
+se queda congelado en el alto viejo, más chico. Resultado: la sección
+siguiente empieza a aparecer en el documento antes de tiempo, mientras el
+hero todavía se ve parcialmente arriba de la pantalla — se ve como una
+sección "que no llena la pantalla completa" aunque la fórmula CSS de esa
+sección esté bien.
+
+**Fix:** cualquier medición de alto por JS en este efecto (el spacer,
+o cualquier otra) tiene que escuchar `visualViewport.resize` además de
+`resize`/`orientationchange` — el mismo trato que ya requiere `--vh100`:
+
+```js
+function medir() {
+  spacer.style.height = hero.getBoundingClientRect().height + 'px';
+}
+medir();
+window.addEventListener('resize', medir);
+window.addEventListener('orientationchange', medir);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', medir);
+}
+```
+
 ---
 
 ## E · Galería anclada (sticky gallery)

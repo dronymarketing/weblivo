@@ -181,15 +181,55 @@ y `#destacadas` ya empieza a asomar) — clase `.seccion--completa` en
 **Historial de intentos fallidos, para no repetirlos:**
 1. Restar solo `--nav-alto` → sección 60px corta, Destacadas asomaba 60px antes de tiempo.
 2. Restar `--nav-alto + 12px` (pensando en `scroll-margin-top`) → sección 72px corta, mismo problema, peor.
-3. **Sin restar nada, igual que el hero → correcto.** El `scroll-margin-top`
-   de `[id]{...}` sigue sirviendo para cuando se entra por link ancla (ej.
-   el botón "Ver propiedades"), pero es un tema aparte de cuánto mide la
-   sección — no hay que mezclar los dos.
+3. Sin restar nada, igual que el hero → **matemáticamente correcto, pero el
+   cliente lo siguió viendo mal en su celular real.** Acá es donde se
+   encontró la causa real (ver abajo).
 
 `--vh100` (en `js/main.js`) se actualiza con `resize`, `orientationchange` Y
 `visualViewport.resize` — este último es el que de verdad dispara cuando
 Chrome Android esconde/muestra la barra de direcciones al scrollear (`resize`
 solo no alcanza).
+
+**La causa real (encontrada recién, analizando un video del celular real del
+cliente frame por frame):** el intento 3 (fórmulas de CSS) estaba bien, pero
+el **spacer del hero fijo** (`initHeroFijo()` en `efectos.js`, el div que
+reserva el scroll del hero mientras éste es `position:fixed`) se mide UNA
+sola vez con `hero.getBoundingClientRect().height` y solo se vuelve a medir
+con `resize`/`orientationchange` — nunca con `visualViewport.resize`. Es el
+MISMO bug de Chrome Android que ya se había resuelto para `--vh100` en
+`main.js`, pero nunca se aplicó acá, en un lugar distinto del código que
+también depende del alto real de la pantalla.
+
+En la práctica: apenas empezás a scrollear, la barra de direcciones de
+Chrome Android se esconde (dispara `visualViewport.resize`, casi nunca
+`resize`), la pantalla real se hace más alta, `--vh100` sube — y como
+`.hero` y `.seccion--completa` usan `--vh100` en vivo por CSS, los dos
+crecen igual, en sincronía. Pero el spacer del hero, medido por JS y
+congelado en un valor fijo en píxeles, se queda con el alto VIEJO (barra
+de direcciones todavía visible) — más chico que el `--vh100` nuevo. Esa
+diferencia hace que "Quiénes somos" arranque en el documento ANTES de lo
+que debería (el spacer es más corto de lo que el hero mide de verdad), así
+que la sección empieza a asomar mientras el hero todavía se ve
+parcialmente arriba — exactamente lo que se ve en el video: contenido de
+"Quiénes somos" ya bien avanzado (hasta el botón "Ver todas") con la foto
+del hero todavía visible detrás, arriba de la pantalla.
+
+**Fix:** agregar el mismo listener que le faltaba, en `efectos.js`:
+
+```js
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', medir);
+}
+```
+
+Verificado con Playwright simulando el crecimiento real de viewport (700px
+→ 844px, como pasa cuando se esconde la barra de direcciones): antes del
+fix el spacer quedaba congelado en 700px mientras `--vh100` y el hero ya
+medían 844px; después del fix, los tres valores quedan sincronizados
+siempre. **Lección para el futuro:** cualquier medición de alto hecha con
+JS (no solo `--vh100`) en un sitio con nav fijo tiene que escuchar
+`visualViewport.resize`, no solo `resize`/`orientationchange` — Chrome
+Android dispara el primero mucho más seguido que los otros dos.
 
 **Lección aparte, no relacionada con CSS:** varias veces el cliente reportó
 "sigue igual" después de un fix real porque los `<link>`/`<script>` no tenían
