@@ -41,14 +41,6 @@
   display:block; width:100%; height:100%; object-fit:cover;
 }
 
-/* ---------- Cortina: sección que sube tapando a la anterior ---------- */
-/* Sin pin ni position:fixed — pura entrada por scroll (ver initCortina
-   en efectos.js). El resguardo es el mismo que en .reveal-scroll: si el
-   clip-path no llega a animarse, el contenido queda visible igual. */
-.cortina-scroll{
-  overflow:hidden;
-}
-
 /* ---------- E · Galería anclada ---------- */
 .galeria-anclada{
   position:relative;

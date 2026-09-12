@@ -259,10 +259,14 @@ body.menu-abierto .nav{
   padding-bottom:0;
   background:var(--azul-900);
   isolation:isolate;
+  overflow:hidden; /* recorta el sobrante de .hero__fotos durante el parallax */
 }
 /* el nav es fixed y transparente sobre el hero: no resta su alto,
    flota encima. Si restara, el hero quedaría "nav-alto" corto abajo. */
-.hero__fotos{ position:absolute; inset:0; z-index:-2; }
+/* 10% de sobrante arriba y abajo (en vez de inset:0 exacto) para que el
+   parallax de JS (efectos.js) tenga margen para moverla sin dejar ver
+   el fondo del hero en los bordes. */
+.hero__fotos{ position:absolute; top:-10%; bottom:-10%; left:0; right:0; z-index:-2; }
 .hero__foto{
   position:absolute; inset:0;
   opacity:0; transition:opacity 1200ms var(--curva);

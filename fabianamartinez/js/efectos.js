@@ -37,7 +37,7 @@
 
   initRevealScroll();     // C
   initHeroFijo();          // D (infraestructura, sin uso en el hero de esta página)
-  initCortina();           // sección que sube tapando al hero (sin pin)
+  initHeroParallax();      // la foto del hero se mueve hacia arriba al scrollear
   initGaleriaAnclada();    // E (infraestructura genérica, sin uso en esta página por ahora)
   initPropiedadFija();     // D + C combinados, como en hba.com
   initSeccionesColor();    // F
@@ -111,31 +111,29 @@
   }
 
   /* ============================================================
-     CORTINA · sección que sube tapando a la anterior
-     Sin pin ni position:fixed: la sección scrollea en flujo normal
-     (el hero, por ejemplo, queda libre de moverse con la página) y
-     al entrar en pantalla se revela con un clip-path que crece de
-     abajo hacia arriba — se ve como una cortina que sube.
+     PARALLAX DEL HERO
+     El hero queda en flujo normal (sin pin, sin position:fixed):
+     scrollea como el resto del sitio. Para que no se sienta "una
+     foto quieta", la foto de fondo se mueve hacia arriba con un
+     parallax clásico mientras se hace scroll hacia abajo — más
+     lento/rápido que el resto de la página, no 1:1. La foto tiene
+     10% de sobrante arriba y abajo (ver .hero__fotos en movil.css)
+     para que este desplazamiento no deje ver el fondo del hero.
      ============================================================ */
-  function initCortina() {
-    var els = document.querySelectorAll('.cortina-scroll');
-    if (!els.length) return;
+  function initHeroParallax() {
+    var hero = document.querySelector('.hero');
+    var fotos = hero ? hero.querySelector('.hero__fotos') : null;
+    if (!fotos) return;
 
-    els.forEach(function (el) {
-      /* Los 4 valores en ambos extremos (nunca "inset(0)" solo) para que
-         GSAP interpole número a número — con conteos distintos de valores
-         no anima de a poco, salta recién al final del scroll. */
-      gsap.set(el, { clipPath: 'inset(100% 0% 0% 0%)' });
-      gsap.to(el, {
-        clipPath: 'inset(0% 0% 0% 0%)',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 100%',
-          end: 'top 40%',
-          scrub: 0.5
-        }
-      });
+    gsap.to(fotos, {
+      yPercent: -10,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
+      }
     });
   }
 
