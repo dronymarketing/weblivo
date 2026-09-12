@@ -172,3 +172,24 @@ solo no alcanza).
 cache-busting. Todo `css/*.css` y `js/*.js` de este proyecto se referencia con
 `?v=N` en `index.html` — **subir el número cada vez que se toque un CSS/JS y
 se necesite que el cambio se vea sí o sí**, no asumir que alcanza con pushear.
+
+---
+
+## 7. Hero como catálogo — chip de precio (copiado de losparaisos)
+
+El cliente pidió que el hero funcione "como un catálogo": cada zona del
+carrusel (ya rotaba foto + nombre + bajada) ahora también muestra una placa
+de precio (`.hero__precio-chip`), copiada visualmente del chip de promos de
+`losparaisos/index.html` (`.hero__precio-chip`) — vidrio esmerilado, un glow
+del color de marca respirando detrás (`::before`, `chip-aura`) y un filo de
+luz recorriendo el borde en loop (`::after`, `chip-filo`), adaptado a
+`var(--azul)` (terracota) en vez del verde/rosado de losparaisos.
+
+**Pendiente real, no inventar:** cada `.hero__foto` tiene un
+`data-precio="Consultar"` puesto como placeholder — no hay precios reales
+por zona todavía. `js/main.js` ya lee `data-precio` y lo pinta en
+`.hero__precio` sincronizado con el cambio de foto/zona/bajada (con el mismo
+fade de 260ms que usa losparaisos — clase `.cambia` en `.hero`). Cuando el
+cliente pase valores reales (por ejemplo "Desde U$S 120.000" por zona, o
+dejar "Consultar" a propósito), actualizar el `data-precio` de cada
+`.hero__foto` en `index.html` — nunca inventar una cifra.

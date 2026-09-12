@@ -123,10 +123,12 @@
   /* ----------------------------------------------------------
      CARRUSEL DEL HERO — 6 localidades
   ---------------------------------------------------------- */
+  var hero   = document.querySelector('.hero');
   var fotos  = Array.prototype.slice.call(document.querySelectorAll('.hero__foto'));
   var puntos = Array.prototype.slice.call(document.querySelectorAll('.hero__punto'));
-  var zonaEl = document.querySelector('.hero__zona');
-  var bajaEl = document.querySelector('.hero__bajada');
+  var zonaEl   = document.querySelector('.hero__zona');
+  var bajaEl   = document.querySelector('.hero__bajada');
+  var precioEl = document.querySelector('.hero__precio');
   var actual = 0, reloj = null;
 
   var lento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -134,14 +136,19 @@
   function irA(i) {
     if (!fotos.length) return;
     actual = (i + fotos.length) % fotos.length;
-    fotos.forEach(function (f, n) { f.classList.toggle('activa', n === actual); });
-    puntos.forEach(function (p, n) {
-      p.classList.toggle('activo', n === actual);
-      p.setAttribute('aria-current', n === actual ? 'true' : 'false');
-    });
-    var f = fotos[actual];
-    if (zonaEl && f.dataset.zona)   zonaEl.textContent = f.dataset.zona;
-    if (bajaEl && f.dataset.bajada) bajaEl.textContent = f.dataset.bajada;
+    if (hero) hero.classList.add('cambia');
+    setTimeout(function () {
+      fotos.forEach(function (f, n) { f.classList.toggle('activa', n === actual); });
+      puntos.forEach(function (p, n) {
+        p.classList.toggle('activo', n === actual);
+        p.setAttribute('aria-current', n === actual ? 'true' : 'false');
+      });
+      var f = fotos[actual];
+      if (zonaEl && f.dataset.zona)     zonaEl.textContent = f.dataset.zona;
+      if (bajaEl && f.dataset.bajada)   bajaEl.textContent = f.dataset.bajada;
+      if (precioEl && f.dataset.precio) precioEl.textContent = f.dataset.precio;
+      if (hero) hero.classList.remove('cambia');
+    }, 260);
   }
 
   function arrancar() {
