@@ -243,7 +243,45 @@ se necesite que el cambio se vea sí o sí**, no asumir que alcanza con pushear.
 
 El meta `Cache-Control` y el bump de versión agregados en el camino se
 mantienen — no está de más, pero no era la causa de este síntoma puntual.
-Bump a `?v=35` con este último cambio.
+
+4. El cliente reportó, con la MISMA captura de antes, que seguía sin
+   funcionar. En vez de seguir mirando CSS/JS, se comparó el `index.html`
+   completo contra `f387c4f` y apareció la causa real: en algún punto de
+   esta sesión (probablemente al reordenar Destacadas con foto fija) el
+   bloque "Propiedades destacadas" + botón "Ver todas" — que originalmente
+   era el encabezado de **`#destacadas`** — había quedado adentro de
+   **`#nosotros`**, como un tercer bloque de contenido. `.seccion--completa`
+   usa `min-height`, no `height`: si el contenido no entra en una pantalla,
+   la sección simplemente crece más allá de una pantalla — y ese bloque de
+   más (título + párrafo + botón) es justo lo que la hacía no entrar en
+   pantallas chicas. Medido con Playwright en varios tamaños: a 412×844 no
+   se notaba (entraba justo), pero a 375×667 y 360×640 el contenido real
+   desbordaba el `min-height` por 85-112px — la sección real medía más que
+   una pantalla, sin importar qué tan afinada estuviera la fórmula de
+   `.seccion--completa` o el spacer del hero. Ese desborde, dependiente del
+   tamaño de pantalla, es probablemente lo que el cliente venía viendo
+   todo este tiempo en SU celular puntual, mientras cualquier verificación
+   con Playwright en un viewport más grande (o en un celular con pantalla
+   más alta) no lo mostraba.
+
+   **Fix real:** se devolvió el bloque "Propiedades destacadas" a
+   `#destacadas` (su lugar original, como encabezado de esa sección — de
+   ahí también tiene más sentido semánticamente: describe Destacadas, no
+   Quiénes somos). `#nosotros` volvió a tener solo su contenido original
+   (antetítulo + título + texto + botón + cifras). Verificado sin desborde
+   hasta 360×640; solo queda un desborde chico (~23px) en 320×568, un
+   tamaño de pantalla prácticamente en desuso hoy.
+
+   **Lección para el futuro, la más importante de todo este bloque:**
+   cuando una sección usa `.seccion--completa` (pantalla completa exacta),
+   **cualquier contenido que se le agregue después hay que revisarlo
+   contra el presupuesto de altura en pantallas CHICAS**, no solo en la
+   que se usó para probar. `min-height` no avisa que algo no entra: sólo
+   hace que la sección crezca en silencio, rompiendo la sincronía con el
+   spacer del hero y con cualquier otra sección a pantalla completa —
+   exactamente el síntoma de "queda un pedazo" que se venía persiguiendo
+   con fórmulas de CSS y fixes de JS, cuando la causa real era contenido
+   de más.
 
 ---
 

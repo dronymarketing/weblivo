@@ -203,6 +203,19 @@ if (window.visualViewport) {
   página, usar la fórmula del hero (sin restar `--nav-alto`) — restarlo ahí
   sí produce un hueco, porque el hero no tiene nada antes que le corra el
   punto de partida. Cualquier otra sección sí resta `--nav-alto`.
+- **La más importante, y la más fácil de pisar sin darse cuenta:**
+  `min-height` no avisa cuando el contenido no entra — la sección
+  simplemente crece más allá de una pantalla, en silencio, y rompe la
+  sincronía con el spacer del hero y con cualquier otra sección a pantalla
+  completa. Cualquier contenido que se le agregue a esta sección DESPUÉS
+  de armarla hay que revisarlo contra el presupuesto de altura en
+  pantallas CHICAS (360×640 o menos), no solo en la que se usó para
+  probar — en Fabiana Martínez, un bloque de más (un encabezado que se
+  había puesto ahí por error, ver `CONTEXTO.md` sección 6) desbordaba el
+  `min-height` en pantallas chicas pero no en las más grandes, y el
+  síntoma se vivió como "no queda a pantalla completa" — llevó varias
+  rondas de tocar CSS y JS antes de encontrar que el problema real era
+  contenido de más, no la fórmula.
 
 **Si el cliente dice "sigue igual" con esta fórmula ya pusheada, en este
 orden:**
