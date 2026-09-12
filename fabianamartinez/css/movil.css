@@ -152,19 +152,36 @@ button{ font:inherit; color:inherit; }
 .nav__logo--texto{
   font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
   color:var(--blanco); line-height:28px;
-  text-shadow:0 1px 3px rgba(0,0,0,.3);
 }
-.nav.es-solido .nav__logo--texto{ color:var(--azul); text-shadow:none; }
+.nav.es-solido .nav__logo--texto{ color:var(--azul); }
 
 .nav__acciones{ display:flex; align-items:center; gap:4px; }
 .nav__btn{
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0;
   color:var(--blanco);
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.25)); /* resguardo sobre foto clara */
 }
 .nav__btn .ico{ width:24px; height:24px; }
 .nav__enlaces{ display:none; }
+
+/* ---------- Buscador del nav ---------- */
+.nav__buscador{
+  position:fixed; top:var(--nav-alto); left:0; right:0; z-index:79;
+  display:flex; align-items:center; gap:10px;
+  padding:14px var(--margen);
+  background:var(--blanco);
+  border-bottom:1px solid rgba(65,47,38,.14);
+  opacity:0; transform:translateY(-8px); pointer-events:none;
+  transition:opacity 260ms var(--curva), transform 260ms var(--curva);
+}
+.nav__buscador.abierto{ opacity:1; transform:translateY(0); pointer-events:auto; }
+.nav__buscador .ico{ width:20px; height:20px; color:var(--azul); flex:none; }
+.nav__buscador input{
+  flex:1; border:0; outline:0; background:none;
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif;
+  font-size:15px; color:var(--tinta);
+}
+.nav__buscador input::placeholder{ color:var(--gris); }
 
 /* estado 1 — tope del hero */
 .nav.es-tope{ background:transparent; }
@@ -190,7 +207,7 @@ button{ font:inherit; color:inherit; }
 }
 .nav.es-solido .logo--blanco{ display:none; }
 .nav.es-solido .logo--color{ display:block; }
-.nav.es-solido .nav__btn{ color:var(--azul); filter:none; }
+.nav.es-solido .nav__btn{ color:var(--azul); }
 
 /* ---------- Menú hamburguesa ---------- */
 .menu{

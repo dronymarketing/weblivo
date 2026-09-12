@@ -88,6 +88,35 @@
     if (e.key === 'Escape') abrirMenu(false);
   });
 
+  /* ----------------------------------------------------------
+     BUSCADOR DEL NAV
+     Solo diseño por ahora: abre/cierra y se puede escribir, pero
+     no busca nada todavía — se conecta cuando exista la página de
+     listados de propiedades.
+  ---------------------------------------------------------- */
+  var buscarBtn  = document.querySelector('.nav__buscar');
+  var buscador   = document.querySelector('.nav__buscador');
+  var buscadorIn = buscador ? buscador.querySelector('input') : null;
+
+  function abrirBuscador(abrir) {
+    if (!buscador) return;
+    buscador.classList.toggle('abierto', abrir);
+    buscador.setAttribute('aria-hidden', abrir ? 'false' : 'true');
+    if (buscarBtn) buscarBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    if (abrir && buscadorIn) buscadorIn.focus();
+  }
+  if (buscarBtn) {
+    buscarBtn.addEventListener('click', function () {
+      abrirBuscador(!buscador.classList.contains('abierto'));
+    });
+  }
+  if (buscador) {
+    buscador.addEventListener('submit', function (e) { e.preventDefault(); });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') abrirBuscador(false);
+  });
+
   /* submenú Proyectos dentro del menú */
   var desplegable = document.querySelector('.menu__desplegable');
   if (desplegable) {

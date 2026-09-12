@@ -6,11 +6,11 @@
 <title>Fabiana Martínez Inmobiliaria — Montevideo &amp; Costa de Oro</title>
 <meta name="description" content="Venta, compra y alquiler en Montevideo y Costa de Oro. Fabiana Martínez, asesora inmobiliaria — te acompaño desde lo humano y lo profesional en cada etapa.">
 <meta name="theme-color" content="#412F26">
-<link rel="stylesheet" href="css/fuentes.css?v=22">
-<link rel="stylesheet" href="css/movil.css?v=22">
-<link rel="stylesheet" href="css/escritorio.css?v=22">
+<link rel="stylesheet" href="css/fuentes.css?v=23">
+<link rel="stylesheet" href="css/movil.css?v=23">
+<link rel="stylesheet" href="css/escritorio.css?v=23">
 <link rel="stylesheet" href="lib/splide.min.css">
-<link rel="stylesheet" href="css/efectos.css?v=22">
+<link rel="stylesheet" href="css/efectos.css?v=23">
 </head>
 <body>
 
@@ -65,13 +65,18 @@
     <a class="nav__btn" href="favoritos.html" aria-label="Favoritos">
       <svg class="ico" aria-hidden="true"><use href="#i-bookmark"/></svg>
     </a>
-    <a class="nav__btn" href="area-clientes.html" aria-label="Área clientes">
-      <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>
-    </a>
+    <button class="nav__btn nav__buscar" type="button" aria-label="Buscar" aria-expanded="false" aria-controls="nav-buscador">
+      <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+    </button>
     <button class="nav__btn nav__hamburguesa" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
       <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
     </button>
   </div>
+
+  <form class="nav__buscador" id="nav-buscador" role="search" aria-hidden="true">
+    <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+    <input type="search" name="q" placeholder="Buscar por zona…" aria-label="Buscar propiedades">
+  </form>
 </header>
 
 <!-- ============ MENÚ ============ -->
@@ -370,7 +375,7 @@
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
 <script src="lib/splide.min.js"></script>
-<script src="js/main.js?v=22"></script>
-<script src="js/efectos.js?v=22"></script>
+<script src="js/main.js?v=23"></script>
+<script src="js/efectos.js?v=23"></script>
 </body>
 </html>

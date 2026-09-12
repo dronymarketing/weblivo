@@ -204,3 +204,24 @@ un número que no es el de Fabiana (quedó de la base de Ananikian, nunca se
 reemplazó). Ahora usa la misma constante `WA_NUMERO_FABIANA` que el resto
 del sitio. Si se agrega un WhatsApp nuevo en cualquier lado del sitio,
 usar esa constante — nunca un número hardcodeado de nuevo.
+
+---
+
+## 8. Nav: buscador en vez de "área clientes", sin sombras
+
+Pedido del cliente: sacar el ícono de usuario/"área clientes" del nav y
+poner una lupa que abra un buscador. Se sacó el link a
+`area-clientes.html` (esa página todavía no existe, no quedó ningún link
+roto) y en su lugar hay un botón `.nav__buscar` que abre `.nav__buscador`
+— un panel blanco fijo debajo del nav con un input de texto
+(`js/main.js`: `abrirBuscador()`). **Solo diseño por ahora**: abre, cierra,
+se puede escribir, pero el `submit` hace `preventDefault()` y no busca
+nada — se conecta cuando exista una página de listados de propiedades
+(filtrar por zona lo más probable, ya que el `data-zona` del carrusel del
+hero ya existe para eso).
+
+También se sacó toda sombra de texto/ícono del nav superior (no del menú
+hamburguesa completo, que es un componente aparte): `.nav__logo--texto`
+tenía `text-shadow` y `.nav__btn` tenía `filter:drop-shadow(...)` como
+resguardo de contraste sobre foto clara — el cliente los quiere sin
+sombra en las tres fases del nav (tope/glass/sólido).
