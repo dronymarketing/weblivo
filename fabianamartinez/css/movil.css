@@ -343,7 +343,7 @@ body.menu-abierto .nav{
    loop. El acento vive en el detalle, no en toda la placa. */
 .hero__precio-chip{
   position:relative; isolation:isolate; overflow:hidden;
-  display:inline-flex; align-items:center; gap:12px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
   margin-top:14px;
   padding:7px 20px 7px 14px;
   border-radius:999px;
