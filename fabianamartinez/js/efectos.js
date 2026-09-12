@@ -36,8 +36,7 @@
   }
 
   initRevealScroll();     // C
-  initHeroFijo();          // D (infraestructura, sin uso en el hero de esta página)
-  initHeroParallax();      // la foto del hero se mueve hacia arriba al scrollear
+  initHeroFijo();          // D
   initGaleriaAnclada();    // E (infraestructura genérica, sin uso en esta página por ahora)
   initPropiedadFija();     // D + C combinados, como en hba.com
   initSeccionesColor();    // F
@@ -83,8 +82,6 @@
      El hero queda position:fixed; las secciones siguientes le
      pasan por encima. Se inyecta un spacer con el alto del hero
      para no perder ese tramo de scroll.
-     Infraestructura reusable para otros proyectos — no se usa en
-     el hero de esta página (ver initCortina más abajo).
      ============================================================ */
   function initHeroFijo() {
     var hero = document.querySelector('.hero--fijo');
@@ -108,33 +105,6 @@
 
     window.addEventListener('resize', medir);
     window.addEventListener('orientationchange', medir);
-  }
-
-  /* ============================================================
-     PARALLAX DEL HERO
-     El hero queda en flujo normal (sin pin, sin position:fixed):
-     scrollea como el resto del sitio. Para que no se sienta "una
-     foto quieta", la foto de fondo se mueve hacia arriba con un
-     parallax clásico mientras se hace scroll hacia abajo — más
-     lento/rápido que el resto de la página, no 1:1. La foto tiene
-     10% de sobrante arriba y abajo (ver .hero__fotos en movil.css)
-     para que este desplazamiento no deje ver el fondo del hero.
-     ============================================================ */
-  function initHeroParallax() {
-    var hero = document.querySelector('.hero');
-    var fotos = hero ? hero.querySelector('.hero__fotos') : null;
-    if (!fotos) return;
-
-    gsap.to(fotos, {
-      yPercent: -10,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true
-      }
-    });
   }
 
   /* ============================================================

@@ -84,30 +84,21 @@ obligatorias del paquete (nunca romperlas): si GSAP no carga, el contenido
 queda visible igual; `prefers-reduced-motion` apaga animaciones sin esconder
 nada; nunca ScrollSmoother ni Lenis.
 
-- **D (hero fijo) — NO se usa en el hero de esta página.** Historial de
-  idas y vueltas, para no repetirlas: (1) el hero arrancó con `hero--fijo`
-  (`position:fixed`, pin real) y "Quiénes somos" lo tapaba como cortina; el
-  cliente lo sintió "una imagen quieta" y pidió sacar el pin — se sacó
-  `hero--fijo`, quedó `.hero` en flujo normal. (2) Eso perdió la cortina, el
-  cliente pidió combinar ambas cosas — se volvió a poner `hero--fijo` +
-  zoom lento (Ken Burns). (3) **Rechazado**: "quedó como estaba antes, con
-  un zoom que no aporta nada" — pidió la versión simple sin pin. (4) Se
-  intentó lograr la cortina de otra forma con `.cortina-scroll` (clip-path
-  revelando `#nosotros`) — **también rechazado**: "no sé qué hiciste que
-  quedó espantoso". El cliente cortó ahí la búsqueda de la cortina y pidió
-  algo distinto y más simple.
-  **Solución final (la que pidió explícitamente)**: dejar `.hero` en flujo
-  normal tal cual estaba originalmente (sin pin, sin cortina, sin zoom) y
-  agregarle **solo** un parallax clásico a la foto de fondo: mientras se
-  hace scroll hacia abajo, `.hero__fotos` se mueve hacia arriba con
-  `initHeroParallax()` (`yPercent: -10`, `scrub:true`, atado al propio
-  scroll del hero — `start:'top top'`, `end:'bottom top'`). Para que ese
-  desplazamiento no deje ver el fondo `--azul-900` del hero en los bordes,
-  `.hero__fotos` tiene 10% de sobrante arriba y abajo (`top:-10%;
-  bottom:-10%` en vez de `inset:0`) y `.hero{overflow:hidden}` recorta el
-  sobrante. Sin pin, sin `position:fixed`, sin cortina, sin z-index hacks —
-  la versión más simple de todas las probadas. **No reintroducir
-  `hero--fijo` ni una cortina en este hero salvo pedido explícito.**
+- **D (hero fijo) — ES la versión final, `hero--fijo` se usa tal cual en
+  el hero de esta página.** Historial de idas y vueltas, para no
+  repetirlas: se probó sacar el pin (hero en flujo normal, nav "bajando"
+  sobre la foto), combinarlo con un zoom lento, lograr la cortina con un
+  clip-path en `#nosotros` en vez de con el pin, y un parallax clásico en
+  la foto — el cliente rechazó cada una de esas variantes ("quedó como
+  estaba antes, con un zoom que no aporta nada"; "no sé qué hiciste que
+  quedó espantoso") y pidió explícitamente volver a como estaba desde el
+  principio. **La versión original — `hero--fijo` con `initHeroFijo()`,
+  sin zoom, sin parallax, sin cortina aparte — es la que el cliente
+  quiere.** No volver a tocar el hero (pin, parallax, cortina, zoom) salvo
+  pedido explícito y específico del cliente; si se pide "que la foto no se
+  sienta quieta" o similar, preguntar primero qué mecanismo concreto tiene
+  en mente antes de implementar una variante nueva — ya se probaron cuatro
+  y todas fueron rechazadas.
 - **Bug real encontrado en el camino, corregido en las 3 animaciones de
   clip-path del sitio que quedan** (`.reveal-scroll`, galería anclada,
   `.propiedad-fija`): GSAP necesita la MISMA cantidad de valores en el
