@@ -225,3 +225,11 @@ hamburguesa completo, que es un componente aparte): `.nav__logo--texto`
 tenía `text-shadow` y `.nav__btn` tenía `filter:drop-shadow(...)` como
 resguardo de contraste sobre foto clara — el cliente los quiere sin
 sombra en las tres fases del nav (tope/glass/sólido).
+
+Después se sacó también el ícono de favoritos/`i-bookmark` del nav (el
+link a `favoritos.html`, esa página tampoco existe todavía — no quedó
+ningún link roto) y se afinó el trazo de los íconos que quedaron
+(`i-menu`, `i-search`): `stroke-width` de `2` a `1.5` directo en el
+`<symbol>` del sprite, para un look más minimalista. Si se necesita
+un trazo todavía más fino, `1.25` es el siguiente paso razonable antes
+de que el ícono empiece a perder peso visual sobre foto.
