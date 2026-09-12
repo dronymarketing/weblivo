@@ -348,6 +348,27 @@ mantienen — no está de más, pero no era la causa de este síntoma puntual.
    y visualmente simétrica) — pedir una captura fresca y medir el punto
    de scroll exacto antes de tocar CSS de nuevo.
 
+7. El cliente marcó con un círculo el bloque de arriba (desde "QUIÉNES
+   SOMOS" hasta el párrafo) y pidió subirlo más — "queda muy apretado en
+   el medio, no hay buena composición". El centrado vertical (paso 6) sí
+   dejaba los dos márgenes iguales, pero el resultado en sí no se veía
+   bien: contenido flotando en el medio de la pantalla en vez de fluir
+   como cualquier otra sección del sitio.
+
+   **Fix real:** dejar de centrar #nosotros. `#nosotros.seccion--completa{
+   align-items:flex-start; }` — arranca pegado arriba con el mismo
+   `padding-block:var(--seccion)` (72px) que ya tiene cualquier `.seccion`
+   del sitio, ni un caso especial. Lo que sobra de una pantalla completa
+   queda todo abajo, de colchón antes de Destacadas (antes eran ~125px
+   arriba y ~125px abajo; ahora 72px arriba, el resto — ~178px a
+   412×844 — abajo). La clase base `.seccion--completa` (en
+   `construccion.md`) se deja centrada por defecto, para el caso general
+   donde SÍ tenga sentido centrar (una sección de una sola frase, por
+   ejemplo); este override puntual es solo para #nosotros, donde
+   centrar no daba buena composición al tener varios bloques de
+   contenido con alturas dispares. Revalidado sin desborde en el mismo
+   barrido de alturas de siempre.
+
 ---
 
 ## 7. Hero como catálogo — chip de precio (copiado de losparaisos)

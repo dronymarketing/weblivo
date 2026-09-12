@@ -148,6 +148,21 @@ sección sí resta `--nav-alto`: el nav ya está sólido cuando se llega acá, y
 el contenido tiene que caber entre el nav y el borde de pantalla, no debajo
 del nav.
 
+**`align-items:center` es el default razonable, pero no siempre es lo que
+se ve mejor.** En Fabiana Martínez, con varios bloques de contenido de
+altura dispar (texto + botón + cifras + un teaser a otra sección), centrar
+dejaba todo flotando en el medio de la pantalla — matemáticamente
+simétrico (mismo margen arriba y abajo), pero sin buena composición: se
+sentía raro, no como el resto de las secciones del sitio. El cliente lo
+pidió corregir con "subí eso, queda apretado en el medio, no hay buena
+composición". Fix: `align-items:flex-start` para esa sección puntual,
+dejando que arranque pegado arriba con el mismo `padding-block:var(--seccion)`
+que cualquier `.seccion` normal — lo que sobra de una pantalla completa
+queda todo abajo, de colchón antes de la sección siguiente. **Usar
+`center` cuando el contenido es un bloque corto y parejo (una frase, una
+cita); usar `flex-start` cuando son varios bloques con alturas distintas**
+— ahí centrar rara vez da una composición prolija.
+
 **Cómo se llegó acá — dos formas de estar "seguro" que no alcanzan por sí
 solas, para no repetir el ciclo:**
 1. Restar `--nav-alto + Npx` pensando en compensar el `scroll-margin-top`

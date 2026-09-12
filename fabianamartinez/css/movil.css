@@ -110,6 +110,13 @@ button{ font:inherit; color:inherit; }
   min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
   display:flex; align-items:center;
 }
+/* #nosotros arranca pegado arriba (como cualquier .seccion normal, con
+   el mismo padding-block:var(--seccion) de siempre), no centrado — el
+   centrado vertical dejaba el contenido flotando en el medio de la
+   pantalla con espacio de sobra arriba Y abajo, sin buena composición.
+   Lo que sobre de una pantalla completa queda abajo, de colchón antes
+   de Destacadas — no hay problema en que sea generoso ahí. */
+#nosotros.seccion--completa{ align-items:flex-start; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
