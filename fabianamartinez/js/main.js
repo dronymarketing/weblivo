@@ -10,6 +10,7 @@
   var menu     = document.querySelector('.menu');
   var abrirBtn = document.querySelector('.nav__hamburguesa');
   var cerrarBtn= document.querySelector('.menu__cerrar');
+  var WA_NUMERO_FABIANA = '59894236869';
 
   /* ----------------------------------------------------------
      ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
@@ -123,12 +124,11 @@
   /* ----------------------------------------------------------
      CARRUSEL DEL HERO — 6 localidades
   ---------------------------------------------------------- */
-  var hero   = document.querySelector('.hero');
   var fotos  = Array.prototype.slice.call(document.querySelectorAll('.hero__foto'));
   var puntos = Array.prototype.slice.call(document.querySelectorAll('.hero__punto'));
-  var zonaEl   = document.querySelector('.hero__zona');
-  var bajaEl   = document.querySelector('.hero__bajada');
-  var precioEl = document.querySelector('.hero__precio');
+  var zonaEl = document.querySelector('.hero__zona');
+  var bajaEl = document.querySelector('.hero__bajada');
+  var chipWa = document.getElementById('hero-chip-wa');
   var actual = 0, reloj = null;
 
   var lento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -144,9 +144,12 @@
         p.setAttribute('aria-current', n === actual ? 'true' : 'false');
       });
       var f = fotos[actual];
-      if (zonaEl && f.dataset.zona)     zonaEl.textContent = f.dataset.zona;
-      if (bajaEl && f.dataset.bajada)   bajaEl.textContent = f.dataset.bajada;
-      if (precioEl && f.dataset.precio) precioEl.textContent = f.dataset.precio;
+      if (zonaEl && f.dataset.zona) zonaEl.textContent = f.dataset.zona;
+      if (bajaEl && f.dataset.bajada) bajaEl.textContent = f.dataset.bajada;
+      if (chipWa && f.dataset.zona) {
+        var mensaje = 'Hola Fabiana, quiero consultarte sobre la propiedad ' + f.dataset.zona;
+        chipWa.href = 'https://wa.me/' + WA_NUMERO_FABIANA + '?text=' + encodeURIComponent(mensaje);
+      }
       if (hero) hero.classList.remove('cambia');
     }, 260);
   }
@@ -272,7 +275,7 @@
         '. Quiero agendar una visita para ' + propiedad +
         (dia && dia.value ? ' (día preferido: ' + dia.value + ')' : '') +
         '. Mi teléfono de contacto es ' + (telefono ? telefono.value : '') + '.';
-      window.open('https://wa.me/59894189402?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+      window.open('https://wa.me/' + WA_NUMERO_FABIANA + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
       toggleModal(false);
       formAgendar.reset();
     });

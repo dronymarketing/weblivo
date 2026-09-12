@@ -315,6 +315,7 @@ body.menu-abierto .nav{
   background:rgba(0,0,0,.34);
   backdrop-filter:blur(10px) saturate(140%);
   -webkit-backdrop-filter:blur(10px) saturate(140%);
+  text-decoration:none;
 }
 .hero__precio-chip::before{
   content:""; position:absolute; z-index:-1; pointer-events:none;

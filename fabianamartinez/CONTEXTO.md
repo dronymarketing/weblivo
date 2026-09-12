@@ -185,11 +185,22 @@ del color de marca respirando detrás (`::before`, `chip-aura`) y un filo de
 luz recorriendo el borde en loop (`::after`, `chip-filo`), adaptado a
 `var(--azul)` (terracota) en vez del verde/rosado de losparaisos.
 
-**Pendiente real, no inventar:** cada `.hero__foto` tiene un
-`data-precio="Consultar"` puesto como placeholder — no hay precios reales
-por zona todavía. `js/main.js` ya lee `data-precio` y lo pinta en
-`.hero__precio` sincronizado con el cambio de foto/zona/bajada (con el mismo
-fade de 260ms que usa losparaisos — clase `.cambia` en `.hero`). Cuando el
-cliente pase valores reales (por ejemplo "Desde U$S 120.000" por zona, o
-dejar "Consultar" a propósito), actualizar el `data-precio` de cada
-`.hero__foto` en `index.html` — nunca inventar una cifra.
+**Resuelto — decisión final del cliente:** en vez de un precio numérico
+(no hay precios fijos por zona — es asesora individual, no desarrolladora
+con lista de precios), el chip es un **CTA de WhatsApp**: ícono
+`i-whatsapp` + texto fijo "Consultar" (`id="hero-chip-wa"` en `index.html`).
+Al tocarlo abre WhatsApp con un mensaje que ya incluye la zona activa:
+"Hola Fabiana, quiero consultarte sobre la propiedad {zona}". `js/main.js`
+recalcula el `href` del chip en cada rotación del carrusel (usa
+`f.dataset.zona`, ya existía — no hizo falta agregar un `data-precio`),
+sincronizado con el mismo fade de 260ms que usa losparaisos (clase
+`.cambia` en `.hero`). Número real: `WA_NUMERO_FABIANA = '59894236869'`,
+declarado una sola vez arriba del todo en `main.js` y reusado tanto acá
+como en el modal de "agendar visita".
+
+**Bug real encontrado de paso, corregido:** el modal de "agendar visita"
+(`formAgendar` en `main.js`) mandaba el WhatsApp a `59894189402` —
+un número que no es el de Fabiana (quedó de la base de Ananikian, nunca se
+reemplazó). Ahora usa la misma constante `WA_NUMERO_FABIANA` que el resto
+del sitio. Si se agrega un WhatsApp nuevo en cualquier lado del sitio,
+usar esa constante — nunca un número hardcodeado de nuevo.
