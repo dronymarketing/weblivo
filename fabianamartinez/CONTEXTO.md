@@ -84,23 +84,41 @@ obligatorias del paquete (nunca romperlas): si GSAP no carga, el contenido
 queda visible igual; `prefers-reduced-motion` apaga animaciones sin esconder
 nada; nunca ScrollSmoother ni Lenis.
 
-- **D (hero fijo) + zoom lento atado al scroll**: el `<section class="hero
-  hero--fijo">` del home queda `position:fixed` (`initHeroFijo()`), y
-  "Quiénes somos" le pasa por arriba tapándolo como una cortina desde abajo —
-  eso es lo que el cliente quería conservar. Iteración previa: se sacó
-  `hero--fijo` del todo (hero en flujo normal, sin pin) porque el cliente
-  sintió la foto "quieta" detrás del nav; eso trajo de vuelta el efecto nav
-  bajando-sobre-la-imagen pero perdió la tapada en cortina. Pedido final:
-  **las dos cosas juntas**. Solución: se mantiene el pin (cortina intacta) y
-  se le agrega a `.hero__fotos` un zoom lento (Ken Burns, `scale(1)` →
-  `scale(1.08)`) con GSAP `scrub:true`, atado exactamente al mismo tramo de
-  scroll que dura la tapada (`ScrollTrigger` con `trigger:` el
-  `.hero--fijo-spacer`, `start:'top bottom'`, `end:'top top'` — ese spacer
-  ocupa justo el alto del hero, así el zoom termina exactamente cuando
-  "Quiénes somos" termina de cubrirlo). Así la foto tiene vida propia
-  mientras está pinneada, sin depender de que el nav se desplace.
-- **C (reveal atado al scroll)**: clip-path `inset(0 0 100% 0)` →
-  `inset(0)` + `scale(1.15 móvil / 1.3 escritorio)` → `scale(1)`, junto.
+- **D (hero fijo) — NO se usa en el hero de esta página.** Historial de
+  idas y vueltas, para no repetirlas: (1) el hero arrancó con `hero--fijo`
+  (`position:fixed`, pin real) y "Quiénes somos" lo tapaba como cortina; el
+  cliente lo sintió "una imagen quieta" y pidió sacar el pin — se sacó
+  `hero--fijo`, quedó `.hero` en flujo normal (se ve el nav "bajando" sobre
+  la foto al scrollear, porque el nav es fixed y la foto no). (2) Eso perdió
+  la cortina, el cliente pidió combinar ambas cosas — se volvió a poner
+  `hero--fijo` y se le sumó un zoom lento (Ken Burns) a la foto para que no
+  se sintiera quieta pinneada. (3) **Rechazado**: "quedó como estaba antes,
+  con un zoom que no aporta nada" — el cliente pidió explícitamente la
+  versión simple: hero en flujo normal (sin pin, sin zoom) + la cortina
+  lograda de otra forma, sin volver a complicarlo.
+  **Solución final**: `.hero` vuelve a flujo normal (sin `hero--fijo`, sin
+  zoom). La sensación de cortina se logra en `#nosotros` con una clase nueva,
+  **`.cortina-scroll`** (`initCortina()` en efectos.js): un clip-path
+  `inset(100% 0% 0% 0%)` → `inset(0% 0% 0% 0%)` atado al scroll con GSAP
+  (`scrub:0.5`, `start:'top 100%'`, `end:'top 40%'`) — la sección se revela
+  creciendo de abajo hacia arriba a medida que entra en pantalla, sin pin,
+  sin `position:fixed`, sin z-index hacks. Mucho más simple, tal como lo
+  pidió el cliente. **No reintroducir `hero--fijo` en este hero.**
+- **Bug real encontrado al armar la cortina, corregido en las 4 animaciones
+  de clip-path del sitio**: GSAP necesita la MISMA cantidad de valores en
+  el `inset()` de arranque y de llegada para interpolar de a poco — con
+  `inset(0 0 100% 0)` → `inset(0)` (4 valores vs. 1), no anima en el
+  trayecto: salta recién al final del scroll, aunque el `scrollTrigger`
+  reporte `progress` avanzando bien. Se corrigió escribiendo los 4 valores
+  siempre (`inset(0% 0% 100% 0%)` → `inset(0% 0% 0% 0%)`) en
+  `initRevealScroll` (C), `initGaleriaAnclada` (E), `initCortina` y
+  `initPropiedadFija` (D+C, Destacadas) — verificado con Playwright que el
+  porcentaje de `clip-path` ahora interpola progresivo en las cuatro, no
+  solo el `scrollTrigger.progress`. Si se agrega un nuevo reveal con
+  clip-path, escribir siempre los 4 valores en ambos extremos.
+- **C (reveal atado al scroll)**: clip-path `inset(0% 0% 100% 0%)` →
+  `inset(0% 0% 0% 0%)` + `scale(1.15 móvil / 1.3 escritorio)` → `scale(1)`,
+  junto.
 - **D+C combinado** (`.propiedad-fija`, sección Destacadas): la foto base
   queda `position:sticky` (funciona sin JS), un velo `--azul-900` se tiñe
   de 0 a .82 de opacidad atado al scroll, y 2 fotos más de la misma

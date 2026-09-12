@@ -36,7 +36,8 @@
   }
 
   initRevealScroll();     // C
-  initHeroFijo();          // D
+  initHeroFijo();          // D (infraestructura, sin uso en el hero de esta página)
+  initCortina();           // sección que sube tapando al hero (sin pin)
   initGaleriaAnclada();    // E (infraestructura genérica, sin uso en esta página por ahora)
   initPropiedadFija();     // D + C combinados, como en hba.com
   initSeccionesColor();    // F
@@ -58,7 +59,10 @@
       var img = el.querySelector('img, .reveal-scroll__img');
       if (!img) return;
 
-      gsap.set(el, { clipPath: 'inset(0 0 100% 0)' });
+      /* Los 4 valores en ambos extremos (nunca "inset(0)" solo): con
+         conteos distintos GSAP no interpola de a poco, salta recién al
+         final del scroll en vez de revelarse en el trayecto. */
+      gsap.set(el, { clipPath: 'inset(0% 0% 100% 0%)' });
       gsap.set(img, { scale: zoomInicial, transformOrigin: 'center center' });
 
       gsap.timeline({
@@ -69,20 +73,18 @@
           scrub: 0.5
         }
       })
-        .to(el, { clipPath: 'inset(0)', ease: 'none' }, 0)
+        .to(el, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, 0)
         .to(img, { scale: 1, ease: 'none' }, 0);
     });
   }
 
   /* ============================================================
-     D · HERO FIJO (+ zoom lento atado al scroll)
+     D · HERO FIJO
      El hero queda position:fixed; las secciones siguientes le
      pasan por encima. Se inyecta un spacer con el alto del hero
      para no perder ese tramo de scroll.
-     Para que no se sienta "una foto quieta" mientras la tapan, la
-     foto de fondo hace un zoom lento (Ken Burns) atado al mismo
-     tramo de scroll que dura la tapada — motion propia del hero,
-     sin depender de que el nav se mueva.
+     Infraestructura reusable para otros proyectos — no se usa en
+     el hero de esta página (ver initCortina más abajo).
      ============================================================ */
   function initHeroFijo() {
     var hero = document.querySelector('.hero--fijo');
@@ -106,21 +108,35 @@
 
     window.addEventListener('resize', medir);
     window.addEventListener('orientationchange', medir);
+  }
 
-    var fotos = hero.querySelector('.hero__fotos');
-    if (fotos) {
-      gsap.set(fotos, { scale: 1, transformOrigin: 'center center' });
-      gsap.to(fotos, {
-        scale: 1.08,
+  /* ============================================================
+     CORTINA · sección que sube tapando a la anterior
+     Sin pin ni position:fixed: la sección scrollea en flujo normal
+     (el hero, por ejemplo, queda libre de moverse con la página) y
+     al entrar en pantalla se revela con un clip-path que crece de
+     abajo hacia arriba — se ve como una cortina que sube.
+     ============================================================ */
+  function initCortina() {
+    var els = document.querySelectorAll('.cortina-scroll');
+    if (!els.length) return;
+
+    els.forEach(function (el) {
+      /* Los 4 valores en ambos extremos (nunca "inset(0)" solo) para que
+         GSAP interpole número a número — con conteos distintos de valores
+         no anima de a poco, salta recién al final del scroll. */
+      gsap.set(el, { clipPath: 'inset(100% 0% 0% 0%)' });
+      gsap.to(el, {
+        clipPath: 'inset(0% 0% 0% 0%)',
         ease: 'none',
         scrollTrigger: {
-          trigger: spacer,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true
+          trigger: el,
+          start: 'top 100%',
+          end: 'top 40%',
+          scrub: 0.5
         }
       });
-    }
+    });
   }
 
   /* ============================================================
@@ -150,7 +166,7 @@
       // acercado, como cualquier foto en reveal-scroll (efecto C)
       for (var i = 1; i < items.length; i++) {
         var contenido = items[i].querySelector('.galeria-anclada__foto') || items[i];
-        gsap.set(items[i], { clipPath: 'inset(0 0 100% 0)' });
+        gsap.set(items[i], { clipPath: 'inset(0% 0% 100% 0%)' });
         gsap.set(contenido, { scale: zoomInicial });
       }
 
@@ -165,7 +181,7 @@
 
       for (var j = 1; j < items.length; j++) {
         var foto = items[j].querySelector('.galeria-anclada__foto') || items[j];
-        tl.to(items[j], { clipPath: 'inset(0)', ease: 'none' }, j - 1)
+        tl.to(items[j], { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, j - 1)
           .to(foto, { scale: 1, ease: 'none' }, j - 1);
       }
     });
@@ -191,7 +207,7 @@
       if (!tinte || !extras.length) return;
 
       extras.forEach(function (extra) {
-        gsap.set(extra, { clipPath: 'inset(0 0 100% 0)' });
+        gsap.set(extra, { clipPath: 'inset(0% 0% 100% 0%)' });
         gsap.set(extra.querySelector('img'), { scale: zoomInicial });
       });
 
@@ -207,7 +223,7 @@
       tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
       extras.forEach(function (extra, i) {
         var arranca = 0.15 + i * 0.32;
-        tl.to(extra, { clipPath: 'inset(0)', ease: 'none' }, arranca)
+        tl.to(extra, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, arranca)
           .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
       });
     });
