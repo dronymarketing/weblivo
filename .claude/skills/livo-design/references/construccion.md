@@ -207,6 +207,15 @@ if (window.visualViewport) {
   no. La única diferencia real entre el hero y esta clase es el
   `display:flex;align-items:center`, que acá siempre está.
 
+**Antes de tocar la fórmula de nuevo si el cliente dice "sigue igual":
+sospechar caché primero.** En Fabiana Martínez este bug puntual generó
+**dos** falsos reportes de "no se arregló" en dos sesiones distintas —
+ambas veces el fix real ya estaba pusheado y el cliente seguía viendo la
+versión vieja. Antes de volver a cambiar CSS: pedir que pruebe en una
+pestaña de incógnito (evita el caché de disco entero) y confirmar que
+`?v=N` subió en el HTML que el navegador realmente cargó. Recién si en
+incógnito se sigue viendo mal, es un bug de verdad.
+
 ---
 
 ## Scroll

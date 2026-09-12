@@ -237,6 +237,37 @@ cache-busting. Todo `css/*.css` y `js/*.js` de este proyecto se referencia con
 `?v=N` en `index.html` — **subir el número cada vez que se toque un CSS/JS y
 se necesite que el cambio se vea sí o sí**, no asumir que alcanza con pushear.
 
+**Repaso post-fix (12/set, después de dos capturas del cliente mostrando que
+"no se resolvió"):** se reconstruyó todo el historial de este bug con
+`git log -p`, incluyendo una ronda ANTERIOR (sesión previa, commits
+`b73d588`→`f387c4f`) donde pasó exactamente lo mismo: se probó restar
+`--nav-alto`, el cliente dijo "sigue igual", se cambió a no restar nada, y
+recién ahí se descubrió que la vez anterior "sigue igual" había sido un
+falso reporte por caché vieja, no un bug real de la fórmula — es decir, este
+mismo patrón (fix real + reporte de "no se arregló" + resultó ser caché) ya
+había pasado una vez antes de esta sesión.
+
+Con ese antecedente, se verificó la fórmula actual (intento 3, sin restar
+nada + el fix del spacer sincronizado) con Playwright, simulando además el
+caso más agresivo: la barra de direcciones escondiéndose A MITAD del scroll
+de transición (viewport creciendo de 844px a 900px con `scrollY` ya en 200,
+no solo al cargar la página). Resultado: `--vh100`, el alto del hero y el
+alto de `#nosotros` se mantienen los tres sincronizados en cualquier
+momento, y un barrido de `elementFromPoint` cada 4px de scroll a lo largo de
+toda la transición hero→nosotros→destacadas no encontró ningún hueco (nunca
+aparece body/html visible, siempre hay una sección tapando toda la
+pantalla) ni ningún asomo prematuro de Destacadas antes de completar la
+pantalla de Quiénes somos. La fórmula y el fix del spacer están bien.
+
+**Dado el antecedente de caché, se agregó además** `<meta http-equiv=
+"Cache-Control" content="no-cache, no-store, must-revalidate">` en el
+`<head>` de `index.html` (best-effort — no todos los navegadores/CDNs lo
+respetan al 100%, pero ayuda) y se subió a `?v=33`. **Si el cliente vuelve a
+ver el bug después de este cambio, antes de tocar una sola línea de CSS de
+nuevo: pedirle que pruebe en una pestaña de incógnito** (evita el caché de
+disco por completo) — si ahí se ve bien, el problema es 100% caché del
+dispositivo, no el código.
+
 ---
 
 ## 7. Hero como catálogo — chip de precio (copiado de losparaisos)
