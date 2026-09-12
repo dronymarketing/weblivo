@@ -75,10 +75,14 @@
   }
 
   /* ============================================================
-     D · HERO FIJO
+     D · HERO FIJO (+ zoom lento atado al scroll)
      El hero queda position:fixed; las secciones siguientes le
      pasan por encima. Se inyecta un spacer con el alto del hero
      para no perder ese tramo de scroll.
+     Para que no se sienta "una foto quieta" mientras la tapan, la
+     foto de fondo hace un zoom lento (Ken Burns) atado al mismo
+     tramo de scroll que dura la tapada — motion propia del hero,
+     sin depender de que el nav se mueva.
      ============================================================ */
   function initHeroFijo() {
     var hero = document.querySelector('.hero--fijo');
@@ -102,6 +106,21 @@
 
     window.addEventListener('resize', medir);
     window.addEventListener('orientationchange', medir);
+
+    var fotos = hero.querySelector('.hero__fotos');
+    if (fotos) {
+      gsap.set(fotos, { scale: 1, transformOrigin: 'center center' });
+      gsap.to(fotos, {
+        scale: 1.08,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: spacer,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+    }
   }
 
   /* ============================================================

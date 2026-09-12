@@ -84,19 +84,21 @@ obligatorias del paquete (nunca romperlas): si GSAP no carga, el contenido
 queda visible igual; `prefers-reduced-motion` apaga animaciones sin esconder
 nada; nunca ScrollSmoother ni Lenis.
 
-- **D (hero fijo) — descartado en el hero de esta página, por pedido del
-  cliente**: la infraestructura sigue en `efectos.js`/`efectos.css`
-  (`.hero--fijo`, `initHeroFijo()`) para reusar en futuros proyectos, pero
-  el `<section class="hero">` del home ya NO lleva la clase `hero--fijo`.
-  Con el hero fijo, la foto quedaba 100% congelada detrás del nav mientras
-  la sección siguiente la tapaba como una cortina desde abajo — el cliente
-  lo sintió como "una imagen quieta" y pidió que el hero scrollee como el
-  resto del sitio. Ahora `.hero` es `position:relative` normal: al scrollear,
-  la foto se mueve hacia arriba con el flujo normal de la página mientras el
-  nav (fixed) se queda quieto arriba — el efecto visual resultante es que el
-  nav "va bajando" sobre la imagen a medida que esta se desplaza debajo, que
-  es justo lo que se pidió. No reintroducir `hero--fijo` en este hero sin que
-  el cliente lo pida de nuevo explícitamente.
+- **D (hero fijo) + zoom lento atado al scroll**: el `<section class="hero
+  hero--fijo">` del home queda `position:fixed` (`initHeroFijo()`), y
+  "Quiénes somos" le pasa por arriba tapándolo como una cortina desde abajo —
+  eso es lo que el cliente quería conservar. Iteración previa: se sacó
+  `hero--fijo` del todo (hero en flujo normal, sin pin) porque el cliente
+  sintió la foto "quieta" detrás del nav; eso trajo de vuelta el efecto nav
+  bajando-sobre-la-imagen pero perdió la tapada en cortina. Pedido final:
+  **las dos cosas juntas**. Solución: se mantiene el pin (cortina intacta) y
+  se le agrega a `.hero__fotos` un zoom lento (Ken Burns, `scale(1)` →
+  `scale(1.08)`) con GSAP `scrub:true`, atado exactamente al mismo tramo de
+  scroll que dura la tapada (`ScrollTrigger` con `trigger:` el
+  `.hero--fijo-spacer`, `start:'top bottom'`, `end:'top top'` — ese spacer
+  ocupa justo el alto del hero, así el zoom termina exactamente cuando
+  "Quiénes somos" termina de cubrirlo). Así la foto tiene vida propia
+  mientras está pinneada, sin depender de que el nav se desplace.
 - **C (reveal atado al scroll)**: clip-path `inset(0 0 100% 0)` →
   `inset(0)` + `scale(1.15 móvil / 1.3 escritorio)` → `scale(1)`, junto.
 - **D+C combinado** (`.propiedad-fija`, sección Destacadas): la foto base
