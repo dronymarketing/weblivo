@@ -308,9 +308,9 @@ body.menu-abierto .nav{
    loop. El acento vive en el detalle, no en toda la placa. */
 .hero__precio-chip{
   position:relative; isolation:isolate; overflow:hidden;
-  display:inline-flex; align-items:center; gap:12px;
+  display:inline-flex; align-items:center; gap:10px;
   margin-top:14px;
-  padding:10px 20px 10px 14px;
+  padding:10px 20px 10px 16px;
   border-radius:14px;
   background:rgba(0,0,0,.34);
   backdrop-filter:blur(10px) saturate(140%);
@@ -346,7 +346,7 @@ body.menu-abierto .nav{
   from{ background-position-x:0px; }
   to{ background-position-x:-300px; }
 }
-.hero__promo-ico{ width:20px; height:20px; flex:none; color:var(--blanco); }
+.hero__promo-ico{ width:15px; height:15px; flex:none; color:var(--blanco); }
 .hero__precio{
   font-family:"Hello Branch",cursive; font-weight:400;
   font-size:24px; color:var(--blanco); line-height:1;
