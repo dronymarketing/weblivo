@@ -150,10 +150,17 @@ button{ font:inherit; color:inherit; }
 
 /* Wordmark de texto — provisorio hasta tener el isotipo/logo real */
 .nav__logo--texto{
+  height:auto;
+  display:flex; flex-direction:column; justify-content:center; gap:2px;
   font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
-  color:var(--blanco); line-height:28px;
+  color:var(--blanco); line-height:1;
 }
 .nav.es-solido .nav__logo--texto{ color:var(--azul); }
+.nav__logo-sub{
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif;
+  font-weight:300; font-size:9px; letter-spacing:.28em; text-transform:uppercase;
+  line-height:1;
+}
 
 .nav__acciones{ display:flex; align-items:center; gap:4px; }
 .nav__btn{
