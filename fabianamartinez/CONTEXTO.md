@@ -566,3 +566,21 @@ componente.**
 tocar ninguna otra propiedad (fondo, blur, glow, filo de luz,
 tipografía siguen exactamente como en `a322813`). Un solo valor
 cambiado.
+
+---
+
+## 11. "Propiedades destacadas" duplicado — sacado el encabezado de #destacadas
+
+Al agregar el aviso compacto `.nosotros__destacadas` dentro de
+"Quiénes somos" (sección 8: teaser con el mismo texto "Propiedades
+destacadas"), quedó duplicado con el encabezado completo que ya vive
+al principio de `#destacadas` (título + párrafo + botón "Ver todas") —
+el mismo mensaje se leía dos veces seguidas, apenas un scroll de
+diferencia. El cliente lo marcó y pidió sacar el bloque de
+`#destacadas` (el marrón, con el título grande).
+
+Se elimina por completo el `<div class="encabezado aparece">` de
+`#destacadas` en `index.html` — la sección ahora pasa directo de la
+foto fija del pin (`propiedad-fija`) sin encabezado propio, ya que el
+aviso de "Quiénes somos" cumple esa función de introducirla. Verificado
+sin errores de consola ni huecos visuales de por medio.
