@@ -560,3 +560,9 @@ detalle de un componente (ej. "el radio de este botón") no es luz verde
 para rediseñarlo entero contra una referencia — si hace falta más
 alcance que el pedido literal, preguntar antes de tocar todo el
 componente.**
+
+**El pedido real, aplicado por fin:** era literal — solo el
+`border-radius` del chip, de `14px` a `999px` (cápsula completa), sin
+tocar ninguna otra propiedad (fondo, blur, glow, filo de luz,
+tipografía siguen exactamente como en `a322813`). Un solo valor
+cambiado.
