@@ -116,7 +116,7 @@ button{ font:inherit; color:inherit; }
    pantalla con espacio de sobra arriba Y abajo, sin buena composición.
    Lo que sobre de una pantalla completa queda abajo, de colchón antes
    de Destacadas — no hay problema en que sea generoso ahí. */
-#nosotros.seccion--completa{ align-items:flex-start; }
+#nosotros.seccion--completa{ align-items:flex-start; padding-top:40px; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
