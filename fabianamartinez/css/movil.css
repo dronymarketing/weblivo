@@ -121,7 +121,7 @@ button{ font:inherit; color:inherit; }
    se funde con el beige de --fondo-alt. #nosotros (ID) le gana en
    especificidad a [class*="tema-"] (que le pone el fondo plano por
    defecto), así que no hace falta tocar la regla general de F. */
-#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--arena) 100%); }
+#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--fondo-alt) 100%); }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */

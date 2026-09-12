@@ -477,16 +477,22 @@ gana en especificidad al selector de atributo (`[class*="tema-"]`) sin
 tocar la regla general de F:
 
 ```css
-#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--arena) 100%); }
+#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--fondo-alt) 100%); }
 ```
 
-**Por qué `--arena` y no `--fondo-alt`:** el primer intento usó
-`--fondo-alt` (`#FAF8F4`, ya casi blanco — 75% blanco/25% beige, ver
-sección de paleta) como el extremo "beige" del degradé, y contra
-`--blanco` (`#FFFFFF`) la diferencia era casi imperceptible (verificado
-muestreando píxeles: 250,248,244 vs 254,254,253, una diferencia de 2-4
-por canal). `--arena` (`#EDE1D2`, el beige real de la marca, más
-saturado) sí da un degradé visible de verdad.
+**Error de esta sesión, ya corregido:** al ver que el degradé contra
+`--fondo-alt` (`#FAF8F4`, ya casi blanco — 75% blanco/25% beige) se notaba
+poco (verificado muestreando píxeles: 250,248,244 vs 254,254,253, una
+diferencia de 2-4 por canal), se cambió el extremo "beige" a `--arena`
+(`#EDE1D2`) — pero `--arena` es el beige VIEJO del branding original, el
+que se reemplazó a propósito por `--fondo-alt` porque el cliente lo pidió
+más claro (ver Paleta, sección 3). El cliente notó el cambio de tono
+("pusiste un beige viejo") y se revirtió a `--fondo-alt`. **`--arena`
+sigue existiendo en el código para otros usos, pero no hay que usarlo
+como reemplazo de `--fondo-alt` pensando que es "más beige" — es
+literalmente el tono que ya se descartó.** El degradé contra
+`--fondo-alt` es sutil a propósito: ese es el beige actual, y es
+naturalmente muy claro.
 
 Radio del círculo (550px) elegido para que la transición se note en todo
 el ancho de un celular sin que queden dos franjas como "bloques" —
