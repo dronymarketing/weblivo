@@ -534,3 +534,14 @@ un precio) a la misma tipografía y tratamiento micro-mayúscula que
 como un botón de línea, coherente con el resto del sitio. Se mantiene el
 ícono de WhatsApp (no estaba en la referencia, pero sin él el CTA pierde
 claridad de qué acción hace).
+
+**Corrección:** el cliente aclaró que quería el look de la referencia
+(borde fino, cápsula) PERO sin perder el glow y el filo de luz animado
+que ya tenía (`::before`/`::after`, `chip-aura`/`chip-filo`) — se habían
+sacado por completo en el cambio anterior. Se reincorporaron ambos,
+ajustados a la forma de cápsula (el glow un poco más grande y sutil, el
+filo de luz sigue el `border-radius:999px` con la misma técnica de
+`mask-composite:exclude` de siempre). Verificado visualmente con
+Playwright. **Lección: "hacé este botón como la referencia" pide el
+lenguaje visual (forma, borde, tipografía) — no autoriza a sacar
+animaciones/efectos existentes que el cliente no mencionó.**
