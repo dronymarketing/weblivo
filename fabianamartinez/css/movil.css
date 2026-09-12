@@ -131,7 +131,7 @@ button{ font:inherit; color:inherit; }
 /* ============================================================
    NAV — tres estados
    1. .es-tope        → transparente, logo blanco, hamburguesa blanca
-   2. .es-glass       → glass apenas blanco sobre el hero
+   2. .es-glass       → glass puro (blur/saturate, sin tinte) sobre el hero
    3. .es-solido      → blanco puro, hamburguesa azul
    ============================================================ */
 .nav{
@@ -171,7 +171,7 @@ button{ font:inherit; color:inherit; }
 
 /* estado 2 — glass sobre el hero */
 .nav.es-glass{
-  background:rgba(255,255,255,.14);
+  background:transparent;
   -webkit-backdrop-filter:blur(16px) saturate(150%);
   backdrop-filter:blur(16px) saturate(150%);
   border-bottom-color:rgba(255,255,255,.22);
