@@ -749,7 +749,8 @@ body.menu-abierto .nav{
    ============================================================ */
 .cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14); margin-top:32px; }
 .cifra{ background:var(--fondo-alt); padding:20px 16px; }
-.cifra__ico{ display:block; width:20px; height:20px; color:var(--azul); margin-bottom:8px; }
+.cifra__fila{ display:flex; align-items:center; gap:8px; }
+.cifra__ico{ display:block; width:20px; height:20px; color:var(--azul); flex:none; }
 .cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; }
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
 
@@ -785,9 +786,10 @@ body.menu-abierto .nav{
    pantalla completa. */
 #nosotros .cifras{ grid-template-columns:repeat(4, 1fr); }
 #nosotros .cifra{ padding:10px 6px; text-align:center; }
-#nosotros .cifra__ico{ width:16px; height:16px; margin:0 auto 4px; }
+#nosotros .cifra__fila{ justify-content:center; gap:5px; }
+#nosotros .cifra__ico{ width:16px; height:16px; }
 #nosotros .cifra__num{ font-size:20px; }
-#nosotros .cifra__txt{ font-size:11px; }
+#nosotros .cifra__txt{ font-size:11px; margin-top:4px; }
 
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
@@ -812,7 +814,7 @@ body.menu-abierto .nav{
   #nosotros .nosotros__intro p{ margin-top:4px; }
   #nosotros .nosotros__intro .btn{ margin-top:8px; }
   #nosotros .cifra{ padding-block:6px; }
-  #nosotros .cifra__ico{ margin-bottom:2px; }
+  #nosotros .cifra__txt{ margin-top:2px; }
   .nosotros__destacadas{ padding-top:10px; }
 }
 /* Si todavía no entra (pantallas muy bajas), las cifras son lo
