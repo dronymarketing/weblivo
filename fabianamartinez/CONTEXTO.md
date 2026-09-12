@@ -498,3 +498,39 @@ Radio del círculo (550px) elegido para que la transición se note en todo
 el ancho de un celular sin que queden dos franjas como "bloques" —
 probado visualmente con Playwright en 412×844, ajustar si se ve muy
 abrupto o muy sutil en otros tamaños.
+
+---
+
+## 10. Chip del hero — de placa de vidrio a botón línea (referencia hba.com)
+
+El cliente mandó una captura de `hba.com` ("NUESTRA PRÁCTICA": cápsula
+con borde fino, sin relleno, texto mayúscula con tracking) y pidió que el
+chip de WhatsApp del hero (`.hero__precio-chip`) se vea así.
+
+Se sacó por completo la placa de vidrio con glow animado (`::before`,
+`chip-aura`) y filo de luz recorriendo el borde (`::after`, `chip-filo`)
+que tenía desde que se copió de losparaisos — no era el lenguaje que se
+pidió acá. Nueva versión, más simple:
+
+```css
+.hero__precio-chip{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 26px;
+  border-radius:999px;
+  border:var(--borde-claro);
+  background:transparent;
+}
+.hero__precio{
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
+  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+}
+```
+
+`--borde-claro` (`1px solid rgba(255,255,255,.18)`) ya existía en el
+sitio para bordes sobre fondo oscuro — no hizo falta un color nuevo. El
+texto pasó de "Hello Branch" cursivo y grande (24px, pensado para mostrar
+un precio) a la misma tipografía y tratamiento micro-mayúscula que
+`.antetitulo` — el chip dejó de ser una placa de "precio" y ahora lee
+como un botón de línea, coherente con el resto del sitio. Se mantiene el
+ícono de WhatsApp (no estaba en la referencia, pero sin él el CTA pierde
+claridad de qué acción hace).
