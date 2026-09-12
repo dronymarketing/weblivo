@@ -300,7 +300,7 @@ body.menu-abierto .nav{
 .hero__titulo{
   padding:0 var(--margen);
   margin-bottom:auto;
-  padding-top:calc(var(--nav-alto) + 26vh);
+  padding-top:calc(var(--nav-alto) + 32vh);
   color:var(--blanco);
 }
 .hero__zona{
