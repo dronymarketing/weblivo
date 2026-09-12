@@ -158,8 +158,8 @@ button{ font:inherit; color:inherit; }
 .nav.es-solido .nav__logo--texto{ color:var(--azul); }
 .nav__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
-  font-weight:300; font-size:8px; letter-spacing:.28em; text-transform:uppercase;
-  line-height:1; text-align:center; margin-top:-3px;
+  font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
+  line-height:1; text-align:center; margin-top:-1px;
 }
 
 .nav__acciones{ display:flex; align-items:center; gap:4px; }
