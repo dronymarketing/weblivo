@@ -155,13 +155,41 @@ dejaba todo flotando en el medio de la pantalla — matemáticamente
 simétrico (mismo margen arriba y abajo), pero sin buena composición: se
 sentía raro, no como el resto de las secciones del sitio. El cliente lo
 pidió corregir con "subí eso, queda apretado en el medio, no hay buena
-composición". Fix: `align-items:flex-start` para esa sección puntual,
-dejando que arranque pegado arriba con el mismo `padding-block:var(--seccion)`
-que cualquier `.seccion` normal — lo que sobra de una pantalla completa
-queda todo abajo, de colchón antes de la sección siguiente. **Usar
-`center` cuando el contenido es un bloque corto y parejo (una frase, una
-cita); usar `flex-start` cuando son varios bloques con alturas distintas**
-— ahí centrar rara vez da una composición prolija.
+composición". **Usar `center` cuando el contenido es un bloque corto y
+parejo (una frase, una cita); usar la receta de abajo cuando son varios
+bloques con alturas distintas** — ahí centrar rara vez da una composición
+prolija.
+
+**Receta final — reparte el sobrante entre los bloques, no en un extremo.**
+Primer intento: `align-items:flex-start` + `padding-block` fijo en la
+sección — arranca prolijo arriba, pero el sobrante de una pantalla
+completa se amontona TODO junto al final, como un bloque de aire suelto
+antes de la sección siguiente. El cliente lo notó de nuevo: pidió que el
+padding fuera parejo arriba Y abajo, sin tocar el alto total de la
+sección. `padding-bottom` fijo no alcanza para eso — con `flex-start` el
+padding-bottom define dónde termina la CAJA, no dónde termina el
+CONTENIDO.
+
+La solución real: el contenedor interno (el que envuelve los bloques de
+contenido, no la sección) pasa a ser
+`display:flex;flex-direction:column;justify-content:space-between`, y la
+sección vuelve a `align-items:stretch` (el default) para que ese
+contenedor ocupe el alto completo. Así el `padding-top`/`padding-bottom`
+de la sección quedan fijos e iguales de verdad, y lo que sobra de una
+pantalla completa se reparte SOLO, en partes iguales, entre los bloques
+de contenido — nunca se acumula en un solo lugar. Un `gap` (24px, por
+ejemplo) en el mismo contenedor pone un mínimo entre bloques para que no
+queden pegados si sobra poco.
+
+```css
+.seccion--tal{ padding-top:40px; padding-bottom:40px; align-items:stretch; }
+.seccion--tal__contenido{ display:flex; flex-direction:column; justify-content:space-between; gap:24px; }
+```
+
+Esta receta reemplaza a `align-items:flex-start` para cualquier
+`.seccion--completa` con más de un bloque de contenido — `flex-start` con
+padding fijo sirve solo si el cliente no pide después que el sobrante se
+reparta parejo.
 
 **Cómo se llegó acá — dos formas de estar "seguro" que no alcanzan por sí
 solas, para no repetir el ciclo:**

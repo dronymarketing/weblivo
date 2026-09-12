@@ -116,7 +116,7 @@ button{ font:inherit; color:inherit; }
    pantalla con espacio de sobra arriba Y abajo, sin buena composición.
    Lo que sobre de una pantalla completa queda abajo, de colchón antes
    de Destacadas — no hay problema en que sea generoso ahí. */
-#nosotros.seccion--completa{ align-items:flex-start; padding-top:40px; }
+#nosotros.seccion--completa{ align-items:stretch; padding-top:40px; padding-bottom:40px; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
@@ -745,12 +745,20 @@ body.menu-abierto .nav{
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
 
 /* Dentro de #nosotros (.seccion--completa) el contenido tiene un
-   presupuesto de altura fijo (una pantalla) — en pantallas bajas
-   este contenido no puede usar los mismos espacios fijos que en
-   nosotros.html, o se estira más allá del min-height en silencio
-   (ver CONTEXTO.md sección 6). @media(max-height) comprime los
-   espacios y, si aun así no alcanza, esconde lo menos esencial
-   (las cifras) antes que dejar que la sección se desalinee. */
+   presupuesto de altura fijo (una pantalla). Los tres bloques
+   (intro, cifras, aviso de Destacadas) se reparten ese alto con
+   flex-column + justify-content:space-between: el padding-top/
+   padding-bottom de la sección quedan fijos en 40px cada uno (el
+   mismo margen arriba y abajo), y lo que sobra de una pantalla
+   completa se reparte SOLO, en partes iguales, entre los tres
+   bloques — nunca se acumula todo junto al final como un bloque de
+   aire suelto. `gap` pone un mínimo (24px) para que nunca queden
+   pegados si hay poco sobrante; `justify-content:space-between`
+   agrega más si sobra más. Si el contenido más el gap mínimo no
+   entra en pantallas muy bajas, ver CONTEXTO.md sección 6 — ahí
+   es donde entran los @media(max-height) de abajo. */
+#nosotros .nosotros__todo{ display:flex; flex-direction:column; justify-content:space-between; gap:24px; }
+#nosotros .cifras{ margin-top:0; }
 #nosotros .nosotros__intro p{ margin-top:8px; }
 #nosotros .nosotros__intro .btn{ margin-top:20px; }
 
@@ -760,7 +768,6 @@ body.menu-abierto .nav{
    grandes compitiendo por el mismo espacio. */
 .nosotros__destacadas{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
-  margin-top:32px;
   padding-top:24px;
   border-top:var(--borde);
   text-decoration:none; color:inherit;
@@ -774,11 +781,11 @@ body.menu-abierto .nav{
    siempre gana por especificidad/orden — no hay estilos inline
    compitiendo, todo el espaciado de #nosotros vive en clases. */
 @media (max-height:760px){
+  #nosotros .nosotros__todo{ gap:10px; }
   #nosotros .nosotros__intro p{ margin-top:4px; }
   #nosotros .nosotros__intro .btn{ margin-top:8px; }
-  #nosotros .cifras{ margin-top:8px; }
   #nosotros .cifra{ padding-block:8px; }
-  .nosotros__destacadas{ margin-top:8px; padding-top:10px; }
+  .nosotros__destacadas{ padding-top:10px; }
 }
 /* Si todavía no entra (pantallas muy bajas), las cifras son lo
    menos esencial de los tres bloques — se esconden antes que dejar

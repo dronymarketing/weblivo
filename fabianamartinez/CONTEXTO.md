@@ -359,15 +359,48 @@ mantienen — no está de más, pero no era la causa de este síntoma puntual.
    align-items:flex-start; }` — arranca pegado arriba con el mismo
    `padding-block:var(--seccion)` (72px) que ya tiene cualquier `.seccion`
    del sitio, ni un caso especial. Lo que sobra de una pantalla completa
-   queda todo abajo, de colchón antes de Destacadas (antes eran ~125px
-   arriba y ~125px abajo; ahora 72px arriba, el resto — ~178px a
-   412×844 — abajo). La clase base `.seccion--completa` (en
-   `construccion.md`) se deja centrada por defecto, para el caso general
-   donde SÍ tenga sentido centrar (una sección de una sola frase, por
-   ejemplo); este override puntual es solo para #nosotros, donde
-   centrar no daba buena composición al tener varios bloques de
-   contenido con alturas dispares. Revalidado sin desborde en el mismo
-   barrido de alturas de siempre.
+   queda todo abajo, de colchón antes de Destacadas. La clase base
+   `.seccion--completa` (en `construccion.md`) se deja centrada por
+   defecto, para el caso general donde SÍ tenga sentido centrar (una
+   sección de una sola frase, por ejemplo); este override puntual es
+   solo para #nosotros, donde centrar no daba buena composición al tener
+   varios bloques de contenido con alturas dispares. Revalidado sin
+   desborde en el mismo barrido de alturas de siempre.
+
+8. El cliente pidió bajar el `padding-top` a 40px ("subí un poquito más
+   la parte que marqué en azul") — hecho, sin tocar el `padding-bottom`.
+   Después pidió que el `padding-bottom` tuviera el mismo valor. Se probó
+   `padding-bottom:40px` directo y NO alcanzaba: con `align-items:
+   flex-start` el padding-bottom del contenedor solo define dónde termina
+   la CAJA, no dónde termina el CONTENIDO — el sobrante seguía
+   acumulándose todo junto arriba de ese padding (40px de padding real +
+   ~170px de sobrante sin repartir = ~210px visibles antes de Destacadas,
+   contra 40px arriba). El cliente aclaró que no quería tocar el alto de
+   la sección (sigue siendo una pantalla completa), solo que el padding
+   del CONTENIDO fuera parejo.
+
+   **Fix real:** en vez de `align-items:flex-start` + padding fijo,
+   `#nosotros .nosotros__todo` (el `.contenedor` de adentro) pasa a ser
+   `display:flex;flex-direction:column;justify-content:space-between`,
+   y `#nosotros.seccion--completa` vuelve a `align-items:stretch` (el
+   default) para que ese contenedor ocupe el alto completo de la
+   sección. Con esto: `padding-top`/`padding-bottom` de la sección
+   quedan fijos en 40px cada uno (de verdad iguales, medido: 40px y
+   40px), y lo que sobra de una pantalla completa se reparte SOLO, en
+   partes iguales, entre los tres bloques (intro, cifras, aviso de
+   Destacadas) — nunca se acumula como un bloque de aire suelto al
+   final. Se sacaron los `margin-top` fijos entre bloques (ya no hacen
+   falta, `justify-content:space-between` los reemplaza) y se dejó un
+   `gap:24px` como mínimo, para que nunca queden pegados si hay poco
+   sobrante. Revalidado sin desborde en el mismo barrido de alturas de
+   siempre (480px a 915px).
+
+   **Lección:** cuando una `.seccion--completa` tiene que repartir
+   espacio sobrante de forma pareja SIN tocar el alto total ni dejarlo
+   todo junto en un extremo, `flex-column + justify-content:space-between
+   + gap` en el contenedor interno reparte automáticamente entre los
+   bloques de contenido — mucho más prolijo que intentar calcular
+   paddings/márgenes fijos a mano para cada tamaño de pantalla.
 
 ---
 
