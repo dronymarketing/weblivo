@@ -751,7 +751,7 @@ body.menu-abierto .nav{
 .cifra{ background:var(--fondo-alt); padding:20px 16px; }
 .cifra__fila{ display:flex; align-items:center; gap:8px; }
 .cifra__ico{ display:block; width:20px; height:20px; color:var(--azul); flex:none; }
-.cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; }
+.cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; margin:0; }
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
 
 /* Dentro de #nosotros (.seccion--completa) el contenido tiene un
