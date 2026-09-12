@@ -84,11 +84,19 @@ obligatorias del paquete (nunca romperlas): si GSAP no carga, el contenido
 queda visible igual; `prefers-reduced-motion` apaga animaciones sin esconder
 nada; nunca ScrollSmoother ni Lenis.
 
-- **D (hero fijo)**: el hero queda `position:fixed`, las secciones
-  siguientes le pasan por encima. Ojo: un `position:fixed` pinta por encima
-  del flujo normal aunque tenga `z-index:auto` — hace falta z-index bajo en
-  el hero y más alto en lo que le sigue (`.hero--fijo ~ *`), si no, el hero
-  tapa todo en vez de al revés.
+- **D (hero fijo) — descartado en el hero de esta página, por pedido del
+  cliente**: la infraestructura sigue en `efectos.js`/`efectos.css`
+  (`.hero--fijo`, `initHeroFijo()`) para reusar en futuros proyectos, pero
+  el `<section class="hero">` del home ya NO lleva la clase `hero--fijo`.
+  Con el hero fijo, la foto quedaba 100% congelada detrás del nav mientras
+  la sección siguiente la tapaba como una cortina desde abajo — el cliente
+  lo sintió como "una imagen quieta" y pidió que el hero scrollee como el
+  resto del sitio. Ahora `.hero` es `position:relative` normal: al scrollear,
+  la foto se mueve hacia arriba con el flujo normal de la página mientras el
+  nav (fixed) se queda quieto arriba — el efecto visual resultante es que el
+  nav "va bajando" sobre la imagen a medida que esta se desplaza debajo, que
+  es justo lo que se pidió. No reintroducir `hero--fijo` en este hero sin que
+  el cliente lo pida de nuevo explícitamente.
 - **C (reveal atado al scroll)**: clip-path `inset(0 0 100% 0)` →
   `inset(0)` + `scale(1.15 móvil / 1.3 escritorio)` → `scale(1)`, junto.
 - **D+C combinado** (`.propiedad-fija`, sección Destacadas): la foto base
