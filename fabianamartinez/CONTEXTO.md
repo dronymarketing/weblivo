@@ -311,6 +311,43 @@ mantienen — no está de más, pero no era la causa de este síntoma puntual.
    extinto, 320×480). Capturas de pantalla a 412×844 y 360×640 confirman
    que se ve bien en ambos extremos, cifras incluidas o escondidas.
 
+6. El cliente mandó una captura de su celular real mostrando mucho más
+   espacio vacío arriba de "QUIÉNES SOMOS" que abajo de "Propiedades
+   destacadas", y pidió subir el contenido para que el margen quede
+   igual arriba y abajo. Medido con Playwright: `.seccion--completa`
+   centra con `display:flex;align-items:center`, que matemáticamente
+   reparte el espacio sobrante en dos mitades EXACTAS (verificado:
+   125px arriba, 125px abajo, a 412×844) — no hay una asimetría real en
+   la fórmula.
+
+   **Lo que sí es real, y vale la pena tener en cuenta a futuro:** el
+   punto de scroll donde "ni se ve nada del hero por arriba, ni asoma
+   nada de Destacadas por abajo" es matemáticamente un solo pixel exacto
+   (`scrollY` = altura del spacer del hero menos `--nav-alto`), no un
+   rango. Como esta página no usa scroll-snap (se probó y entra en
+   conflicto con los ScrollTrigger de GSAP — ver más abajo, sección de
+   scroll-snap descartado), el dedo del usuario puede soltar el scroll
+   en cualquier punto cercano a ese pixel, no justo en él — eso solo
+   puede correr esa franja de separación por muy pocos píxeles hacia un
+   lado u otro, nunca decenas ni cientos de píxeles como para explicar
+   una asimetría grande y visible.
+
+   **Fix aplicado:** el contenido de #nosotros tenía espacios reducidos
+   a propósito (18px/14px en vez de los 32px/20px por defecto de
+   `.cifras`/`.cifra`) para entrar con margen en pantallas chicas — pero
+   esos valores reducidos también se aplicaban en pantallas altas, donde
+   sobraba espacio de más. Se sacaron esas reducciones "siempre activas"
+   y se dejaron SOLO dentro de los `@media (max-height:...)` que ya
+   protegen las pantallas chicas — en pantallas altas ahora usa los
+   valores por defecto (más grandes), lo que reduce el espacio sobrante
+   total de ~300px a ~250px (125px por lado, medido a 412×844) sin
+   arriesgar el desborde en ningún tamaño (revalidado con Playwright).
+
+   Si después de este ajuste la asimetría se sigue viendo grande en el
+   celular real, no es la fórmula de centrado (ya verificada matemática
+   y visualmente simétrica) — pedir una captura fresca y medir el punto
+   de scroll exacto antes de tocar CSS de nuevo.
+
 ---
 
 ## 7. Hero como catálogo — chip de precio (copiado de losparaisos)

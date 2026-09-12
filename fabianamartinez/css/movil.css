@@ -744,10 +744,8 @@ body.menu-abierto .nav{
    (ver CONTEXTO.md sección 6). @media(max-height) comprime los
    espacios y, si aun así no alcanza, esconde lo menos esencial
    (las cifras) antes que dejar que la sección se desalinee. */
-#nosotros .cifras{ margin-top:18px; }
-#nosotros .cifra{ padding-block:14px; }
 #nosotros .nosotros__intro p{ margin-top:8px; }
-#nosotros .nosotros__intro .btn{ margin-top:14px; }
+#nosotros .nosotros__intro .btn{ margin-top:20px; }
 
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
@@ -755,8 +753,8 @@ body.menu-abierto .nav{
    grandes compitiendo por el mismo espacio. */
 .nosotros__destacadas{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
-  margin-top:22px;
-  padding-top:18px;
+  margin-top:32px;
+  padding-top:24px;
   border-top:var(--borde);
   text-decoration:none; color:inherit;
 }
