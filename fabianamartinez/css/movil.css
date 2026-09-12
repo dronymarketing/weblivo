@@ -117,6 +117,11 @@ button{ font:inherit; color:inherit; }
    Lo que sobre de una pantalla completa queda abajo, de colchón antes
    de Destacadas — no hay problema en que sea generoso ahí. */
 #nosotros.seccion--completa{ align-items:stretch; padding-top:40px; padding-bottom:40px; }
+/* Degradé pedido por el cliente: blanco en la punta superior derecha,
+   se funde con el beige de --fondo-alt. #nosotros (ID) le gana en
+   especificidad a [class*="tema-"] (que le pone el fondo plano por
+   defecto), así que no hace falta tocar la regla general de F. */
+#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--arena) 100%); }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */

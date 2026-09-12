@@ -462,3 +462,33 @@ ningún link roto) y se afinó el trazo de los íconos que quedaron
 `<symbol>` del sprite, para un look más minimalista. Si se necesita
 un trazo todavía más fino, `1.25` es el siguiente paso razonable antes
 de que el ícono empiece a perder peso visual sobre foto.
+
+---
+
+## 9. Degradé en "Quiénes somos" — blanco en la punta superior derecha
+
+El cliente pidió un degradé: el beige de la sección se funde con blanco,
+con el blanco concentrado en la esquina superior derecha.
+
+`#nosotros` (efecto F, `tema-crema`) normalmente pinta un fondo plano vía
+`[class*="tema-"]{ background:var(--tema-fondo); }`. Se sobreescribe con
+un radial-gradient, apoyado en que el selector por ID (`#nosotros`) le
+gana en especificidad al selector de atributo (`[class*="tema-"]`) sin
+tocar la regla general de F:
+
+```css
+#nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--arena) 100%); }
+```
+
+**Por qué `--arena` y no `--fondo-alt`:** el primer intento usó
+`--fondo-alt` (`#FAF8F4`, ya casi blanco — 75% blanco/25% beige, ver
+sección de paleta) como el extremo "beige" del degradé, y contra
+`--blanco` (`#FFFFFF`) la diferencia era casi imperceptible (verificado
+muestreando píxeles: 250,248,244 vs 254,254,253, una diferencia de 2-4
+por canal). `--arena` (`#EDE1D2`, el beige real de la marca, más
+saturado) sí da un degradé visible de verdad.
+
+Radio del círculo (550px) elegido para que la transición se note en todo
+el ancho de un celular sin que queden dos franjas como "bloques" —
+probado visualmente con Playwright en 412×844, ajustar si se ve muy
+abrupto o muy sutil en otros tamaños.
