@@ -584,3 +584,60 @@ Se elimina por completo el `<div class="encabezado aparece">` de
 foto fija del pin (`propiedad-fija`) sin encabezado propio, ya que el
 aviso de "Quiénes somos" cumple esa función de introducirla. Verificado
 sin errores de consola ni huecos visuales de por medio.
+
+---
+
+## 12. Párrafo reescrito, botón "Conocer más" como cápsula, cifras con ícono y contador animado
+
+El cliente pidió: reescribir el párrafo de "Fabiana Martínez" (más
+profesional y personal, corto, sin que quede largo), que el botón
+"Conocer más" tenga el mismo tamaño y forma que el chip "Consultar" del
+hero, y rehacer las cifras: efecto de contador que sube al hacer scroll,
+sumando "Propiedades vendidas" y "Propiedades en construcción" a las 2
+que ya había, cada una con ícono + número (con un "+" a la izquierda) +
+título abajo.
+
+**Datos ficticios, marcados como borrador — el cliente confirmó
+explícitamente crear cifras de ejemplo** ("+35" propiedades vendidas,
+"+8" en construcción) porque no tiene los números reales todavía.
+**No usar estos valores como reales en ningún otro lado del sitio ni
+en comunicación con el cliente — reemplazar en cuanto haya datos
+reales.** "Propiedades en construcción" sí aplica al negocio real (ya
+existe `en-construccion.html` como categoría de listado — no es que
+ella construya, es una categoría de propiedades que vende).
+
+**Párrafo:** sin años ni certificaciones específicas (el cliente pidió
+"genérico por ahora") — tono profesional y cercano a la vez, sin
+alargarlo.
+
+**Botón "Conocer más":** `.nosotros__btn{ min-height:38px; padding:0
+20px; border-radius:999px; }` — mismo alto y forma de cápsula que
+`.hero__precio-chip` (38px, `border-radius:999px`), conservando el
+color/borde de `.btn--linea` de siempre (acá el botón vive sobre fondo
+claro, no tiene sentido copiarle el vidrio oscuro que el chip del hero
+necesita para leerse sobre una foto).
+
+**Contador animado:** `animarContador()` en `main.js`, disparado por
+`IntersectionObserver` cuando cada `.cifra__num[data-target]` entra en
+pantalla (mismo patrón que ya usa `.aparece` para las apariciones, pero
+independiente — dispara la cuenta, no una opacidad). Cada número anima
+de 0 al valor de `data-target` en 1.2s con `requestAnimationFrame`,
+con `data-prefix`/`data-suffix` opcionales (`+` a la izquierda, `%` a
+la derecha para el de acompañamiento). Respeta `prefers-reduced-motion`
+(la variable `lento` que ya existía): sin animación, muestra el valor
+final directo.
+
+**El verdadero desafío fue el espacio, otra vez.** 4 tarjetas con
+ícono en 2x2 (el layout "natural" copiando la grilla de 2 columnas que
+ya había) medían ~330px de alto — no entraba en el presupuesto de una
+pantalla completa en la mayoría de los altos reales, ni comprimiendo
+paddings al mínimo. **Se cambió a una sola fila de 4 columnas**
+(`#nosotros .cifras{ grid-template-columns:repeat(4,1fr); }`), mucho
+más baja en total aunque cada tarjeta sea más angosta — para que el
+texto entre en columnas más angostas, los títulos se acortaron a una
+palabra ("Zonas", "Directo", "Vendidas", "En obra") y se redujo el
+tamaño de número (20px) y texto (11px) puntual para #nosotros. La
+clase base `.cifras`/`.cifra` sigue en 2 columnas con los tamaños
+originales, sin esta compresión, por si se reusa en otro lado sin la
+restricción de pantalla completa. Revalidado sin desborde en el mismo
+barrido de alturas de siempre (480px a 960px).

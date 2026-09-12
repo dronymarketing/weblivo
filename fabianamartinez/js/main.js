@@ -231,6 +231,42 @@
   }
 
   /* ----------------------------------------------------------
+     CONTADORES QUE SUBEN AL ENTRAR EN PANTALLA (cifras de Quiénes somos)
+  ---------------------------------------------------------- */
+  var contadores = document.querySelectorAll('.cifra__num[data-target]');
+  function pintarContador(el) {
+    el.textContent = (el.dataset.prefix || '') + el.dataset.target + (el.dataset.suffix || '');
+  }
+  if (contadores.length) {
+    if ('IntersectionObserver' in window && !lento) {
+      var obsContadores = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          animarContador(e.target);
+          obsContadores.unobserve(e.target);
+        });
+      }, { threshold: 0.4 });
+      contadores.forEach(function (el) { obsContadores.observe(el); });
+    } else {
+      contadores.forEach(pintarContador);
+    }
+  }
+  function animarContador(el) {
+    var meta = parseInt(el.dataset.target, 10);
+    var prefijo = el.dataset.prefix || '';
+    var sufijo = el.dataset.suffix || '';
+    var dur = 1200;
+    var inicio = null;
+    function paso(marca) {
+      if (!inicio) inicio = marca;
+      var progreso = Math.min((marca - inicio) / dur, 1);
+      el.textContent = prefijo + Math.round(meta * progreso) + sufijo;
+      if (progreso < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+
+  /* ----------------------------------------------------------
      FAVORITOS — de muestra, solo el estado visual
   ---------------------------------------------------------- */
   document.querySelectorAll('.tarjeta__fav').forEach(function (b) {

@@ -749,6 +749,7 @@ body.menu-abierto .nav{
    ============================================================ */
 .cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14); margin-top:32px; }
 .cifra{ background:var(--fondo-alt); padding:20px 16px; }
+.cifra__ico{ display:block; width:20px; height:20px; color:var(--azul); margin-bottom:8px; }
 .cifra__num{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500; font-size:32px; color:var(--azul); line-height:1; }
 .cifra__txt{ font-size:13px; color:var(--gris); margin-top:6px; }
 
@@ -769,6 +770,24 @@ body.menu-abierto .nav{
 #nosotros .cifras{ margin-top:0; }
 #nosotros .nosotros__intro p{ margin-top:8px; }
 #nosotros .nosotros__intro .btn{ margin-top:20px; }
+/* Mismo tamaño y forma que el chip "Consultar" del hero (cápsula,
+   38px de alto) — el color/borde sigue siendo el de .btn--linea de
+   siempre, solo cambia el radio y el alto. */
+.nosotros__btn{ min-height:38px; padding:0 20px; border-radius:999px; }
+/* Las cifras acá son 4 tarjetas con ícono en vez de las 2 de antes.
+   En 2x2 no entraban en el presupuesto de una pantalla completa en la
+   mayoría de los altos reales (aunque se comprimiera el padding) — la
+   fila de 4 en una sola línea es bastante más baja en total, aunque
+   cada tarjeta sea más angosta (por eso los textos se acortaron:
+   "Zonas", "Directo", "Vendidas", "En obra"). Todo esto puntual para
+   #nosotros; la clase base sigue en 2 columnas con sus valores más
+   generosos por si se reusa en otro lado sin la restricción de
+   pantalla completa. */
+#nosotros .cifras{ grid-template-columns:repeat(4, 1fr); }
+#nosotros .cifra{ padding:10px 6px; text-align:center; }
+#nosotros .cifra__ico{ width:16px; height:16px; margin:0 auto 4px; }
+#nosotros .cifra__num{ font-size:20px; }
+#nosotros .cifra__txt{ font-size:11px; }
 
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
@@ -792,7 +811,8 @@ body.menu-abierto .nav{
   #nosotros .nosotros__todo{ gap:10px; }
   #nosotros .nosotros__intro p{ margin-top:4px; }
   #nosotros .nosotros__intro .btn{ margin-top:8px; }
-  #nosotros .cifra{ padding-block:8px; }
+  #nosotros .cifra{ padding-block:6px; }
+  #nosotros .cifra__ico{ margin-bottom:2px; }
   .nosotros__destacadas{ padding-top:10px; }
 }
 /* Si todavía no entra (pantallas muy bajas), las cifras son lo
