@@ -141,49 +141,45 @@ cliente: *"Fullscreen en quienes somos, cosa que ni bien se complete la
 pantalla, el siguiente scroll ya muestre una propiedad"* — o sea, cero
 sobra, cero asomo anticipado, una pantalla exacta de scroll por sección.
 
-**Causa real (dos intentos fallidos antes de esto):** el nav es
-`position:fixed` y flota encima de CUALQUIER sección por igual — no le
-"quita" espacio a ninguna, mide siempre 60px esté donde esté el scroll.
-Restarle `--nav-alto` (o `--nav-alto + 12px`, pensando en compensar el
-`scroll-margin-top` de los links ancla) a `.seccion--completa` hacía que
-esa sección midiera MENOS que una pantalla completa — mientras que el
-spacer del hero (lo que de verdad determina cuánto scroll dura esa
-transición) sí mide una pantalla completa, sin restar nada. Con esa
-diferencia, "Quiénes somos" quedaba corta respecto al spacer del hero, y
-la sección siguiente empezaba a verse antes de completar la pantalla —
-72px antes, medido con Playwright (`getBoundingClientRect` de `#nosotros`
-y `#destacadas` en varios puntos de scroll, comparando contra el spacer
-del hero).
-
-**La regla real:** todas las secciones a pantalla completa de una página
-(el hero y cualquier `.seccion--completa` que venga después) tienen que
-medir EXACTAMENTE LO MISMO entre sí — ninguna resta nada, todas usan la
-misma `--vh100`. El espacio que ocupa el nav no se resuelve restándolo del
-alto de la sección (el nav no ocupa espacio real, solo flota encima); se
-resuelve con el centrado/padding del CONTENIDO de adentro, que ya evita
-que el texto arranque pegado al borde de arriba.
-
-**Fórmula final, confirmada por medición exacta con Playwright** (a
-`scrollY` = altura del spacer del hero, `#nosotros` ocupa 0 a 844 del
-viewport sin dejar ver nada de `#destacadas`; un solo pixel más de scroll
-y `#destacadas` ya empieza a asomar) — clase `.seccion--completa` en
-`movil.css`, **igual a la fórmula del hero, sin restar nada**:
+**Fórmula confirmada en dispositivo real** — clase `.seccion--completa` en
+`movil.css`, la del hero pero restando `--nav-alto` (a diferencia del hero,
+esta sección no arranca en `scrollY:0`: el nav ya está sólido cuando se
+llega acá, y el contenido tiene que caber entre el nav y el borde de la
+pantalla):
 
 ```css
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
+  min-height:calc(100vh - var(--nav-alto));
+  min-height:calc(100svh - var(--nav-alto));
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
   display:flex; align-items:center;
 }
 ```
 
-**Historial de intentos fallidos, para no repetirlos:**
-1. Restar solo `--nav-alto` → sección 60px corta, Destacadas asomaba 60px antes de tiempo.
-2. Restar `--nav-alto + 12px` (pensando en `scroll-margin-top`) → sección 72px corta, mismo problema, peor.
-3. Sin restar nada, igual que el hero → **matemáticamente correcto, pero el
-   cliente lo siguió viendo mal en su celular real.** Acá es donde se
-   encontró la causa real (ver abajo).
+**Historial de intentos, incluyendo uno propio que retrocedió el fix real —
+para no repetirlo:**
+1. Restar `--nav-alto + 12px` (pensando en compensar el `scroll-margin-top`
+   de los links ancla) → sección demasiado corta, Destacadas asomaba antes
+   de tiempo. Mal.
+2. Restar solo `--nav-alto` → **la fórmula correcta**, confirmada por el
+   cliente en su celular real. Documentada en el skill Livo apenas se
+   confirmó.
+3. **Error propio, en esta misma sesión:** midiendo con Playwright (que no
+   corre en un celular real) pareció que "restar `--nav-alto`" dejaba la
+   sección 60-72px corta frente al spacer del hero, así que se cambió a
+   "sin restar nada, igual que el hero" — matemáticamente prolijo en
+   Playwright, pero el cliente lo siguió viendo mal en su celular. Fue un
+   paso atrás: se había pisado el fix real (paso 2) con una "corrección"
+   basada solo en medición de escritorio/headless. Se revirtió a restar
+   `--nav-alto` (paso 2) después de que el cliente mostrara la captura de
+   la sesión original donde esto se resolvió y se documentó en el skill.
+   **Lección: en este proyecto, la confirmación del cliente en el celular
+   real pesa más que cualquier medición con Playwright** — Playwright no
+   reproduce el comportamiento real de la barra de direcciones de Chrome
+   Android, que es la causa raíz de fondo en casi todos estos bugs.
 
 `--vh100` (en `js/main.js`) se actualiza con `resize`, `orientationchange` Y
 `visualViewport.resize` — este último es el que de verdad dispara cuando
@@ -237,36 +233,22 @@ cache-busting. Todo `css/*.css` y `js/*.js` de este proyecto se referencia con
 `?v=N` en `index.html` — **subir el número cada vez que se toque un CSS/JS y
 se necesite que el cambio se vea sí o sí**, no asumir que alcanza con pushear.
 
-**Repaso post-fix (12/set, después de dos capturas del cliente mostrando que
-"no se resolvió"):** se reconstruyó todo el historial de este bug con
-`git log -p`, incluyendo una ronda ANTERIOR (sesión previa, commits
-`b73d588`→`f387c4f`) donde pasó exactamente lo mismo: se probó restar
-`--nav-alto`, el cliente dijo "sigue igual", se cambió a no restar nada, y
-recién ahí se descubrió que la vez anterior "sigue igual" había sido un
-falso reporte por caché vieja, no un bug real de la fórmula — es decir, este
-mismo patrón (fix real + reporte de "no se arregló" + resultó ser caché) ya
-había pasado una vez antes de esta sesión.
+**Repaso post-fix (12/set):** después de dos capturas del cliente mostrando
+que "no se resolvió", se llegó a sospechar caché y se probó también
+`scroll-snap` como red de seguridad — **descartado**: en las pruebas entra
+en conflicto con los `ScrollTrigger` de GSAP que ya usa la página (el pin de
+Destacadas), produciendo saltos de scroll impredecibles. Nunca se llegó a
+subir a producción.
 
-Con ese antecedente, se verificó la fórmula actual (intento 3, sin restar
-nada + el fix del spacer sincronizado) con Playwright, simulando además el
-caso más agresivo: la barra de direcciones escondiéndose A MITAD del scroll
-de transición (viewport creciendo de 844px a 900px con `scrollY` ya en 200,
-no solo al cargar la página). Resultado: `--vh100`, el alto del hero y el
-alto de `#nosotros` se mantienen los tres sincronizados en cualquier
-momento, y un barrido de `elementFromPoint` cada 4px de scroll a lo largo de
-toda la transición hero→nosotros→destacadas no encontró ningún hueco (nunca
-aparece body/html visible, siempre hay una sección tapando toda la
-pantalla) ni ningún asomo prematuro de Destacadas antes de completar la
-pantalla de Quiénes somos. La fórmula y el fix del spacer están bien.
-
-**Dado el antecedente de caché, se agregó además** `<meta http-equiv=
-"Cache-Control" content="no-cache, no-store, must-revalidate">` en el
-`<head>` de `index.html` (best-effort — no todos los navegadores/CDNs lo
-respetan al 100%, pero ayuda) y se subió a `?v=33`. **Si el cliente vuelve a
-ver el bug después de este cambio, antes de tocar una sola línea de CSS de
-nuevo: pedirle que pruebe en una pestaña de incógnito** (evita el caché de
-disco por completo) — si ahí se ve bien, el problema es 100% caché del
-dispositivo, no el código.
+La causa real del "no se resolvió" era mucho más simple: en esta misma
+sesión se había reemplazado el fix real (restar `--nav-alto`, paso 2 de la
+lista de arriba) por "sin restar nada" (paso 3), basado en medición con
+Playwright — que no reproduce un celular real. El cliente mandó la captura
+de la sesión original donde se resolvió y se documentó en el skill (con la
+fórmula de restar `--nav-alto`), confirmando que el paso 3 fue un
+retroceso. Se restauró la fórmula del paso 2. El meta `Cache-Control` y el
+bump de versión (`?v=33`) agregados en el camino se mantienen — no está de
+más, pero no era la causa de este síntoma puntual.
 
 ---
 
