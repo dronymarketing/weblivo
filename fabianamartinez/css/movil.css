@@ -95,24 +95,26 @@ button{ font:inherit; color:inherit; }
 }
 .seccion{ padding-block:var(--seccion); }
 .seccion--alt{ background:var(--fondo-alt); }
-/* Base: la fórmula exacta del hero. Con el descuento de
-   --nav-alto porque esta sección, a diferencia del hero, no
-   arranca en scrollY:0 — [id] le suma scroll-margin-top de
-   nav-alto+12px, así que sin descontar queda una sobra de scroll
-   del tamaño del nav al final (ya confirmado en el celular real:
-   sin descontar → sobra arriba/abajo; la vez anterior que se
-   descontó, el caché viejo tapaba el cambio real).
-   OJO: hay que descontar el mismo total que scroll-margin-top usa
-   más abajo (nav-alto + 12px), no solo nav-alto — si no, la sección
-   arranca 12px más abajo (por el scroll-margin-top) pero mide lo
-   mismo que si arrancara pegada al nav, y sobran esos 12px al final. */
+/* Base: la MISMA fórmula del hero, sin restar nada. El nav es fixed
+   y flota encima de cualquier sección por igual (siempre mide lo
+   mismo, 60px, esté donde esté el scroll) — no "ocupa espacio extra"
+   en secciones que no sean el hero, así que no hay que restarle nada
+   a ninguna sección para que quepa: alcanza con que el contenido de
+   adentro no arranque pegado al borde de arriba (eso ya lo resuelve
+   el padding-top/centrado del contenido, no el alto de la sección).
+   Lo que sí importa es que TODAS las secciones a pantalla completa
+   (el hero incluido) midan exactamente lo mismo entre sí — si una
+   resta algo y la otra no, quedan desalineadas: la sección corta
+   deja asomar la siguiente antes de completar una pantalla entera de
+   scroll (probado con Playwright: restando nav-alto+12 quedaba 72px
+   corta y la sección de Destacadas ya se veía asomando abajo antes
+   de terminar "Quiénes somos" — justo el bug reportado). Con esta
+   fórmula sin restar, cada sección completa exactamente una pantalla
+   de scroll antes de que aparezca la siguiente. */
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto) - 12px);
-  min-height:calc(100svh - var(--nav-alto) - 12px);
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }

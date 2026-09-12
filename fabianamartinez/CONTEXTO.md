@@ -132,49 +132,59 @@ nada; nunca ScrollSmoother ni Lenis.
 
 ## 6. Bug resuelto: secciones "a pantalla completa" que no son el hero
 
-**Síntoma:** una sección después del hero (ej. "Quiénes somos") con
-`min-height:100vh`-y-derivados no llenaba la pantalla en Chrome Android real
-(aunque sí en desktop/Brave/Playwright headless) — quedaba un resto de la
-sección siguiente visible abajo, o al revés, una sobra de scroll del tamaño
-del nav.
+**Síntoma:** con el hero pinneado (`hero--fijo`, efecto D — el hero mide
+exactamente `--vh100` sin restar nada y reserva ese mismo scroll con un
+spacer), "Quiénes somos" no se sentía realmente a pantalla completa: antes
+de terminar de scrollear esa sección entera, ya empezaba a asomar la
+siguiente sección (Destacadas) por abajo. El objetivo pedido por el
+cliente: *"Fullscreen en quienes somos, cosa que ni bien se complete la
+pantalla, el siguiente scroll ya muestre una propiedad"* — o sea, cero
+sobra, cero asomo anticipado, una pantalla exacta de scroll por sección.
 
-**Causa:** el `.hero`/`.hero-interna` usa la fórmula sin restar `--nav-alto`
-porque arranca en `scrollY:0` — el nav flota transparente encima sin restarle
-nada. Pero cualquier OTRA sección "a pantalla completa" que no sea lo primero
-de la página sí necesita restar `--nav-alto`, porque `[id]{ scroll-margin-top:
-calc(var(--nav-alto) + 12px); }` (ya global en el sitio) le corre el punto de
-scroll-destino esa distancia — sin restar esa misma distancia del alto de la
-sección, sobra exactamente lo que mide el nav, en un extremo o el otro.
+**Causa real (dos intentos fallidos antes de esto):** el nav es
+`position:fixed` y flota encima de CUALQUIER sección por igual — no le
+"quita" espacio a ninguna, mide siempre 60px esté donde esté el scroll.
+Restarle `--nav-alto` (o `--nav-alto + 12px`, pensando en compensar el
+`scroll-margin-top` de los links ancla) a `.seccion--completa` hacía que
+esa sección midiera MENOS que una pantalla completa — mientras que el
+spacer del hero (lo que de verdad determina cuánto scroll dura esa
+transición) sí mide una pantalla completa, sin restar nada. Con esa
+diferencia, "Quiénes somos" quedaba corta respecto al spacer del hero, y
+la sección siguiente empezaba a verse antes de completar la pantalla —
+72px antes, medido con Playwright (`getBoundingClientRect` de `#nosotros`
+y `#destacadas` en varios puntos de scroll, comparando contra el spacer
+del hero).
 
-**Fórmula ya resuelta y confirmada en dispositivo real**, clase `.seccion--completa`
-en `movil.css` — **reusar esta clase tal cual para cualquier sección nueva
-que deba ocupar la pantalla completa**, no reinventar la fórmula:
+**La regla real:** todas las secciones a pantalla completa de una página
+(el hero y cualquier `.seccion--completa` que venga después) tienen que
+medir EXACTAMENTE LO MISMO entre sí — ninguna resta nada, todas usan la
+misma `--vh100`. El espacio que ocupa el nav no se resuelve restándolo del
+alto de la sección (el nav no ocupa espacio real, solo flota encima); se
+resuelve con el centrado/padding del CONTENIDO de adentro, que ya evita
+que el texto arranque pegado al borde de arriba.
+
+**Fórmula final, confirmada por medición exacta con Playwright** (a
+`scrollY` = altura del spacer del hero, `#nosotros` ocupa 0 a 844 del
+viewport sin dejar ver nada de `#destacadas`; un solo pixel más de scroll
+y `#destacadas` ya empieza a asomar) — clase `.seccion--completa` en
+`movil.css`, **igual a la fórmula del hero, sin restar nada**:
 
 ```css
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto) - 12px);
-  min-height:calc(100svh - var(--nav-alto) - 12px);
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 ```
 
-**Corrección posterior, importante:** la primera versión de esta fórmula
-restaba solo `--nav-alto`, sin el `-12px`. Eso dejaba 12px de sobra al
-final de la sección siempre que se entra por link ancla (ej. el botón
-"Ver propiedades" del hero → `#nosotros`), porque `scroll-margin-top`
-(la regla `[id]{...}` de abajo) corre el punto de scroll esos mismos
-12px, y si el alto de la sección no descuenta ese mismo total, la
-sección arranca 12px más abajo pero mide como si arrancara pegada al
-nav — sobran justo esos 12px al final. Verificado con Playwright
-(`getBoundingClientRect` de la sección antes/después) que restando
-`--nav-alto + 12px` completo, el borde inferior de la sección cae
-justo en el borde del viewport, sin sobra. **Si se vuelve a ajustar
-`--nav-alto` o el `+12px` de scroll-margin-top, hay que mantener los
-dos números iguales entre esta fórmula y la regla `[id]{...}`.**
+**Historial de intentos fallidos, para no repetirlos:**
+1. Restar solo `--nav-alto` → sección 60px corta, Destacadas asomaba 60px antes de tiempo.
+2. Restar `--nav-alto + 12px` (pensando en `scroll-margin-top`) → sección 72px corta, mismo problema, peor.
+3. **Sin restar nada, igual que el hero → correcto.** El `scroll-margin-top`
+   de `[id]{...}` sigue sirviendo para cuando se entra por link ancla (ej.
+   el botón "Ver propiedades"), pero es un tema aparte de cuánto mide la
+   sección — no hay que mezclar los dos.
 
 `--vh100` (en `js/main.js`) se actualiza con `resize`, `orientationchange` Y
 `visualViewport.resize` — este último es el que de verdad dispara cuando

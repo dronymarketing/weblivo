@@ -126,47 +126,54 @@ es exactamente lo que produce el salto.
 
 Se pide así: *"esta sección a pantalla completa, como en fabianamartinez"*.
 
-Validado en dispositivo real (Android/Chrome) sobre el proyecto Fabiana
-Martínez, después de tres intentos fallidos con otras fórmulas — incluida
-la del propio hero de esta página, sin modificar. Es la receta a usar
+Validado en dispositivo real (Android/Chrome) y con medición exacta por
+Playwright sobre el proyecto Fabiana Martínez, después de **dos intentos
+fallidos restando cosas que no había que restar**. Es la receta a usar
 siempre que una sección deba ocupar la pantalla completa **y no sea la
-primera de la página**: por ejemplo un "Quiénes somos" que va después del
-hero.
+primera de la página**: por ejemplo un "Quiénes somos" que va después de
+un hero pinneado (efecto D).
 
-**Por qué no alcanza con copiar la fórmula del hero:** el hero arranca en
-`scrollY:0`, así que nada le corre el punto de partida. Cualquier otra
-sección, en cambio, se llega a ella por scroll o por ancla — y este estándar
-ya define `[id]{ scroll-margin-top: calc(var(--nav-alto) + Npx); }` en todo
-sitio con nav fijo (el `Npx` extra varía según el proyecto — 12px en
-Fabiana Martínez, 16px en otros). Ese `scroll-margin-top` corre el destino
-del scroll esa distancia completa, `--nav-alto` MÁS ese extra. Si la
-sección resta solo `--nav-alto` y no el extra, sobra exactamente ese
-resto al final — un bug real, encontrado y corregido en Fabiana Martínez
-(la sección "Quiénes somos" quedaba con una sobra de scroll de +12px cada
-vez que se entraba por link ancla, ej. el botón del hero → `#nosotros`).
-**Los dos números tienen que coincidir siempre**: lo que resta
-`.seccion--completa` tiene que ser exactamente lo mismo que suma
-`scroll-margin-top` más abajo.
+**La regla real, la que importa:** el nav es `position:fixed` y flota
+encima de CUALQUIER sección por igual — no le "quita" espacio a ninguna,
+mide lo mismo esté donde esté el scroll. El hero pinneado (efecto D)
+reserva scroll con un spacer que mide exactamente `--vh100`, sin restar
+nada. Para que la sección siguiente se sienta una pantalla completa real
+— y para que la transición a la sección DE DESPUÉS sea inmediata, sin
+que se vea nada de ella antes de completar el scroll de esta — tiene que
+medir EXACTAMENTE LO MISMO que el spacer del hero: ninguna resta nada,
+todas usan la misma `--vh100`. El nav no se resuelve restándolo del alto
+de la sección (no ocupa espacio real); se resuelve con el
+centrado/padding del contenido de adentro, que ya evita que el texto
+arranque pegado al borde de arriba.
 
 ```css
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto) - 12px);
-  min-height:calc(100svh - var(--nav-alto) - 12px);
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 ```
 
-(el `- 12px` de arriba tiene que ser el mismo número que el `+ Npx` que use
-`[id]{ scroll-margin-top: ...}` en el proyecto — copiarlo tal cual solo
-sirve si ese proyecto también usa 12px; si no, ajustar el número.)
+**Los dos intentos fallidos, para no repetirlos:**
+1. Restar `--nav-alto` (pensando que el nav "ocupa espacio") → la sección
+   queda corta exactamente esa distancia, y la sección de DESPUÉS empieza
+   a asomar antes de terminar de scrollear ésta — el síntoma reportado:
+   "no se siente pantalla completa, sigue ese scroll de más".
+2. Restar `--nav-alto + Npx` pensando en compensar el `scroll-margin-top`
+   de `[id]{...}` (el mismo que usan los links ancla) → mismo problema,
+   más marcado. El `scroll-margin-top` es un tema aparte, de cuándo se
+   entra por link ancla — no tiene nada que ver con cuánto tiene que medir
+   la sección para que el scroll normal (deslizar el dedo) se sienta bien.
+   Mezclar los dos fue el error.
+3. **Sin restar nada, igual que la fórmula del hero → correcto.** Medido
+   con Playwright: en el punto de scroll donde el spacer del hero termina,
+   la sección siguiente ocupa 0 a 100% del viewport sin dejar ver nada de
+   la sección de después; un pixel más de scroll y esa sección ya empieza
+   a asomar. Exactamente el comportamiento pedido.
 
-Las primeras tres líneas son respaldo (nunca se aplican solas si las últimas
-tres cargan); quedan igual por si `--nav-alto` no está definido en algún
-contexto. `--vh100` es el alto real medido por JS — acá sí hace falta, a
+Las primeras tres líneas son respaldo (nunca se aplican solas si `--vh100`
+carga). `--vh100` es el alto real medido por JS — acá sí hace falta, a
 diferencia de lo que dice más arriba la sección del hero: en la práctica,
 `100svh` solo no resolvió el bug en Chrome Android real para esta sección,
 y `--vh100` sí. Se define en `main.js` y hay que actualizarla con los tres
@@ -194,10 +201,11 @@ if (window.visualViewport) {
 - Si esta sección va justo después de un hero con `position:fixed` (efecto D
   del paquete HB), también necesita el z-index más alto que ya pide ese
   efecto para taparlo, o el hero fijo pinta por encima igual.
-- No confundir con el hero: si la sección en cuestión es la primera de la
-  página, usar la fórmula del hero (sin restar `--nav-alto`) — restarlo ahí
-  sí produce un hueco, porque el hero no tiene `scroll-margin-top` que lo
-  compense.
+- Es literalmente la misma fórmula que el hero (ninguna de las dos resta
+  `--nav-alto`) — no hace falta memorizar dos recetas distintas, ni
+  preguntarse cuál usar según si la sección es la primera de la página o
+  no. La única diferencia real entre el hero y esta clase es el
+  `display:flex;align-items:center`, que acá siempre está.
 
 ---
 
