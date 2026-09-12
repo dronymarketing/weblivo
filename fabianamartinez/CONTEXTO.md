@@ -155,12 +155,26 @@ que deba ocupar la pantalla completa**, no reinventar la fórmula:
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto));
-  min-height:calc(100svh - var(--nav-alto));
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  min-height:calc(100vh - var(--nav-alto) - 12px);
+  min-height:calc(100svh - var(--nav-alto) - 12px);
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 ```
+
+**Corrección posterior, importante:** la primera versión de esta fórmula
+restaba solo `--nav-alto`, sin el `-12px`. Eso dejaba 12px de sobra al
+final de la sección siempre que se entra por link ancla (ej. el botón
+"Ver propiedades" del hero → `#nosotros`), porque `scroll-margin-top`
+(la regla `[id]{...}` de abajo) corre el punto de scroll esos mismos
+12px, y si el alto de la sección no descuenta ese mismo total, la
+sección arranca 12px más abajo pero mide como si arrancara pegada al
+nav — sobran justo esos 12px al final. Verificado con Playwright
+(`getBoundingClientRect` de la sección antes/después) que restando
+`--nav-alto + 12px` completo, el borde inferior de la sección cae
+justo en el borde del viewport, sin sobra. **Si se vuelve a ajustar
+`--nav-alto` o el `+12px` de scroll-margin-top, hay que mantener los
+dos números iguales entre esta fórmula y la regla `[id]{...}`.**
 
 `--vh100` (en `js/main.js`) se actualiza con `resize`, `orientationchange` Y
 `visualViewport.resize` — este último es el que de verdad dispara cuando

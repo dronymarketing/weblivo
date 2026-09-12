@@ -101,14 +101,18 @@ button{ font:inherit; color:inherit; }
    nav-alto+12px, así que sin descontar queda una sobra de scroll
    del tamaño del nav al final (ya confirmado en el celular real:
    sin descontar → sobra arriba/abajo; la vez anterior que se
-   descontó, el caché viejo tapaba el cambio real). */
+   descontó, el caché viejo tapaba el cambio real).
+   OJO: hay que descontar el mismo total que scroll-margin-top usa
+   más abajo (nav-alto + 12px), no solo nav-alto — si no, la sección
+   arranca 12px más abajo (por el scroll-margin-top) pero mide lo
+   mismo que si arrancara pegada al nav, y sobran esos 12px al final. */
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto));
-  min-height:calc(100svh - var(--nav-alto));
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  min-height:calc(100vh - var(--nav-alto) - 12px);
+  min-height:calc(100svh - var(--nav-alto) - 12px);
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }

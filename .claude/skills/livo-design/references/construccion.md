@@ -136,24 +136,33 @@ hero.
 **Por qué no alcanza con copiar la fórmula del hero:** el hero arranca en
 `scrollY:0`, así que nada le corre el punto de partida. Cualquier otra
 sección, en cambio, se llega a ella por scroll o por ancla — y este estándar
-ya define `[id]{ scroll-margin-top: calc(var(--nav-alto) + 12px); }` en todo
-sitio con nav fijo. Ese `scroll-margin-top` corre el destino del scroll esa
-distancia. Si la sección mide exactamente `100vh`/`100svh` sin descontarlo,
-sobra un tramo del tamaño del nav — asoma la sección siguiente en un extremo,
-o queda un resto de scroll de más en el otro. Restar `--nav-alto` del alto de
-la sección es lo que cierra esa cuenta.
+ya define `[id]{ scroll-margin-top: calc(var(--nav-alto) + Npx); }` en todo
+sitio con nav fijo (el `Npx` extra varía según el proyecto — 12px en
+Fabiana Martínez, 16px en otros). Ese `scroll-margin-top` corre el destino
+del scroll esa distancia completa, `--nav-alto` MÁS ese extra. Si la
+sección resta solo `--nav-alto` y no el extra, sobra exactamente ese
+resto al final — un bug real, encontrado y corregido en Fabiana Martínez
+(la sección "Quiénes somos" quedaba con una sobra de scroll de +12px cada
+vez que se entraba por link ancla, ej. el botón del hero → `#nosotros`).
+**Los dos números tienen que coincidir siempre**: lo que resta
+`.seccion--completa` tiene que ser exactamente lo mismo que suma
+`scroll-margin-top` más abajo.
 
 ```css
 .seccion--completa{
   min-height:100vh;
   min-height:100svh;
   min-height:var(--vh100, 100svh);
-  min-height:calc(100vh - var(--nav-alto));
-  min-height:calc(100svh - var(--nav-alto));
-  min-height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  min-height:calc(100vh - var(--nav-alto) - 12px);
+  min-height:calc(100svh - var(--nav-alto) - 12px);
+  min-height:calc(var(--vh100, 100svh) - var(--nav-alto) - 12px);
   display:flex; align-items:center;
 }
 ```
+
+(el `- 12px` de arriba tiene que ser el mismo número que el `+ Npx` que use
+`[id]{ scroll-margin-top: ...}` en el proyecto — copiarlo tal cual solo
+sirve si ese proyecto también usa 12px; si no, ajustar el número.)
 
 Las primeras tres líneas son respaldo (nunca se aplican solas si las últimas
 tres cargan); quedan igual por si `--nav-alto` no está definido en algún
