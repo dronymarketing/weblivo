@@ -784,8 +784,13 @@ body.menu-abierto .nav{
    #nosotros; la clase base sigue en 2 columnas con sus valores más
    generosos por si se reusa en otro lado sin la restricción de
    pantalla completa. */
-#nosotros .cifras{ grid-template-columns:repeat(4, 1fr); }
-#nosotros .cifra{ padding:10px 6px; text-align:center; background:transparent; }
+/* Sin fondo sólido ni tinte de fondo en el contenedor: las líneas
+   divisorias entre columnas se hacen con un borde en vez del truco de
+   gap+background (que dependía del fondo opaco de .cifra para no
+   verse como un bloque parejo). */
+#nosotros .cifras{ grid-template-columns:repeat(4, 1fr); gap:0; background:transparent; }
+#nosotros .cifra{ padding:10px 6px; text-align:center; background:transparent; border-right:1px solid rgba(65,47,38,.14); }
+#nosotros .cifra:last-child{ border-right:none; }
 #nosotros .cifra__fila{ justify-content:center; gap:5px; }
 #nosotros .cifra__ico{ width:16px; height:16px; }
 #nosotros .cifra__num{ font-size:20px; }
