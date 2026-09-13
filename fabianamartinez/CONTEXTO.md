@@ -713,3 +713,52 @@ el extremo del degradé es una decisión estética aceptada, no un bug.
 Si en el futuro se pide "arreglar" la legibilidad de este degradé
 específico, la solución ya evaluada es achicar el rango (no llegar al
 arena puro) o cambiar el extremo derecho por otro tono de la paleta.
+
+**Instrucción del cliente para el resto de esta sesión:** no frenar a
+evaluar contraste/legibilidad antes de deployar cambios de color — "si
+queda ilegible te lo diré yo, no tomes decisiones visuales por mi".
+De acá en adelante, este tipo de cambios se implementan y deployan
+directo, sin captura de verificación previa salvo pedido explícito.
+
+---
+
+## 15. Degradé independiente por elemento (no compartido) — íconos con máscara SVG
+
+Pedido de seguimiento: el degradé de la sección 14 tenía que aplicarse
+**a cada elemento por separado** — cada uno con su propio degradé
+completo dentro de su propia caja — en vez del truco de color sólido
+escalonado que se había usado para las 4 tarjetas de cifras (una
+aproximación, no un degradé real por elemento).
+
+**Números de las cifras (`.cifra__num`):** se sumaron a la misma regla
+de `background-clip:text` que ya usaban el antetítulo, el botón y el
+título de Destacadas. Como cada elemento pinta su degradé dentro de su
+propio bounding box, esto ya da un degradé independiente por número
+sin ningún truco extra.
+
+**Íconos de las cifras (`.cifra__ico`):** un SVG con `stroke` no admite
+`background-clip:text` (es solo para texto). Para lograr un degradé
+real (no una aproximación) se cambió la estructura de cada ícono: en
+vez de `<svg><use href="#i-X"/></svg>` con color vía `currentColor`,
+ahora es `<svg viewBox="0 0 24 24"><rect width="24" height="24"
+fill="url(#grad-marron-arena)" mask="url(#mask-cifra-X)"/></svg>`. El
+degradé (`#grad-marron-arena`, definido una sola vez) y una máscara por
+ícono (`#mask-cifra-map-pin`, `-user`, `-key`, `-ruler`) viven en el
+`<defs>` del sprite de símbolos, al principio del `<body>`.
+
+**Dos bugs de SVG encontrados armando la máscara (verificados con una
+página de prueba aislada antes de tocar el sitio real):**
+1. El `<use>` dentro de la máscara necesita `style="color:#fff"`, no
+   `stroke="#fff"` — los símbolos definen `stroke="currentColor"` como
+   atributo de presentación directamente en cada `<path>`, así que solo
+   cambia si se cambia la propiedad `color` (de la que depende
+   `currentColor`), no el atributo `stroke` puesto en un ancestro.
+2. El `<use>` necesita `width="24" height="24"` explícitos. Sin eso, al
+   referenciar un `<symbol>` sin ancho/alto propios, dentro de un
+   `<mask>` el `<use>` no pinta nada (probado: fuera de una máscara sí
+   pinta sin problema, así que es un comportamiento específico del
+   contexto de máscara) — con las dimensiones explícitas, pinta bien.
+
+Sin estos dos ajustes los íconos desaparecían por completo (rect
+totalmente enmascarado/oculto), detectado con captura antes de asumir
+que estaba bien.
