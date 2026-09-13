@@ -641,3 +641,39 @@ clase base `.cifras`/`.cifra` sigue en 2 columnas con los tamaños
 originales, sin esta compresión, por si se reusa en otro lado sin la
 restricción de pantalla completa. Revalidado sin desborde en el mismo
 barrido de alturas de siempre (480px a 960px).
+
+---
+
+## 13. Terracota sólido en tres piezas puntuales de "Quiénes somos"
+
+Después de revertir el esquema de degradé (ver historial de commits:
+se probó y se revirtió por completo), el cliente pidió `#5D2510` sólo
+en tres piezas puntuales: el párrafo de bio, las etiquetas de las
+cifras y el párrafo del aviso a Destacadas. `#5D2510` ya es el valor
+de `--azul` (alias histórico, ver definición de variables arriba), así
+que se usó `var(--azul)` en vez de hardcodear el hex:
+
+```css
+#nosotros .nosotros__intro p,
+#nosotros .cifra__txt,
+.nosotros__destacadas p{ color:var(--azul); }
+```
+
+**Bug de cascada encontrado y corregido en el momento:** el selector
+`.nosotros__destacadas p` ya tenía un `color:var(--gris)` en su regla
+base (la que define `font-size`/`margin`), ubicada MÁS ABAJO en el
+archivo. Con la misma especificidad, gana la regla que aparece último
+en el orden de origen — así que el `--gris` viejo pisaba el nuevo
+`--azul` sin importar el orden en que se leyera la cascada mentalmente.
+Se detectó verificando el color computado real con
+`getComputedStyle().color` en vez de confiar solo en la captura visual
+(la diferencia entre `--gris` `#6A6F4C` y `--azul` `#5D2510` no se nota
+a simple vista en una captura chica). Se corrigió sacando el
+`color:var(--gris)` de esa regla base — no se necesita ahí porque
+`.nosotros__destacadas` sólo se usa en esta pantalla, no hay otro lugar
+que dependa de ese gris por defecto.
+
+**Lección para la próxima vez que se pida un cambio de color puntual:**
+verificar con `getComputedStyle` (no sólo con captura) cuando el nuevo
+color y el viejo son tonos parecidos (ambos oscuros, ambos tierra) —
+la cascada puede estar pisando el cambio en silencio.

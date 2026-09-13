@@ -791,6 +791,13 @@ body.menu-abierto .nav{
 #nosotros .cifra__num{ font-size:20px; }
 #nosotros .cifra__txt{ font-size:11px; margin-top:4px; }
 
+/* Terracota sólido puntual (pedido del cliente) en el párrafo de bio,
+   las etiquetas de las cifras y el párrafo del aviso a Destacadas.
+   --azul ya vale #5D2510 (ver definición de variables). */
+#nosotros .nosotros__intro p,
+#nosotros .cifra__txt,
+.nosotros__destacadas p{ color:var(--azul); }
+
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
    presupuesto de altura de #nosotros nunca dependa de dos bloques
@@ -802,7 +809,7 @@ body.menu-abierto .nav{
   text-decoration:none; color:inherit;
 }
 .nosotros__destacadas h3{ margin:0; }
-.nosotros__destacadas p{ font-size:14px; color:var(--gris); margin:4px 0 0; }
+.nosotros__destacadas p{ font-size:14px; margin:4px 0 0; }
 .nosotros__destacadas .ico{ width:20px; height:20px; color:var(--azul); flex:none; }
 
 /* Pantallas bajas (celulares chicos, o cualquiera con la barra de
