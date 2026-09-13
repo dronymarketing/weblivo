@@ -762,3 +762,25 @@ página de prueba aislada antes de tocar el sitio real):**
 Sin estos dos ajustes los íconos desaparecían por completo (rect
 totalmente enmascarado/oculto), detectado con captura antes de asumir
 que estaba bien.
+
+---
+
+## 16. Fondo sólido de las cifras — error propio al sacarlo, corregido
+
+El cliente marcó un fondo sólido detrás de la fila de cifras que no le
+gustaba. Primer intento (equivocado): poner `.cifra{ background:
+transparent }` sin tocar `.cifras{ background:rgba(65,47,38,.14) }` —
+ese rgba del contenedor sólo se veía antes en las líneas de 1px entre
+columnas (el `gap:1px` del grid dejaba asomar ese fondo únicamente en
+los huecos, tapado en el resto por el fondo opaco de cada `.cifra`).
+Al sacarle el fondo a `.cifra`, ese mismo rgba quedó expuesto en TODA
+la fila de manera uniforme — el cliente lo vio como el mismo problema
+sin resolver, y de paso, sin querer, desaparecieron las líneas
+divisorias (ya no había contraste entre "hueco" y "tarjeta", todo el
+área tenía el mismo tinte).
+
+**Corrección:** sacar también el fondo del contenedor
+(`#nosotros .cifras{ background:transparent; gap:0; }`) y rehacer las
+líneas divisorias con `border-right:1px solid rgba(65,47,38,.14)` en
+cada `.cifra` (sin borde en la última). Resultado: sin ningún fondo
+sólido/tinte en toda la sección, con las líneas divisorias intactas.
