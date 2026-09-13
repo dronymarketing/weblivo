@@ -785,7 +785,7 @@ body.menu-abierto .nav{
    generosos por si se reusa en otro lado sin la restricción de
    pantalla completa. */
 #nosotros .cifras{ grid-template-columns:repeat(4, 1fr); }
-#nosotros .cifra{ padding:10px 6px; text-align:center; }
+#nosotros .cifra{ padding:10px 6px; text-align:center; background:transparent; }
 #nosotros .cifra__fila{ justify-content:center; gap:5px; }
 #nosotros .cifra__ico{ width:16px; height:16px; }
 #nosotros .cifra__num{ font-size:20px; }
