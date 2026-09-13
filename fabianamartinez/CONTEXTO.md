@@ -641,3 +641,47 @@ clase base `.cifras`/`.cifra` sigue en 2 columnas con los tamaños
 originales, sin esta compresión, por si se reusa en otro lado sin la
 restricción de pantalla completa. Revalidado sin desborde en el mismo
 barrido de alturas de siempre (480px a 960px).
+
+---
+
+## 13. Esquema de color de "Quiénes somos" — de degradé arena a terracota sólido
+
+El cliente pidió, sobre una captura anotada: degradé marrón→arena (de
+izquierda a derecha) en el antetítulo "QUIÉNES SOMOS", el botón
+"Conocer más" y el título "Propiedades destacadas" (marcados en azul
+en la captura); y color arena sólido en las etiquetas de las cifras,
+el párrafo y la flecha del aviso a Destacadas (marcados en rojo).
+
+Implementado con `background:linear-gradient(...); background-clip:text`
+para el degradé y `color:var(--arena)` para el resto. **Antes de
+deployar** se sacó una captura de verificación (paso ya habitual en
+esta sesión) y se detectó que el texto quedaba prácticamente invisible:
+`--arena` (`#EDE1D2`) contra el fondo casi blanco de `#nosotros` da un
+contraste de ~1.21:1 — muy por debajo del mínimo de 4.5:1 de WCAG para
+texto normal. No se llegó a deployar esta versión.
+
+El cliente, al ver la captura, mandó una nueva referencia: un color de
+la paleta de marca (captura del PDF de paleta, círculo amarillo sobre
+un tono terracota oscuro) que coincide exactamente con la variable ya
+existente `--azul` (`#5D2510`, documentada en la paleta como "terracota
+— 12.09:1 sobre blanco. Rol de acento/CTA").
+
+**Decisión tomada sin re-preguntar** (la instrucción del cliente sólo
+decía "ese color que te marqué con amarillo", sin aclarar si reemplazaba
+sólo el arena sólido o también el extremo del degradé): se reemplazó
+`--arena` por `--azul` en los DOS lugares, y como el degradé ya usaba
+`--azul` en su otro extremo, esto lo convierte en un color sólido (ya
+no hay degradé real, los dos extremos son iguales). Se optó por esto en
+vez de inventar un segundo tono para mantener el efecto degradé, porque
+el cliente no proveyó una segunda referencia de color — y un terracota
+sólido con buen contraste es más seguro que una decisión estética no
+pedida. Se sacó una nueva captura de verificación: el texto se lee
+perfectamente bien en las 6 piezas (antetítulo, botón, cifras, párrafo,
+título y flecha de Destacadas). Si el cliente prefiere recuperar un
+efecto degradé real, hace falta que aporte un segundo tono (más claro
+u oscuro que `--azul`) para usar como extremo derecho.
+
+**`--arena` sigue sin uso "de facto" en esta pantalla tras este cambio**
+— ver también la sección 9 sobre por qué no conviene reusarlo pensando
+que es "el beige lindo": es el tono viejo del branding, descartado a
+pedido del cliente.

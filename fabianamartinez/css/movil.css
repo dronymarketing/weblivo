@@ -775,6 +775,25 @@ body.menu-abierto .nav{
    38px de alto) — el color/borde sigue siendo el de .btn--linea de
    siempre, solo cambia el radio y el alto. */
 .nosotros__btn{ min-height:38px; padding:0 20px; border-radius:999px; }
+
+/* Color terracota sólido en los tres títulos de esta pantalla (pedido
+   puntual del cliente, marcado en una captura). Antes era un degradé
+   marrón→arena, pero el arena sobre este fondo casi blanco daba un
+   contraste de ~1.21:1 (ilegible); el cliente lo reemplazó por este
+   terracota de la paleta de marca (--azul, 12.09:1 sobre blanco), así
+   que ya no hace falta el truco de background-clip:text. */
+#nosotros .nosotros__intro .antetitulo,
+.nosotros__btn,
+.nosotros__destacadas h3{
+  color:var(--azul);
+}
+
+/* Mismo terracota, sólido, en las etiquetas de las cifras y en el
+   texto + flecha del aviso a Destacadas (pedido puntual, misma
+   captura) — reemplaza al arena por el mismo motivo de contraste. */
+#nosotros .cifra__txt,
+.nosotros__destacadas p,
+.nosotros__destacadas .ico{ color:var(--azul); }
 /* Las cifras acá son 4 tarjetas con ícono en vez de las 2 de antes.
    En 2x2 no entraban en el presupuesto de una pantalla completa en la
    mayoría de los altos reales (aunque se comprimiera el padding) — la
