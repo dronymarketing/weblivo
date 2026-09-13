@@ -798,6 +798,34 @@ body.menu-abierto .nav{
 #nosotros .cifra__txt,
 .nosotros__destacadas p{ color:var(--azul); }
 
+/* Degradé marrón (--azul-900, #412F26) a arena (--arena, #EDE1D2) en
+   "Quiénes somos" (antetítulo), el botón "Conocer más" y el título
+   "Propiedades destacadas" — background-clip:text necesita el color
+   real transparente para que se vea el degradé de fondo a través de
+   las letras. */
+#nosotros .nosotros__intro .antetitulo,
+.nosotros__btn,
+.nosotros__destacadas h3{
+  background:linear-gradient(to right, var(--azul-900), var(--arena));
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+}
+
+/* Mismo degradé aplicado a los íconos y números de las cifras: al no
+   ser texto, no se puede usar background-clip:text sobre el SVG, así
+   que cada una de las 4 tarjetas toma un color sólido intermedio del
+   degradé según su posición en la fila (de --azul-900 a la izquierda
+   a --arena a la derecha), dando el efecto de degradé a lo largo de
+   toda la fila. */
+#nosotros .cifra:nth-child(1) .cifra__ico,
+#nosotros .cifra:nth-child(1) .cifra__num{ color:#412F26; }
+#nosotros .cifra:nth-child(2) .cifra__ico,
+#nosotros .cifra:nth-child(2) .cifra__num{ color:#7A6A5F; }
+#nosotros .cifra:nth-child(3) .cifra__ico,
+#nosotros .cifra:nth-child(3) .cifra__num{ color:#B4A699; }
+#nosotros .cifra:nth-child(4) .cifra__ico,
+#nosotros .cifra:nth-child(4) .cifra__num{ color:var(--arena); }
+
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
    presupuesto de altura de #nosotros nunca dependa de dos bloques

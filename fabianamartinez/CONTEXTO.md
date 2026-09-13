@@ -677,3 +677,39 @@ que dependa de ese gris por defecto.
 verificar con `getComputedStyle` (no sólo con captura) cuando el nuevo
 color y el viejo son tonos parecidos (ambos oscuros, ambos tierra) —
 la cascada puede estar pisando el cambio en silencio.
+
+---
+
+## 14. Degradé marrón (--azul-900) a arena en 4 piezas más — contraste bajo aceptado a propósito
+
+Pedido nuevo del cliente: degradé de `#412F26` (`--azul-900`, marrón,
+izquierda) a `#EDE1D2` (`--arena`, derecha) en el antetítulo "QUIÉNES
+SOMOS", el botón "Conocer más", los íconos+números de las cifras y el
+título "Propiedades destacadas" — **no** en el párrafo de bio, las
+etiquetas de las cifras ni el párrafo de Destacadas (esos quedan en el
+terracota sólido de la sección 13).
+
+**Texto (antetítulo, botón, título):** mismo truco de siempre,
+`background:linear-gradient(...); background-clip:text; color:transparent`.
+
+**Íconos y números de las cifras:** al no ser texto, `background-clip:text`
+no aplica sobre el SVG. En vez de eso, cada una de las 4 tarjetas toma
+un color sólido intermedio del degradé según su posición en la fila
+(interpolación lineal en RGB entre `#412F26` y `#EDE1D2` en t=0, 1/3,
+2/3, 1 → `#412F26`, `#7A6A5F`, `#B4A699`, `#EDE1D2`), dando el efecto
+de degradé a lo largo de la fila completa sin necesitar máscaras SVG.
+
+**Contraste:** como ya se documentó en la sección 13 (y antes, con el
+primer intento de este mismo degradé), `--arena` sobre el fondo casi
+blanco de `#nosotros` da ~1.21:1 de contraste — muy por debajo del
+mínimo de 4.5:1 de WCAG. Se sacó una captura de verificación antes de
+deployar (como siempre) y se confirmó que el extremo derecho del
+degradé (fin de "QUIÉNES SOMOS", fin de "Conocer más", "destacadas" en
+el título, y la 4ª cifra "+8 En obra") se ve muy pálido/casi invisible.
+
+**Se avisó al cliente con la captura antes de deployar y eligió
+dejarlo así a propósito** ("Dejarlo así igual") — el bajo contraste en
+el extremo del degradé es una decisión estética aceptada, no un bug.
+Si en el futuro se pide "arreglar" la legibilidad de este degradé
+específico, la solución ya evaluada es achicar el rango (no llegar al
+arena puro) o cambiar el extremo derecho por otro tono de la paleta.
