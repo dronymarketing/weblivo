@@ -900,3 +900,31 @@ resto del sitio (fotos y textos placeholder, ver secciones anteriores),
 pero vale la pena que el cliente lo tenga presente: cuando haya una
 propiedad real "premium" para destacar acá, conviene que la foto y el
 texto (zona, precio, m²) sean coherentes entre sí.
+
+---
+
+## 21. Fotos extra de Destacadas — sin radio, mismo tamaño, con espacio real
+
+El cliente pidió sacarle el radio de esquina a las 2 fotos extra que
+aparecen sobre la foto fija de cada propiedad, que fueran de igual
+tamaño y que tuvieran espacio vertical entre sí — en la captura se
+veían prácticamente pegadas una a la otra.
+
+Antes cada `.propiedad-fija__extra` se ubicaba por separado con
+`position:absolute` + un `bottom:%` distinto (36% y 6%) calculado a
+ojo. Como el ancho de la caja es un % del ancho del contenedor pero el
+`bottom` es un % del ALTO, el espacio real entre ambas dependía del
+aspect-ratio del contenedor (ancho vs alto de cada pantalla) — en
+altos de pantalla más bajos, ese cálculo las dejaba prácticamente
+tocándose (menos de 2px de separación en el peor caso).
+
+Se reemplazó por un contenedor `.propiedad-fija__extras` (nuevo, envuelve
+a las 2 fotos en el HTML) con `display:flex; flex-direction:column;
+gap:16px`. Así el ancho, el aspect-ratio (16:10) y el espacio entre
+ambas quedan garantizados por el propio flex, sin depender de cálculos
+de position:absolute — y de paso queda más simple de mantener. También
+se sacó el `border-radius:var(--radio)` de `.propiedad-fija__extra`
+(ahora `border-radius:0`). El JS de `initPropiedadFija()`
+(`efectos.js`) no necesitó cambios: sigue buscando
+`.propiedad-fija__extra` con `querySelectorAll`, que encuentra el
+elemento sin importar en qué nivel de anidamiento esté.

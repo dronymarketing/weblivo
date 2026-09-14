@@ -668,13 +668,20 @@ body.menu-abierto .nav{
 .propiedad-fija__tinte{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
 }
+/* Contenedor de las 2 fotos extra: flex-column con gap para que
+   siempre queden del mismo tamaño (mismo ancho, mismo aspect-ratio)
+   y con espacio real entre sí — antes se ubicaban cada una por
+   separado con position:absolute + bottom:%, y en algunos altos de
+   pantalla ese cálculo las dejaba prácticamente tocándose. */
+.propiedad-fija__extras{
+  position:absolute; left:6%; right:6%; bottom:6%;
+  display:flex; flex-direction:column; gap:16px;
+}
 .propiedad-fija__extra{
-  position:absolute; left:6%; right:6%; aspect-ratio:16/10;
-  border-radius:var(--radio); overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.35);
+  position:relative; aspect-ratio:16/10;
+  border-radius:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.35);
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.propiedad-fija__extra--1{ bottom:36%; }
-.propiedad-fija__extra--2{ bottom:6%; }
 
 .proyecto-destacado__cuerpo{ padding-top:28px; padding-bottom:8px; }
 .proyecto-destacado__zona{
