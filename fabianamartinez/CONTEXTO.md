@@ -839,3 +839,36 @@ ni superposición, y el efecto de scroll-pin sigue funcionando igual.
 `.propiedad-fija{ height:220vh; }` (que solo define la distancia total
 de scroll del efecto, no un alto "de pantalla") se dejó con vh normal
 a propósito, no le aplica el mismo bug.
+
+---
+
+## 19. El "rectángulo marrón" debajo de Quiénes somos — hueco vacío, no un elemento
+
+El cliente mandó una grabación de pantalla preguntando qué función
+cumplía un rectángulo marrón sólido, sin nada adentro, que aparecía
+justo debajo de "Quiénes somos" antes de la foto de la primera
+propiedad. Diagnóstico: no era ningún elemento nuevo ni un bug de la
+sección 18 — era el padding-top de `.seccion` (72px, clase que trae
+`#destacadas`) sumado al `margin-top:32px` que tenía
+`.propiedad-fija:first-of-type`, ambos sobre el fondo sólido oscuro de
+`tema-marron`, sin texto ni imagen adentro todavía (la foto recién
+aparece cuando el `.propiedad-fija__pin` entra en escena). Antes de
+que "Quiénes somos" fuera realmente fullscreen (sección 6 en
+adelante), este hueco quedaba más abajo, fuera de la vista inmediata,
+así que no llamaba la atención — al ajustar la altura real de
+"Quiénes somos" quedó justo pegado al borde de la pantalla y se hizo
+visible.
+
+**Corrección:** `#destacadas{ padding-top:0; }` y se sacó el
+`margin-top:32px` de `.propiedad-fija:first-of-type`. Ahora la foto de
+la primera propiedad arranca inmediatamente después del contenido de
+"Quiénes somos", sin ninguna franja de color sin función en el medio.
+Verificado con captura en el punto exacto de la transición.
+
+**Nota para más adelante:** el mismo padding-block de `.seccion` (72px)
+también deja una franja de fondo marrón sólido al final de
+`#destacadas`, después del texto de la tercera propiedad y antes de
+"Zonas" — ahí sí hay contenido inmediatamente antes (el cuerpo de la
+3ª propiedad, mismo fondo oscuro), así que se ve como espaciado normal
+y no como un bloque aislado sin función, pero si en algún momento se
+pide revisar eso también, la causa sería la misma.

@@ -641,8 +641,13 @@ body.menu-abierto .nav{
    propiedad aparecen sobre esa base ya teñida. Al soltarse el
    sticky, en flujo normal, aparecen nombre + precio + botón.
    ============================================================ */
+/* Sin padding-top de .seccion acá: con los 72px de siempre más el
+   margin-top que tenía la primera propiedad, quedaba una franja de
+   fondo marrón sólido sin nada adentro entre el teaser de Destacadas
+   y la primera foto — la primera pantalla tiene que arrancar ya con
+   la foto, pegada a Quiénes somos. */
+#destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; height:220vh; }
-.propiedad-fija:first-of-type{ margin-top:32px; }
 /* Misma fórmula de altura real que .seccion--completa (ver más abajo
    y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
    sin el bug de 100vh en navegadores móviles con barra de direcciones
