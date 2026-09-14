@@ -784,3 +784,18 @@ divisorias (ya no había contraste entre "hueco" y "tarjeta", todo el
 líneas divisorias con `border-right:1px solid rgba(65,47,38,.14)` en
 cada `.cifra` (sin borde en la última). Resultado: sin ningún fondo
 sólido/tinte en toda la sección, con las líneas divisorias intactas.
+
+---
+
+## 17. Sacar el degradé de íconos y números de las cifras
+
+El cliente pidió sacarle el degradé (sección 15) a los íconos y
+números de las cifras y dejarlos "como estaba antes" — no tocaba el
+antetítulo, el botón ni el título de Destacadas, que siguen en
+degradé. Revertido a color sólido `var(--azul)` (las clases base
+`.cifra__ico`/`.cifra__num` ya lo tenían así desde siempre, alcanzó
+con sacar las reglas que lo pisaban). Los íconos volvieron a la marca
+simple `<svg><use href="#i-X"/></svg>` con color vía `currentColor`, y
+se borraron del sprite de símbolos el `<linearGradient
+id="grad-marron-arena">` y las 4 `<mask>` de la sección 15, que ya no
+los usa nadie.

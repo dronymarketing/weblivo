@@ -805,25 +805,20 @@ body.menu-abierto .nav{
 
 /* Degradé marrón (--azul-900, #412F26) a arena (--arena, #EDE1D2),
    independiente en cada elemento (cada uno pinta su propio degradé
-   dentro de su propia caja, no uno compartido a lo largo de toda la
-   fila): "Quiénes somos" (antetítulo), el botón "Conocer más", el
-   título "Propiedades destacadas" y los números de las cifras.
-   background-clip:text necesita el color real transparente para que
-   se vea el degradé de fondo a través de las letras. */
+   dentro de su propia caja): "Quiénes somos" (antetítulo), el botón
+   "Conocer más" y el título "Propiedades destacadas". Los íconos y
+   números de las cifras tuvieron este mismo degradé un tiempo, pero
+   el cliente pidió sacárselo y dejarlos como estaban (color sólido
+   --azul, ver clases base .cifra__ico/.cifra__num). background-clip:text
+   necesita el color real transparente para que se vea el degradé de
+   fondo a través de las letras. */
 #nosotros .nosotros__intro .antetitulo,
 .nosotros__btn,
-.nosotros__destacadas h3,
-#nosotros .cifra__num{
+.nosotros__destacadas h3{
   background:linear-gradient(to right, var(--azul-900), var(--arena));
   -webkit-background-clip:text; background-clip:text;
   color:transparent; -webkit-text-fill-color:transparent;
 }
-
-/* Mismo degradé en los íconos de las cifras, también independiente
-   por ícono: cada uno es un <rect> con este degradé recortado por una
-   máscara SVG con la forma del ícono (definida en el sprite de
-   símbolos, junto a #grad-marron-arena) — un SVG con stroke no admite
-   background-clip:text, que es solo para texto. */
 
 /* Aviso compacto a "Propiedades destacadas" — un teaser chico, no
    un segundo bloque completo (título+párrafo+botón), para que el
