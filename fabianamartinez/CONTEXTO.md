@@ -799,3 +799,43 @@ simple `<svg><use href="#i-X"/></svg>` con color vía `currentColor`, y
 se borraron del sprite de símbolos el `<linearGradient
 id="grad-marron-arena">` y las 4 `<mask>` de la sección 15, que ya no
 los usa nadie.
+
+---
+
+## 18. Misma fórmula de altura real en el pin de Destacadas (#destacadas)
+
+Pedido: aplicar en la siguiente sección (#destacadas, donde van las
+propiedades destacadas con el efecto de imagen fija/pin al scrollear)
+la misma "lógica" de #nosotros — aclarado por el cliente: se refería
+puntualmente a la altura, que sea pantalla completa real.
+
+`.propiedad-fija__pin` (la imagen que queda fija mientras el cuerpo de
+texto pasa por encima) usaba `height:100vh` a secas — el mismo bug de
+siempre en navegadores móviles con barra de direcciones dinámica (ver
+sección de `.seccion--completa`/hero). Se le aplicó la misma cascada
+de fallbacks que ya usa `.seccion--completa`:
+
+```css
+.propiedad-fija__pin{
+  position:sticky; top:var(--nav-alto);
+  height:100vh;
+  height:100svh;
+  height:var(--vh100, 100svh);
+  height:calc(100vh - var(--nav-alto));
+  height:calc(100svh - var(--nav-alto));
+  height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  overflow:hidden;
+}
+```
+
+También se cambió `top:0` por `top:var(--nav-alto)`: como el nav es
+`position:fixed` y esta sección no arranca en scrollY:0 (mismo caso que
+#nosotros), el pin tiene que engancharse debajo del nav, no en el
+borde superior real del viewport — si no, la altura descontada por
+`--nav-alto` dejaba un hueco sin pinear al final de la pantalla en vez
+de arrancar debajo del nav. Verificado con captura: la imagen fija
+ahora ocupa exactamente el espacio visible debajo del nav, sin hueco
+ni superposición, y el efecto de scroll-pin sigue funcionando igual.
+`.propiedad-fija{ height:220vh; }` (que solo define la distancia total
+de scroll del efecto, no un alto "de pantalla") se dejó con vh normal
+a propósito, no le aplica el mismo bug.

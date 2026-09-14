@@ -643,7 +643,21 @@ body.menu-abierto .nav{
    ============================================================ */
 .propiedad-fija{ position:relative; height:220vh; }
 .propiedad-fija:first-of-type{ margin-top:32px; }
-.propiedad-fija__pin{ position:sticky; top:0; height:100vh; overflow:hidden; }
+/* Misma fórmula de altura real que .seccion--completa (ver más abajo
+   y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
+   sin el bug de 100vh en navegadores móviles con barra de direcciones
+   dinámica. El pin arranca en --nav-alto (no en 0) para que ocupe
+   justo el área visible debajo del nav, no por debajo de él. */
+.propiedad-fija__pin{
+  position:sticky; top:var(--nav-alto);
+  height:100vh;
+  height:100svh;
+  height:var(--vh100, 100svh);
+  height:calc(100vh - var(--nav-alto));
+  height:calc(100svh - var(--nav-alto));
+  height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  overflow:hidden;
+}
 .propiedad-fija__base{ position:absolute; inset:0; }
 .propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .propiedad-fija__tinte{
