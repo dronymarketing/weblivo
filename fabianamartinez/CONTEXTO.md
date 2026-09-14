@@ -872,3 +872,31 @@ también deja una franja de fondo marrón sólido al final de
 3ª propiedad, mismo fondo oscuro), así que se ve como espaciado normal
 y no como un bloque aislado sin función, pero si en algún momento se
 pide revisar eso también, la causa sería la misma.
+
+---
+
+## 20. Foto premium para la primera propiedad de Destacadas
+
+El cliente pidió una foto vertical 1080x1920 "aesthetic" de una
+propiedad premium para la foto fullscreen de la primera propiedad de
+Destacadas (la más destacada de la inmobiliaria). Se probaron varias
+opciones de bancos de fotos libres (Pexels, con búsquedas de living
+rooms modernos/de lujo) y se le mostraron un par de candidatas — el
+cliente eligió directamente su propia opción, una foto de piscina
+infinita con vista al mar Mediterráneo:
+https://www.pexels.com/es-es/foto/vista-serena-a-la-piscina-infinita-mediterranea-38796254/
+(licencia Pexels, libre de uso comercial). Descargada a 1080x1920
+exacto vía los parámetros de resize de Pexels (`?w=1080&h=1920&fit=crop`)
+y guardada en `img/propiedades/premium-piscina-vista-mar.jpg`,
+reemplazando `pocitos-living.jpg` como imagen base de la primera
+`.propiedad-fija`.
+
+**Inconsistencia de contenido a tener en cuenta:** el texto debajo de
+esta foto (`.proyecto-destacado__cuerpo`) sigue diciendo "Apartamento
+en Cordón · U$S 138.000 · 2 dorm. · 1 baño · 65 m²" — una descripción
+de apartamento chico bajo una foto de piscina infinita con vista al
+mar de una villa. Es la misma naturaleza de "dato de muestra" que el
+resto del sitio (fotos y textos placeholder, ver secciones anteriores),
+pero vale la pena que el cliente lo tenga presente: cuando haya una
+propiedad real "premium" para destacar acá, conviene que la foto y el
+texto (zona, precio, m²) sean coherentes entre sí.
