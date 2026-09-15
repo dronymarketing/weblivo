@@ -1086,3 +1086,18 @@ pantalla. Se restauró también `gsap.set(..., {scale: zoomInicial})` y
 su animación a `scale:1`, exactamente como estaba antes de la sección
 26. Verificado con capturas: la foto no asoma para nada al arrancar,
 y al llegar a destino ya tiene el mismo zoom-out sutil de siempre.
+
+---
+
+## 28. Efecto simple, sin ninguna animación sobre las fotos
+
+Corrección sobre la sección 27: el cliente aclaró que no quiere NINGÚN
+efecto sobre las fotos en sí — nada de zoom, un efecto simple. Solo
+que al scrollear vengan de abajo, "normal, sin aceleración". Se sacó
+por completo el `scale`/`zoomInicial` de `initPropiedadFija()` (el
+`gsap.set` inicial y el `.to(..., {scale:1})`). Queda un único
+movimiento por foto: el `y` calculado (sección 27) de la posición
+oculta a `y:0`, con `ease:'none'` (ya estaba así — sin curva de
+easing, sigue al scroll de forma lineal, que es lo que pide "sin
+aceleración"). Verificado con `getComputedStyle` en las imágenes:
+`transform:none` en todo el recorrido del scroll, ningún scale.
