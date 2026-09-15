@@ -996,3 +996,29 @@ completa (con el `gsap.set` que oculta `info`) ni se ejecuta si el
 sistema pide reducir movimiento, así que ahí `info` quede visible
 directo, sin animación ni estado oculto — mismo comportamiento que ya
 tenían el tinte y las fotos extra.
+
+---
+
+## 24. Foto de fondo distinta para escritorio en la 1ª propiedad de Destacadas
+
+El cliente pasó una segunda foto de Pexels (misma serie que la
+sección 20 — piscina infinita con vista a la costa turca, mismo
+fotógrafo/locación, pero en formato horizontal 1920x1280) para usarla
+puntualmente como fondo en la versión escritorio.
+
+Como `.propiedad-fija__base` hasta ahora tenía un único `<img>` (la
+foto vertical 1080x1920 pensada para mobile), se cambió a un
+`<picture>` con `<source media="(min-width:900px)">` apuntando a la
+nueva foto horizontal, y el `<img>` de siempre como fallback para
+mobile — mismo breakpoint que ya usa `escritorio.css`
+(`@media (min-width:900px)`), así que queda consistente con el resto
+del sitio en vez de inventar un breakpoint nuevo. `data-fallback`
+sigue funcionando igual: el listener en `main.js` engancha por
+`img[data-fallback]`, sin importar si el `<img>` está envuelto en un
+`<picture>`.
+
+Guardada en `img/propiedades/premium-piscina-vista-mar-escritorio.jpg`.
+Verificado con Playwright en 1440px (carga la horizontal) y 390px
+(sigue cargando la vertical) — `.propiedad-fija__base img{ object-fit:cover }`
+sigue aplicando igual sobre el `<img>` real dentro del `<picture>`, sin
+necesitar tocar el CSS.
