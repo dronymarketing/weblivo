@@ -683,14 +683,18 @@ body.menu-abierto .nav{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
   will-change:opacity;
 }
-/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
-   la info de la propiedad, superpuestos a la foto ya teñida. Cada
-   parte (panel de fotos, luego texto) aparece en su propio tramo de
-   scroll, en secuencia (ver initPropiedadFija en efectos.js). */
+/* Las 2 fotos extra + la info de la propiedad, superpuestos a la foto
+   ya teñida. Margen fijo de 40px arriba y abajo (mismo valor que
+   #nosotros.seccion--completa, no un centrado automático que varía
+   según la altura de pantalla o del contenido): justify-content:
+   space-between separa el panel de fotos (pegado arriba, a 40px) del
+   texto (pegado abajo, a 40px), y absorbe cualquier aire de sobra
+   entre los dos. Cada parte (panel de fotos, luego texto) aparece en
+   su propio tramo de scroll, en secuencia (ver initPropiedadFija en
+   efectos.js). */
 .propiedad-fija__contenido{
-  position:absolute; left:6%; right:6%; top:50%;
-  transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:28px;
+  position:absolute; left:6%; right:6%; top:40px; bottom:40px;
+  display:flex; flex-direction:column; justify-content:space-between;
 }
 /* Las 2 fotos extra: sin fondo ni padding propios (nada de sólido
    marrón detrás) — un solo panel que sube desde abajo como una sola

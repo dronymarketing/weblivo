@@ -1974,3 +1974,30 @@ que no los usaba ninguna otra página.
 
 Sin cache-bust: cambio de contenido de imagen con nombre de archivo
 nuevo, no hace falta.
+
+---
+
+## 56. Margen fijo arriba y abajo, no centrado automático
+
+El cliente preguntó cuánto margen había entre el borde de arriba del
+fullscreen y la primera foto, y entre el borde de abajo y el botón
+"Ver Propiedad". La respuesta fue que no había un margen fijo: el
+bloque completo (fotos + texto) estaba centrado con
+`top:50%; transform:translateY(-50%)`, así que el aire arriba y abajo
+salía de restar la altura del contenido a la altura de la pantalla —
+variable según el dispositivo, no un número fijo.
+
+Pidió que sea fijo, "como hicimos en Quiénes somos" — ahí
+(`#nosotros.seccion--completa`) el margen es `padding-top:40px;
+padding-bottom:40px;` en vez de centrado.
+
+**Cambio en `.propiedad-fija__contenido` (movil.css):** en vez de
+`top:50%; transform:translateY(-50%); gap:28px`, pasa a
+`top:40px; bottom:40px` (mismo valor que usa Quiénes somos) con
+`justify-content:space-between` — el panel de fotos queda pegado
+arriba a 40px del borde del fullscreen, el texto pegado abajo a 40px,
+y cualquier aire de sobra entre ambos se reparte automáticamente en el
+medio (reemplaza al `gap:28px` fijo, que ahora es variable — nunca
+menos que antes, pero tampoco un valor exacto).
+
+Cache-bust: `movil.css?v=89`.
