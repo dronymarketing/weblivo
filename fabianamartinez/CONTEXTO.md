@@ -1792,3 +1792,21 @@ No se tocó la mecánica (sigue siendo pin:true + scrub, sin
 `position:sticky`), ni el orden de aparición (velo → panel → texto).
 
 Cache-bust: `efectos.js?v=77` (sin cambios en `movil.css` esta vez).
+
+---
+
+## 47. Todavía más suave y despacio
+
+El cliente pidió profundizar el ajuste de la sección 46: "¿Podés
+hacerlo más suave? ¿Despacio?"
+
+**Cambio en `initPropiedadFija()` (efectos.js):** se aumenta todavía
+más la porción de scroll que le toca al panel frente al velo y el
+texto (`duration:2.2` para el panel vs `duration:0.3` para velo y
+texto, antes 1.3 y 0.35) y se estira el recorrido total del pin
+(`end:'+=220%'`, antes `160%`). Mismo mecanismo que la sección 46
+—scroll 1 a 1 vía `scrub:0.3`, sin easing— solo que ahora el panel
+tiene bastante más recorrido de scroll para la misma distancia en
+píxeles, así se mueve más despacio por cada píxel que se scrollea.
+
+Cache-bust: `efectos.js?v=78`.
