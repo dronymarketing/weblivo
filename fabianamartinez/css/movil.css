@@ -644,8 +644,9 @@ body.menu-abierto .nav{
    Secuencia (ver initPropiedadFija): el velo se va tiñendo
    GRADUALMENTE mientras sube el panel con las 2 fotos (una sola
    pieza, no 2 fotos sueltas) — arrancan juntos y llegan juntos (velo
-   sólido, panel en su lugar); recién ahí aparece el texto. Las 2
-   fotos en sí no tienen ningún fondo ni marco marrón propio.
+   a 0.8 de opacidad, no sólido del todo, panel en su lugar); recién
+   ahí aparece el texto. Las 2 fotos en sí no tienen ningún fondo ni
+   marco marrón propio.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de

@@ -178,8 +178,10 @@
      El velo de marca y el panel con las 2 fotos (no 2 fotos sueltas,
      una sola pieza) arrancan juntos y con el mismo ritmo: el fondo se
      va oscureciendo GRADUALMENTE mientras las fotos suben, y ambos
-     llegan a destino (velo sólido, panel en su lugar) al mismo
-     tiempo. Recién ahí aparece el texto (zona, nombre, precio, botón).
+     llegan a destino (velo a 0.8 de opacidad, no sólido del todo —
+     se sigue viendo un poco la foto de fondo; panel en su lugar) al
+     mismo tiempo. Recién ahí aparece el texto (zona, nombre, precio,
+     botón).
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -249,7 +251,7 @@
          duration del panel, ya que panel y texto ya no quedan uno
          atrás del otro por default). */
       var duracionPanel = panel ? 2.2 : 0.3;
-      tl.to(tinte, { opacity: 1, ease: 'none', duration: duracionPanel }, 0);
+      tl.to(tinte, { opacity: 0.8, ease: 'none', duration: duracionPanel }, 0);
       if (panel) tl.to(panel, { y: 0, ease: 'none', duration: duracionPanel }, 0);
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 }, duracionPanel);
     });

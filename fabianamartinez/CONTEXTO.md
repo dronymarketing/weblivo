@@ -1914,3 +1914,17 @@ Ajuste fino pedido por el cliente después de probar la sección 51:
 `end:'+=160%'` (antes `150%`). Mismo mecanismo, solo el número.
 
 Cache-bust: `efectos.js?v=83`.
+
+---
+
+## 53. El velo ya no llega a sólido del todo — se ve un poco la foto de fondo
+
+El cliente pidió que el velo llegue a 80% de opacidad en vez de 100%,
+para que se siga viendo un poco la foto de fondo detrás.
+
+**Cambio en `initPropiedadFija()` (efectos.js):**
+`tl.to(tinte, { opacity: 0.8, ... })` (antes `opacity: 1`). Nada más
+cambia — mismo timing, misma sincronización con el panel (sección 49),
+mismo recorrido de scroll (sección 52).
+
+Cache-bust: `movil.css?v=88` (solo comentarios), `efectos.js?v=84`.
