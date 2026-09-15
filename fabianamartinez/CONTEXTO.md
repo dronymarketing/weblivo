@@ -1475,3 +1475,53 @@ No se tocó la secuencia general (velo → panel → texto) ni ninguna
 medida del HTML.
 
 Cache-bust: `movil.css?v=79`, `efectos.js?v=70`.
+
+---
+
+## 40. "Se ve con lag, artificial, tipo plástico" vs. la referencia — scrub:true era la causa
+
+El cliente comparó de nuevo contra la web de referencia: la de él se
+sentía "con lag, artificial, tipo plástico", sin poder señalar una
+causa puntual. Repasando `initPropiedadFija()`, esta era la única
+animación de scroll de todo el archivo que usaba `scrub:true` — el
+resto (`initRevealScroll`, `initGaleriaAnclada`) ya usa un número bajo
+(0.4-0.5).
+
+**La causa técnica:** `scrub:true` ata la posición directamente al
+evento de scroll "crudo" del navegador. En muchos celulares esos
+eventos no se disparan en cada frame (llegan en tandas), así que el
+movimiento se ve a saltos entre esos eventos en vez de continuo — eso
+es exactamente lo que se percibe como "con lag" o "plástico". Un
+`scrub` con un número bajo (en vez de `true`) hace que GSAP interpole
+la posición con `requestAnimationFrame` entre esos eventos de scroll,
+así el movimiento queda fluido en cualquier dispositivo, típicamente
+sin que se note ningún retraso al ojo.
+
+**Importante — esto NO es lo mismo que el problema anterior:** el
+`scrub:true` se había puesto para sacar el "colazo" (que la foto
+siguiera moviéndose sola después de soltar el scroll, sección de más
+atrás en este documento). Ese colazo aparece con valores de `scrub`
+*altos* (tipo 1 o más), no con cualquier número. Un valor bajo como
+`0.3` sigue sin generar colazo perceptible (se resuelve en ~300ms,
+imperceptible) pero sí suaviza el movimiento entre eventos de scroll.
+Por eso se cambió a `scrub: 0.3`, no de vuelta a un valor alto.
+
+**Cambios en `initPropiedadFija()` (efectos.js):**
+- `scrub: true` → `scrub: 0.3`.
+- Se agregó `force3D: true` a los `gsap.set()` del panel, el velo y la
+  info, para forzar que el navegador los trate como su propia capa
+  compuesta (GPU) desde el arranque, en vez de crearla recién a mitad
+  de la animación (eso también puede sentirse como un salto/lag en el
+  primer frame de movimiento).
+
+**Cambios en CSS (`movil.css`):** `will-change:opacity` en
+`.propiedad-fija__tinte` y `will-change:transform` en
+`.propiedad-fija__extras` — mismo objetivo, que el navegador prepare
+la capa de composición de antemano en vez de sobre la marcha.
+
+No se tocó ninguna medida, margen, secuencia (velo → panel → texto) ni
+la mecánica de "sin aceleración" de las fotos (`ease:'none'` se
+mantiene en los tweens) — el cambio es puramente de rendimiento/fluidez
+del scroll, no de la forma del movimiento.
+
+Cache-bust: `movil.css?v=80`, `efectos.js?v=71`.

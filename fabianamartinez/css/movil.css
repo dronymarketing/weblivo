@@ -669,6 +669,7 @@ body.menu-abierto .nav{
 .propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .propiedad-fija__tinte{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
+  will-change:opacity;
 }
 /* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
    la info de la propiedad (zona, nombre, precio, botón) — antes la
@@ -688,6 +689,7 @@ body.menu-abierto .nav{
 .propiedad-fija__extras{
   display:flex; flex-direction:column; gap:16px;
   background:var(--azul-900); padding:16px;
+  will-change:transform;
 }
 .propiedad-fija__extra{
   position:relative; aspect-ratio:16/10;

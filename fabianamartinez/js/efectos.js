@@ -199,20 +199,26 @@
       var pinRect = pin.getBoundingClientRect();
       var panelRect = panel.getBoundingClientRect();
       var desplazo = Math.round(pinRect.bottom - panelRect.top) + 40;
-      gsap.set(panel, { y: desplazo });
-      if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
+      gsap.set(panel, { y: desplazo, force3D: true });
+      gsap.set(tinte, { force3D: true });
+      if (info) gsap.set(info, { autoAlpha: 0, y: 24, force3D: true });
 
-      /* scrub:true (no un número) — sin retraso de suavizado: la
-         posición sigue al scroll de forma inmediata, cuadro a cuadro,
-         sin que quede un "colazo" de movimiento propio al dejar de
-         scrollear. Así funciona como un elemento pegado al scroll, no
-         como una animación con su propia velocidad. */
+      /* scrub:0.3 (no scrub:true) — la diferencia con el resto de los
+         efectos del archivo (reveal-scroll usa 0.4-0.5) era justo acá:
+         scrub:true ata la posición al evento de scroll en crudo, que en
+         muchos celulares no dispara en cada frame — se traduce en saltos
+         entre posiciones en vez de un movimiento continuo ("con lag,
+         plástico"). Un scrub bajo interpola por rAF entre esos eventos,
+         así se ve fluido en cualquier dispositivo. 0.3 sigue siendo lo
+         bastante bajo para que, al soltar el scroll, no quede el
+         "colazo" de movimiento propio que se sacó antes (eso pasaba con
+         valores más altos, no con cualquier número distinto de true). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: bloque,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: true
+          scrub: 0.3
         }
       });
 
