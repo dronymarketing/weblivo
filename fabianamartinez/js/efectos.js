@@ -203,25 +203,24 @@
       });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
+      /* scrub:true (no un número) — sin retraso de suavizado: la
+         posición sigue al scroll de forma inmediata, cuadro a cuadro,
+         sin que quede un "colazo" de movimiento propio al dejar de
+         scrollear. Así funciona como un elemento pegado al scroll, no
+         como una animación con su propia velocidad. */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: bloque,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5
+          scrub: true
         }
       });
 
       tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
-      /* Duración explícita más larga (antes quedaba en el default de
-         GSAP, pensado para un desplazamiento chico de 48px) — ahora
-         que cada foto recorre una distancia bastante más grande para
-         salir del todo de la pantalla, la misma duración corta hacía
-         que se sintiera brusca/rápida. Con más duración, la misma
-         distancia se reparte en más scroll y se ve más gradual. */
       extras.forEach(function (extra, i) {
-        var arranca = 0.15 + i * 0.85;
-        tl.to(extra, { y: 0, duration: 1.1, ease: 'none' }, arranca);
+        var arranca = 0.15 + i * 0.32;
+        tl.to(extra, { y: 0, ease: 'none' }, arranca);
       });
       /* La info (zona, nombre, precio, botón) entra recién cuando
          termina de aparecer la última foto extra — sin posición

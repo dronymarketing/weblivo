@@ -1169,3 +1169,28 @@ igual a fotos y texto, ya no hace falta el padding aparte en
 `.propiedad-fija__info`) y `box-shadow:0 24px 48px rgba(0,0,0,.35)` de
 vuelta en `.propiedad-fija__extra`. La duración/velocidad más lenta de
 la sección 30 se mantiene sin cambios — ese ajuste sí era correcto.
+
+---
+
+## 32. Sacar la sombra y sacar el "colazo" de movimiento propio (scrub)
+
+El cliente pidió sacar la sombra de las fotos extra (ya no debería
+estar — se volvió a sacar). Y aclaró algo más de fondo sobre el
+deslizamiento: no quiere que tenga "velocidad" propia, quiere que
+funcione como un elemento que simplemente viene de abajo, pegado al
+scroll.
+
+**Causa real:** `initPropiedadFija()` usaba `scrub:0.5` en el
+ScrollTrigger — ese `0.5` no es la duración de nada, es un retraso de
+suavizado (en segundos) entre la posición real del scroll y la
+posición de la animación. Con eso, al dejar de scrollear de golpe, la
+foto seguía moviéndose sola durante un instante hasta alcanzar la
+posición correcta — eso es lo que se sentía como "velocidad de
+deslizamiento" (la foto pareciendo tener su propio impulso). Se
+cambió a `scrub:true`: sin número, sin suavizado — la posición sigue
+al scroll cuadro a cuadro, sin ningún retraso ni colazo. También se
+revirtió la duración/separación explícitas de la sección 30
+(`duration:1.1`, `arranca:0.15+i*0.85`) a los valores simples de antes
+(`0.15+i*0.32`, sin duración explícita) — con `scrub:true` ya no hace
+falta estirar la duración para disimular un salto, el propio scroll
+1 a 1 alcanza para que se sienta gradual.
