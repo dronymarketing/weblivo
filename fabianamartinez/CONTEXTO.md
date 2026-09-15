@@ -1887,3 +1887,21 @@ porque se te está complicando esto tan simple."
   fondo/marco marrón propio, solo el `gap:16px` entre ellas.
 
 Cache-bust: `movil.css?v=87`, `efectos.js?v=81`.
+
+---
+
+## 51. Acortar el recorrido total — hacía falta scrollear casi 2 pantallas
+
+El cliente preguntó por qué tardaba tanto en subir el panel de fotos.
+Explicación: entre las secciones 46-47 el `end` del pin se fue
+estirando (`120%` → `160%` → `180%` → `220%` → `180%`) para darle
+"aire" al panel y que no se sintiera rápido — pero eso significa que,
+con el panel ocupando la gran mayoría de ese recorrido (`duration`
+mucho más alta que el velo/texto), hacía falta scrollear casi 2
+pantallas completas para verlo llegar a destino.
+
+Pidió acortar de a poco. **Cambio:** `end:'+=150%'` (antes `180%`).
+Mismas `duration` relativas entre velo/panel/texto — el reparto no
+cambia, solo el total de scroll que hace falta para completarlo.
+
+Cache-bust: `efectos.js?v=82`.
