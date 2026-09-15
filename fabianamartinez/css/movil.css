@@ -672,9 +672,12 @@ body.menu-abierto .nav{
    siempre queden del mismo tamaño (mismo ancho, mismo aspect-ratio)
    y con espacio real entre sí — antes se ubicaban cada una por
    separado con position:absolute + bottom:%, y en algunos altos de
-   pantalla ese cálculo las dejaba prácticamente tocándose. */
+   pantalla ese cálculo las dejaba prácticamente tocándose. Centrado
+   vertical en la pantalla (antes quedaban pegadas abajo, con un
+   hueco grande arriba). */
 .propiedad-fija__extras{
-  position:absolute; left:6%; right:6%; bottom:6%;
+  position:absolute; left:6%; right:6%; top:50%;
+  transform:translateY(-50%);
   display:flex; flex-direction:column; gap:16px;
 }
 .propiedad-fija__extra{
