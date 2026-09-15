@@ -634,14 +634,12 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
-   Propiedad destacada — mecánica calcada de hba.com (sticky_gallery,
-   visto en su propio código vía DevTools): la foto base + el texto
-   (zona/nombre/precio/botón) quedan pegados (sticky) arriba, uno
-   sobre el otro; las 2 fotos extra viven en flujo normal DESPUÉS del
-   pin, así que al scrollear son ELLAS las que suben y tapan a la foto
-   fija — sin velo que se tiñe ni animación por JS, todo el "cubrir"
-   lo hace el scroll nativo. Ya no hace falta initPropiedadFija() en
-   efectos.js (se sacó): no hay nada que temporizar con GSAP.
+   Propiedad destacada — foto fija con tinte de marca (paquete
+   HB, D + C combinados). La foto base queda pegada (sticky) al
+   tope mientras dura el bloque; un velo de --azul-900 se va
+   tiñendo encima con el scroll y dos fotos más de la misma
+   propiedad aparecen sobre esa base ya teñida. Al soltarse el
+   sticky, en flujo normal, aparecen nombre + precio + botón.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -649,11 +647,7 @@ body.menu-abierto .nav{
    y la primera foto — la primera pantalla tiene que arrancar ya con
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
-/* Sin alto fijo: el pin reserva su propia pantalla en el flujo (sigue
-   siendo position:sticky) y las 2 fotos extra suman una pantalla cada
-   una — el bloque de detalle que va después mide lo que necesite. Así
-   no hay que recalcular a mano si el detalle cambia de alto. */
-.propiedad-fija{ position:relative; }
+.propiedad-fija{ position:relative; height:220vh; }
 /* Misma fórmula de altura real que .seccion--completa (ver más abajo
    y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
    sin el bug de 100vh en navegadores móviles con barra de direcciones
@@ -671,42 +665,35 @@ body.menu-abierto .nav{
 }
 .propiedad-fija__base{ position:absolute; inset:0; }
 .propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-/* Superpuesto a la foto, solo el nombre — minimalista, como el título
-   suelto de hba.com (nada de zona/precio/botón acumulados acá; eso
-   vive aparte, en .propiedad-fija__detalle, con más aire). Degradé
-   suave detrás para que el texto se lea, no un velo de pantalla
-   completa. */
-.propiedad-fija__info{
-  position:absolute; left:0; right:0; bottom:0;
-  padding:72px 6% 40px;
-  background:linear-gradient(to top, rgba(9,29,30,.65), transparent);
+.propiedad-fija__tinte{
+  position:absolute; inset:0; background:var(--azul-900); opacity:0;
 }
-/* Fotos extra: SIN posicionamiento especial, en flujo normal — cada
-   una ocupa una pantalla completa (misma fórmula que el pin) para
-   que al scrollear cubran del todo, una atrás de la otra, sin dejar
-   ver el pin entre medio. */
+/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
+   la info de la propiedad (zona, nombre, precio, botón) — antes la
+   info vivía debajo, en flujo normal, sobre su propio fondo marrón
+   sólido (.proyecto-destacado__cuerpo); ahora entra en la misma
+   pantalla fullscreen, superpuesta a la foto ya teñida, y aparece
+   con su propia animación al terminar el reveal de las fotos (ver
+   initPropiedadFija en efectos.js). */
+.propiedad-fija__contenido{
+  position:absolute; left:6%; right:6%; top:50%;
+  transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:28px;
+}
+.propiedad-fija__extras{ display:flex; flex-direction:column; gap:16px; }
 .propiedad-fija__extra{
-  position:relative; overflow:hidden;
-  height:100vh;
-  height:100svh;
-  height:var(--vh100, 100svh);
-  height:calc(100vh - var(--nav-alto));
-  height:calc(100svh - var(--nav-alto));
-  height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  position:relative; aspect-ratio:16/10;
+  border-radius:0; overflow:hidden;
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-/* Zona, precio y botón — aparte del título, en flujo normal, con
-   aire de verdad alrededor (no todo apilado en la esquina de la
-   foto). Sobre el fondo oscuro de #destacadas (tema-marron). */
-.propiedad-fija__detalle{ padding:40px 6% 64px; }
 
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
   color:rgba(237,225,210,.75); margin:0 0 10px;
 }
 .proyecto-destacado__nombre{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:40px; line-height:1.05;
-  color:var(--fondo-alt); margin:0;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:36px; line-height:1.05;
+  color:var(--fondo-alt); margin:0 0 10px;
 }
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
 /* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho

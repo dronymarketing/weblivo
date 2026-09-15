@@ -1325,3 +1325,39 @@ disponible; puede ser un artefacto específico de Chromium headless en
 este entorno. Se deployó igual (el código verifica correcto por DOM) y
 se le pidió al cliente confirmar en su celular, que es como viene
 verificando todo el resto de esta sesión.
+
+---
+
+## 35. Marcha atrás completa: las secciones 33 y 34 sobraban
+
+El cliente aclaró que el texto (zona/nombre/precio/botón, con velo y
+tarjetas con margen) ya estaba resuelto y funcionando bien — lo único
+que faltaba ajustar era el movimiento de las 2 fotos que suben. Los
+dos videos de código de hba.com (`copy($0.outerHTML)` en DevTools) los
+mandó para ese propósito puntual, no para pedir que se reescribiera
+toda la sección. Las secciones 33 (mecánica completa de hba.com: texto
+pineado con la foto, fotos extra tapando por scroll nativo, sin JS) y
+34 (título minimalista + bloque de detalle aparte) fueron **un
+malentendido propio, no lo que se pidió**.
+
+**Revertido por completo** `index.html`, `movil.css` (el bloque de
+`#destacadas`) y `efectos.js` al estado exacto de antes de la sección
+33 (commit `6d210e6` — "Sacar sombra y el retraso de suavizado del
+scroll (scrub:true)"), verificado con `diff` contra ese commit sin
+ninguna diferencia. Eso restaura: el velo (`--tinte`) que se tiñe con
+el scroll, las tarjetas con 6% de margen, el texto completo
+(zona+nombre+precio+botón) apilado y centrado en la pantalla, y
+`initPropiedadFija()` de vuelta en `efectos.js` con el movimiento
+simple por GSAP (`scrub:true`, sin easing, sin zoom, sin máscara) que
+ya estaba resuelto y confirmado.
+
+El fix real de la sección 33 (mover `overflow-x:hidden` de `body` a
+`html` porque rompía `position:sticky` en toda la página) se mantiene
+— es un bug de verdad, independiente del resto del rediseño que se
+revirtió.
+
+**Lección para no repetir:** cuando el cliente manda código/capturas
+de un sitio de referencia, preguntar primero para qué puntualmente lo
+quiere usar en vez de asumir "reemplazar todo el mecanismo" — en este
+caso el pedido real era mucho más acotado (solo el movimiento) que lo
+que se interpretó.
