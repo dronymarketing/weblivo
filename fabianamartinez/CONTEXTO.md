@@ -1194,3 +1194,97 @@ revirtió la duración/separación explícitas de la sección 30
 (`0.15+i*0.32`, sin duración explícita) — con `scrub:true` ya no hace
 falta estirar la duración para disimular un salto, el propio scroll
 1 a 1 alcanza para que se sienta gradual.
+
+---
+
+## 33. Rehecho por completo: mecánica real de hba.com (sticky_gallery)
+
+El cliente insistió en calcar la sección de propiedades de hba.com y
+esta vez trajo el código real: usando `copy($0.outerHTML)` en la
+consola de Chrome DevTools sobre `hba.com/projects/surfside-miami/`,
+fue copiando y pegando (en dos videos) el HTML del componente
+`sticky_gallery`. No se pudo acceder a hba.com desde este entorno
+(dominio bloqueado por la política de red de la sesión — confirmado
+con curl vía el proxy y con la herramienta WebFetch, ambos devuelven
+bloqueo), así que **no se tocó nada hasta tener el código real**, tal
+como pidió el cliente ("si no ves la web no trabajes sobre lo que te
+mande").
+
+**Estructura real descubierta (extraída del HTML pegado):**
+```html
+<section class="sticky_gallery forest" data-colour-scheme="#091D1E">
+  <div class="pin-spacer" style="position:absolute; z-index:3; ...">
+    <div class="sticky_gallery--content-wrapper">
+      <div class="sticky_gallery--content">
+        <h2 class="h1">The St. Regis Longboat Key</h2>
+        <a class="btn" href="...">
+          <span class="btn__text">View Project</span>
+          <span class="btn__bg"></span>
+        </a>
+      </div>
+      <div class="sticky_gallery--content-details d-none d-lg-flex">...</div>
+      <div class="sticky_gallery--content-bg"></div>
+    </div>
+  </div>
+  <div class="pin-spacer" style="position:relative; ...">
+    <div class="sticky_gallery--main-media" style="position:fixed; ...">
+      <figure><img ...></figure>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 col-lg-10 offset-lg-1">
+        <div class="sticky_gallery--slide"><figure><img></figure></div>
+        <div class="sticky_gallery--slide"><figure><img></figure></div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+**La mecánica real es distinta a la que habíamos armado hasta acá:**
+el título + botón quedan pegados (pin) JUNTO con la foto base, uno
+arriba de la otra (el `z-index:3` del pin de texto lo pone por
+encima) — visibles desde el arranque, no al final. Las 2 fotos extra
+NO están pineadas: viven en flujo normal, así que al scrollear son
+ELLAS las que suben y tapan a la foto+texto fijos. No hay ningún velo
+que se va tiñendo ni animación de GSAP para "revelar" nada — todo el
+efecto de "tapar" lo hace el scroll nativo del navegador.
+
+**Se reescribió `#destacadas` para calcar esto:**
+- HTML: `.propiedad-fija__info` (zona/nombre/precio/botón) pasa a vivir
+  DENTRO de `.propiedad-fija__pin`, como hermano de `.propiedad-fija__base`
+  (ya no dentro de un `.propiedad-fija__contenido` con las fotos).
+  `.propiedad-fija__extras` sale del pin, ahora es hermano DIRECTO de
+  `.propiedad-fija__pin` dentro de `.propiedad-fija`, en flujo normal.
+- CSS: se sacó `.propiedad-fija__tinte` (ya no hace falta, nada que
+  teñir). `.propiedad-fija__info` queda `position:absolute` sobre la
+  foto (abajo, con un degradé suave detrás — equivalente a su
+  `content-bg` — solo para que el texto se lea, no un velo de pantalla
+  completa). Cada `.propiedad-fija__extra` mide una pantalla completa
+  (misma fórmula de `--vh100`/`--nav-alto` que el pin, para que cubran
+  exacto sin dejar ver el pin entre medio) y NO llevan ya margen del 6%
+  ni sombra — edge-to-edge, porque ahora SON las que tapan, no una
+  tarjeta flotante. `.propiedad-fija{ height:300vh }` = 1 pantalla del
+  pin + 1 pantalla por cada una de las 2 fotos extra.
+- JS: **se borró `initPropiedadFija()` de `efectos.js` por completo** y
+  su llamado — ya no hace falta nada de GSAP/ScrollTrigger para este
+  efecto, es 100% CSS (`position:sticky`) + scroll nativo. Coincide
+  con cómo lo resuelve hba.com (ellos sí usan el pin de GSAP, pero
+  nosotros lo logramos con `position:sticky` puro, sin librería).
+
+**Bug real encontrado al verificar (no relacionado con el rediseño en
+sí, pero lo exponía):** `body{ overflow-x:hidden; }` hace que
+`overflow-y` compute a `auto` automáticamente (regla de CSS: si un eje
+no es `visible` y el otro sí, el que es `visible` pasa a `auto`) — eso
+convertía a `<body>` en su propio contenedor de scroll independiente,
+lo cual rompe `position:sticky` para todo lo que esté adentro (el
+`sticky` calculaba mal su límite de "pegado" contra ese scroll interno
+en vez de contra el viewport real). Se movió el `overflow-x:hidden` de
+`body` a `html` (el causante original de las franjas blancas
+laterales, sigue evitado, pero sin el efecto secundario). Verificado
+con Playwright: antes del fix, el pin de `.propiedad-fija__pin`
+"scrolleaba" en vez de quedarse pegado (posición lineal con el
+scroll); después del fix, queda fijo en `top:60` durante el scroll de
+las 2 fotos extra y se despega limpio al final, exactamente como se
+esperaba. También se confirmó que no reaparece scroll horizontal.

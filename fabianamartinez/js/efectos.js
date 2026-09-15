@@ -38,7 +38,7 @@
   initRevealScroll();     // C
   initHeroFijo();          // D
   initGaleriaAnclada();    // E (infraestructura genérica, sin uso en esta página por ahora)
-  initPropiedadFija();     // D + C combinados, como en hba.com
+  // Propiedad destacada (D, mecánica de hba.com): sin JS, puro CSS + scroll nativo — ver movil.css
   initSeccionesColor();    // F
   initCarruselFundido();   // H
 
@@ -167,68 +167,14 @@
   }
 
   /* ============================================================
-     D + C combinados · Propiedad destacada con foto fija
-     La foto base queda sticky (CSS puro, se ve igual sin JS). Acá
-     solo se anima, atado al scroll de todo el bloque: el velo de
-     marca se tiñe de 0 a ~.82 de opacidad, y las dos fotos extra
-     entran con el mismo reveal de máscara + zoom del efecto C.
+     D · Propiedad destacada con foto fija (mecánica de hba.com)
+     Ya no hace falta nada de JS acá: la foto base + el texto quedan
+     pegados con position:sticky (puro CSS) y las 2 fotos extra, en
+     flujo normal justo después del pin, son las que el scroll nativo
+     sube y usa para tapar al pin — sin ScrollTrigger, sin timeline,
+     sin cálculos. Ver movil.css (.propiedad-fija y afines) y
+     CONTEXTO.md sección 33 para el porqué de este cambio.
      ============================================================ */
-  function initPropiedadFija() {
-    var bloques = document.querySelectorAll('.propiedad-fija');
-    if (!bloques.length) return;
-
-    bloques.forEach(function (bloque) {
-      var tinte = bloque.querySelector('.propiedad-fija__tinte');
-      var pin = bloque.querySelector('.propiedad-fija__pin');
-      var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
-      var info = bloque.querySelector('.propiedad-fija__info');
-      if (!tinte || !pin || !extras.length) return;
-
-      /* Efecto simple, sin máscara ni zoom: cada foto arranca
-         desplazada lo suficiente para quedar tapada por el
-         overflow:hidden del pin (su borde superior por debajo del
-         borde inferior del pin, con margen), así entra literalmente
-         desde abajo de la pantalla. Se calcula por foto porque cada
-         una arranca en una posición distinta dentro del contenido
-         centrado. Sin easing (ease:'none'): el movimiento sigue al
-         scroll 1 a 1, sin acelerar ni desacelerar. */
-      var pinRect = pin.getBoundingClientRect();
-      var desplazos = extras.map(function (extra) {
-        var r = extra.getBoundingClientRect();
-        return Math.round(pinRect.bottom - r.top) + 40;
-      });
-
-      extras.forEach(function (extra, i) {
-        gsap.set(extra, { y: desplazos[i] });
-      });
-      if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
-
-      /* scrub:true (no un número) — sin retraso de suavizado: la
-         posición sigue al scroll de forma inmediata, cuadro a cuadro,
-         sin que quede un "colazo" de movimiento propio al dejar de
-         scrollear. Así funciona como un elemento pegado al scroll, no
-         como una animación con su propia velocidad. */
-      var tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: bloque,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: true
-        }
-      });
-
-      tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
-      extras.forEach(function (extra, i) {
-        var arranca = 0.15 + i * 0.32;
-        tl.to(extra, { y: 0, ease: 'none' }, arranca);
-      });
-      /* La info (zona, nombre, precio, botón) entra recién cuando
-         termina de aparecer la última foto extra — sin posición
-         explícita, GSAP la encadena justo al final del tween
-         anterior en la timeline. */
-      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
-    });
-  }
 
   /* ============================================================
      F · SECCIONES CON NOMBRE DE COLOR

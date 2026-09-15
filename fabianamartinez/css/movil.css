@@ -51,6 +51,7 @@
 html{
   -webkit-text-size-adjust:100%;
   scroll-behavior:smooth;      /* scroll NATIVO, sin librerías */
+  overflow-x:hidden;
 }
 
 body{
@@ -61,7 +62,6 @@ body{
   font-size:16px;
   line-height:1.55;
   hyphens:auto;
-  overflow-x:hidden;
 }
 
 h1,h2,h3{
@@ -634,12 +634,14 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
-   Propiedad destacada — foto fija con tinte de marca (paquete
-   HB, D + C combinados). La foto base queda pegada (sticky) al
-   tope mientras dura el bloque; un velo de --azul-900 se va
-   tiñendo encima con el scroll y dos fotos más de la misma
-   propiedad aparecen sobre esa base ya teñida. Al soltarse el
-   sticky, en flujo normal, aparecen nombre + precio + botón.
+   Propiedad destacada — mecánica calcada de hba.com (sticky_gallery,
+   visto en su propio código vía DevTools): la foto base + el texto
+   (zona/nombre/precio/botón) quedan pegados (sticky) arriba, uno
+   sobre el otro; las 2 fotos extra viven en flujo normal DESPUÉS del
+   pin, así que al scrollear son ELLAS las que suben y tapan a la foto
+   fija — sin velo que se tiñe ni animación por JS, todo el "cubrir"
+   lo hace el scroll nativo. Ya no hace falta initPropiedadFija() en
+   efectos.js (se sacó): no hay nada que temporizar con GSAP.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -647,7 +649,16 @@ body.menu-abierto .nav{
    y la primera foto — la primera pantalla tiene que arrancar ya con
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
-.propiedad-fija{ position:relative; height:220vh; }
+/* Alto total = el pin (1 pantalla) + una pantalla completa por cada
+   foto extra (2), para que cada una tenga su propio tramo de scroll
+   para subir y cubrir del todo antes de que aparezca la siguiente. */
+.propiedad-fija{
+  position:relative;
+  height:300vh;
+  height:calc(3 * (100vh - var(--nav-alto)));
+  height:calc(3 * (100svh - var(--nav-alto)));
+  height:calc(3 * (var(--vh100, 100svh) - var(--nav-alto)));
+}
 /* Misma fórmula de altura real que .seccion--completa (ver más abajo
    y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
    sin el bug de 100vh en navegadores móviles con barra de direcciones
@@ -665,25 +676,29 @@ body.menu-abierto .nav{
 }
 .propiedad-fija__base{ position:absolute; inset:0; }
 .propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.propiedad-fija__tinte{
-  position:absolute; inset:0; background:var(--azul-900); opacity:0;
+/* Superpuesta a la foto, abajo — mismo lugar que ocupa el título en
+   hba.com. Al ser .propiedad-fija__base y .propiedad-fija__info las
+   dos position:absolute dentro del pin, sin z-index, el orden del
+   HTML ya alcanza para que el texto quede arriba de la foto. Degradé
+   suave detrás (equivalente a su sticky_gallery--content-bg) solo
+   para que el texto se lea bien, no un velo de pantalla completa. */
+.propiedad-fija__info{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:56px 6% 32px;
+  background:linear-gradient(to top, rgba(9,29,30,.7), transparent);
 }
-/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
-   la info de la propiedad (zona, nombre, precio, botón) — antes la
-   info vivía debajo, en flujo normal, sobre su propio fondo marrón
-   sólido (.proyecto-destacado__cuerpo); ahora entra en la misma
-   pantalla fullscreen, superpuesta a la foto ya teñida, y aparece
-   con su propia animación al terminar el reveal de las fotos (ver
-   initPropiedadFija en efectos.js). */
-.propiedad-fija__contenido{
-  position:absolute; left:6%; right:6%; top:50%;
-  transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:28px;
-}
-.propiedad-fija__extras{ display:flex; flex-direction:column; gap:16px; }
+/* Fotos extra: SIN posicionamiento especial, en flujo normal — cada
+   una ocupa una pantalla completa (misma fórmula que el pin) para
+   que al scrollear cubran del todo, una atrás de la otra, sin dejar
+   ver el pin entre medio. */
 .propiedad-fija__extra{
-  position:relative; aspect-ratio:16/10;
-  border-radius:0; overflow:hidden;
+  position:relative; overflow:hidden;
+  height:100vh;
+  height:100svh;
+  height:var(--vh100, 100svh);
+  height:calc(100vh - var(--nav-alto));
+  height:calc(100svh - var(--nav-alto));
+  height:calc(var(--vh100, 100svh) - var(--nav-alto));
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
