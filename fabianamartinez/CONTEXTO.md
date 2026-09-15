@@ -1946,3 +1946,31 @@ sin uso por ahora (no se pidió tocar CSS, y no rompe nada dejarla).
 
 Sin cache-bust: no se tocó CSS ni JS, solo `index.html` (que ya sirve
 sin caché por el meta `Cache-Control: no-cache`).
+
+---
+
+## 55. Cambio de las 2 fotos extra de "Apartamento en Cordón"
+
+El cliente pasó 2 links de Pexels para reemplazar las 2 fotos extra de
+la primera propiedad (arriba = fachada, abajo = living):
+- https://www.pexels.com/es-es/foto/casas-casa-planta-arquitectura-9976121/
+- https://www.pexels.com/es-es/foto/ventana-casa-hogar-silla-7576176/
+
+**Proceso:** las imágenes de Pexels se descargan directo del CDN
+(`images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg`, resuelve sin
+necesidad de scrapear la página). Venían pesadísimas (5089×3393 y
+6720×4480, 2-3 MB cada una) — se redimensionaron a 1400px de ancho y
+se comprimieron a calidad 80 (JPEG), quedando en ~187 KB y ~234 KB,
+mismo orden de magnitud que el resto de las fotos del sitio.
+
+**Archivos:** se guardaron como `cordon-apto-fachada.jpg` (arriba,
+fachada de casa moderna) y `cordon-apto-living.jpg` (abajo, living
+luminoso con sofá y comedor al fondo) — nombres nuevos, no
+reemplazando los archivos viejos en el lugar, para no depender de
+caché de navegador/CDN en un archivo con el mismo nombre. Se
+actualizó `index.html` (src + alt) y se borraron los 2 archivos
+viejos (`cordon-apto-2.jpg`, `cordon-apto-3.jpg`) después de confirmar
+que no los usaba ninguna otra página.
+
+Sin cache-bust: cambio de contenido de imagen con nombre de archivo
+nuevo, no hace falta.
