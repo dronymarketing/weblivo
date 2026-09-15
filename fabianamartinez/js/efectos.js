@@ -175,13 +175,11 @@
      cuenta, aparte del hilo que corre esta animación, y en un flick
      fuerte los dos hilos se desincronizan un instante y se ve un
      bloque montado sobre otro).
-     Todo pasa en secuencia, uno después del otro (sin posiciones
-     explícitas en la timeline, así GSAP encadena cada tramo apenas
-     termina el anterior): primero el velo de marca se tiñe de 0 a 1
-     de opacidad hasta quedar sólido; recién ahí el panel con las 2
-     fotos (un solo bloque sólido, no 2 fotos sueltas) sube desde
-     abajo hasta su lugar final, como una sola pieza; y al final
-     aparece el texto (zona, nombre, precio, botón).
+     El velo de marca y el panel con las 2 fotos (no 2 fotos sueltas,
+     una sola pieza) arrancan juntos y con el mismo ritmo: el fondo se
+     va oscureciendo GRADUALMENTE mientras las fotos suben, y ambos
+     llegan a destino (velo sólido, panel en su lugar) al mismo
+     tiempo. Recién ahí aparece el texto (zona, nombre, precio, botón).
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -241,24 +239,18 @@
         }
       });
 
-      /* El velo y el panel arrancan juntos, en la posición 0 de la
-         timeline (antes el velo terminaba de teñirse y recién ahí
-         arrancaba el panel) — el cliente pidió que el marrón empiece
-         a aparecer AL MISMO TIEMPO que suben las fotos, no antes. El
-         velo, al tener mucha menos duration que el panel, termina de
-         teñirse bastante antes de que el panel llegue a destino —
-         quedan sincronizados en el arranque, no en el final.
-         Las duration explícitas siguen repartiendo el recorrido de
-         scroll de forma despareja (el panel viaja una distancia en
-         píxeles bastante más grande que lo que se mueve el velo o el
-         texto): el panel tiene la gran mayoría del recorrido, así el
-         desplazamiento en píxeles por píxel de scroll se siente
-         lento/suave. El texto sigue apareciendo recién cuando el
-         panel termina de subir (posición explícita = duration del
-         panel, ya que panel y texto ya no quedan uno atrás del otro
-         por default). */
+      /* El velo y el panel arrancan juntos (misma posición 0 en la
+         timeline) y con la MISMA duration — antes el velo tenía mucha
+         menos duration que el panel, así que se ponía sólido casi de
+         entrada y se quedaba así, marrón, durante todo el resto de la
+         subida de las fotos. Ahora se tiñen al mismo ritmo: el fondo
+         se va oscureciendo gradualmente MIENTRAS suben, y llega a
+         sólido recién cuando el panel también termina de llegar. El
+         texto sigue apareciendo recién ahí (posición explícita =
+         duration del panel, ya que panel y texto ya no quedan uno
+         atrás del otro por default). */
       var duracionPanel = panel ? 2.2 : 0.3;
-      tl.to(tinte, { opacity: 1, ease: 'none', duration: 0.3 }, 0);
+      tl.to(tinte, { opacity: 1, ease: 'none', duration: duracionPanel }, 0);
       if (panel) tl.to(panel, { y: 0, ease: 'none', duration: duracionPanel }, 0);
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 }, duracionPanel);
     });

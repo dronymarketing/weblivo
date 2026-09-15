@@ -641,11 +641,11 @@ body.menu-abierto .nav{
    pantallas separadas. El pin lo maneja GSAP ScrollTrigger (pin:true
    en initPropiedadFija, efectos.js), no position:sticky (ver por qué
    en el comentario de .propiedad-fija__pin).
-   Secuencia (ver initPropiedadFija): el velo empieza a teñirse AL
-   MISMO TIEMPO que el panel con las 2 fotos (un solo bloque sólido,
-   no 2 fotos sueltas) arranca a subir desde abajo, como una sola
-   pieza; recién cuando el panel termina de llegar a su lugar aparece
-   el texto.
+   Secuencia (ver initPropiedadFija): el velo se va tiñendo
+   GRADUALMENTE mientras sube el panel con las 2 fotos (una sola
+   pieza, no 2 fotos sueltas) — arrancan juntos y llegan juntos (velo
+   sólido, panel en su lugar); recién ahí aparece el texto. Las 2
+   fotos en sí no tienen ningún fondo ni marco marrón propio.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -691,12 +691,11 @@ body.menu-abierto .nav{
   transform:translateY(-50%);
   display:flex; flex-direction:column; gap:28px;
 }
-/* Las 2 fotos extra: un solo panel sólido (mismo --azul-900 del
-   velo) que sube desde abajo como una sola pieza — nunca 2 fotos
-   sueltas moviéndose cada una por su lado. */
+/* Las 2 fotos extra: sin fondo ni padding propios (nada de sólido
+   marrón detrás) — un solo panel que sube desde abajo como una sola
+   pieza, nunca 2 fotos sueltas moviéndose cada una por su lado. */
 .propiedad-fija__extras{
   display:flex; flex-direction:column; gap:16px;
-  background:var(--azul-900); padding:16px;
   will-change:transform;
 }
 .propiedad-fija__extra{

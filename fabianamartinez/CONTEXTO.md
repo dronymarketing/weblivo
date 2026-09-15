@@ -1854,3 +1854,36 @@ No se tocó el reparto de duration entre velo/panel/texto (sección 47)
 ni el `end` del pin (sección 48).
 
 Cache-bust: `movil.css?v=86`, `efectos.js?v=80`.
+
+---
+
+## 50. El fondo se ponía marrón casi de entrada, y las fotos no debían tener marco marrón
+
+El cliente, tajante: "Se vuelve marrón el fondo muy enseguida, las 2
+fotos tienen un sólido marrón de fondo, cosa que no quiero. No se
+porque se te está complicando esto tan simple."
+
+**Dos causas puntuales, las dos en lo tocado por la sección 49:**
+
+1. Al sincronizar el arranque del velo y el panel (sección 49), el
+   velo se quedó con su `duration` chica (`0.3`) mientras el panel
+   tiene una `duration` grande (`2.2`) — ambos arrancan juntos, pero
+   el velo llegaba a sólido casi de inmediato y se quedaba así,
+   marrón, durante el resto larguísimo tramo en que el panel todavía
+   estaba subiendo. Se ve "el fondo se pone marrón muy rápido".
+2. `.propiedad-fija__extras` tenía `background:var(--azul-900)` +
+   `padding:16px` (de la sección 39, cuando las 2 fotos eran un panel
+   flotante sobre la foto ya oscurecida) — eso le pone un marco/fondo
+   marrón sólido pegado a las 2 fotos, que el cliente no quiere.
+
+**Cambios:**
+- `efectos.js`: el `tinte` pasa a tener la MISMA `duration` que el
+  panel (`duracionPanel`, antes `0.3` fijo) — ahora se van tiñendo
+  gradualmente durante toda la subida, y llegan a destino juntos
+  (velo sólido justo cuando el panel termina de subir), no el velo
+  mucho antes.
+- `movil.css`: se saca `background:var(--azul-900)` y `padding:16px`
+  de `.propiedad-fija__extras` — las 2 fotos ya no tienen ningún
+  fondo/marco marrón propio, solo el `gap:16px` entre ellas.
+
+Cache-bust: `movil.css?v=87`, `efectos.js?v=81`.
