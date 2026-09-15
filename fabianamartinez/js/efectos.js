@@ -183,12 +183,14 @@
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
+      var info = bloque.querySelector('.propiedad-fija__info');
       if (!tinte || !extras.length) return;
 
       extras.forEach(function (extra) {
         gsap.set(extra, { clipPath: 'inset(100% 0% 0% 0%)' });
         gsap.set(extra.querySelector('img'), { scale: zoomInicial });
       });
+      if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
       var tl = gsap.timeline({
         scrollTrigger: {
@@ -205,6 +207,11 @@
         tl.to(extra, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, arranca)
           .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
       });
+      /* La info (zona, nombre, precio, botón) entra recién cuando
+         termina de aparecer la última foto extra — sin posición
+         explícita, GSAP la encadena justo al final del tween
+         anterior en la timeline. */
+      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
     });
   }
 

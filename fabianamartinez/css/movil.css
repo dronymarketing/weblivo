@@ -668,25 +668,25 @@ body.menu-abierto .nav{
 .propiedad-fija__tinte{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
 }
-/* Contenedor de las 2 fotos extra: flex-column con gap para que
-   siempre queden del mismo tamaño (mismo ancho, mismo aspect-ratio)
-   y con espacio real entre sí — antes se ubicaban cada una por
-   separado con position:absolute + bottom:%, y en algunos altos de
-   pantalla ese cálculo las dejaba prácticamente tocándose. Centrado
-   vertical en la pantalla (antes quedaban pegadas abajo, con un
-   hueco grande arriba). */
-.propiedad-fija__extras{
+/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
+   la info de la propiedad (zona, nombre, precio, botón) — antes la
+   info vivía debajo, en flujo normal, sobre su propio fondo marrón
+   sólido (.proyecto-destacado__cuerpo); ahora entra en la misma
+   pantalla fullscreen, superpuesta a la foto ya teñida, y aparece
+   con su propia animación al terminar el reveal de las fotos (ver
+   initPropiedadFija en efectos.js). */
+.propiedad-fija__contenido{
   position:absolute; left:6%; right:6%; top:50%;
   transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:16px;
+  display:flex; flex-direction:column; gap:28px;
 }
+.propiedad-fija__extras{ display:flex; flex-direction:column; gap:16px; }
 .propiedad-fija__extra{
   position:relative; aspect-ratio:16/10;
   border-radius:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.35);
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-.proyecto-destacado__cuerpo{ padding-top:28px; padding-bottom:8px; }
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
   color:rgba(237,225,210,.75); margin:0 0 10px;
@@ -696,6 +696,9 @@ body.menu-abierto .nav{
   color:var(--fondo-alt); margin:0 0 10px;
 }
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
+/* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho
+   queda libre, del tamaño del texto ("Ver Propiedad"), sin forzarlo. */
+.propiedad-fija__btn{ min-height:38px; padding:0 20px; border-radius:999px; }
 
 /* ============================================================
    Tabs de estado — a-estrenar / en-construcción / lanzamiento

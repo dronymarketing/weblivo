@@ -948,3 +948,51 @@ abajo, y crece hacia arriba a medida que ese inset baja a 0% — la foto
 se revela de abajo hacia arriba. El zoom de entrada (`scale`) no
 cambió. Verificado con capturas en varios puntos del scroll: la mitad
 inferior de la foto aparece primero, después la superior.
+
+---
+
+## 23. Info de la propiedad (zona/nombre/precio/botón) pasa a vivir dentro del fullscreen
+
+Cambio de rumbo del cliente respecto a la sección 18/19: ya no quiere
+que el nombre/precio/botón vivan debajo, en flujo normal, sobre su
+propio fondo marrón sólido (`.proyecto-destacado__cuerpo`) — los
+quiere DENTRO de la misma pantalla fullscreen de la propiedad,
+superpuestos a la foto ya teñida, apareciendo con una animación justo
+cuando termina de revelarse la última foto extra. Marcó en una
+captura "Apartamento en Cordón", el precio y el botón "Ver propiedad".
+
+**HTML:** se eliminaron los 3 bloques `.contenedor.proyecto-destacado__cuerpo`
+(uno por propiedad) que vivían fuera de `.propiedad-fija`. Su
+contenido (`.proyecto-destacado__zona/__nombre/__precio` + el botón)
+pasa a un nuevo `.propiedad-fija__info` dentro de `.propiedad-fija__pin`,
+junto a `.propiedad-fija__extras` — ambos ahora comparten un
+contenedor `.propiedad-fija__contenido` (flex-column, gap 28px)
+centrado verticalmente en la pantalla (el mismo `top:50%` +
+`translateY(-50%)` que antes tenía solo `.propiedad-fija__extras`).
+
+**Con esto desaparece del todo la franja de fondo marrón sólido
+"sin función"** de las secciones 19-20 — ya no existe ese bloque
+aparte, cada propiedad es una sola pantalla fullscreen de principio a
+fin, sin nada intermedio entre una propiedad y la siguiente.
+
+**Botón:** mismo alto y radio que `.nosotros__btn` ("Conocer más" —
+cápsula, `min-height:38px`, `border-radius:999px`), nueva clase
+`.propiedad-fija__btn`. El ancho queda libre (el `.btn` base ya es
+`display:inline-flex`, se ajusta solo al texto). Texto actualizado a
+"Ver Propiedad" (antes "Ver propiedad", pedido puntual del cliente).
+
+**Animación (`initPropiedadFija` en `efectos.js`):** `.propiedad-fija__info`
+arranca oculto con `gsap.set(info, { autoAlpha:0, y:24 })` (mismo
+patrón que la sección 22: "premium", entra desde abajo) y se agrega a
+la timeline con `tl.to(info, { autoAlpha:1, y:0, ease:'none' })` SIN
+posición explícita — en GSAP eso la encadena automáticamente justo al
+final del tween anterior (el scale de la última foto extra), así que
+"cuándo aparece" queda amarrado a la lógica existente en vez de un
+número de tiempo hardcodeado que se pudiera desincronizar si se
+cambian los tiempos de las fotos más adelante.
+
+Sigue respetando `prefers-reduced-motion`: `initPropiedadFija()`
+completa (con el `gsap.set` que oculta `info`) ni se ejecuta si el
+sistema pide reducir movimiento, así que ahí `info` quede visible
+directo, sin animación ni estado oculto — mismo comportamiento que ya
+tenían el tinte y las fotos extra.
