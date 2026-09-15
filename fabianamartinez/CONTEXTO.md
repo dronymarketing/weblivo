@@ -1757,3 +1757,38 @@ del pin) — solo se le devolvió el movimiento de entrada que ya tenía
 antes de la simplificación de la sección 42.
 
 Cache-bust: `movil.css?v=85`, `efectos.js?v=76`.
+
+---
+
+## 46. El panel subía más rápido de lo que el dedo scrolleaba
+
+El cliente: "las fotos suben como super rápidas con el scroll, mientras
+que en la web de referencia se notan más natural, suaves, despacio."
+
+**La causa:** `initPropiedadFija()` arma un solo `gsap.timeline()` con
+3 tweens (velo, panel, texto) y los encadena sin posición explícita —
+por default GSAP le da a cada uno un tercio del recorrido total de
+scroll (`end`). El problema es que el panel viaja una distancia en
+píxeles bastante más grande (arranca tapado por completo debajo del
+pin) que lo que se mueve el velo (solo `opacity`) o el texto (un fade
+chico) — con un tercio del scroll nada más, el panel tenía que
+recorrer muchos más píxeles por cada píxel de scroll real que el
+velo o el texto, y esa diferencia de "velocidad relativa" es
+justamente lo que se siente como "super rápido"/no natural: el ojo
+compara la velocidad del panel contra el resto y contra el propio
+gesto de scroll, y no coinciden.
+
+**Cambio en `initPropiedadFija()` (efectos.js):** se le da a cada
+tween una `duration` explícita en vez de dejarlas por default iguales
+— el panel pasa a tener bastante más recorrido de scroll asignado
+(`duration:1.3`) que el velo y el texto (`duration:0.35` cada uno).
+Sigue siendo scroll 1 a 1 (`scrub:0.3`, `ease:'none'`, nada de tiempo
+ni easing de por medio) — lo único que cambia es CUÁNTO scroll le
+toca a cada tramo. También se estiró un poco el recorrido total del
+pin (`end:'+=160%'`, antes `120%`) para darle más aire a todo el
+conjunto.
+
+No se tocó la mecánica (sigue siendo pin:true + scrub, sin
+`position:sticky`), ni el orden de aparición (velo → panel → texto).
+
+Cache-bust: `efectos.js?v=77` (sin cambios en `movil.css` esta vez).

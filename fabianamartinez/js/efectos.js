@@ -227,22 +227,34 @@
          start:'top top+='+navAlto — el pin queda fijo justo donde su
          borde superior toca esa línea (navAlto px debajo del tope de
          la pantalla), debajo del nav, no tapado por él.
-         end:'+=120%' — recorrido de scroll extra mientras dura el
-         pin fullscreen. */
+         end:'+=160%' — recorrido de scroll extra mientras dura el
+         pin fullscreen (un poco más que antes, para que alcance el
+         aire que ahora necesita el panel, ver duration más abajo). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: 'top top+=' + navAlto,
-          end: '+=120%',
+          end: '+=160%',
           pin: true,
           anticipatePin: 1,
           scrub: 0.3
         }
       });
 
-      tl.to(tinte, { opacity: 1, ease: 'none' });
-      if (panel) tl.to(panel, { y: 0, ease: 'none' });
-      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
+      /* Las duration explícitas reparten el recorrido de scroll entre
+         los 3 tramos (por default GSAP les daría el mismo tercio a
+         cada uno). El panel viaja una distancia en píxeles bastante
+         más grande que lo que se mueve el velo (opacity) o el texto
+         (chico, con fade) — con un tercio del scroll nada más, subía
+         más rápido de lo que el dedo scrolleaba ("super rápido"). Acá
+         se le da la mayor parte del recorrido (proporcional, no fija:
+         sigue siendo el mismo scroll el que lo mueve 1 a 1 con
+         scrub, solo que ahora en un tramo de scroll más largo, así el
+         desplazamiento en píxeles por píxel de scroll baja y se
+         siente al ritmo del dedo, no más rápido). */
+      tl.to(tinte, { opacity: 1, ease: 'none', duration: 0.35 });
+      if (panel) tl.to(panel, { y: 0, ease: 'none', duration: 1.3 });
+      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.35 });
     });
   }
 
