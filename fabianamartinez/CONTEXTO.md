@@ -1101,3 +1101,24 @@ oculta a `y:0`, con `ease:'none'` (ya estaba así — sin curva de
 easing, sigue al scroll de forma lineal, que es lo que pide "sin
 aceleración"). Verificado con `getComputedStyle` en las imágenes:
 `transform:none` en todo el recorrido del scroll, ningún scale.
+
+---
+
+## 29. Fotos extra a ancho completo, como en hba.com
+
+El cliente mandó una grabación de hba.com mostrando el efecto de
+referencia: las fotos que suben desde abajo son de ancho completo
+(sin margen a los costados) y sin sombra, a diferencia de como las
+teníamos (con 6% de margen a cada lado y `box-shadow`, como una
+tarjeta flotante). Confirmado que quería igualar también eso, no solo
+el tipo de movimiento (que ya estaba resuelto en las secciones 27-28).
+
+Se movió el margen lateral de `.propiedad-fija__contenido` (que hasta
+ahora tenía `left:6%; right:6%`, aplicado por igual a las fotos y al
+texto) a `left:0; right:0` — ancho completo — y se agregó el margen
+solo a `.propiedad-fija__info` (`padding:0 6%`), para que el texto
+(zona/nombre/precio/botón) siga con el mismo margen de siempre y solo
+las fotos vayan de punta a punta. Se sacó el `box-shadow` de
+`.propiedad-fija__extra`. El cálculo de `initPropiedadFija()` en
+`efectos.js` no necesitó cambios: mide el `getBoundingClientRect()`
+real de cada foto, así que se ajusta solo al nuevo ancho.
