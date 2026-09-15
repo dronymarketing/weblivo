@@ -1022,3 +1022,17 @@ Verificado con Playwright en 1440px (carga la horizontal) y 390px
 (sigue cargando la vertical) — `.propiedad-fija__base img{ object-fit:cover }`
 sigue aplicando igual sobre el `<img>` real dentro del `<picture>`, sin
 necesitar tocar el CSS.
+
+---
+
+## 25. Fotos extra: además del mask, movimiento real de abajo hacia arriba
+
+La sección 22 solo invirtió la dirección del `clip-path` (un wipe/mask
+que revela la foto de abajo hacia arriba, pero la caja en sí no se
+mueve). El cliente pidió explícitamente que las 2 fotos tengan "la
+animación de venir de abajo" — se sumó un desplazamiento real con
+`y` de GSAP: cada `.propiedad-fija__extra` arranca en `y:48` (48px más
+abajo de su posición final) y anima a `y:0` en simultáneo con el
+mask y el zoom. Verificado con capturas intermedias del scroll: a
+mitad de camino la foto está físicamente más abajo Y parcialmente
+enmascarada, combinando ambos efectos en vez de solo un wipe estático.

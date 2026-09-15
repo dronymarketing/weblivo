@@ -187,7 +187,7 @@
       if (!tinte || !extras.length) return;
 
       extras.forEach(function (extra) {
-        gsap.set(extra, { clipPath: 'inset(100% 0% 0% 0%)' });
+        gsap.set(extra, { clipPath: 'inset(100% 0% 0% 0%)', y: 48 });
         gsap.set(extra.querySelector('img'), { scale: zoomInicial });
       });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
@@ -204,7 +204,7 @@
       tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
       extras.forEach(function (extra, i) {
         var arranca = 0.15 + i * 0.32;
-        tl.to(extra, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, arranca)
+        tl.to(extra, { clipPath: 'inset(0% 0% 0% 0%)', y: 0, ease: 'none' }, arranca)
           .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
       });
       /* La info (zona, nombre, precio, botón) entra recién cuando
