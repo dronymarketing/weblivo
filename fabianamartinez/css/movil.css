@@ -653,12 +653,18 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
-/* El pin ya NO ocupa toda la pantalla (antes 100vh): mide bastante
-   menos que la pantalla a propósito, para que abajo quede un tramo
-   visible por donde se ven pasar las 2 fotos mientras esto se
-   mantiene fijo arriba — si ocupara toda la pantalla, taparía a las
-   2 fotos por completo y no se vería nada moviéndose debajo.
-   position:relative (no sticky): con 3 bloques apilados,
+/* Pantalla completa (fullscreen) otra vez, como antes de la sección
+   42 — la simplificación de esa sección no era "achicar el pin", era
+   sacar el JS/la animación de las 2 fotos extra (ver más abajo). El
+   pin fullscreen se suelta solo, en flujo normal, apenas termina su
+   recorrido de scroll: recién ahí entran las 2 fotos, subiendo con el
+   scroll de toda la vida (nunca se solapan con el pin, no hace falta
+   que el pin sea más bajo que la pantalla para eso).
+   Misma fórmula de altura real que .seccion--completa (ver más abajo
+   y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
+   sin el bug de 100vh en navegadores móviles con barra de direcciones
+   dinámica.
+   position:relative (no sticky): con 3 bloques fullscreen apilados,
    position:sticky lo maneja el hilo de compositor del navegador por
    su cuenta, separado del hilo que corre GSAP — en un scroll rápido
    (flick fuerte) los dos hilos se desincronizan un instante y se ve
@@ -668,8 +674,12 @@ body.menu-abierto .nav{
    — no hay dos sistemas de pin corriendo en paralelo. */
 .propiedad-fija__pin{
   position:relative;
-  height:58vh;
-  height:58svh;
+  height:100vh;
+  height:100svh;
+  height:var(--vh100, 100svh);
+  height:calc(100vh - var(--nav-alto));
+  height:calc(100svh - var(--nav-alto));
+  height:calc(var(--vh100, 100svh) - var(--nav-alto));
   overflow:hidden;
 }
 .propiedad-fija__base{ position:absolute; inset:0; }

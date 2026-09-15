@@ -167,21 +167,23 @@
   }
 
   /* ============================================================
-     Propiedad destacada con foto fija — mecánica real de hba.com
-     (sticky_gallery), calcada de su propio código: SOLO la foto base
-     + el texto quedan pineados (pin:true de ScrollTrigger, nunca
-     position:sticky — con varios bloques fullscreen apilados, sticky
-     lo resuelve el hilo de compositor del navegador por su cuenta,
-     aparte del hilo que corre esta animación, y en un flick fuerte
-     los dos hilos se desincronizan un instante y se ve un bloque
-     montado sobre otro). Las 2 fotos extra (`.propiedad-fija__extras`)
-     NO se tocan acá — no tienen gsap.set ni gsap.to, cero JS. Son
-     contenido normal que sigue después del pin en el HTML: la
-     sensación de "las 2 fotos suben con el scroll" no es una
-     animación programada, es scroll nativo — se ve así porque el pin
-     (bastante más bajo que la pantalla, ver movil.css) se queda fijo
-     arriba mientras las fotos, abajo, siguen scrolleando como
-     cualquier otro contenido de la página.
+     Propiedad destacada con foto fija — fullscreen, como siempre
+     estuvo, combinado con la mecánica real de hba.com (sticky_gallery)
+     para las 2 fotos extra: SOLO la foto base + el texto quedan
+     pineados (pin:true de ScrollTrigger, nunca position:sticky — con
+     varios bloques fullscreen apilados, sticky lo resuelve el hilo de
+     compositor del navegador por su cuenta, aparte del hilo que corre
+     esta animación, y en un flick fuerte los dos hilos se
+     desincronizan un instante y se ve un bloque montado sobre otro).
+     Las 2 fotos extra (`.propiedad-fija__extras`) NO se tocan acá —
+     no tienen gsap.set ni gsap.to, cero JS. Son contenido normal que
+     sigue después del pin en el HTML, fuera de la pantalla mientras
+     el pin fullscreen está activo: en cuanto el pin suelta (al llegar
+     al final de su recorrido de scroll), siguen en flujo normal y
+     entran solas, de abajo hacia arriba, con el scroll de toda la
+     vida — no hace falta que el pin sea más chico que la pantalla
+     para que se vean "subir": simplemente aparecen apenas termina el
+     tramo fijo, como cualquier contenido de una página al scrollear.
      El velo de marca se tiñe de 0 a 1 de opacidad durante el pin, y
      el texto aparece recién cuando termina de quedar sólido.
      ============================================================ */
@@ -196,18 +198,11 @@
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var pin = bloque.querySelector('.propiedad-fija__pin');
-      var extras = bloque.querySelector('.propiedad-fija__extras');
       var info = bloque.querySelector('.propiedad-fija__info');
       if (!tinte || !pin) return;
 
       gsap.set(tinte, { force3D: true });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24, force3D: true });
-
-      /* El pin dura scrolleado lo mismo que mide el bloque de las 2
-         fotos: así se suelta justo cuando terminan de pasar, ni antes
-         (quedaría cortado) ni mucho después (quedaría fijo de más,
-         con las fotos ya scrolleadas y nada pasando debajo). */
-      var largo = extras ? extras.getBoundingClientRect().height : window.innerHeight;
 
       /* scrub:0.3 (no scrub:true) — scrub:true ata la posición al
          evento de scroll en crudo, que en muchos celulares no dispara
@@ -220,12 +215,15 @@
          true).
          start:'top top+='+navAlto — el pin queda fijo justo donde su
          borde superior toca esa línea (navAlto px debajo del tope de
-         la pantalla), debajo del nav, no tapado por él. */
+         la pantalla), debajo del nav, no tapado por él.
+         end:'+=120%' — recorrido de scroll extra mientras dura el
+         pin fullscreen (velo tiñéndose + texto apareciendo), igual
+         que antes de la sección 42. */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: 'top top+=' + navAlto,
-          end: '+=' + largo,
+          end: '+=120%',
           pin: true,
           anticipatePin: 1,
           scrub: 0.3

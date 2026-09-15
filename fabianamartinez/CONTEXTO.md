@@ -1639,3 +1639,34 @@ revisar si la estructura de base es la correcta — acá la respuesta
 real era sacar código, no afinarlo.
 
 Cache-bust: `movil.css?v=82`, `efectos.js?v=73`.
+
+---
+
+## 43. Volver al fullscreen sin perder la simplificación de la sección 42
+
+El cliente avisó que con la sección 42 se perdió el fullscreen: "usa
+lo que resolviste, pero sin romper lo que ya teníamos". La sección 42
+había achicado el pin a `58vh` a propósito, para que quedara un tramo
+de pantalla visible por donde ver pasar las 2 fotos *mientras* el pin
+seguía activo — pero eso no hacía falta para nada: las 2 fotos, al ser
+contenido normal sin JS que sigue después del pin en el HTML, entran
+solas apenas el pin fullscreen suelta (al terminar su recorrido de
+scroll), sin necesidad de que ambos convivan en pantalla al mismo
+tiempo. El pin puede volver a ser pantalla completa sin perder nada
+de lo simplificado.
+
+**Cambios:**
+- `movil.css`: `.propiedad-fija__pin` vuelve a la fórmula de siempre
+  (`calc(var(--vh100, 100svh) - var(--nav-alto))`, la misma de
+  `.seccion--completa`) en vez de `58vh`.
+- `efectos.js`: como las 2 fotos ya no conviven en pantalla con el
+  pin, el `end` del `scrollTrigger` deja de calcularse con el alto de
+  `.propiedad-fija__extras` (eso era solo para que el pin chico
+  soltara justo a tiempo) y vuelve a `'+=120%'`, el mismo recorrido
+  fijo que tenía el pin fullscreen antes de la sección 42.
+- Lo de la sección 42 que sí se mantiene, intacto: `.propiedad-fija__extras`
+  sigue siendo contenido plano después del pin, sin ningún
+  `gsap.set`/`gsap.to` — sigue sin haber ninguna animación programada
+  sobre esas 2 fotos, que es lo que el cliente pidió resolver ahí.
+
+Cache-bust: `movil.css?v=83`, `efectos.js?v=74`.
