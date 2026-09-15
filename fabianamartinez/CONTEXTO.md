@@ -1525,3 +1525,55 @@ mantiene en los tweens) — el cambio es puramente de rendimiento/fluidez
 del scroll, no de la forma del movimiento.
 
 Cache-bust: `movil.css?v=80`, `efectos.js?v=71`.
+
+---
+
+## 41. "Sigue rápido/artificial" — position:sticky vs. pin:true de GSAP
+
+El cliente mandó 2 videos (parado en el mismo lugar de cada web,
+un solo deslizamiento de dedo en cada una) para comparar. Se sacaron
+frames (ffmpeg, cada 33-50ms) de los dos videos para poder comparar
+cuadro a cuadro en vez de a simple vista.
+
+**Lo que se vio en los frames de nuestra web:** en varios cuadros,
+durante el mismo scroll rápido, aparecía contenido de un bloque de
+propiedad montado sobre el de otro — por ejemplo el botón "Ver
+Propiedad" de una tarjeta asomando por arriba mientras la foto de
+otro bloque todavía ocupaba el resto de la pantalla. Eso es un glitch
+de renderizado (2 estados de scroll distintos pintados en la misma
+pantalla), no un problema de easing ni de velocidad de la animación.
+
+**Causa probable:** los 3 bloques de `#destacadas` usaban
+`position:sticky` (nativo del navegador) para fijar la foto, mientras
+que la animación de tinte/fotos/texto corre por GSAP. `position:sticky`
+lo resuelve el navegador en su **hilo de compositor**, aparte del hilo
+donde corre GSAP — en un scroll lento van sincronizados, pero en un
+flick fuerte (como el del video) pueden desincronizarse un instante y
+mostrar contenido de dos scrolls distintos pisándose. Se confirmó
+además que la referencia (hba.com) arma su `sticky_gallery` con
+`pin:true` de GSAP ScrollTrigger, no con `position:sticky` — se ve en
+los `<div class="pin-spacer">` que GSAP inserta solo, presentes en el
+código que el cliente había copiado de hba.com en su momento (sección
+33 de este documento).
+
+**Cambio: `position:sticky` → `pin:true` de ScrollTrigger.**
+- `movil.css`: `.propiedad-fija` pierde el `height:220vh` fijo (ya no
+  hace falta, GSAP arma su propio spacer). `.propiedad-fija__pin`
+  pasa de `position:sticky; top:var(--nav-alto)` a `position:relative`
+  simple — sigue siendo el contexto de posicionamiento para la foto,
+  el velo y el contenido de adentro (que son `position:absolute`), pero
+  ya no es el navegador el que lo fija.
+- `efectos.js` (`initPropiedadFija`): la misma timeline que ya tenía
+  el `scrollTrigger` para el tinte/panel/texto ahora también pinea:
+  `trigger: pin, start:'top top+='+navAlto, end:'+=120%', pin:true,
+  anticipatePin:1, scrub:0.3`. El `+=navAlto` hace que quede pegado
+  justo debajo del nav (mismo lugar que antes con sticky); `+=120%`
+  repite el mismo recorrido de scroll que daba el alto de 220vh
+  manual; `anticipatePin:1` es la recomendación de GSAP para evitar un
+  salto visual justo al arrancar el pin en un scroll rápido.
+
+No se tocó la secuencia (velo → panel → texto), ni las medidas, ni el
+`ease:'none'` de las fotos — el cambio es de mecánica de pin, no de
+diseño ni de timing.
+
+Cache-bust: `movil.css?v=81`, `efectos.js?v=72`.

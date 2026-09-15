@@ -168,8 +168,16 @@
 
   /* ============================================================
      D + C combinados · Propiedad destacada con foto fija
-     La foto base queda sticky (CSS puro, se ve igual sin JS). Todo
-     lo demás pasa en secuencia, uno después del otro (sin
+     El pin lo maneja ScrollTrigger (pin:true), no position:sticky —
+     con 3 bloques fullscreen apilados, sticky lo resuelve el hilo de
+     compositor del navegador por su cuenta, aparte del hilo que
+     corre esta misma animación; en un flick fuerte los dos hilos se
+     desincronizan un instante y se ve contenido de un bloque montado
+     sobre el de otro. Con pin:true, GSAP arma su propio spacer y fija
+     el elemento por JS en el mismo hilo que corre el resto — un solo
+     sistema, no dos en paralelo (ver también el comentario en
+     movil.css, junto a .propiedad-fija__pin).
+     Todo lo demás pasa en secuencia, uno después del otro (sin
      posiciones explícitas en la timeline, así GSAP encadena cada
      tramo apenas termina el anterior): primero el velo de marca se
      tiñe de 0 a 1 de opacidad hasta quedar sólido; recién ahí el
@@ -181,6 +189,10 @@
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
     if (!bloques.length) return;
+
+    var navAlto = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--nav-alto')
+    ) || 60;
 
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
@@ -212,12 +224,21 @@
          así se ve fluido en cualquier dispositivo. 0.3 sigue siendo lo
          bastante bajo para que, al soltar el scroll, no quede el
          "colazo" de movimiento propio que se sacó antes (eso pasaba con
-         valores más altos, no con cualquier número distinto de true). */
+         valores más altos, no con cualquier número distinto de true).
+
+         start:'top top+='+navAlto — el pin queda fijo justo donde su
+         borde superior toca esa línea (navAlto px debajo del tope de
+         la pantalla), o sea debajo del nav, no tapado por él — el
+         mismo lugar donde quedaba con position:sticky antes.
+         end:'+=120%' repite el mismo recorrido de scroll extra (120vh)
+         que tenía el alto manual de 220vh del bloque de afuera. */
       var tl = gsap.timeline({
         scrollTrigger: {
-          trigger: bloque,
-          start: 'top top',
-          end: 'bottom bottom',
+          trigger: pin,
+          start: 'top top+=' + navAlto,
+          end: '+=120%',
+          pin: true,
+          anticipatePin: 1,
           scrub: 0.3
         }
       });
