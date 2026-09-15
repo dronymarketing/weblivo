@@ -1148,3 +1148,24 @@ duración explícita más larga (`duration:1.1`, antes ~0.5 por default)
 y se separó más el arranque de cada foto (`0.15 + i*0.85`, antes
 `0.15 + i*0.32`) para que el movimiento se reparta en más scroll y se
 sienta gradual, sin tocar tamaños ni márgenes.
+
+---
+
+## 31. El "tamaño original" era el de ANTES del ancho completo (sección 29)
+
+Malentendido propio en la sección 30: cuando el cliente dijo "el
+tamaño de las imágenes estaban bien, como estaban anteriormente", yo
+lo interpreté como "como estaban antes de mi intento de layout con
+flex" — es decir, la versión a ancho completo de la sección 29. El
+cliente aclaró que en realidad se refería a más atrás: el tamaño de
+ANTES de la sección 29, con margen del 6% a los costados y
+`box-shadow` (la versión "tarjeta", no la de ancho completo tipo
+hba.com).
+
+Se revirtió `.propiedad-fija__contenido`/`__extra` exactamente al
+estado previo al commit de la sección 29 (`git diff` contra ese commit
+sin diferencias): `left:6%; right:6%` en el contenedor (aplica por
+igual a fotos y texto, ya no hace falta el padding aparte en
+`.propiedad-fija__info`) y `box-shadow:0 24px 48px rgba(0,0,0,.35)` de
+vuelta en `.propiedad-fija__extra`. La duración/velocidad más lenta de
+la sección 30 se mantiene sin cambios — ese ajuste sí era correcto.

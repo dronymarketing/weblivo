@@ -676,22 +676,16 @@ body.menu-abierto .nav{
    con su propia animación al terminar el reveal de las fotos (ver
    initPropiedadFija en efectos.js). */
 .propiedad-fija__contenido{
-  position:absolute; left:0; right:0; top:50%;
+  position:absolute; left:6%; right:6%; top:50%;
   transform:translateY(-50%);
   display:flex; flex-direction:column; gap:28px;
 }
-/* Ancho completo, sin margen a los costados y sin sombra — como en
-   la referencia de hba.com (antes tenían 6% de margen a cada lado y
-   box-shadow, como una tarjeta flotante). */
 .propiedad-fija__extras{ display:flex; flex-direction:column; gap:16px; }
 .propiedad-fija__extra{
   position:relative; aspect-ratio:16/10;
-  border-radius:0; overflow:hidden;
+  border-radius:0; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,.35);
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-/* La info de texto sí mantiene el margen lateral de siempre — solo
-   las fotos van de punta a punta. */
-.propiedad-fija__info{ padding:0 6%; }
 
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
