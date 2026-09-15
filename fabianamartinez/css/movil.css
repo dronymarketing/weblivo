@@ -636,12 +636,13 @@ body.menu-abierto .nav{
 /* ============================================================
    Propiedad destacada — foto fija con tinte de marca (paquete
    HB, D + C combinados). La foto base queda pegada (sticky) al
-   tope mientras dura el bloque; un velo de --azul-900 se va
-   tiñendo encima con el scroll hasta quedar sólido (opacity:1,
-   ver initPropiedadFija en efectos.js) y recién ahí aparecen las
-   dos fotos más de la misma propiedad, sobre ese fondo ya sólido.
-   Al terminar de aparecer, en la misma pantalla, aparecen nombre +
-   precio + botón.
+   tope mientras dura el bloque; las 2 fotos extra están puestas en
+   su lugar desde el vamos (no las mueve el scroll) y lo único que
+   anima es el velo de --azul-900 detrás, que se va tiñendo con el
+   scroll hasta quedar sólido (opacity:1, ver initPropiedadFija en
+   efectos.js) — da la sensación de que esas 2 fotos ya están puestas
+   en el sólido, no de que el scroll las arrastra. Recién cuando el
+   velo llega a sólido aparecen nombre + precio + botón.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -675,8 +676,8 @@ body.menu-abierto .nav{
    info vivía debajo, en flujo normal, sobre su propio fondo marrón
    sólido (.proyecto-destacado__cuerpo); ahora entra en la misma
    pantalla fullscreen, superpuesta a la foto ya teñida, y aparece
-   con su propia animación al terminar el reveal de las fotos (ver
-   initPropiedadFija en efectos.js). */
+   con su propia animación recién cuando el velo termina de quedar
+   sólido (ver initPropiedadFija en efectos.js). */
 .propiedad-fija__contenido{
   position:absolute; left:6%; right:6%; top:50%;
   transform:translateY(-50%);

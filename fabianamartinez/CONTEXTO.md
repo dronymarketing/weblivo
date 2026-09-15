@@ -1393,3 +1393,30 @@ valor final del tinte, que es puntualmente lo que pidió el cliente.
 
 Cache-bust: `movil.css?v=76` (solo comentario actualizado, sin cambio
 visual en el CSS), `efectos.js?v=67`.
+
+---
+
+## 37. Sacar el movimiento de las 2 fotos extra — ya están puestas en el sólido
+
+El cliente aclaró más la sensación que buscaba: en su web se sentía
+que el scroll "mueve" las 2 fotos (porque literalmente las hacía
+entrar deslizando desde abajo), mientras que en la referencia las 2
+fotos ya están puestas, fijas, en el bloque — lo único que cambia con
+el scroll es el fondo sólido detrás, que va de transparente a opaco.
+Esa es la diferencia entre sentirse "inestable" (algo en movimiento) y
+sentirse natural (una foto fija sobre un fondo que se tiñe).
+
+**Cambio en `initPropiedadFija()` (efectos.js):** se sacó por completo
+el cálculo de desplazamiento (`desplazos`, `gsap.set(extra, {y:...})`)
+y el tween que las hacía subir (`tl.to(extra, {y:0,...})`). Las 2
+fotos extra ya no tienen ningún estado inicial ni animación de
+posición — quedan en su lugar final desde que se ve el bloque, tal
+como están en el HTML/CSS. Lo único que sigue animado por scroll es el
+velo (`tl.to(tinte, {opacity:1,...})`), y el texto (`info`) se sigue
+encadenando para aparecer recién cuando ese velo termina de quedar
+sólido.
+
+No se tocó ninguna medida, margen ni la estructura del HTML — el
+cambio fue puramente sacar el tween de posición de las 2 fotos.
+
+Cache-bust: `movil.css?v=77` (solo comentarios), `efectos.js?v=68`.
