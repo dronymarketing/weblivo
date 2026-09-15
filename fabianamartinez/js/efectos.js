@@ -177,18 +177,16 @@
     var bloques = document.querySelectorAll('.propiedad-fija');
     if (!bloques.length) return;
 
-    var esMovil = window.matchMedia('(max-width:899px)').matches;
-    var zoomInicial = esMovil ? 1.15 : 1.3;
-
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
       var info = bloque.querySelector('.propiedad-fija__info');
       if (!tinte || !extras.length) return;
 
+      /* Sin máscara ni zoom acá: las fotos ya están del todo visibles,
+         solo se desplazan literalmente desde abajo hacia su lugar. */
       extras.forEach(function (extra) {
-        gsap.set(extra, { clipPath: 'inset(100% 0% 0% 0%)', y: 48 });
-        gsap.set(extra.querySelector('img'), { scale: zoomInicial });
+        gsap.set(extra, { y: 48 });
       });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
@@ -204,8 +202,7 @@
       tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
       extras.forEach(function (extra, i) {
         var arranca = 0.15 + i * 0.32;
-        tl.to(extra, { clipPath: 'inset(0% 0% 0% 0%)', y: 0, ease: 'none' }, arranca)
-          .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
+        tl.to(extra, { y: 0, ease: 'none' }, arranca);
       });
       /* La info (zona, nombre, precio, botón) entra recién cuando
          termina de aparecer la última foto extra — sin posición

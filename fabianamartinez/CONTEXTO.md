@@ -1036,3 +1036,20 @@ abajo de su posición final) y anima a `y:0` en simultáneo con el
 mask y el zoom. Verificado con capturas intermedias del scroll: a
 mitad de camino la foto está físicamente más abajo Y parcialmente
 enmascarada, combinando ambos efectos en vez de solo un wipe estático.
+
+---
+
+## 26. Fotos extra: sacar el mask/zoom, dejar solo el movimiento literal
+
+El cliente pidió sacar "la animación de aparición" y que el efecto sea
+literalmente que las fotos vienen de abajo — no el mask+zoom tipo
+reveal (efecto C) combinado con el movimiento de la sección 25, sino
+solo el desplazamiento. Se sacaron `clipPath` y el `scale` de la
+imagen de `initPropiedadFija()`: ahora `.propiedad-fija__extra` solo
+tiene `gsap.set(extra, { y: 48 })` inicial, animando a `y: 0` — la
+foto está completamente visible (sin máscara, sin zoom) desde el
+principio, solo desplazada 48px hacia abajo, y sube a su lugar con el
+scroll. Se sacó también la variable `zoomInicial`/`esMovil` de esta
+función, que ya no se usa. Verificado con `getComputedStyle` en varios
+puntos del scroll: `clip-path:none` y `opacity:1` todo el tiempo,
+solo cambia el `transform` (translateY).
