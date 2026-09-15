@@ -1361,3 +1361,35 @@ de un sitio de referencia, preguntar primero para qué puntualmente lo
 quiere usar en vez de asumir "reemplazar todo el mecanismo" — en este
 caso el pedido real era mucho más acotado (solo el movimiento) que lo
 que se interpretó.
+
+---
+
+## 36. Tinte a sólido total (opacity:1) antes de que aparezcan las 2 fotos
+
+Sobre la base ya restaurada en la sección 35, el cliente propuso una
+combinación puntual: en vez de que el velo se quede en un tinte oscuro
+que todavía deja ver la foto de fondo, que llegue a ser un marrón
+sólido de verdad, y recién con ese fondo sólido aparezcan las 2 fotos
+extra — el texto (zona/nombre/precio/botón) sigue apareciendo solo
+después de esas 2 fotos, como ya estaba.
+
+Revisando `initPropiedadFija()` en `efectos.js`, la secuencia por
+timeline ya hacía casi todo esto: el tinte empieza a oscurecer en el
+segundo 0, las 2 fotos entran escalonadas (arrancan en 0.15 y 0.47) y
+la info se encadena automáticamente después del tween de la segunda
+foto (sin posición explícita, GSAP la pone a continuación). Lo único
+que faltaba era literal: el tinte solo llegaba a `opacity:0.82`, así
+que la foto de base seguía viéndose (más oscura, pero no un sólido).
+
+**Cambio único:** `tl.to(tinte, { opacity: 0.82, ... })` →
+`{ opacity: 1, ... }` en `initPropiedadFija()`. Con la duración por
+defecto de GSAP (0.5) arrancando en el segundo 0, el tinte llega a
+sólido antes de que la segunda foto (arranca en 0.47) termine de
+entrar — así las 2 fotos quedan sobre un fondo ya sólido marrón
+(`--azul-900`, el mismo sólido que usa el nav/footer), no sobre la
+foto de la propiedad transparentándose. No se tocó nada de texto,
+tamaños, márgenes ni la mecánica de entrada de las fotos — solo el
+valor final del tinte, que es puntualmente lo que pidió el cliente.
+
+Cache-bust: `movil.css?v=76` (solo comentario actualizado, sin cambio
+visual en el CSS), `efectos.js?v=67`.

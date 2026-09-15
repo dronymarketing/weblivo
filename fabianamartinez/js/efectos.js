@@ -170,8 +170,9 @@
      D + C combinados · Propiedad destacada con foto fija
      La foto base queda sticky (CSS puro, se ve igual sin JS). Acá
      solo se anima, atado al scroll de todo el bloque: el velo de
-     marca se tiñe de 0 a ~.82 de opacidad, y las dos fotos extra
-     entran con el mismo reveal de máscara + zoom del efecto C.
+     marca se tiñe de 0 a 1 de opacidad (sólido, tapa del todo la
+     foto de base) y las dos fotos extra entran ya sobre ese fondo
+     sólido, apenas termina de oscurecer.
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -217,7 +218,7 @@
         }
       });
 
-      tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
+      tl.to(tinte, { opacity: 1, ease: 'none' }, 0);
       extras.forEach(function (extra, i) {
         var arranca = 0.15 + i * 0.32;
         tl.to(extra, { y: 0, ease: 'none' }, arranca);
