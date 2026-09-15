@@ -1928,3 +1928,21 @@ cambia — mismo timing, misma sincronización con el panel (sección 49),
 mismo recorrido de scroll (sección 52).
 
 Cache-bust: `movil.css?v=88` (solo comentarios), `efectos.js?v=84`.
+
+---
+
+## 54. Sacar la etiqueta de zona ("Cordón · Venta")
+
+El cliente marcó con un círculo amarillo, sobre una captura, el
+renglón `CORDÓN · VENTA` de la tarjeta de la primera propiedad y pidió
+sacarlo.
+
+**Cambio en `index.html`:** se borra el
+`<p class="proyecto-destacado__zona">...</p>` de los 3 bloques de
+`#destacadas` (Cordón, Nuevo París, Carrasco Norte) — la tarjeta queda
+con nombre, precio y botón, sin el renglón de zona/tipo de operación
+arriba. La clase `.proyecto-destacado__zona` se deja en `movil.css`
+sin uso por ahora (no se pidió tocar CSS, y no rompe nada dejarla).
+
+Sin cache-bust: no se tocó CSS ni JS, solo `index.html` (que ya sirve
+sin caché por el meta `Cache-Control: no-cache`).
