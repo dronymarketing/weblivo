@@ -1731,3 +1731,29 @@ lo implementa en SU propio layout (acá: "fuera del pin") — no todo lo
 segundo aplica igual en un layout distinto.
 
 Cache-bust: `movil.css?v=84`, `efectos.js?v=75`.
+
+---
+
+## 45. El panel de fotos vuelve a subir desde abajo
+
+Con la sección 44 las 2 fotos quedaron quietas, fijas en su lugar
+desde el arranque, adentro del fullscreen. El cliente lo vio y fue
+tajante: no le gusta así, quiere que el panel de fotos suba desde
+abajo hasta esa posición — el mismo pedido de las secciones 37-39,
+ahora sobre la base fullscreen ya corregida en la sección 44.
+
+**Cambio en `initPropiedadFija()` (efectos.js):** se reincorpora el
+cálculo de desplazamiento del panel completo
+(`pinRect.bottom - panelRect.top + 40`) y su `gsap.set`/`tl.to` — el
+panel (las 2 fotos + su fondo sólido, como una sola pieza, nunca cada
+foto por separado) arranca tapado por el `overflow:hidden` del pin y
+sube hasta su lugar. Se mantiene la secuencia ya encadenada (sin
+posiciones explícitas en la timeline): primero el velo se tiñe a
+sólido, recién ahí sube el panel, y al final aparece el texto.
+
+No se tocó el fullscreen ni la estructura de la sección 44 (las 2
+fotos siguen viviendo adentro de `.propiedad-fija__contenido`, dentro
+del pin) — solo se le devolvió el movimiento de entrada que ya tenía
+antes de la simplificación de la sección 42.
+
+Cache-bust: `movil.css?v=85`, `efectos.js?v=76`.

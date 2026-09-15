@@ -175,14 +175,13 @@
      cuenta, aparte del hilo que corre esta animación, y en un flick
      fuerte los dos hilos se desincronizan un instante y se ve un
      bloque montado sobre otro).
-     Las 2 fotos extra (`.propiedad-fija__extras`) NO se tocan acá —
-     no tienen gsap.set ni gsap.to, cero JS: quedan quietas, visibles
-     desde que arranca el bloque, sin deslizarse ni aparecer con un
-     tween (esa es la simplificación que se sacó de mirar el código
-     real de hba.com — ver CONTEXTO.md, secciones 42 y 44). El velo de
-     marca se tiñe de 0 a 1 de opacidad durante el pin, y el texto es
-     lo único que sigue animado, apareciendo recién cuando el velo
-     termina de quedar sólido.
+     Todo pasa en secuencia, uno después del otro (sin posiciones
+     explícitas en la timeline, así GSAP encadena cada tramo apenas
+     termina el anterior): primero el velo de marca se tiñe de 0 a 1
+     de opacidad hasta quedar sólido; recién ahí el panel con las 2
+     fotos (un solo bloque sólido, no 2 fotos sueltas) sube desde
+     abajo hasta su lugar final, como una sola pieza; y al final
+     aparece el texto (zona, nombre, precio, botón).
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -195,10 +194,25 @@
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var pin = bloque.querySelector('.propiedad-fija__pin');
+      var panel = bloque.querySelector('.propiedad-fija__extras');
       var info = bloque.querySelector('.propiedad-fija__info');
       if (!tinte || !pin) return;
 
       gsap.set(tinte, { force3D: true });
+
+      /* El panel entero (las 2 fotos + su fondo sólido) arranca
+         desplazado lo suficiente para quedar tapado por el
+         overflow:hidden del pin (su borde superior por debajo del
+         borde inferior del pin, con margen), así entra literalmente
+         desde abajo de la pantalla, como una sola pieza — nunca cada
+         foto por separado. Sin easing (ease:'none'): el movimiento
+         sigue al scroll 1 a 1, sin acelerar ni desacelerar. */
+      if (panel) {
+        var pinRect = pin.getBoundingClientRect();
+        var panelRect = panel.getBoundingClientRect();
+        var desplazo = Math.round(pinRect.bottom - panelRect.top) + 40;
+        gsap.set(panel, { y: desplazo, force3D: true });
+      }
       if (info) gsap.set(info, { autoAlpha: 0, y: 24, force3D: true });
 
       /* scrub:0.3 (no scrub:true) — scrub:true ata la posición al
@@ -214,8 +228,7 @@
          borde superior toca esa línea (navAlto px debajo del tope de
          la pantalla), debajo del nav, no tapado por él.
          end:'+=120%' — recorrido de scroll extra mientras dura el
-         pin fullscreen (velo tiñéndose + texto apareciendo), igual
-         que antes de la sección 42. */
+         pin fullscreen. */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
@@ -228,6 +241,7 @@
       });
 
       tl.to(tinte, { opacity: 1, ease: 'none' });
+      if (panel) tl.to(panel, { y: 0, ease: 'none' });
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
     });
   }
