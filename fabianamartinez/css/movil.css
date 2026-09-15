@@ -634,14 +634,17 @@ body.menu-abierto .nav{
 .proyecto__zona{ font-size:13px; color:rgba(255,255,255,.88); margin-top:2px; }
 
 /* ============================================================
-   Propiedad destacada — foto fija con tinte de marca (paquete
-   HB, D + C combinados). La foto base queda pegada al tope mientras
-   dura el bloque — el pin lo maneja GSAP ScrollTrigger (pin:true en
-   initPropiedadFija, efectos.js), no position:sticky (ver más abajo
-   por qué). Todo pasa en secuencia: primero el velo de --azul-900 se
-   tiñe con el scroll hasta quedar sólido (opacity:1); recién ahí las
-   2 fotos extra van apareciendo desde abajo, una después de la otra,
-   ya sobre ese sólido; y al final aparecen nombre + precio + botón.
+   Propiedad destacada — foto fija con tinte de marca (paquete HB).
+   Mecánica real de hba.com (sticky_gallery), no una recreada: SOLO
+   la foto base + el texto (zona/nombre/precio/botón) quedan fijos un
+   tramo de scroll (pin de GSAP ScrollTrigger, no position:sticky —
+   ver por qué en el comentario de .propiedad-fija__pin). Las 2 fotos
+   extra NO tienen ninguna animación ni JS encima — son contenido
+   normal, en flujo, que sigue después del pin. El efecto de "las 2
+   fotos suben con el scroll" no es una animación programada: es
+   scroll nativo de toda la vida, se ve así porque lo de arriba se
+   queda fijo mientras lo de abajo sigue scrolleando como cualquier
+   contenido de la página.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -650,11 +653,12 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
-/* Misma fórmula de altura real que .seccion--completa (ver más abajo
-   y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
-   sin el bug de 100vh en navegadores móviles con barra de direcciones
-   dinámica.
-   position:relative (no sticky): con 3 bloques fullscreen apilados,
+/* El pin ya NO ocupa toda la pantalla (antes 100vh): mide bastante
+   menos que la pantalla a propósito, para que abajo quede un tramo
+   visible por donde se ven pasar las 2 fotos mientras esto se
+   mantiene fijo arriba — si ocupara toda la pantalla, taparía a las
+   2 fotos por completo y no se vería nada moviéndose debajo.
+   position:relative (no sticky): con 3 bloques apilados,
    position:sticky lo maneja el hilo de compositor del navegador por
    su cuenta, separado del hilo que corre GSAP — en un scroll rápido
    (flick fuerte) los dos hilos se desincronizan un instante y se ve
@@ -664,12 +668,8 @@ body.menu-abierto .nav{
    — no hay dos sistemas de pin corriendo en paralelo. */
 .propiedad-fija__pin{
   position:relative;
-  height:100vh;
-  height:100svh;
-  height:var(--vh100, 100svh);
-  height:calc(100vh - var(--nav-alto));
-  height:calc(100svh - var(--nav-alto));
-  height:calc(var(--vh100, 100svh) - var(--nav-alto));
+  height:58vh;
+  height:58svh;
   overflow:hidden;
 }
 .propiedad-fija__base{ position:absolute; inset:0; }
@@ -678,25 +678,20 @@ body.menu-abierto .nav{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
   will-change:opacity;
 }
-/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
-   la info de la propiedad (zona, nombre, precio, botón) — antes la
-   info vivía debajo, en flujo normal, sobre su propio fondo marrón
-   sólido (.proyecto-destacado__cuerpo); ahora entra en la misma
-   pantalla fullscreen, superpuesta a la foto ya teñida, y cada parte
-   (fotos, luego info) aparece en su propio tramo de scroll, en
-   secuencia (ver initPropiedadFija en efectos.js). */
-.propiedad-fija__contenido{
+/* Zona, nombre, precio y botón — superpuestos a la foto (adentro del
+   pin), centrados verticalmente. Aparecen recién cuando el velo
+   termina de quedar sólido (ver initPropiedadFija en efectos.js). */
+.propiedad-fija__info{
   position:absolute; left:6%; right:6%; top:50%;
   transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:28px;
 }
-/* Un solo panel sólido para las 2 fotos, no 2 fotos sueltas: el fondo
-   marrón queda pegado a ellas (mismo --azul-900 del velo) y se mueven
-   siempre juntas, como una sola pieza — nunca cada una por su lado. */
+/* Las 2 fotos extra: contenido normal de la página, sin position
+   especial y sin JS — el fondo sólido (mismo --azul-900 del velo) es
+   lo único "de marca" acá, para que no se sientan 2 fotos sueltas
+   sino puestas en un mismo panel. */
 .propiedad-fija__extras{
   display:flex; flex-direction:column; gap:16px;
   background:var(--azul-900); padding:16px;
-  will-change:transform;
 }
 .propiedad-fija__extra{
   position:relative; aspect-ratio:16/10;

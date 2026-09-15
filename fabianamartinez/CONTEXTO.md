@@ -1577,3 +1577,65 @@ No se tocó la secuencia (velo → panel → texto), ni las medidas, ni el
 diseño ni de timing.
 
 Cache-bust: `movil.css?v=81`, `efectos.js?v=72`.
+
+---
+
+## 42. La mecánica real era mucho más simple de lo que se venía armando
+
+El cliente frenó en seco: "Algo te estás pasando. Lo que te estoy
+pidiendo es super simple, veo en la web de referencia como 2 imágenes
+suben con el scroll, pero super sencillo" — y a continuación pasó el
+`outerHTML` completo de hba.com (no solo el fragmento del
+`sticky_gallery`, la página entera), dando la posibilidad de ver la
+estructura real tal cual la arma su tema.
+
+**Lo que reveló el código:** en el `sticky_gallery` de hba.com, las 2
+fotos chicas (`.sticky_gallery--slide`) **no están adentro de ningún
+`pin-spacer`** — viven sueltas en un `.container-fluid > .row`,
+contenido normal de la página, sin ningún JS ni animación propia. Lo
+único que GSAP pinea son el título+botón
+(`.sticky_gallery--content-wrapper`) y la foto principal
+(`.sticky_gallery--main-media`), cada uno en su propio `pin-spacer`.
+Como esos 2 pin-spacers no ocupan toda la pantalla (miden bastante
+menos que el viewport en el ejemplo capturado), queda un tramo visible
+de pantalla por donde las 2 fotos sueltas pasan scrolleando con total
+normalidad — el efecto de "las 2 fotos suben con el scroll" no es una
+animación: es scroll nativo de toda la vida, se ve así porque arriba
+hay algo fijo y abajo no.
+
+Todo lo que se venía armando en las secciones 36 a 41 (velo con
+secuencia propia sobre las 2 fotos, panel único con `gsap.set`/`tl.to`
+moviéndolas como una pieza, cálculos de desplazamiento, `pin:true` de
+la sección completa) sumaba complejidad sobre una premisa equivocada:
+tratar a las 2 fotos como parte de la coreografía pineada, cuando en
+la referencia ni siquiera están adentro del pin.
+
+**Reestructuración (HTML + CSS + JS), quitando en vez de agregando:**
+- `index.html`: `.propiedad-fija__extras` sale de adentro de
+  `.propiedad-fija__pin` / `.propiedad-fija__contenido` y pasa a ser
+  hermano directo del pin, después en el HTML — contenido plano, sin
+  ningún wrapper con animación.
+- `movil.css`: `.propiedad-fija__pin` deja de medir pantalla completa
+  (antes `calc(100vh - nav-alto)`) y pasa a `58vh` — a propósito
+  bastante menos que la pantalla, para que quede un tramo visible
+  abajo por donde pasan las 2 fotos. `.propiedad-fija__info` (zona,
+  nombre, precio, botón) queda directo adentro del pin, superpuesto a
+  la foto. `.propiedad-fija__extras` pierde todo lo que tenía de
+  "panel animado" (`will-change`, cálculos) — es un bloque común con
+  fondo sólido (mismo `--azul-900`) y padding, nada más.
+- `efectos.js` (`initPropiedadFija`): se borra por completo cualquier
+  `gsap.set`/`gsap.to` sobre las fotos extra — no se las toca. El pin
+  (`pin:true`, `scrub:0.3`, igual que en la sección 41) ahora se aplica
+  solo a la foto+texto, y el velo sigue tiñéndose de 0 a 1 de opacidad
+  durante ese pin, con el texto apareciendo recién cuando termina de
+  quedar sólido. El `end` del pin se calcula con el alto real del
+  bloque de fotos (`extras.getBoundingClientRect().height`), así el
+  pin dura scrolleado exactamente lo que tardan las 2 fotos en pasar
+  — ni se corta antes ni se queda fijo de más una vez que ya pasaron.
+
+**Lección:** cuando algo no sale bien después de varias vueltas, antes
+de seguir ajustando parámetros sobre la misma estructura, conviene
+revisar si la estructura de base es la correcta — acá la respuesta
+real era sacar código, no afinarlo.
+
+Cache-bust: `movil.css?v=82`, `efectos.js?v=73`.

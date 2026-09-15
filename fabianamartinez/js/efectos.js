@@ -167,24 +167,23 @@
   }
 
   /* ============================================================
-     D + C combinados · Propiedad destacada con foto fija
-     El pin lo maneja ScrollTrigger (pin:true), no position:sticky —
-     con 3 bloques fullscreen apilados, sticky lo resuelve el hilo de
-     compositor del navegador por su cuenta, aparte del hilo que
-     corre esta misma animación; en un flick fuerte los dos hilos se
-     desincronizan un instante y se ve contenido de un bloque montado
-     sobre el de otro. Con pin:true, GSAP arma su propio spacer y fija
-     el elemento por JS en el mismo hilo que corre el resto — un solo
-     sistema, no dos en paralelo (ver también el comentario en
-     movil.css, junto a .propiedad-fija__pin).
-     Todo lo demás pasa en secuencia, uno después del otro (sin
-     posiciones explícitas en la timeline, así GSAP encadena cada
-     tramo apenas termina el anterior): primero el velo de marca se
-     tiñe de 0 a 1 de opacidad hasta quedar sólido; recién ahí el
-     panel con las 2 fotos (un solo bloque sólido, no 2 fotos
-     sueltas) aparece desde abajo, como una sola pieza, ya sobre ese
-     sólido (nunca mientras todavía se ve la foto base); y al final
-     aparece el texto (zona, nombre, precio, botón).
+     Propiedad destacada con foto fija — mecánica real de hba.com
+     (sticky_gallery), calcada de su propio código: SOLO la foto base
+     + el texto quedan pineados (pin:true de ScrollTrigger, nunca
+     position:sticky — con varios bloques fullscreen apilados, sticky
+     lo resuelve el hilo de compositor del navegador por su cuenta,
+     aparte del hilo que corre esta animación, y en un flick fuerte
+     los dos hilos se desincronizan un instante y se ve un bloque
+     montado sobre otro). Las 2 fotos extra (`.propiedad-fija__extras`)
+     NO se tocan acá — no tienen gsap.set ni gsap.to, cero JS. Son
+     contenido normal que sigue después del pin en el HTML: la
+     sensación de "las 2 fotos suben con el scroll" no es una
+     animación programada, es scroll nativo — se ve así porque el pin
+     (bastante más bajo que la pantalla, ver movil.css) se queda fijo
+     arriba mientras las fotos, abajo, siguen scrolleando como
+     cualquier otro contenido de la página.
+     El velo de marca se tiñe de 0 a 1 de opacidad durante el pin, y
+     el texto aparece recién cuando termina de quedar sólido.
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -197,46 +196,36 @@
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var pin = bloque.querySelector('.propiedad-fija__pin');
-      var panel = bloque.querySelector('.propiedad-fija__extras');
+      var extras = bloque.querySelector('.propiedad-fija__extras');
       var info = bloque.querySelector('.propiedad-fija__info');
-      if (!tinte || !pin || !panel) return;
+      if (!tinte || !pin) return;
 
-      /* El panel entero (las 2 fotos + su fondo sólido) arranca
-         desplazado lo suficiente para quedar tapado por el
-         overflow:hidden del pin (su borde superior por debajo del
-         borde inferior del pin, con margen), así entra literalmente
-         desde abajo de la pantalla, como una sola pieza — nunca cada
-         foto por separado. Sin easing (ease:'none'): el movimiento
-         sigue al scroll 1 a 1, sin acelerar ni desacelerar. */
-      var pinRect = pin.getBoundingClientRect();
-      var panelRect = panel.getBoundingClientRect();
-      var desplazo = Math.round(pinRect.bottom - panelRect.top) + 40;
-      gsap.set(panel, { y: desplazo, force3D: true });
       gsap.set(tinte, { force3D: true });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24, force3D: true });
 
-      /* scrub:0.3 (no scrub:true) — la diferencia con el resto de los
-         efectos del archivo (reveal-scroll usa 0.4-0.5) era justo acá:
-         scrub:true ata la posición al evento de scroll en crudo, que en
-         muchos celulares no dispara en cada frame — se traduce en saltos
-         entre posiciones en vez de un movimiento continuo ("con lag,
-         plástico"). Un scrub bajo interpola por rAF entre esos eventos,
-         así se ve fluido en cualquier dispositivo. 0.3 sigue siendo lo
-         bastante bajo para que, al soltar el scroll, no quede el
-         "colazo" de movimiento propio que se sacó antes (eso pasaba con
-         valores más altos, no con cualquier número distinto de true).
+      /* El pin dura scrolleado lo mismo que mide el bloque de las 2
+         fotos: así se suelta justo cuando terminan de pasar, ni antes
+         (quedaría cortado) ni mucho después (quedaría fijo de más,
+         con las fotos ya scrolleadas y nada pasando debajo). */
+      var largo = extras ? extras.getBoundingClientRect().height : window.innerHeight;
 
+      /* scrub:0.3 (no scrub:true) — scrub:true ata la posición al
+         evento de scroll en crudo, que en muchos celulares no dispara
+         en cada frame: se traduce en saltos entre posiciones en vez
+         de un movimiento continuo ("con lag, plástico"). Un scrub
+         bajo interpola por rAF entre esos eventos, fluido en
+         cualquier dispositivo, y sigue sin generar el "colazo" de
+         movimiento propio al soltar el scroll (eso pasaba con
+         valores de scrub altos, no con cualquier número distinto de
+         true).
          start:'top top+='+navAlto — el pin queda fijo justo donde su
          borde superior toca esa línea (navAlto px debajo del tope de
-         la pantalla), o sea debajo del nav, no tapado por él — el
-         mismo lugar donde quedaba con position:sticky antes.
-         end:'+=120%' repite el mismo recorrido de scroll extra (120vh)
-         que tenía el alto manual de 220vh del bloque de afuera. */
+         la pantalla), debajo del nav, no tapado por él. */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: 'top top+=' + navAlto,
-          end: '+=120%',
+          end: '+=' + largo,
           pin: true,
           anticipatePin: 1,
           scrub: 0.3
@@ -244,7 +233,6 @@
       });
 
       tl.to(tinte, { opacity: 1, ease: 'none' });
-      tl.to(panel, { y: 0, ease: 'none' });
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
     });
   }
