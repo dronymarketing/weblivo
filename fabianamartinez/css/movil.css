@@ -682,7 +682,13 @@ body.menu-abierto .nav{
   transform:translateY(-50%);
   display:flex; flex-direction:column; gap:28px;
 }
-.propiedad-fija__extras{ display:flex; flex-direction:column; gap:16px; }
+/* Un solo panel sólido para las 2 fotos, no 2 fotos sueltas: el fondo
+   marrón queda pegado a ellas (mismo --azul-900 del velo) y se mueven
+   siempre juntas, como una sola pieza — nunca cada una por su lado. */
+.propiedad-fija__extras{
+  display:flex; flex-direction:column; gap:16px;
+  background:var(--azul-900); padding:16px;
+}
 .propiedad-fija__extra{
   position:relative; aspect-ratio:16/10;
   border-radius:0; overflow:hidden;

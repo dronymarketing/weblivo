@@ -172,10 +172,11 @@
      lo demás pasa en secuencia, uno después del otro (sin
      posiciones explícitas en la timeline, así GSAP encadena cada
      tramo apenas termina el anterior): primero el velo de marca se
-     tiñe de 0 a 1 de opacidad hasta quedar sólido; recién ahí las 2
-     fotos extra van apareciendo desde abajo, una y después la otra,
-     ya sobre ese sólido (nunca mientras todavía se ve la foto base);
-     y al final aparece el texto (zona, nombre, precio, botón).
+     tiñe de 0 a 1 de opacidad hasta quedar sólido; recién ahí el
+     panel con las 2 fotos (un solo bloque sólido, no 2 fotos
+     sueltas) aparece desde abajo, como una sola pieza, ya sobre ese
+     sólido (nunca mientras todavía se ve la foto base); y al final
+     aparece el texto (zona, nombre, precio, botón).
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -184,25 +185,21 @@
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var pin = bloque.querySelector('.propiedad-fija__pin');
-      var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
+      var panel = bloque.querySelector('.propiedad-fija__extras');
       var info = bloque.querySelector('.propiedad-fija__info');
-      if (!tinte || !pin || !extras.length) return;
+      if (!tinte || !pin || !panel) return;
 
-      /* Cada foto arranca desplazada lo suficiente para quedar tapada
-         por el overflow:hidden del pin (su borde superior por debajo
-         del borde inferior del pin, con margen), así entra
-         literalmente desde abajo de la pantalla. Se calcula por foto
-         porque cada una arranca en una posición distinta dentro del
-         contenido centrado. Sin easing (ease:'none'): el movimiento
+      /* El panel entero (las 2 fotos + su fondo sólido) arranca
+         desplazado lo suficiente para quedar tapado por el
+         overflow:hidden del pin (su borde superior por debajo del
+         borde inferior del pin, con margen), así entra literalmente
+         desde abajo de la pantalla, como una sola pieza — nunca cada
+         foto por separado. Sin easing (ease:'none'): el movimiento
          sigue al scroll 1 a 1, sin acelerar ni desacelerar. */
       var pinRect = pin.getBoundingClientRect();
-      var desplazos = extras.map(function (extra) {
-        var r = extra.getBoundingClientRect();
-        return Math.round(pinRect.bottom - r.top) + 40;
-      });
-      extras.forEach(function (extra, i) {
-        gsap.set(extra, { y: desplazos[i] });
-      });
+      var panelRect = panel.getBoundingClientRect();
+      var desplazo = Math.round(pinRect.bottom - panelRect.top) + 40;
+      gsap.set(panel, { y: desplazo });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
       /* scrub:true (no un número) — sin retraso de suavizado: la
@@ -220,9 +217,7 @@
       });
 
       tl.to(tinte, { opacity: 1, ease: 'none' });
-      extras.forEach(function (extra) {
-        tl.to(extra, { y: 0, ease: 'none' });
-      });
+      tl.to(panel, { y: 0, ease: 'none' });
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
     });
   }

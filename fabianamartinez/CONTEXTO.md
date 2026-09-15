@@ -1446,3 +1446,32 @@ el marrón sólido.
 No se tocó ninguna medida, margen ni la estructura del HTML.
 
 Cache-bust: `movil.css?v=78` (solo comentarios), `efectos.js?v=69`.
+
+---
+
+## 39. Las 2 fotos pasan a ser un solo panel sólido, no 2 fotos sueltas
+
+El cliente notó que las 2 fotos se veían "individuales" en vez de
+estar asentadas en un sólido, y que el hecho de que cada una se
+moviera por su lado (con su propio desplazamiento y arranque, ver
+sección 38) desestabilizaba el scroll.
+
+**Cambio en CSS (`movil.css`):** `.propiedad-fija__extras` (el
+contenedor de las 2 fotos) pasa a tener `background:var(--azul-900)`
+(el mismo sólido del velo) y `padding:16px` — ahora el espacio entre
+las 2 fotos y alrededor de ellas es ese sólido, no transparente, así
+se leen como 2 fotos puestas en un mismo panel/marco sólido, no 2
+piezas sueltas.
+
+**Cambio en JS (`initPropiedadFija`, `efectos.js`):** en vez de
+calcular un desplazamiento por foto y animar cada `.propiedad-fija__extra`
+por separado, ahora se toma el panel completo
+(`.propiedad-fija__extras`) como una sola pieza: un único
+`gsap.set`/`tl.to` con un solo desplazamiento, calculado sobre el
+panel entero. Las 2 fotos suben siempre juntas, como un solo bloque,
+nunca una foto por su lado.
+
+No se tocó la secuencia general (velo → panel → texto) ni ninguna
+medida del HTML.
+
+Cache-bust: `movil.css?v=79`, `efectos.js?v=70`.
