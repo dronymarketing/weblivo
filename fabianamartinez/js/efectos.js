@@ -241,20 +241,26 @@
         }
       });
 
-      /* Las duration explícitas reparten el recorrido de scroll entre
-         los 3 tramos (por default GSAP les daría el mismo tercio a
-         cada uno). El panel viaja una distancia en píxeles bastante
-         más grande que lo que se mueve el velo (opacity) o el texto
-         (chico, con fade) — con poco scroll asignado, subía más
-         rápido de lo que el dedo scrolleaba. Acá se le da la gran
-         mayoría del recorrido (proporcional, no fija: sigue siendo el
-         mismo scroll el que lo mueve 1 a 1 con scrub, solo que ahora
-         en un tramo de scroll bastante más largo, así el
-         desplazamiento en píxeles por píxel de scroll baja más
-         todavía y se siente lento/suave). */
-      tl.to(tinte, { opacity: 1, ease: 'none', duration: 0.3 });
-      if (panel) tl.to(panel, { y: 0, ease: 'none', duration: 2.2 });
-      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 });
+      /* El velo y el panel arrancan juntos, en la posición 0 de la
+         timeline (antes el velo terminaba de teñirse y recién ahí
+         arrancaba el panel) — el cliente pidió que el marrón empiece
+         a aparecer AL MISMO TIEMPO que suben las fotos, no antes. El
+         velo, al tener mucha menos duration que el panel, termina de
+         teñirse bastante antes de que el panel llegue a destino —
+         quedan sincronizados en el arranque, no en el final.
+         Las duration explícitas siguen repartiendo el recorrido de
+         scroll de forma despareja (el panel viaja una distancia en
+         píxeles bastante más grande que lo que se mueve el velo o el
+         texto): el panel tiene la gran mayoría del recorrido, así el
+         desplazamiento en píxeles por píxel de scroll se siente
+         lento/suave. El texto sigue apareciendo recién cuando el
+         panel termina de subir (posición explícita = duration del
+         panel, ya que panel y texto ya no quedan uno atrás del otro
+         por default). */
+      var duracionPanel = panel ? 2.2 : 0.3;
+      tl.to(tinte, { opacity: 1, ease: 'none', duration: 0.3 }, 0);
+      if (panel) tl.to(panel, { y: 0, ease: 'none', duration: duracionPanel }, 0);
+      if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.3 }, duracionPanel);
     });
   }
 

@@ -641,11 +641,11 @@ body.menu-abierto .nav{
    pantallas separadas. El pin lo maneja GSAP ScrollTrigger (pin:true
    en initPropiedadFija, efectos.js), no position:sticky (ver por qué
    en el comentario de .propiedad-fija__pin).
-   Todo pasa en secuencia (ver initPropiedadFija): primero el velo se
-   tiñe con el scroll hasta quedar sólido; recién ahí el panel con las
-   2 fotos (un solo bloque sólido, no 2 fotos sueltas) sube desde
-   abajo hasta su lugar, como una sola pieza; y al final aparece el
-   texto.
+   Secuencia (ver initPropiedadFija): el velo empieza a teñirse AL
+   MISMO TIEMPO que el panel con las 2 fotos (un solo bloque sólido,
+   no 2 fotos sueltas) arranca a subir desde abajo, como una sola
+   pieza; recién cuando el panel termina de llegar a su lugar aparece
+   el texto.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de

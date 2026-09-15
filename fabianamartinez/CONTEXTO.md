@@ -1826,3 +1826,31 @@ la gran mayoría del recorrido asignado, solo que el recorrido total
 del pin es un poco más corto.
 
 Cache-bust: `efectos.js?v=79`.
+
+---
+
+## 49. El velo y el panel arrancan juntos, no uno después del otro
+
+El cliente notó: "primero se tiñe el marrón y después aparecen las
+fotos. Sincronicemos para que cuando suban las fotos, el marrón
+oscuro empiece a aparecer."
+
+**Causa:** en `initPropiedadFija()`, `tl.to(tinte,...)` y
+`tl.to(panel,...)` se agregaban sin posición explícita, así que GSAP
+los encadenaba uno atrás del otro (el panel arrancaba recién cuando
+el velo terminaba su tween).
+
+**Cambio:** se le da a los dos tweens la misma posición explícita
+(`0`) en la timeline, así arrancan juntos apenas empieza el scroll del
+pin. El texto se mantiene chained pero ahora con posición explícita
+igual a la duration del panel (ya no puede quedar implícito, porque
+al ponerle posición a los otros dos se rompe el auto-encadenado). El
+velo, al tener mucha menos duration que el panel, termina de teñirse
+bastante antes de que el panel llegue a destino — quedan
+sincronizados en el arranque, que es lo que se pidió, no
+necesariamente en el final.
+
+No se tocó el reparto de duration entre velo/panel/texto (sección 47)
+ni el `end` del pin (sección 48).
+
+Cache-bust: `movil.css?v=86`, `efectos.js?v=80`.
