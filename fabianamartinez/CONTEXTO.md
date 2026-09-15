@@ -1122,3 +1122,29 @@ las fotos vayan de punta a punta. Se sacó el `box-shadow` de
 `.propiedad-fija__extra`. El cálculo de `initPropiedadFija()` en
 `efectos.js` no necesitó cambios: mide el `getBoundingClientRect()`
 real de cada foto, así que se ajusta solo al nuevo ancho.
+
+---
+
+## 30. Deslizamiento muy rápido — solo se toca la duración, no el tamaño
+
+El cliente mandó una captura mostrando el botón "Ver Propiedad"
+cortado abajo de la pantalla — señal de que, con las fotos a ancho
+completo (más altas que antes, sección 29), el grupo centrado con
+`translateY(-50%)` a veces se pasaba del alto real disponible. Se
+probó una solución (contenido con flex:1 en vez de aspect-ratio, para
+que nunca se desborde), pero el cliente frenó: el tamaño de las fotos
+estaba bien como estaba, **no tocar eso** — el único problema real era
+que el deslizamiento se sentía "super rápido". Se revirtió el cambio
+de tamaño/layout (`.propiedad-fija__contenido`/`__extras`/`__extra`
+vuelven exactamente a como estaban en la sección 29, verificado con
+`git diff` sin diferencias).
+
+**La causa real de la velocidad:** al agrandar la distancia que cada
+foto recorre para salir del todo de la pantalla (sección 27, hasta
+~700px en vez de 48px), la duración del tween se dejó en el default
+de GSAP (pensado para el desplazamiento chico de antes) — misma
+duración, mucha más distancia, se veía brusco. Se le puso una
+duración explícita más larga (`duration:1.1`, antes ~0.5 por default)
+y se separó más el arranque de cada foto (`0.15 + i*0.85`, antes
+`0.15 + i*0.32`) para que el movimiento se reparta en más scroll y se
+sienta gradual, sin tocar tamaños ni márgenes.
