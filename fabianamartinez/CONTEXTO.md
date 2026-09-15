@@ -1053,3 +1053,36 @@ scroll. Se sacó también la variable `zoomInicial`/`esMovil` de esta
 función, que ya no se usa. Verificado con `getComputedStyle` en varios
 puntos del scroll: `clip-path:none` y `opacity:1` todo el tiempo,
 solo cambia el `transform` (translateY).
+
+---
+
+## 27. Corrección: sí quería el zoom de antes, solo cambiar cómo se ocultan
+
+La sección 26 se pasó de rosca: el cliente nunca pidió que las fotos
+fueran visibles desde el arranque, ni sacar el zoom — pidió específica
+y únicamente reemplazar la MÁSCARA (clip-path) por un desplazamiento
+real como mecanismo para ocultarlas al principio, mantenimiento el
+resto de la animación que ya le gustaba (el zoom `scale` de
+`zoomInicial` a 1).
+
+**El problema de los 48px de la sección 25/26:** ese desplazamiento
+era demasiado chico para tapar una foto de ~214px de alto — por eso,
+sin la máscara, quedaban visibles desde el arranque (motivo del
+reclamo). Para que el desplazamiento por sí solo alcance a esconderlas
+de verdad ("vengan desde abajo de la página", no desde un ligero
+corrimiento en el mismo lugar), hace falta bastante más que 48px, y la
+distancia necesaria depende de en qué altura de la pantalla arranca
+cada foto (con el contenido centrado, la 2ª foto ya arranca más abajo
+que la 1ª).
+
+**Solución:** en vez de un número fijo, se calcula por foto —
+`pinRect.bottom - extraRect.top + 40` — la distancia justa para que el
+borde superior de la foto quede por debajo del borde inferior del pin
+(que tiene `overflow:hidden`), con 40px de margen extra. Así cada
+foto, sin importar en qué punto de la pantalla centrada le toque
+arrancar, queda genuinamente tapada por el recorte del pin — no solo
+corrida — y al animar a `y:0` entra literalmente desde abajo de la
+pantalla. Se restauró también `gsap.set(..., {scale: zoomInicial})` y
+su animación a `scale:1`, exactamente como estaba antes de la sección
+26. Verificado con capturas: la foto no asoma para nada al arrancar,
+y al llegar a destino ya tiene el mismo zoom-out sutil de siempre.

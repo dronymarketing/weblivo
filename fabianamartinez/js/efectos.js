@@ -177,16 +177,32 @@
     var bloques = document.querySelectorAll('.propiedad-fija');
     if (!bloques.length) return;
 
+    var esMovil = window.matchMedia('(max-width:899px)').matches;
+    var zoomInicial = esMovil ? 1.15 : 1.3;
+
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
+      var pin = bloque.querySelector('.propiedad-fija__pin');
       var extras = Array.prototype.slice.call(bloque.querySelectorAll('.propiedad-fija__extra'));
       var info = bloque.querySelector('.propiedad-fija__info');
-      if (!tinte || !extras.length) return;
+      if (!tinte || !pin || !extras.length) return;
 
-      /* Sin máscara ni zoom acá: las fotos ya están del todo visibles,
-         solo se desplazan literalmente desde abajo hacia su lugar. */
-      extras.forEach(function (extra) {
-        gsap.set(extra, { y: 48 });
+      /* Nada de máscara: cada foto arranca desplazada lo suficiente
+         para quedar tapada por el overflow:hidden del pin (su borde
+         superior por debajo del borde inferior del pin, con margen),
+         así entra literalmente desde abajo de la pantalla, no desde
+         un recorte en el mismo lugar. Se calcula por foto porque cada
+         una arranca en una posición distinta dentro del contenido
+         centrado. */
+      var pinRect = pin.getBoundingClientRect();
+      var desplazos = extras.map(function (extra) {
+        var r = extra.getBoundingClientRect();
+        return Math.round(pinRect.bottom - r.top) + 40;
+      });
+
+      extras.forEach(function (extra, i) {
+        gsap.set(extra, { y: desplazos[i] });
+        gsap.set(extra.querySelector('img'), { scale: zoomInicial });
       });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
@@ -202,7 +218,8 @@
       tl.to(tinte, { opacity: 0.82, ease: 'none' }, 0);
       extras.forEach(function (extra, i) {
         var arranca = 0.15 + i * 0.32;
-        tl.to(extra, { y: 0, ease: 'none' }, arranca);
+        tl.to(extra, { y: 0, ease: 'none' }, arranca)
+          .to(extra.querySelector('img'), { scale: 1, ease: 'none' }, arranca);
       });
       /* La info (zona, nombre, precio, botón) entra recién cuando
          termina de aparecer la última foto extra — sin posición
