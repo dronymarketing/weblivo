@@ -1288,3 +1288,40 @@ con Playwright: antes del fix, el pin de `.propiedad-fija__pin`
 scroll); después del fix, queda fijo en `top:60` durante el scroll de
 las 2 fotos extra y se despega limpio al final, exactamente como se
 esperaba. También se confirmó que no reaparece scroll horizontal.
+
+---
+
+## 34. Título minimalista sobre la foto — el resto de la info, aparte con aire
+
+El cliente comparó dos grabaciones (livo.com.uy vs hba.com real) y
+marcó una diferencia real: en hba.com el texto sobre la foto es SOLO
+el nombre del proyecto, grande y suelto — nada de zona/precio/botón
+amontonados en la misma esquina como quedaron en la sección 33.
+
+**Cambio:** `.propiedad-fija__info` (superpuesta a la foto, pineada)
+ahora tiene ÚNICAMENTE el `<h3>` con el nombre (subido a 40px). Zona,
+precio y botón "Ver Propiedad" se movieron a un bloque nuevo,
+`.propiedad-fija__detalle`, que vive DESPUÉS de `.propiedad-fija__extras`
+en flujo normal (aparece una vez que las fotos extra ya taparon del
+todo la foto+título fijos), con su propio padding generoso
+(`40px 6% 64px`) — igual que como estaba antes de la sección 33, pero
+ahora es solo el complemento secundario, no la única forma de ver el
+precio.
+
+`.propiedad-fija` deja de tener una altura fija en vh (`height:300vh`)
+y pasa a `height:auto` — ya no hace falta calcularla a mano, el
+pin (sticky, reserva su propia pantalla en el flujo) + las 2 fotos
+extra (una pantalla cada una) + el detalle (lo que mida su contenido)
+suman solos la altura real del bloque.
+
+**Nota de verificación:** al confirmar este cambio con Playwright en
+este entorno, la herramienta de captura automática mostró resultados
+inconsistentes (a veces no se veía el título pese a que
+`getBoundingClientRect`/`getComputedStyle` confirmaban posición,
+tamaño y color correctos — se probó con repros aislados, con JS
+desactivado, forzando repaint, y el patrón CSS en sí funciona bien en
+aislamiento). No se pudo aislar la causa exacta dentro del tiempo
+disponible; puede ser un artefacto específico de Chromium headless en
+este entorno. Se deployó igual (el código verifica correcto por DOM) y
+se le pidió al cliente confirmar en su celular, que es como viene
+verificando todo el resto de esta sesión.

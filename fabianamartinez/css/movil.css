@@ -649,16 +649,11 @@ body.menu-abierto .nav{
    y la primera foto — la primera pantalla tiene que arrancar ya con
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
-/* Alto total = el pin (1 pantalla) + una pantalla completa por cada
-   foto extra (2), para que cada una tenga su propio tramo de scroll
-   para subir y cubrir del todo antes de que aparezca la siguiente. */
-.propiedad-fija{
-  position:relative;
-  height:300vh;
-  height:calc(3 * (100vh - var(--nav-alto)));
-  height:calc(3 * (100svh - var(--nav-alto)));
-  height:calc(3 * (var(--vh100, 100svh) - var(--nav-alto)));
-}
+/* Sin alto fijo: el pin reserva su propia pantalla en el flujo (sigue
+   siendo position:sticky) y las 2 fotos extra suman una pantalla cada
+   una — el bloque de detalle que va después mide lo que necesite. Así
+   no hay que recalcular a mano si el detalle cambia de alto. */
+.propiedad-fija{ position:relative; }
 /* Misma fórmula de altura real que .seccion--completa (ver más abajo
    y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
    sin el bug de 100vh en navegadores móviles con barra de direcciones
@@ -676,16 +671,15 @@ body.menu-abierto .nav{
 }
 .propiedad-fija__base{ position:absolute; inset:0; }
 .propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-/* Superpuesta a la foto, abajo — mismo lugar que ocupa el título en
-   hba.com. Al ser .propiedad-fija__base y .propiedad-fija__info las
-   dos position:absolute dentro del pin, sin z-index, el orden del
-   HTML ya alcanza para que el texto quede arriba de la foto. Degradé
-   suave detrás (equivalente a su sticky_gallery--content-bg) solo
-   para que el texto se lea bien, no un velo de pantalla completa. */
+/* Superpuesto a la foto, solo el nombre — minimalista, como el título
+   suelto de hba.com (nada de zona/precio/botón acumulados acá; eso
+   vive aparte, en .propiedad-fija__detalle, con más aire). Degradé
+   suave detrás para que el texto se lea, no un velo de pantalla
+   completa. */
 .propiedad-fija__info{
   position:absolute; left:0; right:0; bottom:0;
-  padding:56px 6% 32px;
-  background:linear-gradient(to top, rgba(9,29,30,.7), transparent);
+  padding:72px 6% 40px;
+  background:linear-gradient(to top, rgba(9,29,30,.65), transparent);
 }
 /* Fotos extra: SIN posicionamiento especial, en flujo normal — cada
    una ocupa una pantalla completa (misma fórmula que el pin) para
@@ -701,14 +695,18 @@ body.menu-abierto .nav{
   height:calc(var(--vh100, 100svh) - var(--nav-alto));
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+/* Zona, precio y botón — aparte del título, en flujo normal, con
+   aire de verdad alrededor (no todo apilado en la esquina de la
+   foto). Sobre el fondo oscuro de #destacadas (tema-marron). */
+.propiedad-fija__detalle{ padding:40px 6% 64px; }
 
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
   color:rgba(237,225,210,.75); margin:0 0 10px;
 }
 .proyecto-destacado__nombre{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:36px; line-height:1.05;
-  color:var(--fondo-alt); margin:0 0 10px;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:40px; line-height:1.05;
+  color:var(--fondo-alt); margin:0;
 }
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
 /* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho
