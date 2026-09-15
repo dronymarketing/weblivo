@@ -186,7 +186,7 @@
       if (!tinte || !extras.length) return;
 
       extras.forEach(function (extra) {
-        gsap.set(extra, { clipPath: 'inset(0% 0% 100% 0%)' });
+        gsap.set(extra, { clipPath: 'inset(100% 0% 0% 0%)' });
         gsap.set(extra.querySelector('img'), { scale: zoomInicial });
       });
 

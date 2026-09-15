@@ -928,3 +928,23 @@ se sacó el `border-radius:var(--radio)` de `.propiedad-fija__extra`
 (`efectos.js`) no necesitó cambios: sigue buscando
 `.propiedad-fija__extra` con `querySelectorAll`, que encuentra el
 elemento sin importar en qué nivel de anidamiento esté.
+
+---
+
+## 22. Dirección del reveal de las fotos extra — de arriba a abajo
+
+El cliente pidió que las 2 fotos extra "aparezcan de abajo" al hacer
+scroll, tipo animación premium de revista. `initPropiedadFija()` en
+`efectos.js` ya usaba un reveal con `clip-path` (el mismo "efecto C"
+que el resto del sitio), pero con
+`clipPath:'inset(0% 0% 100% 0%)'` como estado inicial — un inset de
+100% en el lado de ABAJO hace que la ventana visible tenga alto cero
+pegada arriba, y al animar ese inset a 0% la ventana crece hacia
+abajo: la foto se revela de arriba hacia abajo, no al revés.
+
+Se cambió el inset inicial a `inset(100% 0% 0% 0%)` (100% arriba en
+vez de abajo): ahora la ventana visible arranca con alto cero pegada
+abajo, y crece hacia arriba a medida que ese inset baja a 0% — la foto
+se revela de abajo hacia arriba. El zoom de entrada (`scale`) no
+cambió. Verificado con capturas en varios puntos del scroll: la mitad
+inferior de la foto aparece primero, después la superior.
