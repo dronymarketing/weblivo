@@ -227,14 +227,14 @@
          start:'top top+='+navAlto — el pin queda fijo justo donde su
          borde superior toca esa línea (navAlto px debajo del tope de
          la pantalla), debajo del nav, no tapado por él.
-         end:'+=220%' — recorrido de scroll extra mientras dura el
-         pin fullscreen (más que antes, para que el panel tenga
-         todavía más aire y se sienta más lento/suave). */
+         end:'+=180%' — recorrido de scroll extra mientras dura el
+         pin fullscreen (un poco menos que la sección 47, para
+         acercarlo más al recorrido de la web de referencia). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: 'top top+=' + navAlto,
-          end: '+=220%',
+          end: '+=180%',
           pin: true,
           anticipatePin: 1,
           scrub: 0.3

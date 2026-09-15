@@ -1810,3 +1810,19 @@ tiene bastante más recorrido de scroll para la misma distancia en
 píxeles, así se mueve más despacio por cada píxel que se scrollea.
 
 Cache-bust: `efectos.js?v=78`.
+
+---
+
+## 48. Un poco menos de recorrido, para acercarlo a la referencia
+
+El cliente pidió afinar un poco para abajo lo de la sección 47: "un
+poquito menos de recorrido de scroll, quiero asimilarlo a la web de
+referencia."
+
+**Cambio en `initPropiedadFija()` (efectos.js):** `end:'+=180%'`, bajado
+desde `220%`. Se mantienen las mismas `duration` de la sección 47
+(panel `2.2` vs velo/texto `0.3` cada uno) — el panel sigue teniendo
+la gran mayoría del recorrido asignado, solo que el recorrido total
+del pin es un poco más corto.
+
+Cache-bust: `efectos.js?v=79`.
