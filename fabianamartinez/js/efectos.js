@@ -168,24 +168,21 @@
 
   /* ============================================================
      Propiedad destacada con foto fija — fullscreen, como siempre
-     estuvo, combinado con la mecánica real de hba.com (sticky_gallery)
-     para las 2 fotos extra: SOLO la foto base + el texto quedan
-     pineados (pin:true de ScrollTrigger, nunca position:sticky — con
-     varios bloques fullscreen apilados, sticky lo resuelve el hilo de
-     compositor del navegador por su cuenta, aparte del hilo que corre
-     esta animación, y en un flick fuerte los dos hilos se
-     desincronizan un instante y se ve un bloque montado sobre otro).
+     estuvo: la foto base, el velo, las 2 fotos extra y el texto viven
+     todos juntos en la misma pantalla fija (pin:true de ScrollTrigger,
+     nunca position:sticky — con varios bloques fullscreen apilados,
+     sticky lo resuelve el hilo de compositor del navegador por su
+     cuenta, aparte del hilo que corre esta animación, y en un flick
+     fuerte los dos hilos se desincronizan un instante y se ve un
+     bloque montado sobre otro).
      Las 2 fotos extra (`.propiedad-fija__extras`) NO se tocan acá —
-     no tienen gsap.set ni gsap.to, cero JS. Son contenido normal que
-     sigue después del pin en el HTML, fuera de la pantalla mientras
-     el pin fullscreen está activo: en cuanto el pin suelta (al llegar
-     al final de su recorrido de scroll), siguen en flujo normal y
-     entran solas, de abajo hacia arriba, con el scroll de toda la
-     vida — no hace falta que el pin sea más chico que la pantalla
-     para que se vean "subir": simplemente aparecen apenas termina el
-     tramo fijo, como cualquier contenido de una página al scrollear.
-     El velo de marca se tiñe de 0 a 1 de opacidad durante el pin, y
-     el texto aparece recién cuando termina de quedar sólido.
+     no tienen gsap.set ni gsap.to, cero JS: quedan quietas, visibles
+     desde que arranca el bloque, sin deslizarse ni aparecer con un
+     tween (esa es la simplificación que se sacó de mirar el código
+     real de hba.com — ver CONTEXTO.md, secciones 42 y 44). El velo de
+     marca se tiñe de 0 a 1 de opacidad durante el pin, y el texto es
+     lo único que sigue animado, apareciendo recién cuando el velo
+     termina de quedar sólido.
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');

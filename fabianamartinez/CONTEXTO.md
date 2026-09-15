@@ -1670,3 +1670,64 @@ de lo simplificado.
   sobre esas 2 fotos, que es lo que el cliente pidió resolver ahí.
 
 Cache-bust: `movil.css?v=83`, `efectos.js?v=74`.
+
+---
+
+## 44. La sección 42 sacó demasiado: las 2 fotos no pueden vivir fuera del fullscreen
+
+El cliente avisó: "Quedó peor, no está como estaba antes. Revisa
+frame por frame." Se sacaron frames del video con ffmpeg cada 0.5s
+para reconstruir la secuencia real.
+
+**Lo que mostraron los frames:** con la reestructuración de la
+sección 42 (extras movidas fuera del pin, a flujo normal después),
+la pantalla fullscreen quedaba con SOLO la foto + el texto — las 2
+fotos ya no aparecían en esa misma pantalla. Recién se veían
+varios cientos de píxeles de scroll después, como un bloque plano y
+desconectado, con el texto ya reducido y pegado arriba del todo antes
+de que empezaran. Es decir: lo que antes (secciones 36-41) era **una
+sola pantalla fullscreen con todo junto** (foto oscureciéndose + 2
+fotos + texto, superpuestos) pasó a ser **dos momentos separados**
+(pantalla fullscreen con foto+texto, y después, aparte, un bloque
+plano con las 2 fotos) — una regresión real en la composición, no
+una percepción.
+
+**La confusión:** la sección 42 tomó el código de hba.com al pie de
+la letra (ahí las 2 fotos chicas viven fuera de cualquier pin-spacer,
+sueltas en el grid), pero en el layout de una sola columna de este
+sitio (mobile-first, sin el grid de 2 columnas del desktop de hba.com)
+eso significaba que las 2 fotos quedaran completamente ocultas
+detrás del pin fullscreen mientras dura, y solo aparecieran bien
+después, ya en flujo — perdiendo la composición de una sola pantalla
+que el cliente ya tenía aprobada.
+
+**La corrección, sin volver a atrás:** lo único que realmente hacía
+falta "resolver" (sección 42) era que las 2 fotos no tuvieran ninguna
+animación — no que vivieran fuera del pin. Se las devuelve adentro de
+`.propiedad-fija__contenido` (adentro del pin fullscreen, superpuestas
+a la foto, como en las secciones 36-41), pero sin ningún
+`gsap.set`/`gsap.to` encima: quedan quietas, visibles desde que arranca
+el bloque, sin deslizarse ni aparecer con un tween. El velo y el texto
+siguen animados exactamente igual que antes (tinte 0→1, texto después).
+
+**Cambios:**
+- `index.html`: `.propiedad-fija__extras` vuelve a estar adentro de
+  `.propiedad-fija__contenido`, junto con `.propiedad-fija__info`,
+  dentro del pin — en los 3 bloques.
+- `movil.css`: se recupera `.propiedad-fija__contenido` (position
+  absolute, centrado, flex column) como wrapper de extras + info.
+  `.propiedad-fija__info` deja de tener su propio position:absolute
+  (vuelve a ser un simple hijo flex de contenido, como antes).
+- `efectos.js`: sin cambios funcionales — ya no tenía ningún
+  `gsap.set`/`gsap.to` sobre extras desde la sección 43; solo se
+  corrigió el comentario, que describía la versión de la sección 42
+  (extras afuera del pin) en vez de esta.
+
+**Lección:** al adaptar un patrón de referencia (hba.com, grid de 2
+columnas en desktop) a un layout distinto (una sola columna en
+mobile), hay que separar qué parte del patrón es la mecánica pedida
+(acá: "sin animación") de qué parte es meramente cómo esa referencia
+lo implementa en SU propio layout (acá: "fuera del pin") — no todo lo
+segundo aplica igual en un layout distinto.
+
+Cache-bust: `movil.css?v=84`, `efectos.js?v=75`.

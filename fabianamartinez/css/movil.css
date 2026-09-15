@@ -635,16 +635,18 @@ body.menu-abierto .nav{
 
 /* ============================================================
    Propiedad destacada — foto fija con tinte de marca (paquete HB).
-   Mecánica real de hba.com (sticky_gallery), no una recreada: SOLO
-   la foto base + el texto (zona/nombre/precio/botón) quedan fijos un
-   tramo de scroll (pin de GSAP ScrollTrigger, no position:sticky —
-   ver por qué en el comentario de .propiedad-fija__pin). Las 2 fotos
-   extra NO tienen ninguna animación ni JS encima — son contenido
-   normal, en flujo, que sigue después del pin. El efecto de "las 2
-   fotos suben con el scroll" no es una animación programada: es
-   scroll nativo de toda la vida, se ve así porque lo de arriba se
-   queda fijo mientras lo de abajo sigue scrolleando como cualquier
-   contenido de la página.
+   Pantalla completa (fullscreen), como siempre fue: la foto base, el
+   velo, las 2 fotos extra y el texto (zona/nombre/precio/botón) viven
+   todos juntos en la misma pantalla fija, superpuestos — no dos
+   pantallas separadas. El pin lo maneja GSAP ScrollTrigger (pin:true
+   en initPropiedadFija, efectos.js), no position:sticky (ver por qué
+   en el comentario de .propiedad-fija__pin).
+   Lo único "resuelto" sobre hba.com (ver CONTEXTO.md, secciones 42 y
+   44) es que las 2 fotos extra NO tienen ninguna animación ni JS
+   encima — están ahí, quietas, desde que se ve el bloque, sin
+   deslizarse ni aparecer con un tween. El velo se sigue tiñendo de 0
+   a 1 de opacidad con el scroll, y el texto aparece recién cuando
+   termina de quedar sólido.
    ============================================================ */
 /* Sin padding-top de .seccion acá: con los 72px de siempre más el
    margin-top que tenía la primera propiedad, quedaba una franja de
@@ -653,14 +655,7 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
-/* Pantalla completa (fullscreen) otra vez, como antes de la sección
-   42 — la simplificación de esa sección no era "achicar el pin", era
-   sacar el JS/la animación de las 2 fotos extra (ver más abajo). El
-   pin fullscreen se suelta solo, en flujo normal, apenas termina su
-   recorrido de scroll: recién ahí entran las 2 fotos, subiendo con el
-   scroll de toda la vida (nunca se solapan con el pin, no hace falta
-   que el pin sea más bajo que la pantalla para eso).
-   Misma fórmula de altura real que .seccion--completa (ver más abajo
+/* Misma fórmula de altura real que .seccion--completa (ver más abajo
    y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
    sin el bug de 100vh en navegadores móviles con barra de direcciones
    dinámica.
@@ -688,17 +683,18 @@ body.menu-abierto .nav{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
   will-change:opacity;
 }
-/* Zona, nombre, precio y botón — superpuestos a la foto (adentro del
-   pin), centrados verticalmente. Aparecen recién cuando el velo
-   termina de quedar sólido (ver initPropiedadFija en efectos.js). */
-.propiedad-fija__info{
+/* Grupo centrado verticalmente en la pantalla: las 2 fotos extra +
+   la info de la propiedad, superpuestos a la foto ya teñida. Las
+   fotos quedan quietas siempre (sin JS); el texto es lo único que
+   sigue animado, apareciendo recién cuando el velo termina de quedar
+   sólido (ver initPropiedadFija en efectos.js). */
+.propiedad-fija__contenido{
   position:absolute; left:6%; right:6%; top:50%;
   transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:28px;
 }
-/* Las 2 fotos extra: contenido normal de la página, sin position
-   especial y sin JS — el fondo sólido (mismo --azul-900 del velo) es
-   lo único "de marca" acá, para que no se sientan 2 fotos sueltas
-   sino puestas en un mismo panel. */
+/* Las 2 fotos extra: un solo panel sólido (mismo --azul-900 del
+   velo), sin ninguna animación — se ven quietas desde el arranque. */
 .propiedad-fija__extras{
   display:flex; flex-direction:column; gap:16px;
   background:var(--azul-900); padding:16px;
