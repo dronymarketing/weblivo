@@ -1420,3 +1420,29 @@ No se tocó ninguna medida, margen ni la estructura del HTML — el
 cambio fue puramente sacar el tween de posición de las 2 fotos.
 
 Cache-bust: `movil.css?v=77` (solo comentarios), `efectos.js?v=68`.
+
+---
+
+## 38. Las 2 fotos vuelven a aparecer desde abajo, pero recién sobre el sólido ya hecho
+
+El cliente confirmó que el velo (sección 37) ya funciona como quería,
+y pidió volver a sumarle a las 2 fotos la entrada desde abajo — pero
+esta vez sobre el sólido marrón ya puesto, no mientras todavía se ve
+la foto de fondo (que era lo que se sentía "inestable" antes de la
+sección 37).
+
+**Cambio en `initPropiedadFija()` (efectos.js):** se reincorpora el
+cálculo de desplazamiento por foto (`pinRect.bottom - r.top + 40`) y
+el tween que las hace subir (`tl.to(extra, {y:0,...})`), igual que
+antes de la sección 37 — pero esta vez **sin posiciones explícitas en
+la timeline** (antes arrancaban en 0, 0.15 y 0.47, todas superpuestas
+entre sí). Sin ese tercer argumento, GSAP encadena cada tween justo
+después de que termina el anterior: primero termina de teñirse el
+velo hasta sólido, recién ahí sube la primera foto, después la
+segunda, y por último aparece el texto. Así las fotos nunca se mueven
+mientras la foto de base todavía es visible — solo se mueven ya sobre
+el marrón sólido.
+
+No se tocó ninguna medida, margen ni la estructura del HTML.
+
+Cache-bust: `movil.css?v=78` (solo comentarios), `efectos.js?v=69`.

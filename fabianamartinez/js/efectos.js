@@ -168,13 +168,14 @@
 
   /* ============================================================
      D + C combinados · Propiedad destacada con foto fija
-     La foto base queda sticky (CSS puro, se ve igual sin JS). Las 2
-     fotos extra NO se mueven con el scroll — ya están puestas en su
-     lugar final desde que se ve el bloque, como en la referencia.
-     Lo único que anima acá es el velo de marca, que se tiñe de 0 a 1
-     de opacidad (transparente → sólido) y va tapando la foto base
-     detrás de esas 2 fotos fijas, dando la sensación de que están
-     puestas en el sólido, no de que las mueve el scroll.
+     La foto base queda sticky (CSS puro, se ve igual sin JS). Todo
+     lo demás pasa en secuencia, uno después del otro (sin
+     posiciones explícitas en la timeline, así GSAP encadena cada
+     tramo apenas termina el anterior): primero el velo de marca se
+     tiñe de 0 a 1 de opacidad hasta quedar sólido; recién ahí las 2
+     fotos extra van apareciendo desde abajo, una y después la otra,
+     ya sobre ese sólido (nunca mientras todavía se ve la foto base);
+     y al final aparece el texto (zona, nombre, precio, botón).
      ============================================================ */
   function initPropiedadFija() {
     var bloques = document.querySelectorAll('.propiedad-fija');
@@ -187,6 +188,21 @@
       var info = bloque.querySelector('.propiedad-fija__info');
       if (!tinte || !pin || !extras.length) return;
 
+      /* Cada foto arranca desplazada lo suficiente para quedar tapada
+         por el overflow:hidden del pin (su borde superior por debajo
+         del borde inferior del pin, con margen), así entra
+         literalmente desde abajo de la pantalla. Se calcula por foto
+         porque cada una arranca en una posición distinta dentro del
+         contenido centrado. Sin easing (ease:'none'): el movimiento
+         sigue al scroll 1 a 1, sin acelerar ni desacelerar. */
+      var pinRect = pin.getBoundingClientRect();
+      var desplazos = extras.map(function (extra) {
+        var r = extra.getBoundingClientRect();
+        return Math.round(pinRect.bottom - r.top) + 40;
+      });
+      extras.forEach(function (extra, i) {
+        gsap.set(extra, { y: desplazos[i] });
+      });
       if (info) gsap.set(info, { autoAlpha: 0, y: 24 });
 
       /* scrub:true (no un número) — sin retraso de suavizado: la
@@ -203,10 +219,10 @@
         }
       });
 
-      tl.to(tinte, { opacity: 1, ease: 'none' }, 0);
-      /* La info (zona, nombre, precio, botón) entra recién cuando el
-         velo termina de quedar sólido — sin posición explícita, GSAP
-         la encadena justo al final del tween anterior en la timeline. */
+      tl.to(tinte, { opacity: 1, ease: 'none' });
+      extras.forEach(function (extra) {
+        tl.to(extra, { y: 0, ease: 'none' });
+      });
       if (info) tl.to(info, { autoAlpha: 1, y: 0, ease: 'none' });
     });
   }
