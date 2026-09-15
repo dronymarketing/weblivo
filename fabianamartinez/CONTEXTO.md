@@ -1905,3 +1905,12 @@ Mismas `duration` relativas entre velo/panel/texto — el reparto no
 cambia, solo el total de scroll que hace falta para completarlo.
 
 Cache-bust: `efectos.js?v=82`.
+
+---
+
+## 52. Subir un poco el recorrido: 150% → 160%
+
+Ajuste fino pedido por el cliente después de probar la sección 51:
+`end:'+=160%'` (antes `150%`). Mismo mecanismo, solo el número.
+
+Cache-bust: `efectos.js?v=83`.
