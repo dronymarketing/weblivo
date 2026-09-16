@@ -2482,3 +2482,39 @@ Destacadas a la vez (top, alto, ancho, si está "EN PANTALLA" o
 fuera de la pantalla.
 
 Cache-bust: `movil.css?v=105`, `main.js?v=59`.
+
+## 75. Encontrada la causa real: 2 propiedades quedan visibles a la vez durante el "handoff" entre pines
+
+Con el panel mostrando los 3 pines a la vez, el cliente mandó un
+video más lento y largo (44s) donde por fin se pudo capturar el
+momento exacto. Se vio esto en los datos, no a ojo:
+
+Mientras la propiedad 1 está fija en pantalla, su pin tiene
+`position: fixed`. Al terminar su tramo de scroll (`end:'+=160%'`),
+GSAP le saca el `position:fixed` pero le deja un
+`transform: translate(0px, 1200px)` — un valor que coincide con
+`160%` de la altura de pantalla (~750px × 1.6 ≈ 1200px). Es el
+mecanismo con el que GSAP evita un salto brusco al despegar el pin.
+El problema: durante el tramo de scroll en que ese transform sigue
+"sosteniendo" a la propiedad 1 cerca del techo de la pantalla, la
+propiedad 2 YA empezó a entrar por abajo — quedando **las 2 visibles
+al mismo tiempo**, una sobre otra. Eso es el "salto que se achica"
+que reportó el cliente: no es que algo cambie de tamaño, es que por
+un tramo del scroll se ven 2 pantallas completas apiladas en el
+espacio de una.
+
+(Para llegar a esto también se intentó reproducir el scroll con
+Playwright de forma controlada, pero en este entorno automatizado el
+`pin:true` de GSAP nunca llegó a activarse — utilidad nula para esto
+en particular; toda la evidencia salió de instrumentar el sitio en
+vivo y de los videos reales del cliente.)
+
+**Cambio en `efectos.js`:** cada pin de Destacadas ahora tiene
+`onLeave` (oculta todo el bloque de la propiedad con `autoAlpha:0`
+apenas termina su propio tramo de pin) y `onEnterBack` (lo vuelve a
+mostrar si el usuario scrollea hacia atrás). Así, sin importar qué
+transform le deje puesto GSAP por dentro, la propiedad anterior
+desaparece por completo antes de que la siguiente pueda superponerse
+con ella.
+
+Cache-bust: `efectos.js?v=88`.
