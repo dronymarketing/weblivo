@@ -2020,3 +2020,32 @@ usa el resto del sitio (h1/h2), no la cursiva de marca. Mismo color y
 margen que antes.
 
 Cache-bust: `movil.css?v=90`.
+
+---
+
+## 58. Revertir la tipografía (solo el tamaño era el pedido) + arreglar el corte del botón
+
+El cliente corrigió la sección 57: "Quedó cortado y no, no cambies la
+tipografía, el tamaño era cambiar." Dos cosas:
+
+1. **Tipografía:** solo hacía falta agrandar el tamaño del título, no
+   cambiar la fuente. Se revierte `.proyecto-destacado__nombre` a
+   `font-family:"Hello Branch",cursive; font-weight:400` (como estaba
+   antes de la sección 57), dejando `font-size:40px` (lo que sí se
+   pidió agrandar).
+
+2. **El corte:** con el título más grande ocupando 2 renglones, el
+   contenido (panel de fotos + texto) ya no entraba en el espacio
+   fijo entre los márgenes de 40px arriba/abajo (sección 56), y el
+   `overflow:hidden` del pin tapaba el botón "Ver Propiedad" — se veía
+   literalmente cortado, como mostró la captura.
+
+   **Fix:** `.propiedad-fija__extras` (el panel de las 2 fotos) pasa
+   de tener alto fijo por `aspect-ratio:16/10` en cada foto a
+   `flex:1 1 auto; min-height:0` — ahora es el panel de fotos el que
+   cede altura si hace falta (se achica un poco), nunca el texto. La
+   info (título, precio, botón) sigue midiendo lo que su contenido
+   necesite, así el botón queda siempre dentro del margen de 40px de
+   abajo, sin importar si el título ocupa 1 o 2 renglones.
+
+Cache-bust: `movil.css?v=91`.
