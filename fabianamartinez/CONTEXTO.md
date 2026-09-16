@@ -2263,4 +2263,33 @@ las fotos en cualquier parte del sitio.
 el margen. Sacar el `<div>` de `index.html` y la regla `#debug-linea`
 de `movil.css` una vez que el cliente confirme.
 
+## 69. La línea confirmó un desfasaje fino: el dibujo del ícono no llega al borde de su caja
+
+El cliente mandó una captura real del celular con la línea de debug
+puesta. Medí pixel por pixel esa captura (no a ojo): la línea roja y
+el borde derecho de las 2 fotos coinciden casi exactamente, pero las
+3 líneas dibujadas de la hamburguesa terminan unos px antes que la
+línea roja — hay un hueco visible.
+
+**Causa real:** la caja del ícono (24×24) SÍ está bien alineada al
+margen (eso ya lo había corregido y confirmado por Playwright en la
+sección 68: coincide en el mismo píxel). El problema es otro, más
+fino: el símbolo SVG `#i-menu` en sí (compartido, ver `index.html`)
+dibuja sus 3 líneas con `M4 12h16` — o sea, dentro de la grilla de 24
+unidades del ícono, las líneas van de x=4 a x=20, dejando 4 unidades
+(4px) de aire propio a la derecha que no tienen que ver con el
+padding del botón de 44px. Ese aire interno del dibujo no estaba
+compensado por el ajuste de la sección 64 (que solo corregía la
+diferencia entre el botón de 44px y la caja del ícono de 24px), así
+que las líneas visibles quedaban ~4px más adentro que el borde real
+de la foto, aunque la caja invisible del ícono estuviera perfecta.
+
+**Cambio en `movil.css`:** `.nav__hamburguesa` pasa de
+`margin-right:-10px` a `margin-right:-14px` (10px del padding del
+botón + 4px del aire propio del dibujo del ícono), para que las
+líneas dibujadas —no solo la caja invisible— terminen exactamente en
+el mismo margen que el borde derecho de las fotos.
+
+Cache-bust: `movil.css?v=102`.
+
 Cache-bust: `movil.css?v=101`.
