@@ -2170,3 +2170,25 @@ nav), sin achicar su área de toque de 44px, para que el ícono quede
 al mismo margen lateral visual que el logo.
 
 Cache-bust: `movil.css?v=97`.
+
+---
+
+## 65. El margen lateral de las fotos de Destacadas no coincidía con el del nav
+
+El cliente notó, con una captura, que el bloque de fotos+texto de
+Destacadas parecía tener un margen lateral distinto al del nav (logo
+y hamburguesa).
+
+**Causa:** `.propiedad-fija__contenido` usaba `left:6%; right:6%` —
+un margen en PORCENTAJE del ancho de pantalla, mientras que el nav (y
+el resto del sitio) usa `--margen` (24px FIJO). Esos dos únicamente
+coinciden en una pantalla de exactamente 400px de ancho; en cualquier
+otro ancho, el 6% da un margen distinto a 24px (más chico en
+pantallas angostas, más grande en anchas) — de ahí el desfasaje que
+se ve en la captura.
+
+**Cambio en `movil.css`:** `.propiedad-fija__contenido` pasa a
+`left:var(--margen); right:var(--margen)` — el mismo margen fijo de
+24px que usa el nav y el resto del sitio, en vez de un porcentaje.
+
+Cache-bust: `movil.css?v=98`.
