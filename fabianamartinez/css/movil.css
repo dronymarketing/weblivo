@@ -3,6 +3,16 @@
    movil.css · base 375px · SIN media queries
    ============================================================ */
 
+/* Línea guía de debug (temporal, sacar una vez resuelta la duda del
+   margen lateral): marca el borde de --margen (24px) de punta a
+   punta de la pantalla, por encima de todo (z-index más alto que el
+   nav, que usa 80), para comparar a ojo si coincide con el lateral
+   derecho de las fotos y con el ícono de la hamburguesa. */
+#debug-linea{
+  position:fixed; top:0; bottom:0; right:var(--margen);
+  width:1px; background:#ff0000; z-index:999; pointer-events:none;
+}
+
 :root{
   /* Marca — hex muestreados a nivel de píxel del branding (paleta primaria) */
   --azul:        #5D2510;   /* terracota — 12.09:1 sobre blanco. Rol de acento/CTA (antes "azul") */

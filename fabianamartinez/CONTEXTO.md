@@ -2231,3 +2231,36 @@ asomando cerca de la hamburguesa) sin resolver, a la espera de que el
 cliente indique cómo prefiere abordarlo.
 
 Cache-bust: `movil.css?v=100`.
+
+## 68. Línea guía de debug para chequear el margen lateral a ojo
+
+Medí con Playwright contra el sitio en vivo la posición real de la
+hamburguesa y de las fotos de Destacadas (property 1, "Apartamento en
+Cordón"): el borde derecho del ícono de la hamburguesa y el borde
+derecho de las fotos caen exactamente en el mismo píxel (x=388 en una
+pantalla de 412px de ancho, ambos a 24px del borde = `--margen`). No
+hay desfasaje lateral por CSS. El cliente pidió, igual, una forma de
+verlo con sus propios ojos para sacarse la duda.
+
+**Cambio:** agregué un `<div id="debug-linea">` justo después de
+`<body>` en `index.html`, y en `movil.css`:
+
+```css
+#debug-linea{
+  position:fixed; top:0; bottom:0; right:var(--margen);
+  width:1px; background:#ff0000; z-index:999; pointer-events:none;
+}
+```
+
+Es una línea roja fina, fija, que atraviesa toda la pantalla de
+arriba a abajo (incluso por encima del nav, gracias al z-index:999,
+más alto que el 80 del nav) marcando exactamente el borde de
+`--margen` (24px). Sirve para comparar a ojo si esa línea coincide
+con el lateral derecho de la hamburguesa y con el lateral derecho de
+las fotos en cualquier parte del sitio.
+
+**Es temporal** — hecha solo para que el cliente confirme visualmente
+el margen. Sacar el `<div>` de `index.html` y la regla `#debug-linea`
+de `movil.css` una vez que el cliente confirme.
+
+Cache-bust: `movil.css?v=101`.
