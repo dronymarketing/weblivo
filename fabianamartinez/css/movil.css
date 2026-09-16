@@ -723,7 +723,7 @@ body.menu-abierto .nav{
    — la tipografía cursiva de marca ("Hello Branch") se mantiene, solo
    se pidió agrandar el tamaño. No importa si ocupa 2 renglones. */
 .proyecto-destacado__nombre{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:40px; line-height:1.05;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:48px; line-height:1.05;
   color:var(--fondo-alt); margin:0 0 10px;
 }
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }

@@ -2049,3 +2049,15 @@ tipografía, el tamaño era cambiar." Dos cosas:
    abajo, sin importar si el título ocupa 1 o 2 renglones.
 
 Cache-bust: `movil.css?v=91`.
+
+---
+
+## 59. Agrandar más el título (Hello Branch)
+
+Ajuste fino pedido tras la sección 58: `font-size:48px` (antes `40px`)
+en `.proyecto-destacado__nombre`. Sigue siendo la cursiva "Hello
+Branch" — el fix de la sección 58 (panel de fotos con
+`flex:1 1 auto`) ya se encarga de que el botón nunca quede tapado,
+aunque el título crezca u ocupe 2 renglones.
+
+Cache-bust: `movil.css?v=92`.
