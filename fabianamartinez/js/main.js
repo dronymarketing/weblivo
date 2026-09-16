@@ -35,6 +35,50 @@
   }
 
   /* ----------------------------------------------------------
+     PANEL DE DEBUG (temporal) — números en vivo del ancho real de
+     pantalla, --vh100, y el pin de Destacadas que esté cruzando el
+     medio de la pantalla en cada instante (ancho, left/right, y los
+     estilos inline que GSAP le haya puesto mientras está fijo). Se
+     actualiza en cada frame con requestAnimationFrame. Sirve para
+     captar con un video el momento exacto del "salto" que reportó el
+     cliente, en vez de seguir adivinando por capturas sueltas. Sacar
+     junto con #debug-linea (ver movil.css) una vez resuelto.
+  ---------------------------------------------------------- */
+  (function debugPanel() {
+    var panel = document.querySelector('#debug-panel');
+    if (!panel) return;
+    var pines = document.querySelectorAll('.propiedad-fija__pin');
+
+    function actualizar() {
+      var vh100 = getComputedStyle(document.documentElement).getPropertyValue('--vh100');
+      var medioPantalla = window.innerHeight / 2;
+      var masCerca = null;
+      var distMin = Infinity;
+      pines.forEach(function (pin) {
+        var r = pin.getBoundingClientRect();
+        var centro = r.top + r.height / 2;
+        var dist = Math.abs(centro - medioPantalla);
+        if (dist < distMin) { distMin = dist; masCerca = pin; }
+      });
+
+      var texto =
+        'innerWidth: ' + window.innerWidth + '\n' +
+        'clientWidth: ' + document.documentElement.clientWidth + '\n' +
+        '--vh100: ' + vh100.trim();
+
+      if (masCerca) {
+        var r = masCerca.getBoundingClientRect();
+        texto += '\npin width: ' + r.width.toFixed(1) +
+                 '\npin left/right: ' + r.left.toFixed(1) + ' / ' + r.right.toFixed(1) +
+                 '\npin inline style: ' + (masCerca.getAttribute('style') || '(ninguno)');
+      }
+      panel.textContent = texto;
+      requestAnimationFrame(actualizar);
+    }
+    requestAnimationFrame(actualizar);
+  })();
+
+  /* ----------------------------------------------------------
      NAV — tres estados
      tope   : arriba del todo, transparente, logo blanco
      glass  : scrolleando todavía dentro del hero

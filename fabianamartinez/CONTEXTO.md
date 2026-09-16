@@ -2406,3 +2406,42 @@ Sigue pendiente confirmar en un celular real — mismo criterio que en
 la sección 71.
 
 Cache-bust: `efectos.js?v=87`.
+
+## 73. El fix de la sección 72 tampoco alcanzó — se instrumenta el sitio con números en vivo en vez de seguir adivinando
+
+El cliente probó de nuevo en su celular real y confirmó que el salto
+sigue pasando: "cuando completo la pantalla queda en un tamaño todo y
+cuando sigo scrolleando, hace un salto que se achica todo al margen
+de la línea roja".
+
+Con 2 intentos de arreglo fallidos (secciones 71 y 72, ambos
+diagnósticos razonables sobre el papel pero sin confirmar en el
+dispositivo real donde pasa), y con el video que mandó el cliente
+mostrando algo real pero no 100% concluyente (frame a frame se ve
+contenido de una propiedad superpuesto sobre la siguiente, pero no
+alcanza para saber CUÁL valor de CSS/JS está cambiando en ese
+instante), la próxima corrección no debía volver a ser una hipótesis
+más sin verificar.
+
+**Cambio:** en vez de otra línea visual, se agregó un panel de texto
+en vivo (`#debug-panel`, arriba a la izquierda, fondo negro/texto
+verde tipo consola) que muestra, actualizándose en cada frame:
+- `innerWidth` y `clientWidth` reales de la pantalla.
+- El valor actual de `--vh100`.
+- El ancho, `left`/`right` y el `style` inline completo (lo que GSAP
+  le haya puesto mientras está fijo) del pin de Destacadas que en ese
+  instante esté cruzando el medio de la pantalla.
+
+Con un video mostrando este panel en vivo durante el salto, se puede
+leer exactamente qué número cambia (¿el ancho del pin? ¿su
+`left`/`right`? ¿el `--vh100`? ¿ninguno, y es otra cosa?) en vez de
+seguir infiriendo la causa desde capturas sueltas o análisis de
+video sin esos datos.
+
+Archivos: `index.html` (nuevo `<div id="debug-panel">`), `movil.css`
+(estilos del panel), `main.js` (lógica de actualización con
+`requestAnimationFrame`, dentro de una función `debugPanel()`
+autocontenida). Es temporal — sacar junto con `#debug-linea` una vez
+resuelto.
+
+Cache-bust: `movil.css?v=104`, `main.js?v=58`.
