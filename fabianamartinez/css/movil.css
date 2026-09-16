@@ -693,7 +693,7 @@ body.menu-abierto .nav{
   will-change:opacity;
 }
 /* Las 2 fotos extra + la info de la propiedad, superpuestos a la foto
-   ya teñida. Margen fijo de 40px arriba y abajo (mismo valor que
+   ya teñida. Margen fijo de 40px abajo (mismo valor que
    #nosotros.seccion--completa). Las 2 fotos y el texto son
    INDEPENDIENTES entre sí a propósito: el tamaño de la tipografía del
    título no debe afectar el tamaño de las fotos (ni al revés) — las
@@ -702,9 +702,15 @@ body.menu-abierto .nav{
    pegado abajo (bottom:0 de este contenedor = 40px del borde del
    pin), sin que ninguno de los dos le quite ni le dé espacio al otro.
    Si el título crece mucho, se superpone a las fotos en vez de
-   achicarlas — es el comportamiento pedido. */
+   achicarlas — es el comportamiento pedido.
+   Arriba el margen es nav-alto + 16px (no 40px fijo): el pin es
+   fullscreen 100% sin restar el nav, y el nav queda transparente
+   encima de esta sección, así que la primera foto tiene que arrancar
+   por debajo del nav para no quedar tapada/asomando detrás del ícono
+   de la hamburguesa. */
 .propiedad-fija__contenido{
-  position:absolute; left:var(--margen); right:var(--margen); top:40px; bottom:40px;
+  position:absolute; left:var(--margen); right:var(--margen);
+  top:calc(var(--nav-alto) + 16px); bottom:40px;
 }
 /* Las 2 fotos extra: sin fondo ni padding propios (nada de sólido
    marrón detrás) — un solo panel que sube desde abajo como una sola

@@ -2192,3 +2192,29 @@ se ve en la captura.
 24px que usa el nav y el resto del sitio, en vez de un porcentaje.
 
 Cache-bust: `movil.css?v=98`.
+
+## 66. Foto de Destacadas "asomando" detrás de la hamburguesa (textura rara en el borde derecho)
+
+El cliente mandó una captura señalando la hamburguesa y el lateral
+derecho de la foto: se veía una textura oscura/verdosa (tipo árbol)
+justo ahí, y preguntó si era un problema del nav o de las imágenes.
+
+**Causa:** en la sección #63 el pin de Destacadas pasó a fullscreen
+100% real (sin restarle el alto del nav) y el nav pasa a `es-tope`
+(transparente, sin fondo) mientras se ve esta sección — pero
+`.propiedad-fija__contenido` seguía arrancando a `top:40px`, un valor
+menor que `--nav-alto` (60px). Es decir, la primera foto extra
+(`cordon-apto-fachada.jpg`) empezaba a 40px del borde superior del
+pin, quedando sus primeros ~20px de alto TAPADOS/asomando justo
+detrás del nav transparente — lo que se veía cerca de la hamburguesa
+no era un glitch del nav ni un error de márgenes laterales, era la
+punta de esa misma foto (con un árbol en esa zona del encuadre)
+mostrándose a través del nav sin fondo.
+
+**Cambio en `movil.css`:** `.propiedad-fija__contenido` pasa de
+`top:40px` a `top:calc(var(--nav-alto) + 16px)`, para que el bloque
+de fotos+texto arranque siempre por debajo del nav, sin importar que
+el pin de fondo sea fullscreen. El margen inferior se mantiene en
+`40px` (ahí no hay nav que tape nada).
+
+Cache-bust: `movil.css?v=99`.
