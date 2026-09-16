@@ -2445,3 +2445,40 @@ autocontenida). Es temporal — sacar junto con `#debug-linea` una vez
 resuelto.
 
 Cache-bust: `movil.css?v=104`, `main.js?v=58`.
+
+## 74. Dos videos más con el panel — "pin width" nunca cambia, pero el panel tenía sus propios problemas
+
+El cliente mandó 2 videos más (uno de 97 segundos) pidiendo mirar
+frame a frame cómo cambia "pin width". Se revisó con el mismo método
+(`ffmpeg -vf fps=...` + recortes precisos de esa línea del panel en
+cientos de frames): **"pin width" se mantiene en 384.0/385.0 (1px de
+diferencia, insignificante) durante los 2 videos completos, sin
+excepción** — no hay un salto real en ese número.
+
+Lo que sí se confirmó revisando los frames completos (no solo el
+panel): el contenido visual entre "Apartamento en Cordón" y la
+propiedad siguiente sí varía de forma inconsistente entre frames
+cercanos en el tiempo, algo compatible con que el cliente esté
+scrolleando de forma no estrictamente lineal (hacia adelante y atrás)
+al tratar de mostrar el efecto — no necesariamente un bug de ancho.
+
+**2 problemas encontrados en el panel mismo, que limitaban lo que se
+podía ver:**
+1. Solo mostraba el pin "más cercano al centro de la pantalla" — si
+   en algún momento 2 pines quedan visibles/superpuestos al mismo
+   tiempo (que es justo el bug real confirmado en la sección
+   anterior con el video de superposición), el panel no lo podía
+   reflejar porque solo mira uno.
+2. La línea `pin inline style` se cortaba en el borde derecho de la
+   pantalla (el panel no tenía wrap ni límite de ancho) — el valor de
+   `scale` de GSAP, potencialmente relevante, nunca llegó a verse en
+   ningún video.
+
+**Cambio:** `debugPanel()` en `main.js` ahora reporta LOS 3 PINES de
+Destacadas a la vez (top, alto, ancho, si está "EN PANTALLA" o
+"fuera", y su `style` inline completo), no solo uno. En `movil.css`,
+`#debug-panel` pasa a `white-space:pre-wrap` con `right:4px` y
+`word-break:break-all`, así el texto se envuelve en vez de cortarse
+fuera de la pantalla.
+
+Cache-bust: `movil.css?v=105`, `main.js?v=59`.
