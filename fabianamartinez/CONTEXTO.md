@@ -2218,3 +2218,16 @@ el pin de fondo sea fullscreen. El margen inferior se mantiene en
 `40px` (ahí no hay nav que tape nada).
 
 Cache-bust: `movil.css?v=99`.
+
+## 67. Revertido el cambio de la sección 66 (a pedido del cliente)
+
+El cliente dijo no entender el cambio hecho en la sección 66 y pidió
+volver al código anterior.
+
+**Cambio en `movil.css`:** `.propiedad-fija__contenido` vuelve de
+`top:calc(var(--nav-alto) + 16px)` a `top:40px` (el valor que tenía
+antes de la sección 66). Queda pendiente el bug original (la foto
+asomando cerca de la hamburguesa) sin resolver, a la espera de que el
+cliente indique cómo prefiere abordarlo.
+
+Cache-bust: `movil.css?v=100`.
