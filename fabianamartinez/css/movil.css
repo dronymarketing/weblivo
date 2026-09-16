@@ -685,35 +685,39 @@ body.menu-abierto .nav{
 }
 /* Las 2 fotos extra + la info de la propiedad, superpuestos a la foto
    ya teñida. Margen fijo de 40px arriba y abajo (mismo valor que
-   #nosotros.seccion--completa, no un centrado automático que varía
-   según la altura de pantalla o del contenido). El panel de fotos
-   (.propiedad-fija__extras) es el que cede espacio si hace falta
-   (flex:1 1 auto — ver más abajo): la info (texto) mide lo que su
-   contenido necesite, nunca se achica, así el botón "Ver Propiedad"
-   nunca queda tapado por el overflow:hidden del pin aunque el título
-   ocupe 2 renglones. Cada parte (panel de fotos, luego texto) aparece
-   en su propio tramo de scroll, en secuencia (ver initPropiedadFija
-   en efectos.js). */
+   #nosotros.seccion--completa). Las 2 fotos y el texto son
+   INDEPENDIENTES entre sí a propósito: el tamaño de la tipografía del
+   título no debe afectar el tamaño de las fotos (ni al revés) — las
+   fotos arrancan pegadas arriba con su alto fijo de siempre
+   (aspect-ratio, ver .propiedad-fija__extra), y el texto queda
+   pegado abajo (bottom:0 de este contenedor = 40px del borde del
+   pin), sin que ninguno de los dos le quite ni le dé espacio al otro.
+   Si el título crece mucho, se superpone a las fotos en vez de
+   achicarlas — es el comportamiento pedido. */
 .propiedad-fija__contenido{
   position:absolute; left:6%; right:6%; top:40px; bottom:40px;
-  display:flex; flex-direction:column; gap:28px;
 }
 /* Las 2 fotos extra: sin fondo ni padding propios (nada de sólido
    marrón detrás) — un solo panel que sube desde abajo como una sola
-   pieza, nunca 2 fotos sueltas moviéndose cada una por su lado.
-   flex:1 1 auto + min-height:0 (en vez de un alto fijo por
-   aspect-ratio): ocupa lo que sobre después de la info, y se achica
-   solo si hace falta para que nunca se corte nada abajo. */
+   pieza, nunca 2 fotos sueltas moviéndose cada una por su lado. Alto
+   fijo por aspect-ratio en cada foto, siempre el mismo sin importar
+   el tamaño del título. */
 .propiedad-fija__extras{
   display:flex; flex-direction:column; gap:16px;
-  flex:1 1 auto; min-height:0;
   will-change:transform;
 }
 .propiedad-fija__extra{
-  position:relative; flex:1 1 0; min-height:0;
+  position:relative; aspect-ratio:16/10;
   border-radius:0; overflow:hidden;
 }
 .propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+/* Pegado abajo de .propiedad-fija__contenido (o sea, a 40px del
+   borde de abajo del pin), sin importar cuánto midan las 2 fotos de
+   arriba — si el título crece, se superpone a las fotos en vez de
+   empujarlas o achicarlas (ver comentario en .propiedad-fija__contenido). */
+.propiedad-fija__info{
+  position:absolute; left:0; right:0; bottom:0;
+}
 
 .proyecto-destacado__zona{
   font-size:11px; letter-spacing:.14em; text-transform:uppercase;
@@ -723,7 +727,7 @@ body.menu-abierto .nav{
    — la tipografía cursiva de marca ("Hello Branch") se mantiene, solo
    se pidió agrandar el tamaño. No importa si ocupa 2 renglones. */
 .proyecto-destacado__nombre{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:60px; line-height:1.05;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:50px; line-height:1.05;
   color:var(--fondo-alt); margin:0 0 10px;
 }
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }

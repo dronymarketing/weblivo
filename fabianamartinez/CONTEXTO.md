@@ -2085,3 +2085,33 @@ Ajuste fino tras probar 90px: `font-size:60px` en
 panel de fotos flexible de la sección 58).
 
 Cache-bust: `movil.css?v=94`.
+
+---
+
+## 62. Desacoplar el tamaño del título del tamaño de las 2 fotos
+
+El cliente pidió bajar a 50px, pero además cambió el criterio de
+fondo: "Que el tamaño de la tipografía no interfiera con el tamaño de
+las 2 imágenes, que eso sea independiente, no pasa nada que el título
+quede encima de las 2 imágenes."
+
+Esto revierte el mecanismo de la sección 58 (panel de fotos
+`flex:1 1 auto` cediendo espacio para que el texto siempre entrara
+completo) — ese acople era exactamente lo que ya no se quiere.
+
+**Cambios en `movil.css`:**
+- `.propiedad-fija__extras` / `.propiedad-fija__extra` vuelven a tener
+  alto fijo por `aspect-ratio:16/10` (como antes de la sección 58) —
+  el tamaño de las 2 fotos ya no depende de cuánto mida el texto.
+- `.propiedad-fija__contenido` deja de ser un flex column con
+  `justify-content`/`gap` — pasa a ser solo el marco
+  (`top:40px; bottom:40px`) sin manejar el reparto interno.
+- `.propiedad-fija__info` (el texto) pasa a `position:absolute;
+  left:0; right:0; bottom:0` — queda pegado al fondo del marco (40px
+  del borde del pin) de forma completamente independiente de las
+  fotos. Si el título crece mucho, se superpone visualmente a la
+  parte de abajo de las fotos en vez de empujarlas o achicarlas — el
+  comportamiento pedido ("no pasa nada que quede encima").
+- `.proyecto-destacado__nombre`: `font-size:50px` (antes `60px`).
+
+Cache-bust: `movil.css?v=95`.
