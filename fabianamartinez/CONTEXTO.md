@@ -2518,3 +2518,35 @@ desaparece por completo antes de que la siguiente pueda superponerse
 con ella.
 
 Cache-bust: `efectos.js?v=88`.
+
+## 76. La sección 75 era espantosa — arreglado con z-index en vez de esconder por JS
+
+El cliente rechazó el fix de la sección 75: esconder de golpe todo
+el bloque con `autoAlpha:0` en `onLeave` hace que la propiedad
+desaparezca de un tirón apenas termina su pin — un salto distinto,
+pero salto al fin. Pidió una solución más sencilla.
+
+**Revertido en `efectos.js`:** se sacaron `onLeave`/`onEnterBack` y
+el `gsap.set(bloque, {autoAlpha:...})` — el ScrollTrigger de cada
+pin vuelve a ser el de siempre (sin callbacks extra).
+
+**Fix real, en `movil.css` (una sola regla, sin tocar JS):** el
+diagnóstico de la sección 75 sigue siendo válido — al soltar el pin,
+GSAP le deja a la propiedad anterior un transform que la mantiene
+asomando arriba de la pantalla mientras la siguiente ya entró por
+abajo. En vez de esconder nada, alcanza con que la propiedad que
+viene DESPUÉS en el HTML pinte siempre POR ENCIMA de la anterior:
+
+```css
+.propiedad-fija:nth-of-type(1){ z-index:1; }
+.propiedad-fija:nth-of-type(2){ z-index:2; }
+.propiedad-fija:nth-of-type(3){ z-index:3; }
+```
+
+Como cada foto de fondo es opaca y ocupa el 100% de la pantalla, la
+propiedad de más adelante tapa automáticamente cualquier resto
+visible de la anterior — sin parpadeos, sin pop, sin JS adicional.
+`.propiedad-fija` ya tenía `position:relative`, así que el `z-index`
+aplica directo, sin tocar nada más.
+
+Cache-bust: `movil.css?v=106`, `efectos.js?v=89`.

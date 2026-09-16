@@ -698,6 +698,16 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
+/* Al soltar el pin de una propiedad, GSAP le deja un transform
+   residual (para no dar un salto brusco) que la mantiene asomando
+   arriba de la pantalla mientras la siguiente ya empezó a entrar por
+   abajo — un instante quedan las 2 a la vez. En vez de esconder nada
+   por JS, alcanza con que la que viene DESPUÉS en el HTML pinte
+   siempre POR ENCIMA: como cada foto de fondo es opaca y ocupa el
+   100%, la de atrás queda tapada sin que se note nada raro. */
+.propiedad-fija:nth-of-type(1){ z-index:1; }
+.propiedad-fija:nth-of-type(2){ z-index:2; }
+.propiedad-fija:nth-of-type(3){ z-index:3; }
 /* Fullscreen 100% real, SIN restar --nav-alto (a diferencia de
    .seccion--completa) — acá el nav pasa a transparente con letras
    blancas mientras dura #destacadas (ver estadoNav en main.js), así

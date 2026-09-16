@@ -246,24 +246,7 @@
          así que la foto ocupa el 100% de la pantalla de punta a
          punta, con el nav flotando encima (igual que sobre el hero).
          end:'+=160%' — recorrido de scroll extra mientras dura el
-         pin fullscreen (ajustado de a poco: 180% → 150% → 160%).
-
-         onLeave/onEnterBack: confirmado con un panel de debug en
-         vivo (números reales, no capturas) contra un video del
-         cliente: cuando termina el pin de una propiedad, GSAP la
-         despega de position:fixed pero le deja un
-         transform:translate(0, ~alto-del-pin*1.6) para que la
-         transición hacia el scroll normal no dé un salto — ese valor
-         coincide exactamente con el end:'+=160%' de acá arriba. El
-         problema es que, mientras dura ese tramo, la propiedad
-         anterior sigue asomando arriba de la pantalla (el transform
-         no la saca del todo) al mismo tiempo que la siguiente ya
-         empezó a entrar por abajo — las dos quedan visibles a la
-         vez, lo que se ve como un salto/superposición. Se la oculta
-         del todo (autoAlpha:0) apenas termina su propio pin, y se la
-         vuelve a mostrar si el usuario scrollea hacia atrás, para
-         que nunca puedan quedar 2 propiedades visibles al mismo
-         tiempo sin importar qué transform le deje puesto GSAP. */
+         pin fullscreen (ajustado de a poco: 180% → 150% → 160%). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
@@ -271,9 +254,7 @@
           end: '+=160%',
           pin: true,
           anticipatePin: 1,
-          scrub: 0.3,
-          onLeave: function () { gsap.set(bloque, { autoAlpha: 0 }); },
-          onEnterBack: function () { gsap.set(bloque, { autoAlpha: 1 }); }
+          scrub: 0.3
         }
       });
 
