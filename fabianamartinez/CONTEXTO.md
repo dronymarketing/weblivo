@@ -2145,3 +2145,28 @@ tapando un pedazo de la foto.
   hero) sigue intacto.
 
 Cache-bust: `movil.css?v=96`, `main.js?v=57`, `efectos.js?v=85`.
+
+---
+
+## 64. La hamburguesa no tenía el mismo margen lateral que el logo
+
+El cliente notó que el margen lateral que se mantiene en toda la
+página no se replicaba en el nav — puntualmente, el ícono de la
+hamburguesa (a la derecha) quedaba más adentro que el logo (a la
+izquierda), aunque ambos "deberían" estar al mismo `--margen`.
+
+**Causa:** `.nav__btn` mide 44×44px (área de toque, buena práctica de
+accesibilidad/mobile) pero el ícono adentro mide 24×24px, centrado —
+sobran 10px de aire invisible a cada lado del ícono dentro del botón.
+El logo, en el otro extremo del nav, no tiene ese aire: su borde
+visual coincide exactamente con el `padding-inline:var(--margen)` del
+nav. Resultado: el ícono de la hamburguesa quedaba ~10px más adentro
+que el logo, aunque los contenedores de ambos respeten el mismo
+margen.
+
+**Cambio en `movil.css`:** `.nav__hamburguesa{ margin-right:-10px; }`
+— corrige solo ese botón (el que está pegado al borde derecho del
+nav), sin achicar su área de toque de 44px, para que el ícono quede
+al mismo margen lateral visual que el logo.
+
+Cache-bust: `movil.css?v=97`.

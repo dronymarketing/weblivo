@@ -180,6 +180,15 @@ button{ font:inherit; color:inherit; }
   color:var(--blanco);
 }
 .nav__btn .ico{ width:24px; height:24px; }
+/* El botón mide 44px (área de toque), pero el ícono de 24px queda
+   centrado ahí adentro — le sobran 10px de "aire" invisible a cada
+   lado que el logo, del otro extremo del nav, no tiene. Sin este
+   ajuste el ícono de la hamburguesa queda 10px más adentro que el
+   margen real del logo, aunque los dos "parezcan" estar en el mismo
+   --margen. Se corrige solo en la hamburguesa (el botón pegado al
+   borde derecho del nav) para que su ícono quede al mismo margen
+   lateral que el logo, sin achicar el área de toque. */
+.nav__hamburguesa{ margin-right:-10px; }
 .nav__enlaces{ display:none; }
 
 /* ---------- Buscador del nav ---------- */
