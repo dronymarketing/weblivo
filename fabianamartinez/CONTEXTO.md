@@ -2061,3 +2061,17 @@ Branch" — el fix de la sección 58 (panel de fotos con
 aunque el título crezca u ocupe 2 renglones.
 
 Cache-bust: `movil.css?v=92`.
+
+---
+
+## 60. Probar el título a 90px
+
+El cliente pidió agrandar todavía más: "Hacelo más grande el título,
+proba con 90." `font-size:90px` (antes `48px`) en
+`.proyecto-destacado__nombre`, se mantiene "Hello Branch" cursiva. El
+panel de fotos flexible (sección 58) sigue absorbiendo el espacio que
+haga falta para que el botón nunca quede tapado, aunque a este tamaño
+el título muy probablemente ocupe 2 o más renglones en pantallas
+angostas.
+
+Cache-bust: `movil.css?v=93`.
