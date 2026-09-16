@@ -5,11 +5,17 @@
 
 /* Línea guía de debug (temporal, sacar una vez resuelta la duda del
    margen lateral): marca el borde de --margen (24px) de punta a
-   punta de la pantalla, por encima de todo (z-index más alto que el
-   nav, que usa 80), para comparar a ojo si coincide con el lateral
-   derecho de las fotos y con el ícono de la hamburguesa. */
+   punta de TODO el documento (no solo la pantalla visible), por
+   encima de todo (z-index más alto que el nav, que usa 80), para
+   comparar a ojo si coincide con el lateral derecho de las fotos y
+   con el ícono de la hamburguesa.
+   OJO: es position:absolute (ligada al documento, no a la pantalla)
+   a propósito — con position:fixed, al hacer zoom con los dedos en
+   el celular, la línea no se mueve igual que el resto del contenido
+   y la comparación se ve corrida aunque el CSS esté bien. */
+body{ position:relative; }
 #debug-linea{
-  position:fixed; top:0; bottom:0; right:var(--margen);
+  position:absolute; top:0; height:100%; right:var(--margen);
   width:1px; background:#ff0000; z-index:999; pointer-events:none;
 }
 

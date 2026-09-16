@@ -2292,4 +2292,26 @@ el mismo margen que el borde derecho de las fotos.
 
 Cache-bust: `movil.css?v=102`.
 
-Cache-bust: `movil.css?v=101`.
+## 70. La línea de debug con position:fixed se desalinea al hacer zoom con los dedos
+
+El cliente mandó otra captura (esta vez haciendo zoom con los dedos
+para ver mejor) donde la línea roja quedaba claramente lejos del
+borde de la foto — pidió que quedara "bien al borde".
+
+**Causa:** `#debug-linea` usaba `position:fixed`, que se ancla al
+viewport de layout. Al hacer zoom con gesto de pellizco en el
+celular, los elementos `fixed` no se desplazan/escalan junto con el
+resto del contenido de la página de la misma forma que los elementos
+normales (como la foto, que está en el flujo del documento) — es un
+comportamiento estándar de los navegadores móviles con el zoom
+manual, no un error de margen. Medí la captura y confirmé que, con
+zoom, el hueco entre la línea y la foto no correspondía a ningún
+valor de `--margen` real, sino a esa distorsión.
+
+**Cambio en `movil.css`:** `#debug-linea` pasa de `position:fixed` a
+`position:absolute` (con `body{position:relative}` agregado para que
+tenga de dónde colgarse y cubra el alto de todo el documento, no solo
+la pantalla). Así la línea se mueve exactamente igual que el resto
+del contenido, sea cual sea el nivel de zoom.
+
+Cache-bust: `movil.css?v=103`.
