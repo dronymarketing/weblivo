@@ -2075,3 +2075,13 @@ el título muy probablemente ocupe 2 o más renglones en pantallas
 angostas.
 
 Cache-bust: `movil.css?v=93`.
+
+---
+
+## 61. Bajar el título a 60px
+
+Ajuste fino tras probar 90px: `font-size:60px` en
+`.proyecto-destacado__nombre`. Mismo mecanismo (Hello Branch cursiva,
+panel de fotos flexible de la sección 58).
+
+Cache-bust: `movil.css?v=94`.
