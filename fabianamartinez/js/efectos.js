@@ -42,6 +42,35 @@
   initSeccionesColor();    // F
   initCarruselFundido();   // H
 
+  /* Chrome Android esconde/muestra la barra de direcciones al
+     scrollear — eso cambia el alto visible real (visualViewport
+     dispara 'resize', ver main.js/fijarAltoReal), pero ScrollTrigger
+     no se entera solo: sigue usando las medidas de ancho que tomó al
+     cargar la página. En Destacadas (pin:true en las 3 propiedades)
+     eso se nota como un desfasaje lateral de pocos px entre el borde
+     de las fotos y el margen real, que aparece y desaparece según el
+     estado de esa barra mientras se scrollea. Se lo confirmó
+     comparando frame a frame un video real contra la línea de debug
+     de la sección 68 de CONTEXTO.md.
+     Recalculamos con ScrollTrigger.refresh() (con un pequeño debounce
+     para no recalcular en cada pixel) cada vez que visualViewport
+     dispara resize, así las medidas del pin se mantienen al día.
+     OJO: un intento anterior de escuchar visualViewport.resize en
+     initHeroFijo() (más abajo) rompió en un celular real el efecto
+     de "Quiénes somos" — ver CONTEXTO.md sección 6. Esto es distinto
+     (acá no se toca ningún spacer a mano, solo se le pide a
+     ScrollTrigger que vuelva a medir), pero por las dudas: confirmar
+     en un celular real antes de darlo por bueno. */
+  if (window.visualViewport) {
+    var refrescoPendiente;
+    window.visualViewport.addEventListener('resize', function () {
+      clearTimeout(refrescoPendiente);
+      refrescoPendiente = setTimeout(function () {
+        ScrollTrigger.refresh();
+      }, 150);
+    });
+  }
+
   /* ============================================================
      C · REVEAL ATADO AL SCROLL
      clip-path inset(0 0 100% 0) → inset(0)

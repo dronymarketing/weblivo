@@ -2315,3 +2315,53 @@ la pantalla). Así la línea se mueve exactamente igual que el resto
 del contenido, sea cual sea el nivel de zoom.
 
 Cache-bust: `movil.css?v=103`.
+
+## 71. El "achicamiento/corrimiento" real: ScrollTrigger se desactualiza cuando Chrome esconde la barra de direcciones
+
+El cliente insistió en que había un bug real de scroll (no de margen
+fijo) y mandó un video de pantalla completo scrolleando por
+Destacadas con la línea de debug puesta. Le pedí eso porque no podía
+reproducir el pin fullscreen de forma confiable con mis herramientas
+automatizadas (Playwright no engancha el pin igual que un celular
+real en este proyecto).
+
+**Diagnóstico:** descompuse el video en frames (`ffmpeg -vf fps=5`) y
+medí, frame a frame, la posición de la línea roja contra el borde
+derecho de las fotos. La línea roja se mantiene perfectamente estable
+en todo el video. Las fotos, en cambio, sí se corren unos pocos
+píxeles hacia la izquierda o la derecha en ciertos tramos del scroll
+(comparar frame 55 vs. frame 62 del video: en 55 hay un hueco visible
+entre la foto y la línea; 7 frames después, en 62, ese hueco casi
+desaparece) — sin que haya ningún cambio de CSS de por medio.
+
+**Causa real:** Chrome Android esconde y muestra la barra de
+direcciones mientras se scrollea. Eso dispara el evento
+`visualViewport.resize` (que el sitio ya escucha en
+`main.js/fijarAltoReal()` para mantener `--vh100` al día, algo
+confirmado en celular real — ver sección 6). El problema es que
+GSAP/ScrollTrigger NO se entera de ese cambio por su cuenta: sigue
+usando las medidas de ancho que tomó cuando cargó la página. Como las
+3 propiedades de Destacadas usan `pin:true` (fullscreen fijo), un
+pin cuyas medidas quedan desactualizadas se nota justo como esto: un
+desfasaje lateral de pocos píxeles en el borde de las fotos que
+aparece y desaparece según el estado de la barra de direcciones en
+ese instante — no es que el margen "cambie", es que el pin quedó
+midiendo una pantalla que ya no es exactamente la actual.
+
+**Cambio en `efectos.js`:** se agregó, dentro de `initEfectos`
+(después de los `init...()` de todos los efectos), un listener de
+`visualViewport.resize` que llama a `ScrollTrigger.refresh()` con un
+debounce de 150ms, para que el pin de Destacadas vuelva a medirse
+cada vez que la barra de direcciones cambia de estado durante el
+scroll.
+
+**Advertencia dejada en el propio código:** un intento anterior de
+escuchar `visualViewport.resize` dentro de `initHeroFijo()` para
+remedir el spacer a mano rompió el efecto de "Quiénes somos" en un
+celular real (sección 6) — la diferencia acá es que este nuevo
+listener NO toca ningún spacer a mano, solo le pide a ScrollTrigger
+que se vuelva a medir solo, pero de todas formas **hay que
+confirmarlo en un celular real** antes de darlo por resuelto, dado el
+historial de este archivo con este tipo de listener.
+
+Cache-bust: `efectos.js?v=86`.
