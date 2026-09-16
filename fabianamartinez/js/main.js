@@ -5,11 +5,12 @@
 (function () {
   'use strict';
 
-  var nav      = document.querySelector('.nav');
-  var hero     = document.querySelector('.hero');
-  var menu     = document.querySelector('.menu');
-  var abrirBtn = document.querySelector('.nav__hamburguesa');
-  var cerrarBtn= document.querySelector('.menu__cerrar');
+  var nav        = document.querySelector('.nav');
+  var hero       = document.querySelector('.hero');
+  var destacadas = document.querySelector('#destacadas');
+  var menu       = document.querySelector('.menu');
+  var abrirBtn   = document.querySelector('.nav__hamburguesa');
+  var cerrarBtn  = document.querySelector('.menu__cerrar');
   var WA_NUMERO_FABIANA = '59894236869';
 
   /* ----------------------------------------------------------
@@ -38,6 +39,13 @@
      tope   : arriba del todo, transparente, logo blanco
      glass  : scrolleando todavía dentro del hero
      solido : el hero ya quedó arriba
+
+     #destacadas (las 3 propiedades con foto fija fullscreen) cuenta
+     también como zona "tope": esas fotos ya no le restan su alto al
+     nav (ver .propiedad-fija__pin en movil.css) — ocupan la pantalla
+     de punta a punta, así que el nav tiene que flotar transparente
+     encima, igual que sobre el hero, en vez de quedar sólido tapando
+     un pedazo de la foto.
   ---------------------------------------------------------- */
   function estadoNav() {
     if (!nav) return;
@@ -45,7 +53,12 @@
     var finHero = hero ? hero.offsetHeight - nav.offsetHeight : 0;
     var clase;
 
-    if (!hero)            clase = 'es-solido';
+    var sobreDestacadas = destacadas &&
+      y + nav.offsetHeight > destacadas.offsetTop &&
+      y < destacadas.offsetTop + destacadas.offsetHeight;
+
+    if (sobreDestacadas)  clase = 'es-tope';
+    else if (!hero)       clase = 'es-solido';
     else if (y < 24)      clase = 'es-tope';
     else if (y < finHero) clase = 'es-glass';
     else                  clase = 'es-solido';
@@ -53,7 +66,7 @@
     nav.classList.remove('es-tope', 'es-glass', 'es-solido');
     nav.classList.add(clase);
 
-    // el menú desplegado copia el glass mientras esté sobre el hero
+    // el menú desplegado copia el glass mientras esté sobre el hero o Destacadas
     if (menu) menu.classList.toggle('sobre-hero', clase !== 'es-solido');
   }
 

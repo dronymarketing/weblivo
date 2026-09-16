@@ -2115,3 +2115,33 @@ completo) — ese acople era exactamente lo que ya no se quiere.
 - `.proyecto-destacado__nombre`: `font-size:50px` (antes `60px`).
 
 Cache-bust: `movil.css?v=95`.
+
+---
+
+## 63. Fullscreen 100% real en Destacadas — nav transparente en vez de restarle su alto
+
+El cliente notó que la fórmula de altura de `.propiedad-fija__pin` le
+restaba `--nav-alto` (como en `.seccion--completa`) y pidió sacar esa
+resta para que la foto ocupe el 100% de la pantalla — a cambio, que el
+nav pase a transparente con letras blancas mientras dura la sección
+de Destacadas, igual que hace sobre el hero, en vez de quedar sólido
+tapando un pedazo de la foto.
+
+**Cambios:**
+- `movil.css` (`.propiedad-fija__pin`): se sacan las 3 declaraciones
+  `calc(... - var(--nav-alto))` — queda solo `100vh` / `100svh` /
+  `var(--vh100, 100svh)`, fullscreen real sin descontar nada.
+- `efectos.js` (`initPropiedadFija`): el `scrollTrigger.start` pasa de
+  `'top top+='+navAlto` a `'top top'` (el pin se fija pegado arriba
+  del todo, ya no debajo de donde terminaba el nav) — se saca también
+  la variable `navAlto`, que ya no se usa en ningún lado del archivo.
+- `main.js` (`estadoNav`): se agrega `destacadas` (el `#destacadas`) a
+  la lógica de 3 estados del nav — mientras el scroll está dentro de
+  los límites de `#destacadas` (que ahora incluye el alto real de los
+  3 pines fullscreen, con sus pin-spacers de GSAP ya armados),
+  `estadoNav()` fuerza `es-tope` (transparente, letras blancas),
+  saltando por delante de la lógica basada en `.hero`. Fuera de ese
+  rango, el comportamiento de siempre (tope/glass/sólido según el
+  hero) sigue intacto.
+
+Cache-bust: `movil.css?v=96`, `main.js?v=57`, `efectos.js?v=85`.

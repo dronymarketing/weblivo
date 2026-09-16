@@ -655,10 +655,13 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
-/* Misma fórmula de altura real que .seccion--completa (ver más abajo
-   y CONTEXTO.md): fija exactamente el espacio visible debajo del nav,
-   sin el bug de 100vh en navegadores móviles con barra de direcciones
-   dinámica.
+/* Fullscreen 100% real, SIN restar --nav-alto (a diferencia de
+   .seccion--completa) — acá el nav pasa a transparente con letras
+   blancas mientras dura #destacadas (ver estadoNav en main.js), así
+   que no hace falta dejarle un hueco propio: la foto va de punta a
+   punta de la pantalla, con el nav flotando encima, igual que sobre
+   el hero. Formato con fallbacks de siempre para el bug de 100vh en
+   navegadores móviles con barra de direcciones dinámica.
    position:relative (no sticky): con 3 bloques fullscreen apilados,
    position:sticky lo maneja el hilo de compositor del navegador por
    su cuenta, separado del hilo que corre GSAP — en un scroll rápido
@@ -672,9 +675,6 @@ body.menu-abierto .nav{
   height:100vh;
   height:100svh;
   height:var(--vh100, 100svh);
-  height:calc(100vh - var(--nav-alto));
-  height:calc(100svh - var(--nav-alto));
-  height:calc(var(--vh100, 100svh) - var(--nav-alto));
   overflow:hidden;
 }
 .propiedad-fija__base{ position:absolute; inset:0; }

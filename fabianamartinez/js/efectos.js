@@ -187,10 +187,6 @@
     var bloques = document.querySelectorAll('.propiedad-fija');
     if (!bloques.length) return;
 
-    var navAlto = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--nav-alto')
-    ) || 60;
-
     bloques.forEach(function (bloque) {
       var tinte = bloque.querySelector('.propiedad-fija__tinte');
       var pin = bloque.querySelector('.propiedad-fija__pin');
@@ -224,15 +220,17 @@
          movimiento propio al soltar el scroll (eso pasaba con
          valores de scrub altos, no con cualquier número distinto de
          true).
-         start:'top top+='+navAlto — el pin queda fijo justo donde su
-         borde superior toca esa línea (navAlto px debajo del tope de
-         la pantalla), debajo del nav, no tapado por él.
+         start:'top top' — el pin queda fijo pegado arriba del todo,
+         ya no debajo del nav: el nav pasa a transparente con letras
+         blancas mientras dura #destacadas (ver estadoNav en main.js),
+         así que la foto ocupa el 100% de la pantalla de punta a
+         punta, con el nav flotando encima (igual que sobre el hero).
          end:'+=160%' — recorrido de scroll extra mientras dura el
          pin fullscreen (ajustado de a poco: 180% → 150% → 160%). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
-          start: 'top top+=' + navAlto,
+          start: 'top top',
           end: '+=160%',
           pin: true,
           anticipatePin: 1,
