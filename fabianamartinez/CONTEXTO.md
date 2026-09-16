@@ -2001,3 +2001,22 @@ medio (reemplaza al `gap:28px` fijo, que ahora es variable — nunca
 menos que antes, pero tampoco un valor exacto).
 
 Cache-bust: `movil.css?v=89`.
+
+---
+
+## 57. Título del nombre de la propiedad, asimilado al de hba.com
+
+El cliente mandó 2 capturas comparando el título "Apartamento en
+Cordón" (nuestra web) contra "Jumeirah Marsa Al Arab" (hba.com) y
+pidió asimilar el nuestro al de la referencia — tipografía de palo
+normal, grande, en vez de la cursiva que tenía, sin importar que
+ocupe 2 renglones.
+
+**Cambio en `.proyecto-destacado__nombre` (movil.css):**
+`font-family:"Hello Branch",cursive; font-weight:400; font-size:36px`
+→ `font-family:"Neue Haas Grotesk Display Pro",...,sans-serif;
+font-weight:500; font-size:40px` — la misma tipografía de palo que
+usa el resto del sitio (h1/h2), no la cursiva de marca. Mismo color y
+margen que antes.
+
+Cache-bust: `movil.css?v=90`.
