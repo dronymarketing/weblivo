@@ -22,6 +22,26 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  /* Chrome Android esconde/muestra la barra de direcciones mientras
+     se scrollea. Por default, ScrollTrigger reacciona a ESE cambio
+     de tamaño como si fuera un resize real (rotar el celular, etc.)
+     y se remide solo — pero remedirse a mitad de un pin activo es
+     justo lo que rompe todo: en Destacadas (3 pines apilados,
+     pin:true) esto se vio como el bloque de la propiedad anterior
+     ("Ver Propiedad" + el piso de madera de su fondo) quedando
+     superpuesto arriba de la foto de la propiedad siguiente, justo
+     en el borde entre una y otra — confirmado comparando frame a
+     frame un video real del cliente scrolleando ese tramo.
+     ignoreMobileResize:true es la bandera que GSAP documenta
+     específicamente para esto: le dice a ScrollTrigger que ignore
+     los cambios de alto típicos de la barra de direcciones móvil (no
+     los de una rotación de pantalla real), así no se remide a mitad
+     de scroll. Reemplaza al intento anterior (forzar
+     ScrollTrigger.refresh() a mano en visualViewport.resize), que no
+     alcanzaba porque el problema no era medidas desactualizadas sino
+     el refresh disparándose en mal momento. */
+  ScrollTrigger.config({ ignoreMobileResize: true });
+
   var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Habilita cualquier estado inicial que un efecto necesite ocultar.
@@ -41,35 +61,6 @@
   initPropiedadFija();     // D + C combinados, como en hba.com
   initSeccionesColor();    // F
   initCarruselFundido();   // H
-
-  /* Chrome Android esconde/muestra la barra de direcciones al
-     scrollear — eso cambia el alto visible real (visualViewport
-     dispara 'resize', ver main.js/fijarAltoReal), pero ScrollTrigger
-     no se entera solo: sigue usando las medidas de ancho que tomó al
-     cargar la página. En Destacadas (pin:true en las 3 propiedades)
-     eso se nota como un desfasaje lateral de pocos px entre el borde
-     de las fotos y el margen real, que aparece y desaparece según el
-     estado de esa barra mientras se scrollea. Se lo confirmó
-     comparando frame a frame un video real contra la línea de debug
-     de la sección 68 de CONTEXTO.md.
-     Recalculamos con ScrollTrigger.refresh() (con un pequeño debounce
-     para no recalcular en cada pixel) cada vez que visualViewport
-     dispara resize, así las medidas del pin se mantienen al día.
-     OJO: un intento anterior de escuchar visualViewport.resize en
-     initHeroFijo() (más abajo) rompió en un celular real el efecto
-     de "Quiénes somos" — ver CONTEXTO.md sección 6. Esto es distinto
-     (acá no se toca ningún spacer a mano, solo se le pide a
-     ScrollTrigger que vuelva a medir), pero por las dudas: confirmar
-     en un celular real antes de darlo por bueno. */
-  if (window.visualViewport) {
-    var refrescoPendiente;
-    window.visualViewport.addEventListener('resize', function () {
-      clearTimeout(refrescoPendiente);
-      refrescoPendiente = setTimeout(function () {
-        ScrollTrigger.refresh();
-      }, 150);
-    });
-  }
 
   /* ============================================================
      C · REVEAL ATADO AL SCROLL

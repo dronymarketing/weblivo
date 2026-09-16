@@ -2365,3 +2365,44 @@ confirmarlo en un celular real** antes de darlo por resuelto, dado el
 historial de este archivo con este tipo de listener.
 
 Cache-bust: `efectos.js?v=86`.
+
+## 72. El fix de la sección 71 no alcanzaba — la causa real era la opuesta
+
+El cliente probó en su celular real y el bug seguía. Pidió un segundo
+video, esta vez cubriendo específicamente el paso de "Apartamento en
+Cordón" a "Casa en Nuevo París" (el video anterior casi no llegaba a
+ese tramo).
+
+**Lo que se ve en el video (frame a frame, `ffmpeg -vf fps=6`):**
+justo en el borde entre ambas propiedades aparece, superpuesto, el
+botón "Ver Propiedad" y el piso de madera del FONDO de "Apartamento
+en Cordón" por ENCIMA de la foto de living de "Casa en Nuevo País"
+que ya empezó a mostrarse debajo. Es decir: contenido de la propiedad
+anterior queda pegado/fantasma sobre el arranque de la siguiente —
+un problema de superposición entre pines consecutivos, no un cambio
+de margen.
+
+**Por qué el fix de la sección 71 no solo no alcanzaba, sino que iba
+al revés:** ese fix agregaba un `ScrollTrigger.refresh()` manual cada
+vez que la barra de direcciones de Chrome cambiaba de estado, para
+"poner al día" las medidas. Pero remedir a mitad de un scroll activo,
+justo cuando un pin está terminando y el siguiente por arrancar, es
+exactamente lo que puede desalinear el corte entre uno y otro y
+producir esta superposición — GSAP mismo desaconseja llamar a
+`refresh()` en medio de un pin activo. El síntoma no era "medidas
+desactualizadas" sino el refresh disparándose en el peor momento
+posible.
+
+**Cambio en `efectos.js`:** se saca el listener de
+`visualViewport.resize` + `ScrollTrigger.refresh()` manual de la
+sección 71, y se reemplaza por `ScrollTrigger.config({
+ignoreMobileResize: true })` — la bandera que GSAP documenta
+específicamente para este escenario (el alto que cambia solo por la
+barra de direcciones de un celular, no por una rotación de pantalla
+real). Con esto, ScrollTrigger directamente IGNORA esos cambios de
+alto en vez de reaccionar (mal) a cada uno.
+
+Sigue pendiente confirmar en un celular real — mismo criterio que en
+la sección 71.
+
+Cache-bust: `efectos.js?v=87`.
