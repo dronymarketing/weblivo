@@ -22,26 +22,6 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  /* Chrome Android esconde/muestra la barra de direcciones mientras
-     se scrollea. Por default, ScrollTrigger reacciona a ESE cambio
-     de tamaño como si fuera un resize real (rotar el celular, etc.)
-     y se remide solo — pero remedirse a mitad de un pin activo es
-     justo lo que rompe todo: en Destacadas (3 pines apilados,
-     pin:true) esto se vio como el bloque de la propiedad anterior
-     ("Ver Propiedad" + el piso de madera de su fondo) quedando
-     superpuesto arriba de la foto de la propiedad siguiente, justo
-     en el borde entre una y otra — confirmado comparando frame a
-     frame un video real del cliente scrolleando ese tramo.
-     ignoreMobileResize:true es la bandera que GSAP documenta
-     específicamente para esto: le dice a ScrollTrigger que ignore
-     los cambios de alto típicos de la barra de direcciones móvil (no
-     los de una rotación de pantalla real), así no se remide a mitad
-     de scroll. Reemplaza al intento anterior (forzar
-     ScrollTrigger.refresh() a mano en visualViewport.resize), que no
-     alcanzaba porque el problema no era medidas desactualizadas sino
-     el refresh disparándose en mal momento. */
-  ScrollTrigger.config({ ignoreMobileResize: true });
-
   var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Habilita cualquier estado inicial que un efecto necesite ocultar.

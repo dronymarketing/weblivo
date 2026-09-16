@@ -3,36 +3,6 @@
    movil.css · base 375px · SIN media queries
    ============================================================ */
 
-/* Línea guía de debug (temporal, sacar una vez resuelta la duda del
-   margen lateral): marca el borde de --margen (24px) de punta a
-   punta de TODO el documento (no solo la pantalla visible), por
-   encima de todo (z-index más alto que el nav, que usa 80), para
-   comparar a ojo si coincide con el lateral derecho de las fotos y
-   con el ícono de la hamburguesa.
-   OJO: es position:absolute (ligada al documento, no a la pantalla)
-   a propósito — con position:fixed, al hacer zoom con los dedos en
-   el celular, la línea no se mueve igual que el resto del contenido
-   y la comparación se ve corrida aunque el CSS esté bien. */
-body{ position:relative; }
-#debug-linea{
-  position:absolute; top:0; height:100%; right:var(--margen);
-  width:1px; background:#ff0000; z-index:999; pointer-events:none;
-}
-
-/* Panel de debug (temporal): números en vivo en vez de una línea
-   visual, para captar con precisión el momento exacto del "salto"
-   que reportó el cliente en Destacadas (se actualiza por JS, ver
-   main.js). position:fixed a propósito acá (no absolute) — es texto
-   de diagnóstico, no algo que deba compararse contra el contenido de
-   la página, así que no importa que se comporte distinto con el zoom
-   manual. */
-#debug-panel{
-  position:fixed; top:4px; left:4px; right:4px; z-index:1000; pointer-events:none;
-  background:rgba(0,0,0,.92); color:#0f0; font-family:monospace;
-  font-size:10px; line-height:1.35; padding:6px 8px; white-space:pre-wrap;
-  word-break:break-all; max-height:70vh; overflow:hidden;
-}
-
 :root{
   /* Marca — hex muestreados a nivel de píxel del branding (paleta primaria) */
   --azul:        #5D2510;   /* terracota — 12.09:1 sobre blanco. Rol de acento/CTA (antes "azul") */
@@ -698,16 +668,6 @@ body.menu-abierto .nav{
    la foto, pegada a Quiénes somos. */
 #destacadas{ padding-top:0; }
 .propiedad-fija{ position:relative; }
-/* Al soltar el pin de una propiedad, GSAP le deja un transform
-   residual (para no dar un salto brusco) que la mantiene asomando
-   arriba de la pantalla mientras la siguiente ya empezó a entrar por
-   abajo — un instante quedan las 2 a la vez. En vez de esconder nada
-   por JS, alcanza con que la que viene DESPUÉS en el HTML pinte
-   siempre POR ENCIMA: como cada foto de fondo es opaca y ocupa el
-   100%, la de atrás queda tapada sin que se note nada raro. */
-.propiedad-fija:nth-of-type(1){ z-index:1; }
-.propiedad-fija:nth-of-type(2){ z-index:2; }
-.propiedad-fija:nth-of-type(3){ z-index:3; }
 /* Fullscreen 100% real, SIN restar --nav-alto (a diferencia de
    .seccion--completa) — acá el nav pasa a transparente con letras
    blancas mientras dura #destacadas (ver estadoNav en main.js), así

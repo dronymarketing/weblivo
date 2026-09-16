@@ -2550,3 +2550,25 @@ visible de la anterior — sin parpadeos, sin pop, sin JS adicional.
 aplica directo, sin tocar nada más.
 
 Cache-bust: `movil.css?v=106`, `efectos.js?v=89`.
+
+## 77. Revertido todo lo relacionado al "salto" — vuelve a quedar como estaba
+
+El cliente pidió sacar todos los cambios hechos por este problema
+("vamos a dejarlo como estaba") y sacar la línea roja para seguir con
+otras cosas.
+
+**Sacado:**
+- `index.html`: los `<div id="debug-linea">` y `<div id="debug-panel">`.
+- `movil.css`: las reglas de `#debug-linea`, `#debug-panel`, el
+  `body{position:relative}` (solo existía para la línea), y el
+  `z-index` de `.propiedad-fija:nth-of-type(...)` de la sección 76.
+- `efectos.js`: el `ScrollTrigger.config({ ignoreMobileResize: true })`
+  de la sección 72.
+- `main.js`: la función `debugPanel()` completa de las secciones 73/74.
+
+El código de Destacadas (`efectos.js`, `movil.css`) queda igual que
+antes de la sección 66 — no quedó ningún cambio pendiente de este
+tema. El "salto" entre propiedades sigue sin resolverse; queda
+pendiente para retomar más adelante si el cliente lo pide.
+
+Cache-bust: `movil.css?v=107`, `main.js?v=60`, `efectos.js?v=90`.
