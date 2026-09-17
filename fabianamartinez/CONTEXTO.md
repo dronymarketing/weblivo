@@ -2899,3 +2899,24 @@ lado del sitio antes de borrarlo.
 
 Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
 solamente.
+
+## 91. Nueva foto de fondo para "Chacra Jacinta en José Ignacio"
+
+El cliente pasó otra foto de Pexels (vista de un lago) para la
+property 3 de Destacadas:
+https://www.pexels.com/es-es/foto/vista-del-lago-29627452/
+
+**Cambio:** foto original (2525×3792) redimensionada a 1080px de
+ancho manteniendo proporción (1080×1622), comprimida a JPEG calidad
+75 (~400KB, en línea con el resto de fondos de Destacadas). Guardada
+con nombre nuevo — `img/propiedades/joseignacio-chacra-lago.jpg` —
+sin pisar el archivo anterior.
+
+En `index.html`, el fondo de esa propiedad pasa de
+`malvin-living.jpg` a `joseignacio-chacra-lago.jpg`, con el `alt`
+actualizado a "Vista al lago de una chacra de muestra en José
+Ignacio". Se confirmó que `malvin-living.jpg` no se usaba en ningún
+otro lado del sitio antes de borrarlo.
+
+Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
+solamente.
