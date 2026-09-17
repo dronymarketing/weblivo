@@ -3204,3 +3204,33 @@ sino un contenedor de 2 botones).
 Queda pendiente de confirmación si el cliente quiere sumarle el
 mismo margin-top:8px al párrafo para unificar con las otras dos
 secciones, o dejarlo como está (no se tocó el CSS todavía).
+
+## 101. "Hablemos" (Contacto) igualado del todo a Nosotros/Proyectos
+
+El cliente confirmó: quiere el mismo espaciado en las tres secciones.
+
+**Cambios en `movil.css`:**
+- `.cta p{...}` (que ya pintaba el párrafo blanco, sin tocar
+  márgenes) se deja igual — se agrega una regla nueva `.cta
+  p:not(.antetitulo){ margin-top:8px }` al lado, mismo patrón que
+  `.nosotros__intro`/`.encabezado`. No se tocó el color: `.cta p`
+  también pinta el antetítulo de blanco (en vez del terracota
+  habitual), pero eso es necesario para que se lea sobre el fondo
+  marrón oscuro — sacarlo lo hubiera dejado ilegible.
+- `.cta__botones{ margin-top:24px }` → `margin-top:36px` (para
+  igualar el párrafo→botón "de pantalla alta" de las otras dos
+  secciones).
+- Nuevo `@media(max-height:760px){ .cta p:not(.antetitulo){
+  margin-top:4px } .cta__botones{ margin-top:24px } }`, puesto
+  **después** del bloque `.cta` (no en el media query compartido de
+  arriba, cerca de `#nosotros`) — al probarlo ahí primero, no
+  aplicaba: con la misma especificidad, gana la regla que aparece
+  más abajo en el archivo, y el media query de `#nosotros` está
+  antes que el bloque `.cta` en el CSS. Aprendizaje para no repetir
+  el error si se agrega una cuarta sección a este patrón.
+
+Verificado con el medidor en 900px y 700px de alto: nosotros,
+proyectos y contacto dan exactamente los mismos 4 números en ambos
+casos (0px / 12px / 8px-o-4px / 36px-o-24px).
+
+Cache-bust: `movil.css?v=122`.

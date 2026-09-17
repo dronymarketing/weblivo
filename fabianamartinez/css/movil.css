@@ -1112,8 +1112,15 @@ body.menu-abierto .nav{
 .cta{ background:var(--azul); color:var(--blanco); }
 .cta h2{ color:var(--blanco); }
 .cta p{ color:rgba(255,255,255,.88); max-width:var(--lectura); }
-.cta__botones{ display:flex; flex-direction:column; gap:12px; margin-top:24px; }
+/* Mismo margen título→párrafo que #nosotros/.encabezado, para que
+   "Hablemos" quede parejo con "Quiénes somos" y "Proyectos". */
+.cta p:not(.antetitulo){ margin-top:8px; }
+.cta__botones{ display:flex; flex-direction:column; gap:12px; margin-top:36px; }
 .cta .btn--linea{ color:var(--blanco); border-color:rgba(255,255,255,.4); }
+@media (max-height:760px){
+  .cta p:not(.antetitulo){ margin-top:4px; }
+  .cta__botones{ margin-top:24px; }
+}
 
 .pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:48px 32px; font-size:14px; }
 .pie__logo{ height:26px; margin-bottom:20px; }
