@@ -2993,3 +2993,69 @@ abajo — Destacadas es 100% fotos fullscreen, no necesita margen
 propio en ninguno de los dos extremos).
 
 Cache-bust: `movil.css?v=116`.
+
+## 95. "Zonas donde trabajo" → "Proyectos" (borrador de próximos desarrollos)
+
+El cliente mostró como referencia una ficha de propiedad externa
+(marketdeleste.com) y pidió un análisis de qué conceptos sumarle al
+sitio (gastos comunes desglosados, datos del edificio, WhatsApp con
+mensaje precargado por propiedad, "propiedades similares", etc. —
+quedó solo como recomendación, sin implementar todavía).
+
+Después pidió rehacer la sección "Zonas donde trabajo" (ya avisada
+como borrador/placeholder, libre de rediseñar) para mostrar
+emprendimientos nuevos en construcción, como paso hacia la
+reestructuración de nav que se viene charlando (Inicio, Propiedades,
+Nosotros, Contacto + 1 ítem más). Pidió puntualmente:
+- Misma estructura de padding superior/inferior que "Quiénes somos".
+- Un "título de nav" (la etiqueta chica tipo antetítulo) y un título
+  principal que podría ser "PRÓXIMAMENTE".
+- Adaptar los colores y los botones al estilo de "Quiénes somos".
+- Cambiar las fotos por edificios y casas en construcción.
+
+**Cambio en `index.html`:** la sección `<section id="zonas">` pasa a
+`<section id="proyectos">`. Antetítulo "Montevideo & Costa de Oro" →
+"Proyectos"; título "Zonas donde trabajo" → "PRÓXIMAMENTE"; bajada
+reescrita ("Edificios y casas en distintas etapas de obra — reservá
+tu unidad antes del lanzamiento."). Se agregó un botón
+`btn btn--linea nosotros__btn` ("Ver proyectos" → `en-construccion.html`)
+debajo de la bajada, reusando la misma cápsula de botón de "Quiénes
+somos". La grilla de 6 tarjetas (`.zonas` / `.zona`, sin tocar esas
+clases CSS) cambió de barrios a proyectos ficticios de muestra: Torre
+Vista Mar (en construcción), Edificio Rambla Sur (a estrenar), Torre
+Costanera (últimas unidades), Complejo Parque Central (lanzamiento),
+Barrio Los Aromos (casas en construcción) y Chacras del Este
+(preventa) — cada tarjeta linkea a la página de categoría más afín
+(`en-construccion.html` / `a-estrenar.html` / `lanzamiento.html`).
+
+**Fotos nuevas** (buscadas en Pexels, sin URL provista por el
+cliente esta vez — se buscaron por texto "building/house under
+construction"), recortadas centradas a 600×400 (misma convención que
+`img/zonas-grid/*`) y comprimidas a JPEG calidad 78, guardadas con
+nombre nuevo en `img/zonas-grid/`:
+`proyecto-torre-obra-1.jpg`, `proyecto-torre-obra-2.jpg`,
+`proyecto-torre-obra-3.jpg`, `proyecto-edificio-obra.jpg`,
+`proyecto-casa-obra-1.jpg`, `proyecto-casa-obra-2.jpg`. Las fotos
+viejas de la grilla de zonas (`pocitos.jpg`, `puntacarretas.jpg`,
+`carrasconorte.jpg`, `nuevoparis.jpg`, `cordon.jpg`, `cerrito.jpg`)
+no se borraron: no se confirmó que no se usen en otro lado (aparecen
+también como fondos rotativos del hero, con otro nombre de carpeta,
+pero se prefirió no tocar `img/zonas-grid/` viejas por las dudas).
+
+**Cambio en `movil.css`:** nueva regla `#proyectos` (junto a la de
+`#nosotros`, mismo patrón) con `padding-block:40px` (en vez del
+`padding-block:var(--seccion)` de 72px que trae `.seccion` por
+default) y el mismo degradé radial blanco→`--fondo-alt` en la
+esquina superior derecha que ya usa `#nosotros`. Se agregó
+`#proyectos .encabezado .btn{ margin-top:20px }` para separar el
+nuevo botón del párrafo (el `.encabezado p` de esta sección no trae
+margen inferior propio).
+
+Cache-bust: `movil.css?v=117`.
+
+**Pendiente, no resuelto en este cambio:** el nav ya tiene un ítem
+"Proyectos" (dropdown con A estrenar / En construcción /
+Lanzamiento) — mismo nombre que el antetítulo de esta sección nueva,
+pero apuntando a otro lado. Falta decidir si esta sección homepage se
+linkea desde el nav (y con qué texto, para no repetir "Proyectos" dos
+veces con destinos distintos) — todavía no se tocó `.menu__lista`.

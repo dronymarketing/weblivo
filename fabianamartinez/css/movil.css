@@ -122,6 +122,14 @@ button{ font:inherit; color:inherit; }
    especificidad a [class*="tema-"] (que le pone el fondo plano por
    defecto), así que no hace falta tocar la regla general de F. */
 #nosotros{ background:radial-gradient(circle 550px at top right, var(--blanco), var(--fondo-alt) 100%); }
+/* #proyectos (borrador) toma el mismo padding superior/inferior y el
+   mismo degradé de #nosotros, pedido explícitamente por el cliente
+   para que ambas secciones "hagan juego". */
+#proyectos{
+  padding-block:40px;
+  background:radial-gradient(circle 550px at top right, var(--blanco), var(--fondo-alt) 100%);
+}
+#proyectos .encabezado .btn{ margin-top:20px; }
 [id]{ scroll-margin-top:calc(var(--nav-alto) + 12px); }
 
 /* ---------- Botones ---------- */
