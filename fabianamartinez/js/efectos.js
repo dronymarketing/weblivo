@@ -225,13 +225,13 @@
          blancas mientras dura #destacadas (ver estadoNav en main.js),
          así que la foto ocupa el 100% de la pantalla de punta a
          punta, con el nav flotando encima (igual que sobre el hero).
-         end:'+=160%' — recorrido de scroll extra mientras dura el
-         pin fullscreen (ajustado de a poco: 180% → 150% → 160%). */
+         end:'+=150%' — recorrido de scroll extra mientras dura el
+         pin fullscreen (ajustado de a poco: 180% → 150% → 160% → 150%). */
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: pin,
           start: 'top top',
-          end: '+=160%',
+          end: '+=150%',
           pin: true,
           anticipatePin: 1,
           scrub: 0.3

@@ -2859,3 +2859,19 @@ confirmó además con una captura real a 320px (el caso más exigente)
 que el texto ya no se parte: entra todo en una sola línea.
 
 Cache-bust: `movil.css?v=115`, `main.js?v=62`.
+
+## 89. Bajar el scroll total del pin a 150%, velo y panel siguen sincronizados
+
+Pedido: bajar el `end:'+=160%'` del pin de Destacadas a 150%, y que
+quede sincronizado con el velo marrón (`.propiedad-fija__tinte`).
+
+**Cambio en `efectos.js`:** `end:'+=160%'` → `end:'+=150%'` en el
+`scrollTrigger` de `initPropiedadFija()`. El velo y el panel de fotos
+ya comparten la misma posición de inicio (0) y la misma duración
+(`duracionPanel`) desde antes (sección de esa sincronización ya
+resuelta hace tiempo) — al bajar el total de scroll del pin, esa
+proporción se mantiene igual entre los dos (ambos siguen terminando
+exactamente juntos), así que la sincronización no se rompe con este
+cambio.
+
+Cache-bust: `efectos.js?v=91`.
