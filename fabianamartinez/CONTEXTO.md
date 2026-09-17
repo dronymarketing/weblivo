@@ -2659,3 +2659,31 @@ cliente confirme si lo deja así, agranda el ancho de alguna forma, o
 saca algún dato.
 
 Cache-bust: `movil.css?v=111`.
+
+## 82. Ícono de ubicación en zona, dormitorios/baños solo ícono+número, menos padding
+
+Pedido: agregarle el ícono de ubicación (pin) al ítem de zona;
+dejar dormitorios y baños como ícono + número solo (sin la palabra
+"dorm."/"baño"); reducir un poco el padding horizontal de la lista
+para que entre todo en una fila.
+
+**Cambios en `index.html`:** las 3 propiedades — el `<li>` de zona
+suma `<svg><use href="#i-map-pin"/></svg>` antes del nombre; los
+`<li>` de dormitorios y baños quedan solo con el ícono y el número
+("2", "1"), sin la palabra.
+
+**Cambio en `movil.css`:** `.propiedad-fija__specs li` pasa de
+`padding:0 10px` a `padding:0 6px`.
+
+**Verificado de nuevo con Playwright (375px y 414px):** mejoró
+bastante — ahora entran 5 de los 6 ítems en la primera línea (precio,
+zona, dormitorios, baños, m² edificado); solo "m² terreno" sigue
+pasando a la segunda línea. Medí el ancho exacto: a 375px sobran
+~65px para que entren los 6 en una sola fila. Para cerrar ese
+sobrante haría falta achicar más el texto (por ejemplo sacarle
+"edif."/"terr." a esos 2 ítems, igual que se hizo con
+dormitorios/baños, ya que el ícono distinto alcanza para diferenciarlos)
+— no se hizo todavía porque no fue pedido explícitamente, queda
+para la próxima vuelta si el cliente lo confirma.
+
+Cache-bust: `movil.css?v=112`.
