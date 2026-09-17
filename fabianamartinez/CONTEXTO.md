@@ -3146,3 +3146,35 @@ iguales.
 
 Cache-bust: `movil.css?v=120`. `js/debug-medidas.js?v=1` es nuevo,
 no pisa nada existente.
+
+## 99. Igualar también título→párrafo y párrafo→botón
+
+El cliente vio los números del medidor en su celular real (con la
+barra de direcciones visible, pantalla "baja" → `@media
+(max-height:760px)` activo) y señaló la diferencia restante: 4px vs
+10px, y 24px vs 20px. Se decidió igualar del todo en vez de dejarlo
+"por diseño".
+
+**Cambios en `movil.css`:**
+- `.encabezado p:not(.antetitulo){ margin:10px 0 0 }` → `margin-top:8px`
+  (sacando el `margin-bottom:0` explícito, para que el párrafo de
+  "Proyectos" se comporte igual que el de "Quiénes somos": solo pisa
+  el margen de arriba, deja el margen inferior por defecto del `<p>`
+  sin tocar).
+- Dentro de `@media (max-height:760px)` (la misma regla que ya
+  comprime "Quiénes somos" en pantallas bajas), se agregó:
+  `.encabezado p:not(.antetitulo){ margin-top:4px }` y `#proyectos
+  .encabezado .btn{ margin-top:8px }` — este último con el ID
+  `#proyectos` adelante porque si no perdía por especificidad contra
+  la regla base `#proyectos .encabezado .btn{ margin-top:20px }` de
+  la sección 95 (una regla con ID siempre le gana a una sin ID, sin
+  importar el orden ni el media query — primer intento salió mal por
+  esto, quedó found-and-fixed en la misma tanda).
+
+Verificado con el propio medidor en dos alturas de viewport
+(900px y 700px, para forzar la compresión): las 4 distancias
+(borde→antetítulo, antetítulo→título, título→párrafo,
+párrafo→botón) dan exactamente iguales en "Quiénes somos" y
+"Proyectos" en ambos casos.
+
+Cache-bust: `movil.css?v=121`.

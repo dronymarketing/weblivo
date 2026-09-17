@@ -573,7 +573,10 @@ body.menu-abierto .nav{
    Tarjetas de propiedad
    ============================================================ */
 .encabezado{ margin-bottom:28px; }
-.encabezado p:not(.antetitulo){ max-width:var(--lectura); margin:10px 0 0; }
+/* Mismo patrón de margen que #nosotros .nosotros__intro (8px arriba,
+   sin tocar el margen inferior por defecto del párrafo) para que
+   "Proyectos" quede con las mismas distancias que "Quiénes somos". */
+.encabezado p:not(.antetitulo){ max-width:var(--lectura); margin-top:8px; }
 
 .tarjetas{ display:grid; gap:20px; }
 .tarjeta{
@@ -966,6 +969,8 @@ body.menu-abierto .nav{
   #nosotros .cifra{ padding-block:6px; }
   #nosotros .cifra__txt{ margin-top:2px; }
   .nosotros__destacadas{ padding-top:10px; }
+  .encabezado p:not(.antetitulo){ margin-top:4px; }
+  #proyectos .encabezado .btn{ margin-top:8px; }
 }
 /* Si todavía no entra (pantallas muy bajas), las cifras son lo
    menos esencial de los tres bloques — se esconden antes que dejar
