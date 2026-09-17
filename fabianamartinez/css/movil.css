@@ -573,7 +573,7 @@ body.menu-abierto .nav{
    Tarjetas de propiedad
    ============================================================ */
 .encabezado{ margin-bottom:28px; }
-.encabezado p{ max-width:var(--lectura); margin:10px 0 0; }
+.encabezado p:not(.antetitulo){ max-width:var(--lectura); margin:10px 0 0; }
 
 .tarjetas{ display:grid; gap:20px; }
 .tarjeta{

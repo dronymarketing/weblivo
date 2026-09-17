@@ -3079,3 +3079,28 @@ El cliente comparó una captura de "Quiénes somos" con una de
    del `body`, igual que el de "Quiénes somos".
 
 Cache-bust: `movil.css?v=118`.
+
+## 97. Bug real encontrado: falta margen entre "Proyectos" y "Próximamente"
+
+El cliente insistió en que había una diferencia notoria entre el
+espaciado de arriba de "Quiénes somos" y "Proyectos" (mandó capturas
+superpuestas). El análisis en Playwright (comparando ambas
+secciones con getBoundingClientRect/getComputedStyle) descartó el
+padding del contenedor (40px en ambas, igual) y encontró la causa
+real: `.antetitulo` en `movil.css` trae `margin:0 0 12px`, pero
+`.encabezado p{ margin:10px 0 0 }` — como el antetítulo también es
+un `<p>`, y `.encabezado p` tiene más especificidad (clase + tag)
+que `.antetitulo` (una sola clase), le pisaba el margen: dentro de
+`.encabezado` el antetítulo quedaba con `margin-bottom:0` en vez de
+12px (y un `margin-top:10px` de más que no le correspondía). Por
+eso "PRÓXIMAMENTE"/"Próximamente" quedaba pegado a "Proyectos" sin
+el respiro que sí tiene "Fabiana Martínez" respecto a "Quiénes
+somos".
+
+**Cambio en `movil.css`:** `.encabezado p{...}` → `.encabezado
+p:not(.antetitulo){...}`, para que la regla del párrafo de bajada ya
+no le gane al margen propio del antetítulo. Verificado con
+Playwright: ambas secciones quedan con exactamente 12px entre
+antetítulo y título, y el h2 a la misma altura en las dos.
+
+Cache-bust: `movil.css?v=119`.
