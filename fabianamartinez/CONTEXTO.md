@@ -3508,3 +3508,28 @@ links a esas páginas fantasma — se arregló puntualmente el nav
 porque fue lo pedido, pero el mismo problema existe en otros lugares.
 
 Cache-bust: `movil.css?v=129`.
+
+## 113. Nav: sacar tinte del glass, títulos más finos/mayúsculas sin sombra, animación más suave
+
+Tres ajustes sobre el nav recién arreglado:
+
+1. **Tinte del glass:** `.menu.sobre-hero{ background:rgba(255,255,255,.14) }`
+   → `background:transparent`. Se deja el `backdrop-filter:blur(22px)
+   saturate(150%)` intacto — sigue siendo "vidrio esmerilado", pero
+   sin la capa blanca encima que lavaba el color de la foto de fondo.
+2. **Títulos del menú:** `.menu__lista a,.menu__lista button` pasa de
+   `font-weight:500` a `font-weight:300` (más fino) y suma
+   `text-transform:uppercase` + `letter-spacing:.02em`. Se saca el
+   `text-shadow:0 1px 3px rgba(0,0,0,.35)` que tenían en el estado
+   `.sobre-hero` (transparente/vidrio).
+3. **Animación:** `.menu{ transition:transform 520ms var(--curva) }`
+   → `transition:transform 650ms cubic-bezier(.19,1,.22,1), opacity
+   480ms ease-out`, sumando un fade (`opacity:0→1`) a la vez que
+   entra desde la derecha, para que se sienta más gradual/premium en
+   vez de un slide seco.
+
+Verificado con Playwright: computed style confirma `font-weight:300`,
+`text-transform:uppercase`, `text-shadow:none` y `background-color:
+rgba(0,0,0,0)` con el blur activo.
+
+Cache-bust: `movil.css?v=130`.
