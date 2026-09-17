@@ -3324,3 +3324,13 @@ fueran "iguales" en el CSS. Con padding no hay colapso, y se
 verificó con Playwright que ambos huecos dan exactamente 24px.
 
 Cache-bust: `movil.css?v=125`.
+
+## 106. Sacar la bajada del footer
+
+El cliente pidió quitar "Asesora inmobiliaria en Montevideo y Costa
+de Oro." del bloque del logo en el footer.
+
+**Cambio en `index.html`:** se elimina ese `<p>`, quedando el bloque
+con el logo grande y, debajo, directo los íconos de redes.
+
+Solo HTML, sin cache-bust necesario.
