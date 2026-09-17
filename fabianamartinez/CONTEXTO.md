@@ -3686,3 +3686,19 @@ intercepta (confirmado con `elementFromPoint`), o sea que
 necesitar `pointer-events` manual.
 
 Cache-bust: `movil.css?v=133`.
+
+## 118. Cortina más suave: misma curva de movimiento que el resto del sitio
+
+El cliente pidió que la cortina se sienta más suave/premium/minimalista.
+
+**Cambio en `movil.css`:** `transition:clip-path 650ms
+cubic-bezier(.19,1,.22,1)` → `750ms var(--curva)` — se saca la curva
+bezier a medida que tenía solo este componente y se usa la misma
+`--curva` (cubic-bezier(.16,1,.3,1)) que ya usa el resto del sitio
+para sus transiciones (fade del nav, chevron del desplegable,
+crossfade de fotos del hero, etc.), para que la apertura del menú
+se sienta parte del mismo lenguaje de movimiento en vez de tener su
+propia curva aparte — y 100ms más de duración para que se sienta
+menos apurada.
+
+Cache-bust: `movil.css?v=134`.

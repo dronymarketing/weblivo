@@ -265,7 +265,7 @@ button{ font:inherit; color:inherit; }
      su lugar todo el tiempo, no desliza junto con el fondo. */
   clip-path:inset(0 0 0 100%);
   will-change:clip-path;
-  transition:clip-path 650ms cubic-bezier(.19,1,.22,1);
+  transition:clip-path 750ms var(--curva);
   overflow-y:auto;
 }
 .menu.sobre-hero{
