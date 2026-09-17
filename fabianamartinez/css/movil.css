@@ -729,7 +729,7 @@ body.menu-abierto .nav{
    arriba — si el título crece, se superpone a las fotos en vez de
    empujarlas o achicarlas (ver comentario en .propiedad-fija__contenido). */
 .propiedad-fija__info{
-  position:absolute; left:0; right:0; bottom:0;
+  position:absolute; left:0; right:0; bottom:-20px;
 }
 
 .proyecto-destacado__zona{

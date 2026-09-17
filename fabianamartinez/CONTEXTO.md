@@ -2584,3 +2584,15 @@ pegados.
 line-height:0.85`.
 
 Cache-bust: `movil.css?v=108`.
+
+## 79. Bajar un poco el bloque título + descripción + botón
+
+Pedido: bajar juntos los 3 elementos (título, precio/descripción y
+botón "Ver Propiedad") un poco más.
+
+**Cambio en `movil.css`:** `.propiedad-fija__info` pasa de
+`bottom:0` a `bottom:-20px` (sigue `position:absolute; left:0;
+right:0`, relativo a `.propiedad-fija__contenido`) — los 3 elementos
+se mueven juntos porque están todos adentro de este mismo bloque.
+
+Cache-bust: `movil.css?v=109`.
