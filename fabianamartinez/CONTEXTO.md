@@ -3702,3 +3702,25 @@ propia curva aparte — y 100ms más de duración para que se sienta
 menos apurada.
 
 Cache-bust: `movil.css?v=134`.
+
+## 119. El bug real era "INMOBILIARIA" sin centrar en el logo del menú
+
+La ronda anterior comparé "Fabiana Martínez" completo y medí todo
+idéntico entre nav y menú — pero el cliente señaló que el problema
+específico era el texto "INMOBILIARIA". Revisando de nuevo con ese
+foco: al copiar `.nav__logo-sub` a `.menu__logo-sub` en la sección
+114, se traspasaron todas las propiedades MENOS `text-align:center`.
+Como el `<span>` de "Inmobiliaria" es más angosto que "Fabiana
+Martínez" y ambos son flex items en una columna con `align-items`
+por default (`stretch`), el span se estira al ancho del nombre — sin
+`text-align:center` quedaba pegado a la izquierda en vez de centrado
+bajo el nombre. Esto era lo que se veía "distinto" en las capturas
+del cliente — no un tema de tamaño de fuente (eso sí estaba
+idéntico, 8px en ambos).
+
+**Cambio en `movil.css`:** se agrega `text-align:center` a
+`.menu__logo-sub`. Verificado con Playwright: `subLeft`/`subWidth`
+de `.nav__logo-sub` y `.menu__logo-sub` dan exactamente iguales
+(24px / 119.95px) ahora.
+
+Cache-bust: `movil.css?v=135`.

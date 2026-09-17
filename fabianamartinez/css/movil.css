@@ -287,7 +287,7 @@ button{ font:inherit; color:inherit; }
 .menu__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
   font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
-  line-height:1; margin-top:-1px;
+  line-height:1; text-align:center; margin-top:-1px;
 }
 /* con el menú abierto el nav se retira: no se ven dos logos superpuestos */
 body.menu-abierto .nav{
