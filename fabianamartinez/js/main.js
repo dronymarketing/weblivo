@@ -89,31 +89,20 @@
   /* ----------------------------------------------------------
      MENÚ HAMBURGUESA
   ---------------------------------------------------------- */
-  var scrollAntesDelMenu = 0;
   function abrirMenu(abrir) {
     if (!menu) return;
     menu.classList.toggle('abierto', abrir);
     if (abrirBtn) abrirBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
     document.body.classList.toggle('menu-abierto', abrir);
-    /* overflow:hidden solo no alcanza en mobile (Chrome/Safari
-       Android e iOS siguen dejando scrollear por touch) — se fija
-       el body en su lugar y se restaura el scroll al cerrar. */
-    if (abrir) {
-      scrollAntesDelMenu = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = -scrollAntesDelMenu + 'px';
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-    } else {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      /* scrollTo(x,y) hereda scroll-behavior:smooth del html y anima
-         el salto de vuelta — se ve como un scroll raro al cerrar.
-         behavior:'instant' lo fuerza a ser inmediato. */
-      window.scrollTo({ top: scrollAntesDelMenu, left: 0, behavior: 'instant' });
-    }
+    /* overflow:hidden en html Y body (no alcanza con solo body).
+       Se prueba deliberadamente SIN el truco de position:fixed +
+       restaurar scroll: ese método movía el scroll de verdad (aunque
+       fuera y volviera), y eso confunde a ScrollTrigger de GSAP en
+       Destacadas (que ya está pineando/scrubando su propio scroll),
+       provocando saltos y quedando "raro" en esa sección al abrir o
+       cerrar el menú. overflow:hidden no le toca el scroll a nadie. */
+    document.documentElement.style.overflow = abrir ? 'hidden' : '';
+    document.body.style.overflow = abrir ? 'hidden' : '';
   }
   if (abrirBtn)  abrirBtn.addEventListener('click', function () { abrirMenu(true); });
   if (cerrarBtn) cerrarBtn.addEventListener('click', function () { abrirMenu(false); });

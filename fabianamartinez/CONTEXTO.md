@@ -3623,3 +3623,35 @@ del menú deja `scrollY` en el valor final sin pasos intermedios
 ambos, sin animación).
 
 Cache-bust: `movil.css?v=132`, `main.js?v=64`.
+
+## 116. El bloqueo de scroll de la 115 seguía dando saltos raros
+
+El cliente probó en el celular real y el "arreglo" de la sección 115
+(`position:fixed` en `body` + restaurar `scrollY` al cerrar) seguía
+dando saltos y "poniendo rara" la web en algunas secciones.
+
+**Investigación:** medido con Playwright, se confirmó que el
+problema real es que **`window.scrollTo(...)` es un cambio de scroll
+de verdad** — GSAP ScrollTrigger (que tiene pineada/scrubando la
+sección Destacadas) lo detecta como un scroll genuino y necesita
+"reconciliarlo", produciendo el salto visible. Se comprobó también
+que esto pasa incluso con un `scrollTo` normal sin nada de menú de
+por medio (es un comportamiento ya conocido de este proyecto: GSAP +
+scroll programático no es confiable, ver CONTEXTO.md de sesiones
+anteriores sobre el "salto" entre propiedades).
+
+**Cambio en `main.js`:** se saca por completo el truco de
+`position:fixed` + `scrollTo` de restauración. `abrirMenu()` vuelve a
+algo más simple: `overflow:hidden` en **`html` y `body`** (el primer
+intento de la sección 114 solo lo había puesto en `body`). A
+diferencia del método anterior, esto nunca llama a `scrollTo` ni
+mueve el `scrollY` real — solo bloquea el scroll con CSS, sin que
+GSAP tenga que reaccionar a nada.
+
+Verificado con Playwright usando scroll real (rueda del mouse en
+pasos chicos, no saltos instantáneos con `scrollTo`, que es lo que
+había dado falsos positivos antes): con la sección Destacadas
+pineada activa, abrir y cerrar el menú deja el `scrollY` exactamente
+igual antes y después (2400 → 2400 → 2400), sin ningún salto.
+
+Cache-bust: `main.js?v=65` (no se tocó CSS en este cambio).
