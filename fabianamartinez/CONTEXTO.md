@@ -2716,3 +2716,18 @@ pide un ajuste más para cerrar esos 17px en pantallas angostas.
 
 Sin cache-bust nuevo: no se tocó `movil.css` en este cambio, solo
 texto en `index.html` (que se sirve sin caché).
+
+## 84. Se saca "m² edificado", queda solo "m² terreno" con etiqueta
+
+Pedido: sacar del todo el ítem de m² edificado; ya que sobra
+espacio, volver a ponerle la abreviatura a m² terreno.
+
+**Cambio en `index.html`:** en las 3 propiedades se elimina el `<li>`
+de "m² edif." (ícono regla). El `<li>` que queda (ícono casita) pasa
+de "65 m²" a "65 m² terr." — ahora que es el único dato de m², la
+etiqueta ayuda a que no quede ambiguo sin depender solo del ícono.
+
+**Verificado con el navegador:** a 375px de ancho (el caso más
+angosto) los 5 ítems entran en una sola fila con margen de sobra.
+
+Sin cache-bust nuevo: solo texto en `index.html`.
