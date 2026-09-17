@@ -3253,3 +3253,37 @@ en pantalla baja: `0px, 12px, 4px, 24px`.
 
 Lección para no repetir: `debug-medidas.js` también necesita su
 propio cache-bust cada vez que se lo edita, igual que `movil.css`.
+
+## 103. El bug real: el padding de la SECCIÓN, no del bloque interno
+
+Con el script ya actualizado, el cliente mandó otra comparación
+lado a lado: los 4 números internos daban iguales (0px/12px/4px/24px
+en ambos), pero el margen de arriba SEGUÍA viéndose distinto a
+simple vista. Tenía razón — el medidor no lo iba a mostrar nunca,
+porque medía la distancia desde el propio bloque interno
+(`.nosotros__intro` / `.encabezado` / `.aparece`) hacia abajo, no
+desde el borde real de la SECCIÓN (`#nosotros` / `#proyectos` /
+`#contacto`), que es donde vive el padding-top.
+
+Se confirmó con `getComputedStyle`: `#nosotros` y `#proyectos`
+tenían `padding-top:40px` (arreglado en secciones anteriores), pero
+`#contacto` seguía en los `72px` por defecto de `.seccion` — nunca
+se le había puesto el mismo override. Ese es el bug real detrás de
+la "diferencia notoria" que el cliente venía señalando desde el
+principio en esta sección.
+
+**Cambios:**
+- `movil.css`: `.cta{ padding-block:40px; }` (antes solo tenía
+  `background`/`color`, heredaba los 72px de `.seccion`).
+- `debug-medidas.js`: cada bloque ahora guarda también su sección
+  "externa" (`#nosotros`, `#proyectos`, `#contacto`) además del
+  bloque interno de siempre; la primera etiqueta (antes siempre
+  "0px", inútil) ahora mide el padding real de la sección hasta el
+  antetítulo, para que este tipo de bug se vea directo la próxima
+  vez sin tener que razonarlo a mano.
+
+Verificado con el medidor en 900px y 700px de alto: nosotros,
+proyectos y contacto dan ahora **40px / 12px / 8px-o-4px /
+36px-o-24px**, exactamente iguales en las tres.
+
+Cache-bust: `movil.css?v=123`, `js/debug-medidas.js?v=3`.

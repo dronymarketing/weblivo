@@ -1109,7 +1109,10 @@ body.menu-abierto .nav{
 /* ============================================================
    CTA + Footer
    ============================================================ */
-.cta{ background:var(--azul); color:var(--blanco); }
+/* Mismo padding superior/inferior que #nosotros/#proyectos (40px en
+   vez de los 72px por defecto de .seccion), para que "Hablemos"
+   arranque a la misma distancia del borde que las otras dos. */
+.cta{ background:var(--azul); color:var(--blanco); padding-block:40px; }
 .cta h2{ color:var(--blanco); }
 .cta p{ color:rgba(255,255,255,.88); max-width:var(--lectura); }
 /* Mismo margen título→párrafo que #nosotros/.encabezado, para que

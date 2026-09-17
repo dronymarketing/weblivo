@@ -27,9 +27,9 @@
   var FILAS_CTA = ['.antetitulo', 'h2', 'p:not(.antetitulo)', '.cta__botones'];
 
   var BLOQUES = [
-    { seccion: '#nosotros .nosotros__intro', nombre: 'nosotros', filas: FILAS },
-    { seccion: '#proyectos .encabezado', nombre: 'proyectos', filas: FILAS },
-    { seccion: '#contacto .aparece', nombre: 'contacto', filas: FILAS_CTA }
+    { externa: '#nosotros', seccion: '#nosotros .nosotros__intro', nombre: 'nosotros', filas: FILAS },
+    { externa: '#proyectos', seccion: '#proyectos .encabezado', nombre: 'proyectos', filas: FILAS },
+    { externa: '#contacto', seccion: '#contacto .aparece', nombre: 'contacto', filas: FILAS_CTA }
   ];
 
   function etiqueta(id) {
@@ -56,8 +56,8 @@
   function medirBloque(bloque) {
     var sec = document.querySelector(bloque.seccion);
     if (!sec) return;
-    var secRect = sec.getBoundingClientRect();
-    var prevBottom = secRect.top;
+    var externa = bloque.externa ? document.querySelector(bloque.externa) : sec;
+    var prevBottom = (externa || sec).getBoundingClientRect().top;
     var filas = bloque.filas || FILAS;
 
     filas.forEach(function (sel, i) {
