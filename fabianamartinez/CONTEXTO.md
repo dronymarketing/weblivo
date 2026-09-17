@@ -3351,3 +3351,28 @@ nombre (proporción ~1:3.7).
 misma proporción 1:3 del nav.
 
 Cache-bust: `movil.css?v=126`.
+
+## 108. Franja vacía enorme arriba del logo del footer
+
+El cliente mandó una captura mostrando una franja marrón vacía
+gigante entre los botones de "Hablemos" y el logo del footer.
+
+**Causa:** al sacar el párrafo "Asesora inmobiliaria..." (sección
+106), el padding propio del logo (agregado en la 105 para el margen
+"igual arriba y abajo") quedó sumándose SOBRE el padding-top de
+`.pie` (48px) en vez de reemplazarlo — 48+24=72px arriba — mientras
+que abajo, `.pie__redes` todavía tenía su propio `margin-top:14px`
+de cuando existía el párrafo entre medio, sumándose a los 24px del
+logo (24+14=38px). Ni sumaban lo mismo arriba y abajo, ni el total
+de arriba (72px) tenía ya sentido una vez que el logo pasó a ser lo
+primero que se ve.
+
+**Cambio en `movil.css`:** el espacio de arriba y abajo del logo
+pasa a depender EXCLUSIVAMENTE de `.pie__logo--texto{padding:24px 0}`
+(sin tocarlo) — se le saca la responsabilidad a los vecinos:
+`.pie{padding-block:48px 32px}` → `padding-block:0 32px` (el `48px`
+de arriba ya no hace falta, lo pone el logo) y `.pie__redes{
+margin-top:14px}` → `margin-top:0`. Verificado con Playwright: 24px
+arriba y 24px abajo del texto, exactos.
+
+Cache-bust: `movil.css?v=127`.

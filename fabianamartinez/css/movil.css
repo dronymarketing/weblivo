@@ -1127,7 +1127,10 @@ body.menu-abierto .nav{
   .cta__botones{ margin-top:24px; }
 }
 
-.pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:48px 32px; font-size:14px; }
+/* padding-top en 0: el espacio de arriba del logo ahora lo pone
+   completamente .pie__logo--texto (ver más abajo), para que no se
+   sumen dos paddings y quede una franja vacía enorme. */
+.pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:0 32px; font-size:14px; }
 .pie__logo{ height:auto; }
 /* Mismo wordmark del nav (nombre + "Inmobiliaria" chico), pero bien
    grande y centrado, con el mismo margen arriba y abajo. */
@@ -1149,7 +1152,9 @@ body.menu-abierto .nav{
   text-transform:uppercase; color:var(--blanco); margin-bottom:12px; }
 .pie a{ display:inline-flex; align-items:center; gap:8px; padding:4px 0; }
 .pie li{ padding:2px 0; }
-.pie__redes{ display:flex; gap:8px; margin-top:14px; }
+/* margin-top en 0: el espacio de abajo del logo también lo pone
+   .pie__logo--texto (padding-bottom), sin sumarle nada más acá. */
+.pie__redes{ display:flex; gap:8px; margin-top:0; }
 .pie__redes a{
   width:44px; height:44px; display:grid; place-items:center;
   border:var(--borde-claro); border-radius:var(--radio); color:var(--blanco);
