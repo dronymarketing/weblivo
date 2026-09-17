@@ -3533,3 +3533,40 @@ Verificado con Playwright: computed style confirma `font-weight:300`,
 rgba(0,0,0,0)` con el blur activo.
 
 Cache-bust: `movil.css?v=130`.
+
+## 114. Ajustes finales del menú + sacar el medidor de una vez
+
+Cinco pedidos sobre el menú, ya confirmado el resto:
+
+1. **Botón de WhatsApp con forma cápsula**, igual que el resto de los
+   botones del sitio: `.menu__wa{ border-radius:999px }` (antes
+   heredaba los 6px rectos de `.btn`).
+2. **Sacar el texto de contacto** debajo del botón
+   ("Montevideo & Costa de Oro / +598 94 236 869 · ..."): se borra
+   `<p class="menu__datos">` de `index.html` y sus reglas
+   `.menu__datos`/`.menu.sobre-hero .menu__datos` de `movil.css`.
+3. **Bloquear el scroll de fondo** al abrir el menú: `overflow:hidden`
+   en `body` no alcanzaba en mobile (Chrome/Safari Android e iOS
+   siguen dejando scrollear la página de atrás por touch aunque el
+   overlay esté encima). Se cambia `abrirMenu()` en `main.js` a la
+   técnica de fijar el body: al abrir, guarda `window.scrollY`, pone
+   `body{position:fixed; top:-esaPosición}`; al cerrar, saca esos
+   estilos y hace `window.scrollTo` de vuelta a esa posición. El
+   panel del menú sigue scrolleando internamente porque
+   `.menu{overflow-y:auto}` no se tocó.
+4. **Logo del menú igual al del nav**: le faltaba el subtítulo
+   "Inmobiliaria". Se agrega el mismo `<span class="menu__logo-sub">`
+   que usa `.nav__logo--texto`, y `.menu__logo--texto` pasa a tener
+   exactamente el mismo CSS que `.nav__logo--texto` (flex columna,
+   24px, line-height:1) en vez del tratamiento levemente distinto que
+   tenía antes (22px, sin subtítulo).
+5. **Sacar el medidor de distancias**: ya cumplió su función (todas
+   las medidas quedaron iguales, confirmado por el cliente). Se borra
+   `js/debug-medidas.js` y su `<script>` en `index.html`.
+
+Verificado con Playwright: botón a 999px de radio, sin `.menu__datos`
+en el DOM, 0 elementos `.debug-medida`/`.debug-medida__linea`, logo
+con los 2 `<span>`, y el body queda `position:fixed` mientras el menú
+está abierto y se restaura el scroll exacto al cerrarlo.
+
+Cache-bust: `movil.css?v=131`, `main.js?v=63`.

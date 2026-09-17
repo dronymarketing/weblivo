@@ -83,12 +83,28 @@
   /* ----------------------------------------------------------
      MENÚ HAMBURGUESA
   ---------------------------------------------------------- */
+  var scrollAntesDelMenu = 0;
   function abrirMenu(abrir) {
     if (!menu) return;
     menu.classList.toggle('abierto', abrir);
     if (abrirBtn) abrirBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
-    document.body.style.overflow = abrir ? 'hidden' : '';
     document.body.classList.toggle('menu-abierto', abrir);
+    /* overflow:hidden solo no alcanza en mobile (Chrome/Safari
+       Android e iOS siguen dejando scrollear por touch) — se fija
+       el body en su lugar y se restaura el scroll al cerrar. */
+    if (abrir) {
+      scrollAntesDelMenu = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = -scrollAntesDelMenu + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, scrollAntesDelMenu);
+    }
   }
   if (abrirBtn)  abrirBtn.addEventListener('click', function () { abrirMenu(true); });
   if (cerrarBtn) cerrarBtn.addEventListener('click', function () { abrirMenu(false); });

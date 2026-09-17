@@ -266,14 +266,21 @@ button{ font:inherit; color:inherit; }
 }
 .menu.abierto{ transform:translateX(0); opacity:1; }
 .menu__logo{
-  position:absolute; top:16px; left:var(--margen); height:28px;
+  position:absolute; top:16px; left:var(--margen); height:auto;
 }
 .menu__logo img{ height:28px; width:auto; }
+/* Mismo wordmark exacto que .nav__logo--texto (nombre + "Inmobiliaria" chico). */
 .menu__logo--texto{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:22px;
-  color:var(--azul); line-height:28px;
+  display:flex; flex-direction:column; justify-content:center; gap:0;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
+  color:var(--azul); line-height:1;
 }
-.menu.sobre-hero .menu__logo--texto{ color:var(--blanco); text-shadow:0 1px 3px rgba(0,0,0,.3); }
+.menu__logo-sub{
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif;
+  font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
+  line-height:1; margin-top:-1px;
+}
+.menu.sobre-hero .menu__logo--texto{ color:var(--blanco); }
 /* con el menú abierto el nav se retira: no se ven dos logos superpuestos */
 body.menu-abierto .nav{
   opacity:0; pointer-events:none;
@@ -301,9 +308,8 @@ body.menu-abierto .nav{
 .menu__desplegable[aria-expanded="true"] .ico{ transform:rotate(180deg); }
 .menu__desplegable .ico{ transition:transform 320ms var(--curva); }
 .menu__pie{ margin-top:auto; padding-top:28px; }
-.menu__wa{ margin-bottom:16px; }
-.menu__datos{ font-size:13px; color:var(--gris); }
-.menu.sobre-hero .menu__datos{ color:rgba(255,255,255,.9); }
+/* Misma forma cápsula que el resto de los botones de la web. */
+.menu__wa{ border-radius:999px; }
 
 /* ============================================================
    HERO — fullscreen, carrusel de localidades
