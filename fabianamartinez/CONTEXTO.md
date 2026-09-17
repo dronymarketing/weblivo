@@ -2731,3 +2731,28 @@ etiqueta ayuda a que no quede ambiguo sin depender solo del ícono.
 angosto) los 5 ítems entran en una sola fila con margen de sobra.
 
 Sin cache-bust nuevo: solo texto en `index.html`.
+
+## 85. "terr." → "terreno" completo, y la fila centrada con el margen del sitio
+
+Pedido: escribir "terreno" completo en vez de la abreviatura
+"terr."; centrar todos los ítems de la lista usando el margen
+lateral estándar del sitio, para que la fila quede centrada en la
+pantalla.
+
+**Cambio en `index.html`:** "m² terr." → "m² terreno" en las 3
+propiedades.
+
+**Cambio en `movil.css`:** `.propiedad-fija__specs` suma
+`justify-content:center` (antes quedaban pegados a la izquierda). Se
+sacó el `padding-left:0` del primer ítem (ya no hace falta: al estar
+centrada la fila, no necesita quedar pegada al borde izquierdo del
+margen — el margen lateral en sí lo sigue dando `.propiedad-fija__contenido`,
+que no se tocó).
+
+**Efecto sobre el ajuste de la sección 84:** al escribir "terreno"
+completo (en vez de "terr."), el texto vuelve a ser un poco más
+largo — a 375px de ancho el último ítem vuelve a pasar a una segunda
+línea (ya centrada); a 414px+ los 5 siguen entrando en una sola fila
+centrada. Se avisa por las dudas, no se lo pidió revertir.
+
+Cache-bust: `movil.css?v=113`.
