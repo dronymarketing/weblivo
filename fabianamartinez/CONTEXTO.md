@@ -2596,3 +2596,28 @@ right:0`, relativo a `.propiedad-fija__contenido`) — los 3 elementos
 se mueven juntos porque están todos adentro de este mismo bloque.
 
 Cache-bust: `movil.css?v=109`.
+
+## 80. Botón "Ver Propiedad" más fino + fotos pegadas justo debajo del nav
+
+Pedido: el texto del botón "Ver Propiedad" en el grosor más fino
+disponible; bajar las 2 fotos de Destacadas para que la de arriba
+quede matemáticamente pegada debajo del nav superior, sin que
+importe si terminan superponiéndose con el título (ya es el
+comportamiento establecido: título y fotos son independientes).
+
+**Cambios en `movil.css`:**
+- `.propiedad-fija__btn` suma `font-weight:300` — el grosor más
+  liviano que tiene cargado el sitio para "Neue Haas Grotesk Display
+  Pro" (ver `fuentes.css`: solo hay 300/400/500, no hay nada más
+  fino que 300).
+- `.propiedad-fija__contenido` pasa su margen superior de `top:40px`
+  a `top:var(--nav-alto)` — antes el margen de arriba y abajo eran
+  iguales (40px); ahora arriba es exactamente el alto del nav, así
+  la primera foto arranca justo en el borde de abajo del nav, sin
+  aire de más. De paso, esto también resuelve del todo el viejo
+  problema de las secciones 66/67 (la foto asomando detrás del nav
+  transparente): antes el margen de arriba era MENOR al alto del
+  nav (40px < 60px), ahora es EXACTAMENTE el alto del nav, así que ya
+  no hay overlap posible.
+
+Cache-bust: `movil.css?v=110`.

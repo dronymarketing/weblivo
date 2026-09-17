@@ -697,18 +697,22 @@ body.menu-abierto .nav{
   will-change:opacity;
 }
 /* Las 2 fotos extra + la info de la propiedad, superpuestos a la foto
-   ya teñida. Margen fijo de 40px arriba y abajo (mismo valor que
-   #nosotros.seccion--completa). Las 2 fotos y el texto son
-   INDEPENDIENTES entre sí a propósito: el tamaño de la tipografía del
-   título no debe afectar el tamaño de las fotos (ni al revés) — las
-   fotos arrancan pegadas arriba con su alto fijo de siempre
-   (aspect-ratio, ver .propiedad-fija__extra), y el texto queda
-   pegado abajo (bottom:0 de este contenedor = 40px del borde del
-   pin), sin que ninguno de los dos le quite ni le dé espacio al otro.
-   Si el título crece mucho, se superpone a las fotos en vez de
-   achicarlas — es el comportamiento pedido. */
+   ya teñida. Margen fijo de 40px abajo (mismo valor que
+   #nosotros.seccion--completa); arriba, en cambio, el margen es
+   exactamente var(--nav-alto) — la foto de arriba queda pegada justo
+   debajo del nav, matemáticamente, sin margen de aire extra. Las 2
+   fotos y el texto son INDEPENDIENTES entre sí a propósito: el
+   tamaño de la tipografía del título no debe afectar el tamaño de
+   las fotos (ni al revés) — las fotos arrancan pegadas arriba con su
+   alto fijo de siempre (aspect-ratio, ver .propiedad-fija__extra), y
+   el texto queda pegado abajo (bottom:0 de este contenedor = 40px
+   del borde del pin), sin que ninguno de los dos le quite ni le dé
+   espacio al otro. Si las fotos bajan y el título ya está abajo de
+   todo, se superponen entre sí en vez de empujarse — es el
+   comportamiento pedido. */
 .propiedad-fija__contenido{
-  position:absolute; left:var(--margen); right:var(--margen); top:40px; bottom:40px;
+  position:absolute; left:var(--margen); right:var(--margen);
+  top:var(--nav-alto); bottom:40px;
 }
 /* Las 2 fotos extra: sin fondo ni padding propios (nada de sólido
    marrón detrás) — un solo panel que sube desde abajo como una sola
@@ -746,7 +750,7 @@ body.menu-abierto .nav{
 .proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
 /* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho
    queda libre, del tamaño del texto ("Ver Propiedad"), sin forzarlo. */
-.propiedad-fija__btn{ min-height:38px; padding:0 20px; border-radius:999px; }
+.propiedad-fija__btn{ min-height:38px; padding:0 20px; border-radius:999px; font-weight:300; }
 
 /* ============================================================
    Tabs de estado — a-estrenar / en-construcción / lanzamiento
