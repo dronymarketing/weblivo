@@ -3395,3 +3395,43 @@ a 40px para igualar ese mismo total. Verificado con Playwright:
 40px arriba y 40px abajo, exactos.
 
 Cache-bust: `movil.css?v=128`.
+
+## 110. El hero pasa a mostrar las 3 propiedades de Destacadas
+
+El cliente pidió conectar el carrusel del hero (que hasta ahora
+rotaba 6 barrios genéricos de Montevideo) con las 3 propiedades de
+Destacadas, y que "Mansión en Punta del Este" sea la primera al
+abrir la web.
+
+**Cambio en `index.html`:** los 6 `.hero__foto` (Pocitos, Punta
+Carretas, Carrasco Norte, Nuevo París, Cordón, Cerrito de la
+Victoria, con fotos de `img/zonas/`) se reemplazan por 3, en este
+orden, reusando las mismas fotos de fondo que ya tiene cada
+propiedad en Destacadas:
+1. Mansión en Punta del Este (`img/propiedades/premium-piscina-vista-mar.jpg`) — `activa` por default, es la que se ve al abrir la web.
+2. Apartamento en Carrasco (`img/propiedades/carrasco-apto-fachada.jpg`)
+3. Chacra Jacinta en José Ignacio (`img/propiedades/joseignacio-chacra-lago.jpg`)
+
+`data-zona` pasa a ser el nombre de la propiedad (no la zona) — se
+usa tal cual para el `<h1>` y para el mensaje de WhatsApp que arma
+`main.js` ("...consultarte sobre la propiedad {texto}"), que no
+necesitó ningún cambio de código: ya leía esos mismos atributos.
+`data-bajada` es una frase nueva por propiedad, escrita para la
+foto de cada una. El `<h1>`, el párrafo y el link de WhatsApp
+estáticos (para el primer pintado, antes de que corra el JS) se
+actualizaron a mano para que coincidan exactamente con lo que
+generaría el JS al cargar — se verificó con Playwright que el
+`href` estático es carácter por carácter igual al que arma
+`encodeURIComponent` en runtime.
+
+No se tocó ni `main.js` ni el CSS del hero (`.hero__foto`,
+`object-fit:cover`, etc.) — el carrusel ya era genérico, solo leía
+`data-zona`/`data-bajada` de los elementos que hubiera.
+
+**Limpieza:** las 6 fotos viejas de `img/zonas/` quedaron sin ningún
+uso en el sitio (confirmado por grep en todos los `.html`) — se
+borraron los 6 archivos y la carpeta (quedó vacía), sin tocar
+`img/zonas-grid/` que es de la sección Proyectos.
+
+Cambio de solo HTML (más borrado de imágenes) — sin cache-bust
+necesario.
