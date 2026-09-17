@@ -3104,3 +3104,45 @@ Playwright: ambas secciones quedan con exactamente 12px entre
 antetítulo y título, y el h2 a la misma altura en las dos.
 
 Cache-bust: `movil.css?v=119`.
+
+## 98. Medidor de distancias en vivo (debug temporal) + segundo bug real
+
+El cliente pidió una forma de ver, directamente en la pantalla y en
+tiempo real, la distancia en píxeles entre los elementos de arriba
+de cada sección, para confirmar de una vez si "Quiénes somos" y
+"Proyectos" están igual.
+
+**Cambio:** nuevo archivo `js/debug-medidas.js` (temporal, marcado
+así en el comentario del `<script>` en `index.html`, justo antes de
+`</body>`). Dibuja etiquetas rojas con el número de píxeles entre
+antetítulo → título → párrafo → botón, tanto en `#nosotros
+.nosotros__intro` como en `#proyectos .encabezado`, recalculadas en
+cada frame (`requestAnimationFrame`) para que se actualicen solas si
+cambia el tamaño de pantalla — no hace falta recargar.
+
+Al armar el medidor apareció un bug en la propia herramienta (no del
+sitio): el selector genérico `p` también agarraba el antetítulo
+(que es un `<p class="antetitulo">`), dando distancias negativas sin
+sentido. Se corrigió a `p:not(.antetitulo)`.
+
+Con el medidor ya funcionando bien, encontró un **segundo bug real
+del sitio**, esta vez del lado de "Quiénes somos": `#nosotros
+.nosotros__intro p{ margin-top:8px }` (y su versión en `@media
+(max-height:760px)`, `margin-top:4px`) también le pegaba al
+antetítulo por el mismo motivo (es un `<p>`), sumándole 8px de más
+que no le correspondían y que "Proyectos" no tenía. Se corrigió
+igual que el bug de la sección 97: `#nosotros .nosotros__intro
+p:not(.antetitulo)` en ambas reglas.
+
+Con las dos correcciones (97 y 98), el medidor confirma: distancia
+del borde de la sección al antetítulo = 0px en ambas; antetítulo →
+título = 12px en ambas. Quedan dos gaps con valores distintos pero
+por diseño ya existente, no por bug — h2→párrafo (8px en Nosotros,
+10px en Proyectos) y párrafo→botón (36px en Nosotros, 20px en
+Proyectos, porque `.nosotros__intro p` nunca tocó el margen inferior
+del párrafo y `.encabezado p` sí lo pone en 0) — no se tocaron,
+quedan a la espera de que el cliente confirme si también los quiere
+iguales.
+
+Cache-bust: `movil.css?v=120`. `js/debug-medidas.js?v=1` es nuevo,
+no pisa nada existente.

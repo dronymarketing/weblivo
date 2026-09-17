@@ -890,7 +890,7 @@ body.menu-abierto .nav{
    es donde entran los @media(max-height) de abajo. */
 #nosotros .nosotros__todo{ display:flex; flex-direction:column; justify-content:space-between; gap:24px; }
 #nosotros .cifras{ margin-top:0; }
-#nosotros .nosotros__intro p{ margin-top:8px; }
+#nosotros .nosotros__intro p:not(.antetitulo){ margin-top:8px; }
 #nosotros .nosotros__intro .btn{ margin-top:20px; }
 /* Mismo tamaño y forma que el chip "Consultar" del hero (cápsula,
    38px de alto) — el color/borde sigue siendo el de .btn--linea de
@@ -961,7 +961,7 @@ body.menu-abierto .nav{
    compitiendo, todo el espaciado de #nosotros vive en clases. */
 @media (max-height:760px){
   #nosotros .nosotros__todo{ gap:10px; }
-  #nosotros .nosotros__intro p{ margin-top:4px; }
+  #nosotros .nosotros__intro p:not(.antetitulo){ margin-top:4px; }
   #nosotros .nosotros__intro .btn{ margin-top:8px; }
   #nosotros .cifra{ padding-block:6px; }
   #nosotros .cifra__txt{ margin-top:2px; }
