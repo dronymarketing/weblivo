@@ -2969,3 +2969,27 @@ secciones 91, 93 y 92 respectivamente).
 
 Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
 solamente.
+
+## 94. Franja marrón sólida después de la última propiedad de Destacadas
+
+El cliente mandó una captura señalando un rectángulo marrón sólido,
+sin nada adentro, justo después del botón "Ver Propiedad" de la
+última propiedad (José Ignacio) y antes de "Zonas donde trabajo".
+
+**Causa:** exactamente el mismo tipo de bug que ya se había
+diagnosticado y arreglado en el margen de ARRIBA de esta sección
+(ver el comentario ya existente arriba de esta regla en el CSS):
+`.seccion{ padding-block:var(--seccion) }` (72px) le pone padding
+arriba Y abajo a toda sección por default. En su momento se había
+puesto `#destacadas{ padding-top:0 }` para sacar la franja de arriba,
+pero nunca se tocó el padding de ABAJO — quedaba esa misma franja de
+72px de fondo marrón sólido (el color de fondo de `.tema-marron`)
+sin ninguna foto adentro, entre el final de la última propiedad y la
+siguiente sección.
+
+**Cambio en `movil.css`:** `#destacadas{ padding-top:0 }` →
+`#destacadas{ padding-block:0 }` (saca el padding de arriba Y de
+abajo — Destacadas es 100% fotos fullscreen, no necesita margen
+propio en ninguno de los dos extremos).
+
+Cache-bust: `movil.css?v=116`.
