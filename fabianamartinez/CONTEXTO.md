@@ -3300,3 +3300,27 @@ traen por default de `.btn`.
 literalmente lo pedido.
 
 Cache-bust: `movil.css?v=124`.
+
+## 105. Logo del pie de página igual al del nav, grande y centrado
+
+El cliente circuló el bloque del logo del footer y pidió: poner ahí
+el mismo logo que usa el nav (nombre + "Inmobiliaria" chico debajo),
+bien grande, centrado, con el mismo margen arriba y abajo.
+
+**Cambio en `index.html`:** `<p class="pie__logo pie__logo--texto">
+Fabiana Martínez</p>` pasa a tener la misma estructura de 2 `<span>`
+que usa `.nav__logo--texto` (nombre + `.pie__logo-sub` "Inmobiliaria").
+
+**Cambio en `movil.css`:** `.pie__logo--texto` pasa de texto simple
+alineado a la izquierda (26px) a un bloque flex en columna,
+centrado, a 44px, con un `.pie__logo-sub` nuevo (12px, mismo
+tratamiento de mayúsculas/tracking que `.nav__logo-sub`). El
+espaciado arriba/abajo se hizo con `padding:24px 0` en vez de
+`margin` — con margin, el margen-top del logo (al ser el primer
+hijo de `.pie__bloque`, sin padding/borde propio) colapsaba hacia
+arriba con el `padding-top` de `.pie`, así que el hueco de arriba
+terminaba siendo más grande que el de abajo aunque los valores
+fueran "iguales" en el CSS. Con padding no hay colapso, y se
+verificó con Playwright que ambos huecos dan exactamente 24px.
+
+Cache-bust: `movil.css?v=125`.

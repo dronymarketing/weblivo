@@ -1128,10 +1128,21 @@ body.menu-abierto .nav{
 }
 
 .pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:48px 32px; font-size:14px; }
-.pie__logo{ height:26px; margin-bottom:20px; }
+.pie__logo{ height:auto; }
+/* Mismo wordmark del nav (nombre + "Inmobiliaria" chico), pero bien
+   grande y centrado, con el mismo margen arriba y abajo. */
 .pie__logo--texto{
-  font-family:"Hello Branch",cursive; font-weight:400; font-size:26px;
-  color:var(--blanco); margin:0 0 20px;
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  font-family:"Hello Branch",cursive; font-weight:400; font-size:44px;
+  color:var(--blanco); line-height:1; text-align:center;
+  /* padding, no margin: el margin-top de un primer hijo colapsa con
+     el padding-top de .pie y deja de verse igual que el de abajo. */
+  margin:0; padding:24px 0;
+}
+.pie__logo-sub{
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif;
+  font-weight:300; font-size:12px; letter-spacing:.38em; text-transform:uppercase;
+  line-height:1; margin-top:6px;
 }
 .pie__bloque + .pie__bloque{ margin-top:28px; }
 .pie h3{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-size:11px; letter-spacing:.14em;
