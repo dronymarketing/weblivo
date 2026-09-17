@@ -259,9 +259,13 @@ button{ font:inherit; color:inherit; }
   padding:calc(var(--nav-alto) + 28px) var(--margen) 36px;
   background:var(--azul-900);
   color:var(--arena);
-  transform:translateX(100%);
-  opacity:0;
-  transition:transform 650ms cubic-bezier(.19,1,.22,1), opacity 480ms ease-out;
+  /* Cortina: el panel no se mueve ni traslada — solo se revela con
+     clip-path desde la derecha. El único borde en movimiento es el
+     izquierdo del recorte; el contenido de adentro queda quieto en
+     su lugar todo el tiempo, no desliza junto con el fondo. */
+  clip-path:inset(0 0 0 100%);
+  will-change:clip-path;
+  transition:clip-path 650ms cubic-bezier(.19,1,.22,1);
   overflow-y:auto;
 }
 .menu.sobre-hero{
@@ -269,7 +273,7 @@ button{ font:inherit; color:inherit; }
   -webkit-backdrop-filter:blur(22px) saturate(150%);
   backdrop-filter:blur(22px) saturate(150%);
 }
-.menu.abierto{ transform:translateX(0); opacity:1; }
+.menu.abierto{ clip-path:inset(0 0 0 0%); }
 .menu__logo{
   position:absolute; top:16px; left:var(--margen); height:auto;
 }

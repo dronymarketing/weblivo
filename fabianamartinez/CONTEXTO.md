@@ -3655,3 +3655,34 @@ pineada activa, abrir y cerrar el menú deja el `scrollY` exactamente
 igual antes y después (2400 → 2400 → 2400), sin ningún salto.
 
 Cache-bust: `main.js?v=65` (no se tocó CSS en este cambio).
+
+## 117. Animación de cortina (clip-path) en vez de panel deslizante
+
+El cliente pidió que la apertura/cierre del menú sea "como una
+cortina": que lo único que se mueva sea el borde izquierdo de la
+pantalla del menú, sin que el contenido (logo, links, botón) se
+desplace junto con el fondo — un wipe minimalista de derecha a
+izquierda, no un panel deslizante.
+
+**Cambio en `movil.css`:** `.menu` deja de animarse con
+`transform:translateX()` + `opacity` y pasa a animarse con
+`clip-path:inset(0 0 0 100%)` → `.menu.abierto{
+clip-path:inset(0 0 0 0%) }`. El panel ya no se traslada ni cambia
+de posición en ningún momento — el `clip-path` solo recorta/revela
+progresivamente desde la derecha, así que el logo, los links y el
+botón quedan fijos en su lugar durante toda la animación, tal como
+se pidió ("lo único que se mueva sea el lateral izquierdo"). Se
+agrega `will-change:clip-path` para que la animación sea más fluida
+en mobile. El cierre reproduce automáticamente la misma transición
+al revés (mismo `clip-path`, mismo `transition`), sin código extra.
+
+Verificado con Playwright: capturas de 3 frames intermedios muestran
+el contenido del hero fijo detrás mientras la cortina lo tapa de
+derecha a izquierda; el `clip-path` computado al terminar de abrir
+es `inset(0px 0px 0px 0%)` (totalmente revelado); y con el menú
+cerrado, un click en cualquier punto de la pantalla ya no lo
+intercepta (confirmado con `elementFromPoint`), o sea que
+`clip-path` también saca el área recortada del hit-testing, sin
+necesitar `pointer-events` manual.
+
+Cache-bust: `movil.css?v=133`.
