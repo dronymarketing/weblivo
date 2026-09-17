@@ -23,11 +23,14 @@
     document.head.appendChild(estilo);
   }
 
-  var BLOQUES = [
-    { seccion: '#nosotros .nosotros__intro', nombre: 'nosotros' },
-    { seccion: '#proyectos .encabezado', nombre: 'proyectos' }
-  ];
   var FILAS = ['.antetitulo', 'h2', 'p:not(.antetitulo)', '.btn'];
+  var FILAS_CTA = ['.antetitulo', 'h2', 'p:not(.antetitulo)', '.cta__botones'];
+
+  var BLOQUES = [
+    { seccion: '#nosotros .nosotros__intro', nombre: 'nosotros', filas: FILAS },
+    { seccion: '#proyectos .encabezado', nombre: 'proyectos', filas: FILAS },
+    { seccion: '#contacto .aparece', nombre: 'contacto', filas: FILAS_CTA }
+  ];
 
   function etiqueta(id) {
     var el = document.getElementById(id);
@@ -55,8 +58,9 @@
     if (!sec) return;
     var secRect = sec.getBoundingClientRect();
     var prevBottom = secRect.top;
+    var filas = bloque.filas || FILAS;
 
-    FILAS.forEach(function (sel, i) {
+    filas.forEach(function (sel, i) {
       var el = sec.querySelector(sel);
       if (!el) return;
       var rect = el.getBoundingClientRect();

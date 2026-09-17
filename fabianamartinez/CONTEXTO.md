@@ -3178,3 +3178,29 @@ párrafo→botón) dan exactamente iguales en "Quiénes somos" y
 "Proyectos" en ambos casos.
 
 Cache-bust: `movil.css?v=121`.
+
+## 100. Medidor extendido a "Contacto" (Hablemos)
+
+El cliente pidió "hacer lo mismo para el pie de página" — resultó
+ser la sección "Contacto" (antetítulo "Contacto" / h2 "Hablemos" / párrafo
+/ botones WhatsApp-Escribime), no el `<footer>` real, según la
+captura que mandó marcando esa sección con un círculo.
+
+**Cambio en `js/debug-medidas.js`:** se generalizó `BLOQUES` para
+que cada bloque pueda traer su propia lista de filas a medir
+(`bloque.filas`), y se agregó `#contacto .aparece` con
+`['.antetitulo','h2','p:not(.antetitulo)','.cta__botones']`.
+
+Resultado (sin bug de CSS esta vez, se revisó `.cta p{...}` y no
+choca con `.antetitulo` porque no toca márgenes): borde→antetítulo
+0px, antetítulo→título 12px (ambos iguales a Nosotros/Proyectos),
+pero título→párrafo da 0px (contra los 8px de las otras dos
+secciones) porque ese párrafo nunca tuvo margin-top asignado — no es
+un choque de selectores, es que directamente no se le puso margen.
+Párrafo→botones da 24px (`.cta__botones{margin-top:24px}`, valor
+propio, sin comparación directa ya que ahí no hay un `.btn` suelto
+sino un contenedor de 2 botones).
+
+Queda pendiente de confirmación si el cliente quiere sumarle el
+mismo margin-top:8px al párrafo para unificar con las otras dos
+secciones, o dejarlo como está (no se tocó el CSS todavía).
