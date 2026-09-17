@@ -1141,7 +1141,7 @@ body.menu-abierto .nav{
 }
 .pie__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
-  font-weight:300; font-size:12px; letter-spacing:.38em; text-transform:uppercase;
+  font-weight:300; font-size:15px; letter-spacing:.38em; text-transform:uppercase;
   line-height:1; margin-top:6px;
 }
 .pie__bloque + .pie__bloque{ margin-top:28px; }

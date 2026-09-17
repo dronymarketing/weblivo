@@ -3334,3 +3334,20 @@ de Oro." del bloque del logo en el footer.
 con el logo grande y, debajo, directo los íconos de redes.
 
 Solo HTML, sin cache-bust necesario.
+
+## 107. Ajustar proporción de "INMOBILIARIA" en el logo del footer
+
+El cliente mandó una captura del logo tal cual se ve en el nav, para
+confirmar que el del footer sea igual. Comparando lado a lado (con
+el mismo fondo blanco y color terracota para que sea una comparación
+justa, ya que el footer lo pinta blanco por el fondo oscuro), la
+tipografía y el tratamiento coincidían, pero "INMOBILIARIA" quedaba
+chico en proporción al nombre: el nav usa 8px de subtítulo para 24px
+de nombre (proporción 1:3), y el footer tenía 12px para 44px de
+nombre (proporción ~1:3.7).
+
+**Cambio en `movil.css`:** `.pie__logo-sub{ font-size:12px }` →
+`font-size:15px` (44 ÷ 3 ≈ 14.7, redondeado a 15), para igualar la
+misma proporción 1:3 del nav.
+
+Cache-bust: `movil.css?v=126`.
