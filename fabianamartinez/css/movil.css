@@ -736,10 +736,6 @@ body.menu-abierto .nav{
   position:absolute; left:0; right:0; bottom:-20px;
 }
 
-.proyecto-destacado__zona{
-  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
-  color:rgba(237,225,210,.75); margin:0 0 10px;
-}
 /* Tamaño asimilado al título grande de la web de referencia (hba.com)
    — la tipografía cursiva de marca ("Hello Branch") se mantiene, solo
    se pidió agrandar el tamaño. No importa si ocupa 2 renglones. */
@@ -747,7 +743,24 @@ body.menu-abierto .nav{
   font-family:"Hello Branch",cursive; font-weight:400; font-size:60px; line-height:0.85;
   color:var(--fondo-alt); margin:0 0 10px;
 }
-.proyecto-destacado__precio{ font-size:15px; color:rgba(237,225,210,.82); margin:0 0 20px; }
+/* Precio + zona + datos, en fila horizontal con líneas verticales
+   separando cada ítem (pedido explícito, como la referencia pero
+   horizontal en vez de apilada). flex-wrap:wrap como red de
+   seguridad: si en una pantalla angosta no entran los 6 ítems en un
+   renglón, pasan al siguiente en vez de desbordar o superponerse. */
+.propiedad-fija__specs{
+  display:flex; flex-wrap:wrap; align-items:center; row-gap:6px;
+  list-style:none; margin:0 0 20px; padding:0;
+  font-size:13px; color:rgba(237,225,210,.82);
+}
+.propiedad-fija__specs li{
+  display:flex; align-items:center; gap:4px;
+  padding:0 10px; border-right:1px solid rgba(237,225,210,.35);
+  line-height:1.2;
+}
+.propiedad-fija__specs li:first-child{ padding-left:0; }
+.propiedad-fija__specs li:last-child{ border-right:0; padding-right:0; }
+.propiedad-fija__specs .ico{ width:14px; height:14px; flex:none; }
 /* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho
    queda libre, del tamaño del texto ("Ver Propiedad"), sin forzarlo. */
 .propiedad-fija__btn{ min-height:38px; padding:0 20px; border-radius:999px; font-weight:300; }

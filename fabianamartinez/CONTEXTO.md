@@ -2621,3 +2621,41 @@ comportamiento establecido: título y fotos son independientes).
   no hay overlap posible.
 
 Cache-bust: `movil.css?v=110`.
+
+## 81. Descripción de Destacadas: de texto plano a lista horizontal con separadores
+
+Pedido: reemplazar la línea de texto plano ("U$S 138.000 · 2 dorm. ·
+1 baño · 65 m²") por una lista horizontal con líneas verticales
+separando cada ítem, estilo la referencia mandada (íconos + texto)
+pero horizontal en vez de apilada, en este orden: precio - zona -
+dormitorios - baños - m² edificado - m² terreno. También pidió
+revisar si entraba todo en una sola fila.
+
+**Datos nuevos que no existían:** "zona" (se usa el nombre de zona
+de cada propiedad, ej. "Cordón") y "m² de terreno" (no existía en el
+contenido — se inventó un valor ficticio para cada propiedad,
+coherente con que todo el contenido del sitio es de muestra).
+
+**Cambio en `index.html`:** el `<p class="proyecto-destacado__precio">`
+de las 3 propiedades pasa a ser un `<ul class="propiedad-fija__specs">`
+con un `<li>` por ítem (precio y zona sin ícono; dormitorios/baños/
+edificado/terreno con ícono del sprite: `#i-bed`, `#i-bath`,
+`#i-ruler`, `#i-home`).
+
+**Cambio en `movil.css`:** nueva regla `.propiedad-fija__specs`
+(`display:flex; flex-wrap:wrap`, cada `<li>` con
+`border-right` como separador vertical, sin borde en el último). Se
+sacaron `.proyecto-destacado__zona` y `.proyecto-destacado__precio`,
+que quedaron sin uso en el HTML.
+
+**Verificado con el navegador (Playwright, sirviendo el sitio en
+local) en 375px y 414px de ancho:** los primeros 4 ítems (precio,
+zona, dormitorios, baños) entran en la primera línea, pero "m²
+edificado" y "m² terreno" siempre pasan a una segunda línea — NO
+entran los 6 en una sola fila en un celular. El `flex-wrap:wrap`
+hace que pase prolijamente a una segunda línea en vez de desbordar o
+superponerse, pero sigue siendo 2 líneas, no una. Pendiente que el
+cliente confirme si lo deja así, agranda el ancho de alguna forma, o
+saca algún dato.
+
+Cache-bust: `movil.css?v=111`.
