@@ -66,8 +66,14 @@
     nav.classList.remove('es-tope', 'es-glass', 'es-solido');
     nav.classList.add(clase);
 
-    // el menú desplegado copia el glass mientras esté sobre el hero o Destacadas
-    if (menu) menu.classList.toggle('sobre-hero', clase !== 'es-solido');
+    // el menú desplegado copia el glass mientras esté sobre el hero o Destacadas.
+    // Con el menú abierto, body queda position:fixed para bloquear el scroll,
+    // y eso resetea window.scrollY a 0 como efecto secundario — sin este freno
+    // el cálculo de arriba se recalcula mal (cree que volvió al tope) y le
+    // cambia el fondo al menú mientras está abierto.
+    if (menu && !document.body.classList.contains('menu-abierto')) {
+      menu.classList.toggle('sobre-hero', clase !== 'es-solido');
+    }
   }
 
   var pendiente = false;
@@ -103,7 +109,10 @@
       document.body.style.top = '';
       document.body.style.left = '';
       document.body.style.right = '';
-      window.scrollTo(0, scrollAntesDelMenu);
+      /* scrollTo(x,y) hereda scroll-behavior:smooth del html y anima
+         el salto de vuelta — se ve como un scroll raro al cerrar.
+         behavior:'instant' lo fuerza a ser inmediato. */
+      window.scrollTo({ top: scrollAntesDelMenu, left: 0, behavior: 'instant' });
     }
   }
   if (abrirBtn)  abrirBtn.addEventListener('click', function () { abrirMenu(true); });

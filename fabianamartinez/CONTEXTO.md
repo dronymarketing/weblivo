@@ -3570,3 +3570,56 @@ con los 2 `<span>`, y el body queda `position:fixed` mientras el menú
 está abierto y se restaura el scroll exacto al cerrarlo.
 
 Cache-bust: `movil.css?v=131`, `main.js?v=63`.
+
+## 115. Scroll raro al cerrar + el menú perdió el tema marrón/beige
+
+Dos bugs, ambos causados por el fix de bloqueo de scroll de la
+sección 114:
+
+1. **Scroll raro al cerrar el menú:** `window.scrollTo(0,
+   scrollAntesDelMenu)` hereda `scroll-behavior:smooth` del `html`
+   global, así que el salto de vuelta al cerrar quedaba animado en
+   vez de instantáneo, y se sentía como un scroll extraño justo
+   cuando el menú también está terminando su propia transición.
+   **Cambio en `main.js`:** se pasa a la forma con opciones,
+   `window.scrollTo({ top, left:0, behavior:'instant' })`, que fuerza
+   el salto inmediato sin heredar el `smooth` del CSS.
+
+2. **Se perdió el fondo marrón/texto beige** que debía verse al abrir
+   el menú sobre un fondo claro (Nosotros, Proyectos, Contacto). La
+   causa real: al poner `body{position:fixed}` para bloquear el
+   scroll, el navegador resetea `window.scrollY` a 0 como efecto
+   secundario (el `<body>` sale del flujo y `<html>` deja de tener
+   qué scrollear). Eso disparaba un recálculo de `estadoNav()` con
+   `y=0`, que reclasificaba el nav como si estuviera arriba de todo
+   ("es-tope") y le copiaba el vidrio esmerilado al menú aunque
+   visualmente seguía sobre una sección clara.
+
+   De paso, se aprovechó para simplificar: en vez de tener dos
+   juegos de colores (blanco+azul por default, blanco+sombra en
+   `.sobre-hero`), el marrón (`--azul-900`) + beige (`--arena`) pasan
+   a ser la base siempre, y `.sobre-hero` solo cambia el fondo a
+   vidrio esmerilado — el texto ya es claro en los dos casos, no hace
+   falta un segundo `color` por estado.
+
+   **Cambio en `movil.css`:** `.menu{ background:var(--blanco) }` →
+   `background:var(--azul-900); color:var(--arena)`. Se sacan los
+   overrides de color repetidos en `.menu.sobre-hero .menu__logo--texto`,
+   `.menu__cerrar` y `.menu__lista a/button` (ya heredan el mismo
+   beige). El borde entre ítems pasa de `var(--borde)` (oscuro, pensado
+   para fondo claro) a `rgba(237,225,210,.18)` (beige clarito, se ve
+   bien tanto en marrón sólido como en vidrio).
+   **Cambio en `main.js`:** `estadoNav()` ya no toca la clase
+   `sobre-hero` del menú mientras `body` tiene `menu-abierto` — el
+   valor queda "congelado" en lo que ya tenía correctamente calculado
+   antes de abrir, sin importar que el `scrollY` se lea mal mientras
+   está fijo.
+
+Verificado con Playwright: con el menú abierto sobre `#nosotros`,
+`background-color` da `rgb(65, 47, 38)` (marrón) sin `.sobre-hero`; y
+sobre el hero sigue dando el vidrio esmerilado de siempre. El cierre
+del menú deja `scrollY` en el valor final sin pasos intermedios
+(confirmado leyendo el valor a los 50ms y a los 700ms: igual en
+ambos, sin animación).
+
+Cache-bust: `movil.css?v=132`, `main.js?v=64`.

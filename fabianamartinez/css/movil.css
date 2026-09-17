@@ -249,11 +249,16 @@ button{ font:inherit; color:inherit; }
 .nav.es-solido .nav__btn{ color:var(--azul); }
 
 /* ---------- Menú hamburguesa ---------- */
+/* Base marrón + texto beige siempre — sobre foto (hero/Destacadas)
+   .sobre-hero solo cambia el fondo a vidrio esmerilado, el texto
+   queda igual (ya es claro, no hace falta un segundo juego de
+   colores). */
 .menu{
   position:fixed; inset:0; z-index:90;
   display:flex; flex-direction:column;
   padding:calc(var(--nav-alto) + 28px) var(--margen) 36px;
-  background:var(--blanco);
+  background:var(--azul-900);
+  color:var(--arena);
   transform:translateX(100%);
   opacity:0;
   transition:transform 650ms cubic-bezier(.19,1,.22,1), opacity 480ms ease-out;
@@ -273,14 +278,13 @@ button{ font:inherit; color:inherit; }
 .menu__logo--texto{
   display:flex; flex-direction:column; justify-content:center; gap:0;
   font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
-  color:var(--azul); line-height:1;
+  color:var(--arena); line-height:1;
 }
 .menu__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
   font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
   line-height:1; margin-top:-1px;
 }
-.menu.sobre-hero .menu__logo--texto{ color:var(--blanco); }
 /* con el menú abierto el nav se retira: no se ven dos logos superpuestos */
 body.menu-abierto .nav{
   opacity:0; pointer-events:none;
@@ -289,19 +293,16 @@ body.menu-abierto .nav{
 .menu__cerrar{
   position:absolute; top:8px; right:calc(var(--margen) - 10px);
   width:44px; height:44px; display:grid; place-items:center;
-  background:none; border:0; cursor:pointer; color:var(--azul);
+  background:none; border:0; cursor:pointer; color:var(--arena);
 }
-.menu.sobre-hero .menu__cerrar{ color:var(--blanco); filter:drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
-.menu__lista li + li{ border-top:var(--borde); }
+.menu.sobre-hero .menu__cerrar{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
+.menu__lista li + li{ border-top:1px solid rgba(237,225,210,.18); }
 .menu__lista a,.menu__lista button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
   width:100%; padding:16px 0; background:none; border:0; cursor:pointer;
   font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:300; font-size:26px;
-  letter-spacing:.02em; text-transform:uppercase; color:var(--azul); text-align:left;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--arena); text-align:left;
 }
-.menu.sobre-hero .menu__lista a,
-.menu.sobre-hero .menu__lista button{ color:var(--blanco); }
-.menu.sobre-hero .menu__lista li + li{ border-top-color:rgba(255,255,255,.22); }
 .menu__sub{ max-height:0; overflow:hidden; transition:max-height 420ms var(--curva); }
 .menu__sub.abierto{ max-height:220px; }
 .menu__sub a{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-size:16px; padding:10px 0 10px 16px; }
