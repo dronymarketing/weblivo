@@ -748,14 +748,22 @@ body.menu-abierto .nav{
    horizontal en vez de apilada). flex-wrap:wrap como red de
    seguridad: si en una pantalla angosta no entran los 6 ítems en un
    renglón, pasan al siguiente en vez de desbordar o superponerse. */
+/* flex-wrap:wrap queda solo como red de seguridad por si el JS no
+   corre (ver ajustarSpecsDestacadas() en main.js) — ese JS es el que
+   de verdad garantiza que esto nunca pase a 2 renglones: mide el
+   ancho real contra el disponible y va achicando primero la letra
+   (--specs-font) y después el espacio entre ítems (--specs-gap)
+   hasta que entra todo, sin importar el largo del texto de cada
+   propiedad ni el ancho de pantalla. */
 .propiedad-fija__specs{
+  --specs-font:13px; --specs-gap:6px;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
   row-gap:6px; list-style:none; margin:0 0 20px; padding:0;
-  font-size:13px; color:rgba(237,225,210,.82);
+  font-size:var(--specs-font); color:rgba(237,225,210,.82);
 }
 .propiedad-fija__specs li{
   display:flex; align-items:center; gap:4px;
-  padding:0 6px; border-right:1px solid rgba(237,225,210,.35);
+  padding:0 var(--specs-gap); border-right:1px solid rgba(237,225,210,.35);
   line-height:1.2;
 }
 .propiedad-fija__specs li:last-child{ border-right:0; }

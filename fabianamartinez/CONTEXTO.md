@@ -2777,3 +2777,43 @@ fotos de archivo, sin relación real con el nombre — coherente con
 que todo el contenido del sitio es de muestra).
 
 Sin cache-bust: solo texto en `index.html`.
+
+## 87. Garantizar que la fila de specs NUNCA pase a un segundo renglón
+
+El cliente mandó una captura real donde, con "Mansión en Punta del
+Este", la fila sí pasaba a 2 renglones — algo que había pedido antes
+que no pasara nunca. Pidió una regla que, sea cual sea el contenido
+o el ancho de pantalla, achique letra o espacio entre ítems lo que
+haga falta para que siempre quede en 1 renglón, centrado, respetando
+el margen lateral del sitio.
+
+**Por qué pasaba:** el texto de cada propiedad cambia de largo
+("Cordón" vs. "Chacra Jacinta en José Ignacio" tienen larguísimos
+distintos), así que ninguna medida fija de CSS alcanza para
+garantizar que siempre entre — hacía falta medir en vivo.
+
+**Cambio en `movil.css`:** `.propiedad-fija__specs` y sus `<li>`
+pasan a usar 2 variables CSS controlables desde JS:
+`--specs-font` (antes `font-size:13px` fijo) y `--specs-gap` (antes
+`padding:0 6px` fijo). `flex-wrap:wrap` se mantiene como red de
+seguridad por si el JS no llega a correr.
+
+**Cambio en `main.js`:** nueva función `ajustarSpecsDestacadas()`
+que por cada `.propiedad-fija__specs`: fuerza `flex-wrap:nowrap`
+(clave — con `wrap` el ancho nunca desborda porque los ítems que
+sobran simplemente pasan de renglón, así que la comparación de
+ancho nunca detecta el problema), mide `scrollWidth` contra
+`clientWidth`, y si no entra, va bajando `--specs-font` de a 0.5px
+(piso 10px) y, si con el mínimo de letra tampoco entra, va bajando
+`--specs-gap` de a 1px (piso 2px). Se ejecuta al cargar, en cada
+resize/orientationchange, y de nuevo cuando terminan de cargar las
+tipografías propias (`document.fonts.ready`) para no medir con una
+fuente de reemplazo por error.
+
+**Verificado con el navegador (ancho: 320px, 360px, 375px, 414px,
+con las 3 propiedades actuales) en un proceso de Chromium nuevo por
+cada ancho, para descartar caché:** desborde 0px en los 12 casos,
+y el margen lateral se mantiene en 24px (`var(--margen)`) a cada
+lado en todos los anchos probados.
+
+Cache-bust: `movil.css?v=114`, `main.js?v=61`.

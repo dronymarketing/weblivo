@@ -359,4 +359,58 @@
     });
   }
 
+  /* ----------------------------------------------------------
+     DESTACADAS — la fila de specs (precio/zona/dorm/baños/m²)
+     SIEMPRE tiene que entrar en un solo renglón, centrada, sin
+     salirse del margen lateral del sitio — nunca puede pasar a un
+     segundo renglón, sea cual sea el largo del texto de cada
+     propiedad (varía: "Cordón" no es lo mismo que "Chacra Jacinta en
+     José Ignacio") o el ancho de la pantalla. Una regla de CSS fija
+     no alcanza para garantizar eso con contenido variable, así que
+     se mide el ancho real contra el disponible y, si no entra, se
+     va achicando primero la letra y recién si con el mínimo de letra
+     tampoco entra, el espacio entre ítems — nunca al revés, nunca
+     más grande que los valores base del CSS.
+  ---------------------------------------------------------- */
+  function ajustarSpecsDestacadas() {
+    var FONT_BASE = 13, FONT_MIN = 10, FONT_PASO = 0.5;
+    var GAP_BASE = 6, GAP_MIN = 2, GAP_PASO = 1;
+
+    document.querySelectorAll('.propiedad-fija__specs').forEach(function (ul) {
+      /* flex-wrap:wrap (el de base en el CSS) evita que scrollWidth
+         supere a clientWidth — en vez de desbordar, manda los ítems
+         que sobran a un segundo renglón. Eso hace que la comparación
+         de más abajo nunca detecte el problema. Por eso acá se
+         fuerza nowrap primero: así scrollWidth sí refleja el ancho
+         real que ocupa el contenido sin cortarlo en renglones, y se
+         puede medir de verdad si entra o no. Se deja en nowrap
+         siempre — para eso está todo este ajuste, para garantizar
+         que jamás pase a un segundo renglón. */
+      ul.style.flexWrap = 'nowrap';
+      ul.style.setProperty('--specs-font', FONT_BASE + 'px');
+      ul.style.setProperty('--specs-gap', GAP_BASE + 'px');
+
+      var fontSize = FONT_BASE;
+      while (ul.scrollWidth > ul.clientWidth && fontSize > FONT_MIN) {
+        fontSize -= FONT_PASO;
+        ul.style.setProperty('--specs-font', fontSize + 'px');
+      }
+      var gap = GAP_BASE;
+      while (ul.scrollWidth > ul.clientWidth && gap > GAP_MIN) {
+        gap -= GAP_PASO;
+        ul.style.setProperty('--specs-gap', gap + 'px');
+      }
+    });
+  }
+  ajustarSpecsDestacadas();
+  window.addEventListener('load', ajustarSpecsDestacadas);
+  window.addEventListener('resize', ajustarSpecsDestacadas);
+  window.addEventListener('orientationchange', ajustarSpecsDestacadas);
+  if (window.document.fonts && document.fonts.ready) {
+    // Sin esto, si las tipografías propias tardan en cargar, la
+    // primera medición puede usar el ancho de una fuente de
+    // reemplazo y quedar mal calculada.
+    document.fonts.ready.then(ajustarSpecsDestacadas);
+  }
+
 })();
