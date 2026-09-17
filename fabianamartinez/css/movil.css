@@ -254,7 +254,7 @@ button{ font:inherit; color:inherit; }
   display:flex; flex-direction:column;
   padding:calc(var(--nav-alto) + 28px) var(--margen) 36px;
   background:var(--blanco);
-  transform:translateY(-100%);
+  transform:translateX(100%);
   transition:transform 520ms var(--curva);
   overflow-y:auto;
 }
@@ -263,7 +263,7 @@ button{ font:inherit; color:inherit; }
   -webkit-backdrop-filter:blur(22px) saturate(150%);
   backdrop-filter:blur(22px) saturate(150%);
 }
-.menu.abierto{ transform:translateY(0); }
+.menu.abierto{ transform:translateX(0); }
 .menu__logo{
   position:absolute; top:16px; left:var(--margen); height:28px;
 }

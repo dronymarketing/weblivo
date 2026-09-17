@@ -3453,3 +3453,58 @@ Victoria. Verificado con Playwright: 9 fotos totales, la primera es
 la Mansión y queda `activa`.
 
 Solo HTML (más recuperar 6 imágenes) — sin cache-bust necesario.
+
+## 112. Nav: animación desde la derecha + títulos arreglados
+
+El cliente pidió que el menú (hamburguesa) se abra con una animación
+desde la derecha, cubriendo toda la pantalla, y que se corrijan los
+títulos del nav según lo que está armado en el sitio.
+
+**Hallazgo importante antes de tocar los títulos:** los links del
+nav (`venta.html`, `alquiler.html`, `nosotros.html`, `contacto.html`,
+`a-estrenar.html`, `en-construccion.html`, `lanzamiento.html`)
+apuntaban a páginas que **no existen** en este proyecto — en el
+directorio `fabianamartinez/` solo existe `index.html`. Esas páginas
+sí existen en un proyecto hermano (`ananikian/`, otro cliente, mismo
+template de origen) — la lista de tareas que trae este entorno
+("Build venta.html", "Build alquiler.html", etc.) pertenece a ESE
+otro proyecto, no a este. En este sitio de Fabiana Martínez todo
+vive en `index.html` como secciones ancla (`#inicio`, `#destacadas`,
+`#proyectos`, `#nosotros`, `#contacto`) — así que el nav estaba
+linkeando a páginas fantasma.
+
+**Cambio en `index.html`:**
+- `.nav__enlaces` (versión escritorio) y `.menu__lista` (menú
+  hamburguesa) se reescriben para apuntar a las secciones reales:
+  Inicio (`#inicio`), Propiedades (`#destacadas`, antes separado en
+  "Venta"/"Alquiler" sin sección propia), Proyectos (`#proyectos`,
+  antes un desplegable a "A estrenar/En construcción/Lanzamiento"
+  que tampoco existían), Nosotros (`#nosotros`) y Contacto
+  (`#contacto`). Se sacan los desplegables (`.nav__drop` y
+  `.menu__desplegable`/`.menu__sub`) porque ya no hace falta un
+  submenú para una sola sección.
+- Esto también resuelve la duda que había quedado abierta en la
+  sección 95 (dos cosas llamándose "Proyectos" con destinos
+  distintos) y la pregunta del cliente de varias vueltas atrás sobre
+  cuál sería el 5to ítem del nav (Inicio, Propiedades, Nosotros,
+  Contacto + Proyectos).
+- No se tocó `main.js`: el cierre del menú al clickear un link
+  (`menu.querySelectorAll('a')...click→abrirMenu(false)`) y el
+  `[id]{scroll-margin-top:...}` para que el ancla no quede tapada
+  por el nav fijo ya funcionaban genéricamente. Verificado con
+  Playwright: los 5 links navegan a su sección y cierran el menú.
+
+**Cambio en `movil.css`:** `.menu{ transform:translateY(-100%) }` →
+`translateX(100%)`, y `.menu.abierto{ transform:translateY(0) }` →
+`translateX(0)`. El menú ya era `position:fixed;inset:0` (cubre toda
+la pantalla una vez abierto) — solo hacía falta cambiar el eje de
+la animación de entrada, de "cae desde arriba" a "entra desde la
+derecha". Verificado con Playwright capturando el frame a mitad de
+la transición.
+
+**Pendiente, no tocado en este cambio:** el resto del sitio (footer,
+"Ver Propiedad" en Destacadas → `propiedad.html`, etc.) también tiene
+links a esas páginas fantasma — se arregló puntualmente el nav
+porque fue lo pedido, pero el mismo problema existe en otros lugares.
+
+Cache-bust: `movil.css?v=129`.
