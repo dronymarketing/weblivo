@@ -3287,3 +3287,16 @@ proyectos y contacto dan ahora **40px / 12px / 8px-o-4px /
 36px-o-24px**, exactamente iguales en las tres.
 
 Cache-bust: `movil.css?v=123`, `js/debug-medidas.js?v=3`.
+
+## 104. Botones de "Hablemos" con la forma cápsula de "Conocer más"
+
+El cliente pidió que los botones "WhatsApp" y "Escribime" tengan la
+misma forma que "Conocer más" (cápsula, `border-radius:999px`) en
+vez del `border-radius:var(--radio)` (6px, esquinas rectas) que
+traen por default de `.btn`.
+
+**Cambio en `movil.css`:** `.cta__botones .btn{ border-radius:999px; }`
+— no se tocó tamaño/padding (52px de alto), solo la forma, que fue
+literalmente lo pedido.
+
+Cache-bust: `movil.css?v=124`.

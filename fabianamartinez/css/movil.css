@@ -1119,6 +1119,8 @@ body.menu-abierto .nav{
    "Hablemos" quede parejo con "Quiénes somos" y "Proyectos". */
 .cta p:not(.antetitulo){ margin-top:8px; }
 .cta__botones{ display:flex; flex-direction:column; gap:12px; margin-top:36px; }
+/* Misma forma cápsula que .nosotros__btn ("Conocer más"). */
+.cta__botones .btn{ border-radius:999px; }
 .cta .btn--linea{ color:var(--blanco); border-color:rgba(255,255,255,.4); }
 @media (max-height:760px){
   .cta p:not(.antetitulo){ margin-top:4px; }
