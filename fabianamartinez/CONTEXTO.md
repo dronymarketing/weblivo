@@ -2920,3 +2920,27 @@ otro lado del sitio antes de borrarlo.
 
 Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
 solamente.
+
+## 92. Nueva foto "de abajo" para José Ignacio (living con escalera)
+
+El cliente pasó otra foto de Pexels (living con escalera moderna)
+para la foto de ABAJO (la segunda de las 2 fotos apiladas) de la
+property 3 de Destacadas:
+https://www.pexels.com/es-es/foto/escaleras-interior-salon-hogar-8134760/
+
+**Cambio:** foto original (7360×4912) recortada centrada al ratio
+16:10 (el mismo que usa `.propiedad-fija__extra` por CSS) y
+redimensionada a 1400×933 — mismo tamaño que `cordon-apto-fachada.jpg`,
+la referencia de esta categoría de foto. Comprimida a JPEG calidad 82
+(~184KB). Guardada con nombre nuevo —
+`img/propiedades/joseignacio-chacra-living.jpg` — sin pisar el
+archivo anterior.
+
+En `index.html`, la segunda foto extra de esa propiedad pasa de
+`carrasconorte-3.jpg` a `joseignacio-chacra-living.jpg`, con el `alt`
+actualizado a "Living con escalera de una chacra de muestra en José
+Ignacio". Se confirmó que `carrasconorte-3.jpg` no se usaba en
+ningún otro lado del sitio antes de borrarlo.
+
+Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
+solamente.
