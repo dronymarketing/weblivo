@@ -3234,3 +3234,22 @@ proyectos y contacto dan exactamente los mismos 4 números en ambos
 casos (0px / 12px / 8px-o-4px / 36px-o-24px).
 
 Cache-bust: `movil.css?v=122`.
+
+## 102. El fix de #101 no se veía: faltaba subir la versión del script
+
+El cliente mandó una captura donde "Contacto" no mostraba ninguna
+etiqueta roja del medidor (mientras que "Quiénes somos" sí). El CSS
+de la sección 101 estaba bien — el problema era que
+`debug-medidas.js` se referenciaba siempre como `?v=1` en
+`index.html`, aunque el archivo se editó varias veces (secciones 98,
+100 y 101 le agregaron mediciones nuevas). Al no cambiar el `?v=`,
+el celular del cliente se había quedado con una copia en caché de
+una versión vieja del script que no medía "Contacto" todavía.
+
+**Cambio:** `js/debug-medidas.js?v=1` → `?v=2` en `index.html`.
+Verificado en local (servidor limpio, sin caché de por medio) que
+"Contacto" da los mismos 4 números que "Quiénes somos" y "Proyectos"
+en pantalla baja: `0px, 12px, 4px, 24px`.
+
+Lección para no repetir: `debug-medidas.js` también necesita su
+propio cache-bust cada vez que se lo edita, igual que `movil.css`.
