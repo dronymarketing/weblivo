@@ -3059,3 +3059,23 @@ Lanzamiento) — mismo nombre que el antetítulo de esta sección nueva,
 pero apuntando a otro lado. Falta decidir si esta sección homepage se
 linkea desde el nav (y con qué texto, para no repetir "Proyectos" dos
 veces con destinos distintos) — todavía no se tocó `.menu__lista`.
+
+## 96. Ajustes de #95: capitalización del título y color del párrafo
+
+El cliente comparó una captura de "Quiénes somos" con una de
+"Proyectos" y señaló dos diferencias a corregir:
+
+1. El título "PRÓXIMAMENTE" estaba en mayúscula sostenida — pasa a
+   "Próximamente" (solo la primera letra en mayúscula), texto plano
+   en `index.html`, sin tocar CSS de `text-transform` (no había
+   ninguna, era el texto tal cual escrito).
+2. El párrafo de bajada se veía en verde oliva en "Proyectos" pero en
+   marrón oscuro en "Quiénes somos". Causa: `.encabezado p{ color:
+   var(--gris) }` en `movil.css` — `.encabezado` es una clase
+   genérica que hoy solo usa esta sección (se confirmó por grep que
+   no aparece en ningún otro HTML del sitio), así que se sacó
+   `color:var(--gris)` de la regla directamente en vez de crear una
+   excepción por ID. El párrafo ahora hereda el marrón (`--tinta`)
+   del `body`, igual que el de "Quiénes somos".
+
+Cache-bust: `movil.css?v=118`.
