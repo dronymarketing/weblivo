@@ -367,14 +367,18 @@
      propiedad (varía: "Cordón" no es lo mismo que "Chacra Jacinta en
      José Ignacio") o el ancho de la pantalla. Una regla de CSS fija
      no alcanza para garantizar eso con contenido variable, así que
-     se mide el ancho real contra el disponible y, si no entra, se
-     va achicando primero la letra y recién si con el mínimo de letra
-     tampoco entra, el espacio entre ítems — nunca al revés, nunca
-     más grande que los valores base del CSS.
+     se mide el ancho real contra el disponible y, si no entra, se va
+     achicando en cascada — letra, espacio entre ítems, tamaño del
+     ícono y espacio ícono-texto, en ese orden — hasta que entra todo.
+     Nunca al revés, nunca más grande que los valores base del CSS.
   ---------------------------------------------------------- */
   function ajustarSpecsDestacadas() {
-    var FONT_BASE = 13, FONT_MIN = 10, FONT_PASO = 0.5;
-    var GAP_BASE = 6, GAP_MIN = 2, GAP_PASO = 1;
+    var pasos = [
+      { prop: '--specs-font',    base: 13, min: 9,   paso: 0.5, unidad: 'px' },
+      { prop: '--specs-gap',     base: 6,  min: 0,   paso: 1,   unidad: 'px' },
+      { prop: '--specs-ico',     base: 14, min: 10,  paso: 1,   unidad: 'px' },
+      { prop: '--specs-ico-gap', base: 4,  min: 2,   paso: 1,   unidad: 'px' }
+    ];
 
     document.querySelectorAll('.propiedad-fija__specs').forEach(function (ul) {
       /* flex-wrap:wrap (el de base en el CSS) evita que scrollWidth
@@ -387,19 +391,15 @@
          siempre — para eso está todo este ajuste, para garantizar
          que jamás pase a un segundo renglón. */
       ul.style.flexWrap = 'nowrap';
-      ul.style.setProperty('--specs-font', FONT_BASE + 'px');
-      ul.style.setProperty('--specs-gap', GAP_BASE + 'px');
+      pasos.forEach(function (p) { ul.style.setProperty(p.prop, p.base + p.unidad); });
 
-      var fontSize = FONT_BASE;
-      while (ul.scrollWidth > ul.clientWidth && fontSize > FONT_MIN) {
-        fontSize -= FONT_PASO;
-        ul.style.setProperty('--specs-font', fontSize + 'px');
-      }
-      var gap = GAP_BASE;
-      while (ul.scrollWidth > ul.clientWidth && gap > GAP_MIN) {
-        gap -= GAP_PASO;
-        ul.style.setProperty('--specs-gap', gap + 'px');
-      }
+      pasos.forEach(function (p) {
+        var valor = p.base;
+        while (ul.scrollWidth > ul.clientWidth && valor > p.min) {
+          valor -= p.paso;
+          ul.style.setProperty(p.prop, valor + p.unidad);
+        }
+      });
     });
   }
   ajustarSpecsDestacadas();

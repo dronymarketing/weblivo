@@ -2817,3 +2817,45 @@ y el margen lateral se mantiene en 24px (`var(--margen)`) a cada
 lado en todos los anchos probados.
 
 Cache-bust: `movil.css?v=114`, `main.js?v=61`.
+
+## 88. La sección 87 no alcanzaba: el texto de cada ítem se partía solo
+
+El cliente mandó una captura real donde, con "Mansión en Punta del
+Este", CADA ítem partía su propio texto en 2 líneas ("Punta del" /
+"Este", "65 m²" / "terreno") — no era la fila la que pasaba a un
+segundo renglón, era el texto DENTRO de cada ítem el que se
+autopartía.
+
+**Causa:** los `<li>` no tenían `white-space:nowrap` ni
+`flex-shrink:0`. Sin eso, cuando el contenido no entraba, el
+navegador arreglaba el problema por su cuenta ENCOGIENDO cada `<li>`
+y partiendo su texto en 2 líneas — nunca llegaba a generar un
+desborde horizontal real. Como el JS de la sección 87 mide
+`scrollWidth` vs `clientWidth` para decidir si achica más, y esa
+auto-partición del navegador hace que `scrollWidth` nunca refleje el
+problema real, el JS "veía" que entraba (0 de desborde) cuando en
+realidad entraba partiendo texto — el mismo tipo de bug que ya había
+tapado el diagnóstico en la sección 71 (ahí era `flex-wrap` en el
+contenedor; acá es el shrink+wrap del navegador dentro de cada
+ítem).
+
+**Cambio en `movil.css`:** cada `<li>` suma `white-space:nowrap;
+flex-shrink:0`. Ahora si no entra, el navegador ya no tiene forma de
+"resolverlo" solo — el desborde se ve reflejado de verdad en
+`scrollWidth`, y el JS lo puede detectar y corregir.
+
+**Cambio en `main.js`:** `ajustarSpecsDestacadas()` ahora achica en
+4 pasos en cascada (antes solo 2): letra (13px→9px) → espacio entre
+ítems (6px→0px) → tamaño del ícono (14px→10px) → espacio ícono-texto
+(4px→2px). Los pisos de letra y espacio también se estiraron un poco
+más abajo que en la sección 87 (9px y 0px en vez de 10px y 2px),
+para tener margen de sobra en pantallas muy angostas con textos
+largos.
+
+**Verificado con el navegador, sin caché, en 320/360/375/390/412/414px
+con las 3 propiedades actuales (incluida "Mansión en Punta del
+Este", la que había fallado):** 0px de desborde en los 18 casos. Se
+confirmó además con una captura real a 320px (el caso más exigente)
+que el texto ya no se parte: entra todo en una sola línea.
+
+Cache-bust: `movil.css?v=115`, `main.js?v=62`.

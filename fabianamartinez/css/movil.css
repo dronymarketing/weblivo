@@ -751,23 +751,32 @@ body.menu-abierto .nav{
 /* flex-wrap:wrap queda solo como red de seguridad por si el JS no
    corre (ver ajustarSpecsDestacadas() en main.js) — ese JS es el que
    de verdad garantiza que esto nunca pase a 2 renglones: mide el
-   ancho real contra el disponible y va achicando primero la letra
-   (--specs-font) y después el espacio entre ítems (--specs-gap)
-   hasta que entra todo, sin importar el largo del texto de cada
-   propiedad ni el ancho de pantalla. */
+   ancho real contra el disponible y va achicando, en este orden,
+   letra → espacio entre ítems → tamaño del ícono → espacio
+   ícono-texto, hasta que entra todo, sin importar el largo del texto
+   de cada propiedad ni el ancho de pantalla.
+   white-space:nowrap + flex-shrink:0 en cada <li> son claves: sin
+   eso, el navegador parte el texto de un ítem en 2 líneas por su
+   cuenta para "hacerlo entrar" (achicando el li en vez de pasarlo de
+   renglón), y esa auto-partición hace que scrollWidth nunca refleje
+   el ancho real → el JS de abajo no detecta que hace falta achicar
+   más. Con nowrap, si no entra, se ve reflejado en el ancho medido,
+   así el JS SÍ lo detecta y corrige. */
 .propiedad-fija__specs{
-  --specs-font:13px; --specs-gap:6px;
+  --specs-font:13px; --specs-gap:6px; --specs-ico:14px; --specs-ico-gap:4px;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
   row-gap:6px; list-style:none; margin:0 0 20px; padding:0;
   font-size:var(--specs-font); color:rgba(237,225,210,.82);
 }
 .propiedad-fija__specs li{
-  display:flex; align-items:center; gap:4px;
+  display:flex; align-items:center; gap:var(--specs-ico-gap); flex-shrink:0;
   padding:0 var(--specs-gap); border-right:1px solid rgba(237,225,210,.35);
-  line-height:1.2;
+  line-height:1.2; white-space:nowrap;
 }
 .propiedad-fija__specs li:last-child{ border-right:0; }
-.propiedad-fija__specs .ico{ width:14px; height:14px; flex:none; }
+.propiedad-fija__specs .ico{
+  width:var(--specs-ico); height:var(--specs-ico); flex:none;
+}
 /* Mismo alto y radio que .nosotros__btn (cápsula, 38px) — el ancho
    queda libre, del tamaño del texto ("Ver Propiedad"), sin forzarlo. */
 .propiedad-fija__btn{ min-height:38px; padding:0 20px; border-radius:999px; font-weight:300; }
