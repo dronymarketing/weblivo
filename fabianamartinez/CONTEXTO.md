@@ -2944,3 +2944,28 @@ ningún otro lado del sitio antes de borrarlo.
 
 Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
 solamente.
+
+## 93. Nueva foto "de arriba" para José Ignacio (piscina al atardecer)
+
+El cliente pasó otra foto de Pexels (piscina de una villa al
+atardecer) para la foto de ARRIBA (la primera de las 2 fotos
+apiladas) de la property 3 de Destacadas:
+https://www.pexels.com/es-es/foto/piscina-de-villa-de-lujo-al-atardecer-en-bali-indonesia-34790496/
+
+**Cambio:** foto original (6720×4480) recortada centrada al ratio
+16:10 y redimensionada a 1400×933 (misma convención que las demás
+fotos extra). Comprimida a JPEG calidad 82 (~162KB). Guardada con
+nombre nuevo — `img/propiedades/joseignacio-chacra-piscina.jpg` —
+sin pisar el archivo anterior.
+
+En `index.html`, la primera foto extra de esa propiedad pasa de
+`carrasconorte-2.jpg` a `joseignacio-chacra-piscina.jpg`, con el
+`alt` actualizado a "Piscina al atardecer de una chacra de muestra
+en José Ignacio". Se confirmó que `carrasconorte-2.jpg` no se usaba
+en ningún otro lado del sitio antes de borrarlo. Con este cambio,
+José Ignacio ya no usa ninguna de las fotos originales de "Carrasco
+Norte" (fondo, foto de arriba y foto de abajo reemplazadas en las
+secciones 91, 93 y 92 respectivamente).
+
+Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
+solamente.
