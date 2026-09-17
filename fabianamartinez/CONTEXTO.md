@@ -2572,3 +2572,15 @@ tema. El "salto" entre propiedades sigue sin resolverse; queda
 pendiente para retomar más adelante si el cliente lo pide.
 
 Cache-bust: `movil.css?v=107`, `main.js?v=60`, `efectos.js?v=90`.
+
+## 78. Título de Destacadas: 50px → 60px, interlineado más apretado
+
+Pedido: subir el tamaño del título ("Apartamento en Cordón", etc.) y
+bajar el interlineado para que los saltos de línea queden casi
+pegados.
+
+**Cambio en `movil.css`:** `.proyecto-destacado__nombre` pasa de
+`font-size:50px; line-height:1.05` a `font-size:60px;
+line-height:0.85`.
+
+Cache-bust: `movil.css?v=108`.
