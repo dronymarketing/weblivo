@@ -3724,3 +3724,20 @@ de `.nav__logo-sub` y `.menu__logo-sub` dan exactamente iguales
 (24px / 119.95px) ahora.
 
 Cache-bust: `movil.css?v=135`.
+
+## 120. El logo se corría 2px al abrir el menú
+
+El cliente notó que el logo cambia un poquito de posición entre el
+nav cerrado y el menú abierto. Causa: en el nav, `.nav__logo` es un
+flex item dentro de `.nav` (`align-items:center` en una barra de
+60px), así que se centra solo — con el wordmark midiendo 31px de
+alto, queda a 14px del borde superior. En el menú, `.menu__logo` es
+`position:absolute` con un `top:16px` puesto a mano (de cuando el
+logo era más chico, antes de la sección 114), 2px corrido respecto
+al valor real de nav.
+
+**Cambio en `movil.css`:** `.menu__logo{ top:16px }` → `top:14px`.
+Verificado con Playwright: `top` y `left` de `.nav__logo--texto` y
+`.menu__logo--texto` dan ahora exactamente iguales (14, 24).
+
+Cache-bust: `movil.css?v=136`.

@@ -275,7 +275,11 @@ button{ font:inherit; color:inherit; }
 }
 .menu.abierto{ clip-path:inset(0 0 0 0%); }
 .menu__logo{
-  position:absolute; top:16px; left:var(--margen); height:auto;
+  /* Mismo top que el logo del nav (ahí se centra solo por flex en
+     la barra de 60px; acá, al ser position:absolute, hay que
+     calcularlo a mano: (60px de --nav-alto - 31px de alto real del
+     wordmark) / 2). */
+  position:absolute; top:14px; left:var(--margen); height:auto;
 }
 .menu__logo img{ height:28px; width:auto; }
 /* Mismo wordmark exacto que .nav__logo--texto (nombre + "Inmobiliaria" chico). */
