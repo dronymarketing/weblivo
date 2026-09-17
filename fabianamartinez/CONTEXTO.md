@@ -2687,3 +2687,32 @@ dormitorios/baños, ya que el ícono distinto alcanza para diferenciarlos)
 para la próxima vuelta si el cliente lo confirma.
 
 Cache-bust: `movil.css?v=112`.
+
+## 83. Probado: sacar "edif."/"terr." de los m² para que entren los 6 ítems
+
+El cliente pidió probar la opción que había propuesto en la sección
+82: sacarle la palabra a "m² edif."/"m² terr.", dejando solo "65 m²"
+en cada uno (el ícono distinto — regla vs. casita — ya alcanza para
+diferenciarlos).
+
+**Cambio en `index.html`:** en las 3 propiedades, los 2 últimos
+ítems pasan de "65 m² edif."/"65 m² terr." a solo "65 m²" (mismo
+patrón que ya se había aplicado a dormitorios/baños: ícono +
+número/valor, sin palabra).
+
+**Verificado de nuevo con el navegador (una página aislada con el
+mismo CSS, para evitar el problema de que el scroll con GSAP no
+se puede forzar de forma confiable en este entorno):**
+- A 414px de ancho (iPhone estándar y la mayoría de Android):
+  **entran los 6 ítems en una sola fila.**
+- A 375px de ancho (iPhone SE / celulares angostos): siguen entrando
+  5 de 6 en la primera fila; el último ítem ("65 m²" de terreno) pasa
+  a una segunda línea. Faltan ~17px a ese ancho (bajó de ~65px de
+  sobrante a ~17px).
+
+No se tocó nada más (ni tamaño de letra ni padding) porque no fue
+pedido — queda a criterio del cliente si esto ya es suficiente o si
+pide un ajuste más para cerrar esos 17px en pantallas angostas.
+
+Sin cache-bust nuevo: no se tocó `movil.css` en este cambio, solo
+texto en `index.html` (que se sirve sin caché).
