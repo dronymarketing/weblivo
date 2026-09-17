@@ -2875,3 +2875,27 @@ exactamente juntos), así que la sincronización no se rompe con este
 cambio.
 
 Cache-bust: `efectos.js?v=91`.
+
+## 90. Nueva foto vertical de fondo para "Apartamento en Carrasco"
+
+El cliente pasó una foto de Pexels (vertical, para celular) para
+usar como fondo de pantalla completa de la propiedad "Apartamento en
+Carrasco" (property 2 de Destacadas):
+https://www.pexels.com/es-es/foto/arquitectura-urbana-moderna-con-cielo-despejado-28556623/
+
+**Cambio:** se descargó la foto original (3953×5830), se la
+redimensionó a 1080px de ancho (mismo ancho que usa la foto de fondo
+de la property 1, `premium-piscina-vista-mar.jpg`) manteniendo la
+proporción (1080×1593) y se comprimió a JPEG calidad 82 (~140KB),
+guardada con un nombre NUEVO —
+`img/propiedades/carrasco-apto-fachada.jpg` — para no pisar el
+archivo viejo y evitar problemas de caché.
+
+En `index.html`, el `<img>` de fondo de esa propiedad pasa de
+`carrasco-interior.jpg` a `carrasco-apto-fachada.jpg`, con el `alt`
+actualizado a "Fachada de un apartamento de muestra en Carrasco".
+Se confirmó que `carrasco-interior.jpg` no se usaba en ningún otro
+lado del sitio antes de borrarlo.
+
+Sin cache-bust: cambio de imagen (nombre de archivo nuevo) y HTML
+solamente.
