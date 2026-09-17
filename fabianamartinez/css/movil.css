@@ -1139,8 +1139,11 @@ body.menu-abierto .nav{
   font-family:"Hello Branch",cursive; font-weight:400; font-size:44px;
   color:var(--blanco); line-height:1; text-align:center;
   /* padding, no margin: el margin-top de un primer hijo colapsa con
-     el padding-top de .pie y deja de verse igual que el de abajo. */
-  margin:0; padding:24px 0;
+     el padding-top de .pie y deja de verse igual que el de abajo.
+     Arriba el espacio ya lo pone el padding-bottom:40px de #contacto
+     (.cta), así que acá solo se pone padding-bottom, con el mismo
+     valor, para que el total de cada lado quede igual (40px). */
+  margin:0; padding:0 0 40px;
 }
 .pie__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;

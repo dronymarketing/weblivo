@@ -3376,3 +3376,22 @@ margin-top:14px}` → `margin-top:0`. Verificado con Playwright: 24px
 arriba y 24px abajo del texto, exactos.
 
 Cache-bust: `movil.css?v=127`.
+
+## 109. Todavía no era igual: faltaba contar el padding de #contacto
+
+El cliente volvió a marcar el mismo problema. El fix de la sección
+108 sacó la doble-suma DENTRO del footer (`.pie` + logo), pero no
+contó que arriba del logo también pesa el `padding-bottom:40px` de
+`#contacto`/`.cta` (sección de "Hablemos", justo antes del footer) —
+una sección vecina totalmente aparte, con su propio padding, que
+nunca se había tenido en cuenta. Total real arriba: 40 (cta) + 24
+(logo) = 64px. Abajo: solo 24px (logo) + 0 (redes) = 24px. Verificado
+con Playwright midiendo texto real (no cajas): confirmado 64 vs 24.
+
+**Cambio en `movil.css`:** `.pie__logo--texto{ padding:24px 0 }` →
+`padding:0 0 40px` — arriba ya no pone nada (el espacio lo da por
+completo el padding-bottom de `.cta`, que ya está ahí), y abajo pasa
+a 40px para igualar ese mismo total. Verificado con Playwright:
+40px arriba y 40px abajo, exactos.
+
+Cache-bust: `movil.css?v=128`.
