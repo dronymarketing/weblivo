@@ -3435,3 +3435,21 @@ borraron los 6 archivos y la carpeta (quedó vacía), sin tocar
 
 Cambio de solo HTML (más borrado de imágenes) — sin cache-bust
 necesario.
+
+## 111. Corrección de #110: intercalar, no reemplazar
+
+El cliente aclaró que la idea era **intercalar** las 3 propiedades
+con los 6 barrios que ya rotaban en el hero, no reemplazarlos — el
+orden no le importaba, solo que la Mansión (foto más llamativa)
+apareciera primero.
+
+**Cambio:** se recuperan las 6 fotos de `img/zonas/` borradas en la
+sección 110 (`git checkout` del commit anterior al borrado) y se
+arma un solo carrusel de 9 `.hero__foto`, intercalando de a 2 barrios
+por propiedad: Mansión en Punta del Este (primera, activa) → Pocitos
+→ Punta Carretas → Apartamento en Carrasco → Carrasco Norte → Nuevo
+París → Chacra Jacinta en José Ignacio → Cordón → Cerrito de la
+Victoria. Verificado con Playwright: 9 fotos totales, la primera es
+la Mansión y queda `activa`.
+
+Solo HTML (más recuperar 6 imágenes) — sin cache-bust necesario.
