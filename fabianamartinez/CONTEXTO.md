@@ -2756,3 +2756,24 @@ línea (ya centrada); a 414px+ los 5 siguen entrando en una sola fila
 centrada. Se avisa por las dudas, no se lo pidió revertir.
 
 Cache-bust: `movil.css?v=113`.
+
+## 86. Probando distinto contenido: renombradas las 3 propiedades de Destacadas
+
+El cliente pidió probar otras aplicaciones/tipos de propiedad
+inmobiliaria manteniendo el mismo formato ya armado (specs
+centrados, íconos, etc. — que ya estaba igual en las 3 desde antes).
+Renombres pedidos:
+
+- Propiedad 1: "Apartamento en Cordón" → **"Mansión en Punta del Este"**
+- Propiedad 2: "Casa en Nuevo París" → **"Apartamento en Carrasco"**
+- Propiedad 3: "Casa en Carrasco Norte" → **"Chacra Jacinta en José Ignacio"**
+
+**Cambio en `index.html`:** en cada una se actualizó el `<h3>`
+(título), el ítem de zona de la lista de specs (mismo nombre que el
+título, ej. "Punta del Este"/"Carrasco"/"José Ignacio"), y los `alt`
+de las fotos para que no queden mencionando la zona vieja. No se
+tocaron precio, dorm/baños/m² ni las fotos (siguen siendo las mismas
+fotos de archivo, sin relación real con el nombre — coherente con
+que todo el contenido del sitio es de muestra).
+
+Sin cache-bust: solo texto en `index.html`.
