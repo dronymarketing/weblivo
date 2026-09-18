@@ -196,6 +196,45 @@ el hero simplemente no se mueve.
 **Ojo:** el contenido que pasa por encima necesita fondo opaco, o se ve el hero
 por detrás y queda sucio.
 
+**Ojo 2 — bug real encontrado en Fabiana Martínez, en dispositivo Android
+real (no se veía en Playwright/desktop):** la implementación típica de este
+efecto agrega un spacer (`position:fixed` en el hero saca espacio del
+documento, así que un div invisible reserva ese scroll) medido una sola vez
+con JS (`hero.getBoundingClientRect().height`). Si ese spacer solo se
+vuelve a medir con `resize`/`orientationchange`, queda desincronizado en
+Chrome Android: apenas empezás a scrollear, la barra de direcciones se
+esconde (la pantalla real se agranda) disparando `visualViewport.resize`
+— casi nunca `resize` — y el hero (si su alto depende de una variable CSS
+tipo `--vh100` medida en vivo) crece con la pantalla real, pero el spacer
+se queda congelado en el alto viejo, más chico. Resultado: la sección
+siguiente empieza a aparecer en el documento antes de tiempo, mientras el
+hero todavía se ve parcialmente arriba de la pantalla — se ve como una
+sección "que no llena la pantalla completa" aunque la fórmula CSS de esa
+sección esté bien.
+
+**Fix intentado, y REVERTIDO — no aplicar sin confirmar antes en celular
+real:** la solución obvia es que `medir()` escuche también
+`visualViewport.resize`, no solo `resize`/`orientationchange`:
+
+```js
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', medir);
+}
+```
+
+Suena correcto y en teoría lo es (sincroniza el spacer con `--vh100` en
+todo momento), pero en Fabiana Martínez, al agregarlo, el cliente reportó
+que el efecto de "Quiénes somos" (que SÍ estaba confirmado como correcto
+sin este listener) dejó de funcionar en su celular real. No se llegó a
+entender el mecanismo exacto — la hipótesis es que el bug original
+(spacer desincronizado) y la fórmula de `.seccion--completa` que restaba
+`--nav-alto` se "cancelaban" parcialmente entre sí en la práctica, y
+sincronizar el spacer sin tocar nada más rompió ese equilibrio. Se
+revirtió a la versión de dos listeners (sin `visualViewport.resize`) en
+Fabiana Martínez. **Antes de agregar este listener en un proyecto nuevo:
+probarlo en un celular real primero, no asumir que es una mejora segura
+solo porque el razonamiento es correcto.**
+
 ---
 
 ## E · Galería anclada (sticky gallery)
