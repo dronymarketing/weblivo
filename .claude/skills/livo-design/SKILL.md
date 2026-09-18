@@ -43,6 +43,9 @@ Si eligió **1**, preguntá qué evento:
 
 Si eligió **2, 3, 4 o 5**, preguntá el rubro del cliente en una línea.
 
+Si eligió **6 (Otro)**, pedile que lo describa y después preguntá igual el
+rubro. Nunca sigas sin saber de qué se trata el negocio.
+
 ### 3 — Arquitectura de navegación
 
 1. **Una sola página con anclas** — todo en el inicio, el nav scrollea.
@@ -63,16 +66,38 @@ Detalles de cada modo en `references/construccion.md`.
 
 Antes de preguntar color y registro, preguntá:
 
-"¿Arrancamos de una estética que ya tenés, o la definimos de cero?"
+"¿Arrancamos de una estética que ya existe, o la definimos de cero?"
 
-1. **L — estética Livo** (livo.com.uy): terrosa, cálida, tipografía protagonista
-2. **M — estética Martina** (martinaxv): ceremonial, nocturna, dorada
-3. **N — estética Nexa** (nexalegales): sobria, institucional, dos colores
-4. **De cero** — seguimos con las preguntas de color y registro
+**Propias de Livo — se clonan enteras:**
 
-Si elige L, M o N: abrí `references/esteticas-livo.md` y usá esos valores
-**tal cual**. Se saltean los pasos 4, 5, 6 y 7 — ya están respondidos.
-Si pide una variante ("como Martina pero en verde"), cambiá solo eso.
+1. **L — Livo** (livo.com.uy): terrosa, cálida, tipografía protagonista.
+   Para portfolios y marcas de diseño.
+2. **M — Martina** (martinaxv): ceremonial, nocturna, dorada, sin nav.
+   Para invitaciones y eventos.
+3. **N — Nexa** (nexalegales): sobria, institucional, dos colores.
+   Para legal y servicios profesionales.
+4. **FM — Fabiana Martínez** (fabianamartinez): marrón tabaco, arena y bronce,
+   foto a sangre. Para inmobiliaria y lujo cálido. **Es la más avanzada: ya usa
+   los tokens del estándar y tiene puestos los efectos D, E, F y H** —casi el
+   paquete «HBA» entero, le falta solo la C.
+
+**Direcciones ajenas — se usan como referencia, no como copia:**
+
+5. **FU — Fundar** (fundar.com.co): verde profundo con lima eléctrico, muy
+   aireada. Para salud, bienestar y ONG.
+6. **RE — Realevate** (realevate.agency): navy sobre blanco, editorial,
+   tipografía en vw. Para inmobiliaria internacional y lujo.
+
+7. **De cero** — seguimos con las preguntas de color y registro.
+
+Si elige cualquiera de las seis: abrí `references/esteticas-livo.md` y usá
+esos valores **tal cual**. Se saltean los pasos 4, 5, 6 y 7 — ya están
+respondidos. Si pide una variante ("como Fabiana pero en verde"), cambiá
+solo eso.
+
+**Con FU y RE, avisá dos cosas antes de construir:** sus tipografías son
+comerciales y con licencia paga (el archivo trae el reemplazo libre de cada
+una), y nunca se usa su logo, su nombre ni sus textos.
 
 ### 4 — Color
 
@@ -160,20 +185,25 @@ Se puede repetir familia en dos pesos si el registro es minimalista.
 Si elige 2 o 3, abrí `references/catalogo-efectos.md` y ofrecé primero los
 **paquetes por sitio**, que es la forma rápida:
 
-- **RE** — animaciones de realevate.agency: preloader de marco, texto por
-  palabras. Cinematográfico, para lujo y decisión lenta.
-- **FU** — animaciones de fundar.com.co: apariciones al entrar en pantalla,
-  microtransiciones. Discreto, liviano, sin GSAP. **El que corresponde
-  en la mayoría de los casos.**
-- **HB** — animaciones de hba.com: reveal atado al scroll, hero fijo, galería
-  anclada, secciones que cambian de color. El más rico y el que más scroll cuesta.
+- **«Realevate»** — preloader de marco, texto por palabras, marquee con foto
+  encima, color por categoría, hero que crece. Curva propia
+  `cubic-bezier(.7,.6,0,1)`. Cinematográfico, para lujo.
+- **«Fundar»** — apariciones al entrar en pantalla, microtransiciones de 0.3s.
+  Discreto y liviano: los reveals no necesitan GSAP.
+  **El que corresponde en la mayoría de los casos.**
+- **«HBA»** — reveal atado al scroll, hero fijo, galería anclada, secciones que
+  cambian de color, carrusel con fundido. El más rico y el que más scroll cuesta.
+
+Los paquetes se nombran **por el sitio**, nunca por sigla: las siglas de dos
+letras (FM, FU, RE) son SIEMPRE estéticas. Si Santi dice "RE", es la estética.
 
 El paquete define cómo se MUEVE, nunca cómo se ve: no toca color, tipografía
 ni composición. Se combina con la estética: *"estética M con las animaciones
 de HBA"*.
 
-Si quiere afinar, se piden letras sueltas de la A a la H.
-Avisá si la combinación no cierra (por ejemplo N con HB: en legal se lee frívolo).
+Si quiere afinar, se piden letras sueltas de la A a la K.
+Avisá si la combinación no cierra (por ejemplo N con «HBA»: en legal se lee
+frívolo). La tabla completa de combinaciones está en `catalogo-efectos.md`.
 
 ### 9 — Navegación
 
@@ -253,11 +283,16 @@ no un gris fijo. El reborde reemplaza a la sombra: si hay reborde, no va
 `box-shadow`.
 
 **Animaciones al scroll, suaves.** 800ms, `cubic-bezier(.16, 1, .3, 1)`,
-escalonado de 90ms. Un solo eje por vez.
+escalonado de 90ms. Un solo eje por vez **en las apariciones**.
+Los efectos del catálogo que combinan máscara con zoom (C), crecimiento (E, K)
+o círculo que se expande son excepciones declaradas: ahí el segundo eje ES
+el efecto.
 
-**Glassmorphism condicional.** Livo lo usa, pero no en todo. Habilitado en
-tech, minimalista, moda, salud e inmobiliaria (solo sobre foto). No va en
-legal, constructor, rural, editorial, artesanal ni gastronomía.
+**Glassmorphism condicional.** Livo lo usa, pero no en todo.
+Habilitado en: tech, minimalista, moda, salud, inmobiliaria (solo sobre foto)
+y ceremonial (sobre foto oscura, con el borde en dorado).
+No va en: legal, constructor, rural, editorial, artesanal ni gastronomía.
+Si el registro es "Otro", preguntá.
 Cuando el registro lo habilita, **preguntá** si lo quiere en ese proyecto.
 
 Especificaciones en `references/construccion.md`.
@@ -284,8 +319,8 @@ Especificaciones en `references/construccion.md`.
   barras del sistema, arquitectura de archivos, navegación
 - `references/contenido.md` — límites de texto y fotos
 - `references/checklist.md` — verificación antes de entregar
-- `references/esteticas-livo.md` — estéticas L, M y N para clonar enteras
-- `references/catalogo-efectos.md` — efectos A a H medidos de sitios reales
+- `references/esteticas-livo.md` — las 6 estéticas (L, M, N, FM, FU, RE)
+- `references/catalogo-efectos.md` — efectos A a K y los 3 paquetes por sitio
 
 Abrilos cuando los necesites, no antes.
 

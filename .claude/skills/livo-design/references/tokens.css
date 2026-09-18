@@ -1,8 +1,11 @@
 /* ============================================================
    LIVO — Tokens de diseño
 
-   Las medidas salen de medir livo.com.uy, livo.com.uy/martinaxv
-   y nexalegales.com en 375px.
+   Las medidas salen de medir, en 375px, livo.com.uy, livo.com.uy/martinaxv,
+   nexalegales.com y livo.com.uy/fabianamartinez.
+
+   El contenedor (1200), la lectura (460), la sección (72) y el nav (60)
+   vienen de fabianamartinez, que es la implementación más fiel al estándar.
 
    Móvil primero. El bloque de escritorio del final solo escala.
    ============================================================ */
@@ -10,7 +13,7 @@
 :root {
 
   /* ---------- Tipografía: tamaños ---------- */
-  --fs-h1:      40px;   /* constante Livo: 41.6 en Livo, 40 en Panacea */
+  --fs-h1:      40px;   /* 41.6 en livo.com.uy, 40 en fabianamartinez */
   --fs-h2:      28px;   /* PENDIENTE: Livo usa 32, martinaxv 28.8 */
   --fs-h3:      22px;
   --fs-body:    16px;   /* piso, nunca menos */
@@ -61,8 +64,12 @@
   --ease:        cubic-bezier(.16, 1, .3, 1);
   --stagger:     90ms;
 
+  /* ---------- Barras del sistema ---------- */
+  --barra-inferior: var(--fondo, #000);  /* lo pisa el JS por sección */
+
   /* ---------- Rebordes ---------- */
-  --borde: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  --borde:       1px solid color-mix(in srgb, currentColor 15%, transparent);
+  --borde-claro: 1px solid rgba(255, 255, 255, .18);  /* sobre fondo oscuro */
 }
 
 
@@ -75,6 +82,7 @@
 
 /* --- Ceremonial y celebración — medido en livo.com.uy/martinaxv --- */
 .tono-ceremonial {
+  --neutro:       #8792B5;
   --fondo:        #0A1A3D;
   --fondo-alt:    #2D1B4E;
   --acento:       #F0BD5C;
@@ -86,6 +94,7 @@
 
 /* --- Sobrio e institucional — medido en nexalegales.com --- */
 .tono-sobrio {
+  --neutro:       #6B7490;
   --fondo:        #FFFFFF;
   --fondo-alt:    #0F193A;
   --acento:       #0F193A;
@@ -109,6 +118,7 @@
 
 /* --- Fresco y juvenil — PROPUESTA, sin validar --- */
 .tono-fresco {
+  --neutro:       #9AA396;
   --fondo:        #FBF9F4;
   --fondo-alt:    #1F4D3F;
   --acento:       #E5642F;
@@ -120,6 +130,7 @@
 
 /* --- Romántico y suave — PROPUESTA, sin validar --- */
 .tono-romantico {
+  --neutro:       #B2A19C;
   --fondo:        #FAF4F1;
   --fondo-alt:    #7A5C63;
   --acento:       #C98F91;

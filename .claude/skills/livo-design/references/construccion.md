@@ -348,7 +348,9 @@ Salen de tokens. Resumen:
 - Logo: 28px de alto con header de 60, 32px con header de 68.
 - Margen lateral: el mismo que el contenido (24px móvil, 40px escritorio),
   para que el logo alinee con los títulos de abajo.
-- Ítems: 11px en mayúsculas, tracking 0.12em.
+- Ítems: 11px **en mayúsculas**, tracking 0.12em. Si van en minúscula, el piso
+  son 14px (es lo que usa fabianamartinez): las mayúsculas se leen más grandes
+  que su tamaño nominal, la minúscula no.
 
 El 60 no es arbitrario: es 44 del área táctil mínima + 8 de aire arriba y abajo.
 
@@ -421,7 +423,8 @@ Esto es lo que separa un menú caro de uno común:
 - Posición: en el header junto a la hamburguesa (por defecto) · flotante abajo
   a la derecha · las dos.
 - Forma: sigue la regla de botones del rubro. Círculo solo si es ícono sin texto.
-- Tamaño: 44 × 44px si es solo ícono; alto 40px si lleva texto en el header.
+- Tamaño: 44 × 44px si es solo ícono; alto **44px mínimo** (48 recomendado) si
+  lleva texto en el header. El piso táctil no tiene excepciones.
 - Si el negocio atiende por WhatsApp, el botón **no** se esconde adentro del
   menú. Es la acción principal y va visible.
 
@@ -500,7 +503,9 @@ Esto es lo que separa un menú caro de uno común:
 - Transición 800ms con `cubic-bezier(.16, 1, .3, 1)`. Nada de `ease-in-out`:
   el remate lento es lo que las hace suaves.
 - Escalonado de 90ms entre hermanos. Más que eso se siente lento.
-- Un solo eje por vez. Nada de `scale` ni `rotate`.
+- Un solo eje por vez **en las apariciones**: nada de `scale` ni `rotate` en un
+  simple fade-in. Los efectos del catálogo que combinan ejes (C, E, K y el menú
+  circular) son excepciones declaradas, no permiso general.
 
 **Dos respaldos obligatorios:**
 
@@ -512,8 +517,10 @@ Esto es lo que separa un menú caro de uno común:
 ### Glassmorphism — condicional
 
 Habilitado en: tech e innovación · minimalista · moda y belleza · salud y
-bienestar · inmobiliaria (solo sobre foto).
+bienestar · inmobiliaria (solo sobre foto) · ceremonial (sobre foto oscura,
+con el borde en el dorado de la paleta).
 No va en: legal · constructor · rural · editorial · artesanal · gastronomía.
+Registro "Otro": preguntá.
 
 Cuando el registro lo habilita, **preguntá** si lo quiere en ese proyecto.
 Nunca lo pongas por tu cuenta.

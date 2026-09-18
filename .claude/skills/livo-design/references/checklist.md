@@ -33,33 +33,36 @@ Se revisa **a 375px de ancho**, una por una, antes de decir que está listo.
 
 ## Contenido
 
-15. ¿Alguna tarjeta tiene el texto en más líneas que sus hermanas?
-16. ¿Aparecen puntos suspensivos por recorte en algún lado?
-17. ¿Hay alguna imagen rota o que pese menos de 20 KB?
-18. ¿Lo que es de muestra está declarado **en pantalla**, no solo en el código?
-19. ¿Quedó algún `PENDIENTE` sin avisar en la lista final?
-20. ¿Hay alguna foto de banco de una persona presentada como alguien real
+15. ¿Algún texto pasa su límite de caracteres de `contenido.md`?
+    Los que más se rompen: nombre de producto (28), descripción de tarjeta (90),
+    título de sección (24), botón (18).
+16. ¿Alguna tarjeta tiene el texto en más líneas que sus hermanas?
+17. ¿Aparecen puntos suspensivos por recorte en algún lado?
+18. ¿Hay alguna imagen rota o que pese menos de 20 KB?
+19. ¿Lo que es de muestra está declarado **en pantalla**, no solo en el código?
+20. ¿Quedó algún `PENDIENTE` sin avisar en la lista final?
+21. ¿Hay alguna foto de banco de una persona presentada como alguien real
     del negocio?
 
 ## Robustez
 
-21. Si hay animaciones al scroll, **desactivá el JavaScript**: ¿el contenido
+22. Si hay animaciones al scroll, **desactivá el JavaScript**: ¿el contenido
     se sigue viendo? Nunca `opacity: 0` en el CSS base.
-22. ¿`prefers-reduced-motion` apaga las animaciones sin esconder nada?
-23. ¿El glass tiene su respaldo `@supports`?
-24. ¿Los links del menú son `<a>` con `href` real?
-25. ¿`Escape` cierra el menú y el foco vuelve a la hamburguesa?
+23. ¿`prefers-reduced-motion` apaga las animaciones sin esconder nada?
+24. ¿El glass tiene su respaldo `@supports`?
+25. ¿Los links del menú son `<a>` con `href` real?
+26. ¿`Escape` cierra el menú y el foco vuelve a la hamburguesa?
 
 ## Íconos
 
-26. ¿Están todos en el sprite inline, definidos una sola vez?
-27. ¿Hay algún SVG pegado más de una vez en el HTML?
-28. ¿Se mezclaron sets de íconos? Lucide para interfaz, Simple Icons solo marcas.
+27. ¿Están todos en el sprite inline, definidos una sola vez?
+28. ¿Hay algún SVG pegado más de una vez en el HTML?
+29. ¿Se mezclaron sets de íconos? Lucide para interfaz, Simple Icons solo marcas.
 
 ## Contacto
 
-29. ¿Los links de WhatsApp abren con el mensaje precargado correcto?
-30. ¿El Instagram, la ubicación y el teléfono son los reales?
+30. ¿Los links de WhatsApp abren con el mensaje precargado correcto?
+31. ¿El Instagram, la ubicación y el teléfono son los reales?
 
 ---
 
