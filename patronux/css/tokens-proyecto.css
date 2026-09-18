@@ -60,16 +60,45 @@
   --font-cuerpo:  'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-micro:   'Archivo', var(--font-cuerpo);
 
-  /* Escala fluida con piso duro, tomada de la IDEA de RE (vw con
-     multiplicador por dispositivo), no de sus números crudos: su
-     --desktop-text-size de 1.2vw daría ~10px a 375px de ancho. */
-  --fs-h1:    clamp(40px, 11.5vw, 76px);
-  --fs-h2:    clamp(28px,  7.6vw, 44px);
-  --fs-h3:    clamp(22px,  5.6vw, 30px);
-  --fs-body:  16px;
-  --fs-small: 14px;
-  --fs-micro: 11px;
-  --fs-marquee: 21vw;   /* la palabra gigante del marquee */
+  /* ---------- Sistema de escala de RE, con sus valores medidos ----------
+     Todo en vw con un multiplicador por dispositivo. La escala además se
+     reduce cuando la ventana es más baja que la línea de base, que es lo
+     que hace que su hero entre siempre en una pantalla.
+     Los tamaños de texto llevan piso de 16px: el 1.2vw de RE, con el
+     multiplicador móvil, daría ~10px a 375px de ancho. */
+  --desktop-size-scale: 1;
+  --tablet-size-scale:  1.54;
+  --mobile-size-scale:  2.25;
+  --responsive-size-scale: var(--mobile-size-scale);   /* móvil primero */
+  --layout-size-scale: var(--responsive-size-scale);
+  --compact-height-baseline: 950px;
+
+  --desktop-h1-size:   16vw;
+  --desktop-h2-size:   5.2vw;
+  --desktop-h3-size:   3.646vw;
+  --desktop-h5-size:   1.736vw;
+  --desktop-text-size: 1.2vw;
+  --desktop-grid-gap:  2.601vw;
+  --desktop-hero-visual-size:   20vw;   /* la foto del marquee es cuadrada */
+  --desktop-hero-content-width: 42vw;
+  --desktop-hero-content-max:   35vw;
+
+  /* El 16vw es SOLO del marquee. Los títulos de página bajan un escalón
+     en la jerarquía de RE (su h2) y los de sección otro más (su h3). */
+  --fs-marquee: calc(var(--desktop-h1-size) * var(--layout-size-scale));
+  --fs-h1:      clamp(34px, calc(var(--desktop-h2-size) * var(--layout-size-scale)), 88px);
+  --fs-h2:      clamp(28px, calc(var(--desktop-h3-size) * var(--layout-size-scale)), 60px);
+  --fs-h3:      clamp(22px, calc(2.4vw * var(--layout-size-scale)), 32px);
+  --fs-lead:    max(17px, calc(var(--desktop-h5-size) * var(--layout-size-scale)));
+  --fs-body:    max(16px, calc(var(--desktop-text-size) * var(--layout-size-scale)));
+  --fs-small:   14px;
+  --fs-micro:   11px;
+
+  --marquee-gap:       calc(var(--desktop-grid-gap) * var(--layout-size-scale));
+  --hero-visual-size:  calc(var(--desktop-hero-visual-size) * var(--layout-size-scale));
+  --hero-content-width: min(
+      calc(var(--desktop-hero-content-width) * var(--layout-size-scale)),
+      calc(100% - var(--margen-lateral) * 2));
 
   /* Interlineados por debajo de 1 en los títulos: la firma editorial de RE */
   --lh-h1: 1;
@@ -120,11 +149,27 @@
   --barra-inferior: var(--fondo);
 }
 
+/* Tablet y escritorio. El bloque vive acá y no en escritorio.css porque
+   son variables, no diseño: escritorio.css sigue guardando solo lo que
+   cambia de layout. */
 @media (min-width: 768px) {
   :root {
-    --fs-body:  17px;
+    --responsive-size-scale: var(--tablet-size-scale);
     --margen-lateral: 40px;
     --hero-crece-recorrido: 110svh;   /* el valor de RE: con mouse no cuesta */
+  }
+}
+
+@media (min-width: 1025px) {
+  :root { --responsive-size-scale: var(--desktop-size-scale); }
+}
+
+/* De tablet para arriba la escala se achica con la ventana baja. Es lo
+   que mantiene el hero de RE dentro de una pantalla en portátiles. */
+@media (min-width: 768px) {
+  :root {
+    --compact-vw-as-svh: min(1, calc(100svh / var(--compact-height-baseline)));
+    --layout-size-scale: calc(var(--responsive-size-scale) * var(--compact-vw-as-svh));
   }
 }
 

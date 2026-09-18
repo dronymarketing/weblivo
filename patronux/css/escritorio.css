@@ -25,15 +25,28 @@
   display: grid;
 }
 
-/* ---------- Hero ---------- */
-.hero { padding-top: var(--sp-6); }
+/* ---------- Hero ----------
+   Los tamaños del marquee, la foto y el lead salen de las variables de
+   escala en tokens-proyecto.css, no de acá: no los repitas o dejan de
+   seguir el alto de la ventana. */
+.hero { padding-top: var(--sp-5); }
 
-.hero__cuerpo { gap: var(--sp-3); }
-.hero__bajada { max-width: 520px; }
+.hero__cuerpo {
+  gap: var(--sp-3);
+  max-width: calc(var(--desktop-hero-content-max) * var(--layout-size-scale));
+}
 
-.marquee { margin-bottom: var(--sp-5); }
+.marquee { margin-bottom: var(--sp-4); }
 .marquee__pista { animation-duration: 34s; }
-.marquee__foto { width: 15vw; max-width: 260px; }
+
+/* Acá sí va a la esquina, anclada al borde de la ventana y no al del
+   contenedor: si no, en pantallas anchas queda flotando a mitad de camino. */
+.hero__firma {
+  position: absolute;
+  left: calc(50% - 50vw + var(--margen-lateral));
+  bottom: 28px;
+  margin-top: 0;
+}
 
 /* ---------- Figura que crece ---------- */
 .crece__marco {

@@ -8,13 +8,13 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#FFFFFF">
 
-<link rel="stylesheet" href="css/tokens.css?v=2">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=2">
-<link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/movil.css?v=2">
-<link rel="stylesheet" href="css/escritorio.css?v=2" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=3">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
+<link rel="stylesheet" href="css/base.css?v=3">
+<link rel="stylesheet" href="css/movil.css?v=3">
+<link rel="stylesheet" href="css/escritorio.css?v=3" media="(min-width: 768px)">
 
-<script src="js/app.js?v=2"></script>
+<script src="js/app.js?v=3"></script>
 </head>
 <body>
 
@@ -57,23 +57,25 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero contenedor" data-bg="claro">
-    <!-- Marquee — efecto I. Va arriba y es el protagonista del hero:
-         la foto tapa parte de la palabra y obliga a completarla. -->
+    <h1 class="visualmente-oculto">Patronux S.A. — Obras de agua y saneamiento en Montevideo</h1>
+
+    <!-- Marquee — efecto I. Es el titular gigante del hero: la foto tapa
+         parte de la frase y obliga a completarla. -->
     <div class="marquee" aria-hidden="true">
       <div class="marquee__pista">
-        <span>Patronux · Patronux · Patronux · </span>
-        <span>Patronux · Patronux · Patronux · </span>
+        <span>Agua y saneamiento · </span>
+        <span>Agua y saneamiento · </span>
       </div>
       <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
       <img class="marquee__foto" src="img/marquee.jpg" alt="" width="800" height="1067">
     </div>
 
     <div class="hero__cuerpo">
-      <p class="micro hero__micro">Patronux S.A. — Uruguay</p>
-      <h1 class="hero__titulo" data-palabras>Obras de agua y saneamiento</h1>
-      <p class="hero__bajada">Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
+      <p class="hero__lead" data-palabras>Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
       <p class="micro chip">+40 años de experiencia</p>
     </div>
+
+    <p class="micro hero__firma">Patronux S.A. — Uruguay</p>
 
     <a class="cue" href="#obra">
       <span class="cue__texto">Bajá</span>

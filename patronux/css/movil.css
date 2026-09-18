@@ -9,6 +9,8 @@
    Marco que se abre desde el centro y descubre la web.
    El JS lo crea; si el JS no corre, no existe y la web se ve igual.
    ============================================================ */
+/* Timings y curva medidos del site-preloader de RE:
+   bgWipeDuration 1.2s con cubic-bezier(.73,.15,.15,.99). */
 .preloader {
   position: fixed;
   inset: 0;
@@ -17,7 +19,7 @@
   place-items: center;
   background: var(--texto);
   clip-path: inset(0%);
-  transition: clip-path 900ms var(--ease-re);
+  transition: clip-path 1200ms cubic-bezier(.73, .15, .15, .99);
   pointer-events: none;
 }
 .preloader__caja {
@@ -249,15 +251,29 @@
   text-align: center;          /* RE centra todo el hero en móvil */
 }
 
+/* El bloque de texto no ocupa todo el ancho: RE lo limita a 42vw por la
+   escala, y eso es lo que hace que el titular caiga en dos líneas cortas
+   en vez de estirarse de lado a lado. */
 .hero__cuerpo {
   display: grid;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
   justify-items: center;
+  width: var(--hero-content-width);
+  margin-inline: auto;
 }
 
 .hero__micro { color: var(--cat-suave); }
 
-.hero__titulo { color: var(--cat); }
+/* El titular del hero va en SANS y en cuerpo grande, no en display serif:
+   en RE el único texto gigante del hero es el marquee. */
+.hero__lead {
+  font-family: var(--font-cuerpo);
+  font-weight: 400;
+  font-size: var(--fs-lead);
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  color: var(--cat);
+}
 
 /* Chip con reborde fino — el recurso de RE para el dato de apoyo */
 .chip {
@@ -277,24 +293,35 @@
   font-style: inherit;
   transform: translateY(105%);
 }
-.js .hero__titulo.es-dentro .palabra i {
+.js [data-palabras].es-dentro .palabra i {
   transform: none;
   transition: transform var(--dur-re) var(--ease-re);
   transition-delay: var(--retraso, 0ms);
 }
 
 .hero__bajada {
-  max-width: var(--max-lectura);
   color: var(--cat-suave);
-  margin-inline: auto;
+  font-size: var(--fs-body);
+}
+
+/* En móvil va en el flujo, centrada bajo el chip: en la esquina se
+   superpone con el círculo del scroll cue. */
+.hero__firma {
+  text-align: center;
+  color: var(--cat-suave);
+  margin-top: var(--sp-2);
 }
 
 /* ---------- Marquee — efecto I ----------
    Una palabra gigante que se repite y se desplaza, con una foto encima
    que tapa parte del texto. Un solo marquee por sitio, y va en el hero.
    El overflow:hidden vive acá, nunca en la sección hero. */
+/* Va a sangre: rompe el contenedor y ocupa el ancho de la ventana, como
+   el de RE. El recorte vive acá, nunca en la sección hero. */
 .marquee {
   position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   margin-bottom: var(--sp-4);
   overflow: hidden;
 }
@@ -303,14 +330,16 @@
   width: max-content;
   animation: correr 26s linear infinite;
 }
+/* En RE el marquee es SANS peso 500 con el tamaño del h1 (16vw por la
+   escala), no la serif de display. Es lo que le da el aire de marca. */
 .marquee__pista span {
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
   font-size: var(--fs-marquee);
-  line-height: .9;
-  letter-spacing: -.04em;
+  line-height: 1;
+  letter-spacing: -.02em;
   color: var(--cat);
-  padding-right: .18em;
+  padding-right: var(--marquee-gap);
   white-space: nowrap;
 }
 @keyframes correr {
@@ -328,9 +357,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 46vw;
-  max-width: 240px;
-  aspect-ratio: 3 / 4;
+  width: var(--hero-visual-size);    /* cuadrada, 20vw por la escala */
+  height: var(--hero-visual-size);
   object-fit: cover;
 }
 

@@ -47,6 +47,14 @@
         sessionStorage.setItem('patronux-visto', '1');
       } catch (e) { /* modo privado: se muestra igual, una sola vez */ }
 
+      // Timings del site-preloader de RE, en milisegundos
+      var T = {
+        imageDelay:   500,
+        counterEnter: 850,
+        bgWipe:      1200,
+        morphDelay:   100   // el contenido entra MIENTRAS se abre la cortina
+      };
+
       var capa = document.createElement('div');
       capa.className = 'preloader';
       capa.setAttribute('aria-hidden', 'true');
@@ -58,13 +66,12 @@
         '</div>';
       document.body.appendChild(capa);
 
-      // Contador de 0 a 100 mientras dura la cortina
       var num = capa.querySelector('.preloader__n');
       var arranque = performance.now();
       (function contar(ahora) {
-        var t = Math.min(1, ((ahora || arranque) - arranque) / 1300);
-        num.textContent = Math.round(t * 100);
-        if (t < 1) requestAnimationFrame(contar);
+        var t = (ahora || arranque) - arranque - T.imageDelay;
+        num.textContent = Math.round(Math.min(1, Math.max(0, t / T.counterEnter)) * 100);
+        if (t < T.counterEnter) requestAnimationFrame(contar);
       })();
 
       var fuera = false;
@@ -72,14 +79,16 @@
         if (fuera) return;
         fuera = true;
         capa.classList.add('es-fuera');
+        // Solapado: sin esto el titular entra recién con la cortina ya
+        // afuera y la entrada se siente en dos tiempos.
+        setTimeout(arrancarTitular, T.morphDelay);
         setTimeout(function () {
           if (capa.parentNode) capa.parentNode.removeChild(capa);
-          arrancarTitular();
-        }, 950);
+        }, T.bgWipe);
       }
 
       requestAnimationFrame(function () { capa.classList.add('es-listo'); });
-      setTimeout(sacar, 1400);
+      setTimeout(sacar, T.imageDelay + T.counterEnter);
       setTimeout(sacar, 3500);   // tope duro
     })();
 
