@@ -2,6 +2,8 @@
    ANANIKIAN — BORRADOR
    Scroll nativo. Sin librerías de scroll.
    ============================================================ */
+import { createMorph } from './vendor/morphicons/dom.js';
+
 (function () {
   'use strict';
 
@@ -12,6 +14,17 @@
   var abrirBtn   = document.querySelector('.nav__hamburguesa');
   var cerrarBtn  = document.querySelector('.menu__cerrar');
   var WA_NUMERO_FABIANA = '59894236869';
+
+  /* ----------------------------------------------------------
+     HAMBURGUESA → X — morph real del trazado (morphicons, la misma
+     librería que en losparaisos), disparado al abrir/cerrar el menú
+     (ahí la usan atado al scroll para una llama; acá es la misma
+     herramienta aplicada al abrir/cerrar).
+  ---------------------------------------------------------- */
+  var MENU_D = 'M4 6h16M4 12h16M4 18h16';
+  var X_D    = 'M18 6 6 18M6 6 18 18';
+  var hamPath  = document.getElementById('nav-hamburguesa-path');
+  var hamMorph = hamPath ? createMorph(hamPath, MENU_D) : null;
 
   /* ----------------------------------------------------------
      ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
@@ -93,6 +106,7 @@
     if (!menu) return;
     menu.classList.toggle('abierto', abrir);
     if (abrirBtn) abrirBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    if (hamMorph) hamMorph.morphTo(abrir ? X_D : MENU_D, 'bouncy');
     document.body.classList.toggle('menu-abierto', abrir);
     /* overflow:hidden en html Y body (no alcanza con solo body).
        Se prueba deliberadamente SIN el truco de position:fixed +

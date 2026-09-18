@@ -3741,3 +3741,53 @@ Verificado con Playwright: `top` y `left` de `.nav__logo--texto` y
 `.menu__logo--texto` dan ahora exactamente iguales (14, 24).
 
 Cache-bust: `movil.css?v=136`.
+
+## 121. Recuadro azul al tocar, menú de "guardar imagen", y morph hamburguesa→X
+
+Tres pedidos:
+
+1. **Recuadro azul nativo de Android/Chrome al tocar** cualquier
+   botón o link: se agrega `-webkit-tap-highlight-color:transparent`
+   en `html`, y también en `a`/`button` para que gane por
+   especificidad en cualquier caso puntual.
+2. **Menú nativo de "descargar imagen"** al mantener presionada la
+   hamburguesa (en realidad la foto del hero detrás, `cerrito.jpg`):
+   se agrega `-webkit-touch-callout:none` (más `user-select:none`)
+   a la regla global `img` en `movil.css`, así que aplica a **todas**
+   las fotos del sitio, no solo al hero — tal como pidió el cliente
+   ("revisa toda la página").
+3. **Morph hamburguesa → X**: primer intento fue con 3 barras y CSS
+   puro (transform/opacity), pero el cliente pidió específicamente
+   usar la MISMA librería que ya se usa en losparaisos
+   (`morphicons`), así que se descartó el CSS y se portó la
+   librería real:
+   - Se copian los 3 archivos de
+     `losparaisos/js/vendor/morphicons/` (`dom.js`,
+     `spring-*.js`, `normalize-*.js`, MIT) a
+     `fabianamartinez/js/vendor/morphicons/`, sin cambios.
+   - El botón de la hamburguesa vuelve a un `<svg>` con un único
+     `<path id="nav-hamburguesa-path">` (la librería anima el
+     atributo `d` de un solo path, no puede trabajar con 3 `<path>`
+     sueltos) — mismas coordenadas que ya tenía el ícono propio del
+     sitio (`M4 6h16M4 12h16M4 18h16`), combinadas en un solo string.
+   - `main.js` pasa a ES module (`<script type="module">`, sube a
+     `?v=66`) para poder hacer `import { createMorph } from
+     './vendor/morphicons/dom.js'`. `efectos.js` se deja como
+     script clásico — no depende de `main.js` ni al revés (cada uno
+     es su propia IIFE, uno mira `window.gsap`, el otro el DOM del
+     nav/menú), así que no hay problema de orden de carga.
+   - En losparaisos usan esta misma librería para un morph atado al
+     SCROLL (hamburguesa ↔ llama, según la sección). Acá se usa la
+     misma herramienta pero atada al ABRIR/CERRAR: dentro de
+     `abrirMenu()` se llama `hamMorph.morphTo(abrir ? X_D : MENU_D,
+     'bouncy')`, con el mismo preset de resorte "bouncy" que usa el
+     sitio de referencia.
+
+Verificado con Playwright: el atributo `d` del path pasa por decenas
+de valores intermedios (interpolación real punto a punto, no un
+salto) entre `M4 6h16M4 12h16M4 18h16` y `M18 6 6 18M6 6 18 18`, en
+ambas direcciones, sin errores de consola nuevos (el único 404 que
+aparece es el favicon, que no existe en el proyecto — algo previo,
+sin relación con este cambio).
+
+Cache-bust: `movil.css?v=137`, `main.js?v=66` (ahora `type="module"`).
