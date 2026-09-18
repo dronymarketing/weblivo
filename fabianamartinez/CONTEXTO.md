@@ -3791,3 +3791,78 @@ aparece es el favicon, que no existe en el proyecto — algo previo,
 sin relación con este cambio).
 
 Cache-bust: `movil.css?v=137`, `main.js?v=66` (ahora `type="module"`).
+
+## 122. Morph sincronizado con la cortina, botón único para abrir/cerrar, y "guardar imagen" persistía en 4 puntos
+
+El cliente reportó que el morph de la sección 121 "no se nota bien" y
+que el menú nativo de "descargar imagen" seguía apareciendo al
+mantener presionados 4 elementos puntuales: la hamburguesa, el
+círculo debajo de "Ver propiedades" en el hero, el ícono de buscar, y
+el logo del nav (todos superpuestos a la foto del hero). Pidió
+revisar esto "exhaustivamente".
+
+**1. Morph atado a la duración/curva exacta de la cortina.**
+Antes usaba el resorte físico `morphTo(d, 'bouncy')` de la librería,
+que se asienta solo (sin duración fija) en unos ~300-400ms — mucho
+más rápido que los 750ms que tarda la cortina en abrir/cerrar, así
+que el ícono ya había terminado de transformarse mucho antes de que
+el gesto completo del menú se apreciara. Se reemplaza por un driver
+manual con `hamMorph.seek(d, progreso)`, avanzando el progreso con
+`requestAnimationFrame` durante los mismos 750ms que
+`.menu{transition:clip-path 750ms var(--curva)}`, pasado por una
+implementación en JS de la misma curva `cubic-bezier(.16,1,.3,1)`
+(algoritmo estándar de Newton-Raphson para resolver el bezier, sin
+librería externa). Así el morph y la cortina comparten exactamente el
+mismo ritmo de entrada/salida, en vez de ser dos animaciones sueltas
+con timings distintos.
+
+**2. Un solo botón (la hamburguesa) abre y cierra.**
+De paso se encontraron y arreglaron dos bugs que quedaron de la
+sección 114-121 al sacar el botón `.menu__cerrar` (que ya no hacía
+falta, la hamburguesa persistente lo reemplaza):
+- `main.js` todavía tenía `if (cerrarBtn) cerrarBtn.addEventListener(...)`
+  con `cerrarBtn` sin declarar (iba a tirar `ReferenceError` en
+  cuanto se ejecutara el script).
+- El click de la hamburguesa llamaba siempre a `abrirMenu(true)` —
+  nunca cerraba. Ahora alterna según `aria-expanded`:
+  `abrirMenu(abrirBtn.getAttribute('aria-expanded') !== 'true')`.
+  También se agrega `aria-label` dinámico ("Abrir menú" / "Cerrar
+  menú") ya que ahora es un control unificado.
+- Se subió el z-index de `.nav` (80 → 95, por encima del `.menu` en
+  90) y `body.menu-abierto .nav` ya no apaga todo el nav con
+  `opacity:0` — solo oculta `.nav__logo` y `.nav__buscar`, dejando la
+  hamburguesa (ahora en beige) visible y clickeable durante toda la
+  animación de 750ms, no solo los primeros 240ms.
+
+**3. "Guardar imagen" en los 4 puntos reportados — causa real.**
+El `-webkit-touch-callout:none` de la sección 121 es una propiedad de
+iOS Safari; en Android no hace nada. Ahí el menú nativo se dispara
+vía el evento `contextmenu` en el long-press, y aparecía en esos 4
+puntos porque los 4 son controles transparentes (SVG con `fill:none`
+o texto) apoyados visualmente sobre la foto de fondo del hero — el
+"buscador de imagen" de Android encuentra la `<img>` de fondo aunque
+esté por detrás en el z-index. Arreglo en dos capas:
+- `pointer-events:none` en toda foto puramente decorativa que tenga
+  controles encima: `.hero__foto img`, `.propiedad-fija__base img` y
+  `.propiedad-fija__extra img` (mismo patrón en Destacadas: botón
+  "Ver Propiedad" e íconos de specs sobre la foto fija) — así el
+  hit-test del navegador ya no encuentra una imagen ahí, resuelve
+  directo al control de encima.
+- Un listener global en `main.js`:
+  `document.addEventListener('contextmenu', e => { if
+  (e.target.closest('img[data-fallback]')) e.preventDefault(); })` —
+  usa el atributo `data-fallback` que ya marca **todas** las fotos de
+  contenido del sitio, así que cubre cualquier foto presente o futura
+  sin tocar este archivo de nuevo, cumpliendo el pedido de revisar
+  "toda la página".
+
+Verificado con Playwright (viewport 390×844): el `d` del path sigue
+interpolando con decenas de valores intermedios durante el
+open/close; el botón alterna abrir↔cerrar correctamente por clicks
+sucesivos; cerrar por link del menú no deja el scroll ni el
+`overflow` colgado; `dispatchEvent(contextmenu)` sobre la foto del
+hero da `pointerEvents:"none"` y confirma que `preventDefault()` se
+ejecuta; sin errores de consola (el único 404 es el favicon,
+inexistente en el proyecto, ajeno a este cambio).
+
+Cache-bust: `movil.css?v=138`, `main.js?v=67`.

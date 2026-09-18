@@ -163,7 +163,11 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    3. .es-solido      → blanco puro, hamburguesa azul
    ============================================================ */
 .nav{
-  position:fixed; inset:0 0 auto 0; z-index:80;
+  /* 95: por encima de .menu (90) — así el botón hamburguesa queda
+     siempre visible/clickeable arriba de la cortina, y el morph a
+     X se ve completo durante toda la apertura, no solo los 240ms
+     que tardaba en desvanecerse el nav entero. */
+  position:fixed; inset:0 0 auto 0; z-index:95;
   height:var(--nav-alto);
   display:flex; align-items:center; justify-content:space-between;
   padding-inline:var(--margen);
@@ -172,7 +176,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   border-bottom:1px solid transparent;
 }
 .nav__logo{ display:block; height:28px; }
-.nav__logo img{ height:28px; width:auto; }
+.nav__logo img{ height:28px; width:auto; pointer-events:none; }
 .nav__logo .logo--blanco{ display:block; }
 .nav__logo .logo--color{ display:none; }
 
@@ -302,17 +306,23 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
   line-height:1; text-align:center; margin-top:-1px;
 }
-/* con el menú abierto el nav se retira: no se ven dos logos superpuestos */
+/* Con el menú abierto: se esconden el logo y el buscador del nav
+   (no se ven dos logos superpuestos), pero la hamburguesa queda
+   visible y clickeable arriba de la cortina (ver z-index de .nav)
+   para que el morph a X se note completo durante toda la apertura,
+   no solo los 240ms que tardaba en desvanecerse el nav entero. El
+   fondo/blur del nav se neutraliza para que no tape la cortina con
+   una franja de color en la franja de los primeros 60px. */
 body.menu-abierto .nav{
+  background:transparent; border-bottom-color:transparent;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+body.menu-abierto .nav__logo,
+body.menu-abierto .nav__buscar{
   opacity:0; pointer-events:none;
   transition:opacity 240ms var(--curva);
 }
-.menu__cerrar{
-  position:absolute; top:8px; right:calc(var(--margen) - 10px);
-  width:44px; height:44px; display:grid; place-items:center;
-  background:none; border:0; cursor:pointer; color:var(--arena);
-}
-.menu.sobre-hero .menu__cerrar{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
+body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .menu__lista li + li{ border-top:1px solid rgba(237,225,210,.18); }
 .menu__lista a,.menu__lista button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -353,6 +363,7 @@ body.menu-abierto .nav{
 .hero__foto.activa{ opacity:1; }
 .hero__foto img{
   width:100%; height:100%; object-fit:cover;
+  pointer-events:none;
 }
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
@@ -728,7 +739,7 @@ body.menu-abierto .nav{
   overflow:hidden;
 }
 .propiedad-fija__base{ position:absolute; inset:0; }
-.propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.propiedad-fija__base img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
 .propiedad-fija__tinte{
   position:absolute; inset:0; background:var(--azul-900); opacity:0;
   will-change:opacity;
@@ -764,7 +775,7 @@ body.menu-abierto .nav{
   position:relative; aspect-ratio:16/10;
   border-radius:0; overflow:hidden;
 }
-.propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.propiedad-fija__extra img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
 /* Pegado abajo de .propiedad-fija__contenido (o sea, a 40px del
    borde de abajo del pin), sin importar cuánto midan las 2 fotos de
    arriba — si el título crece, se superpone a las fotos en vez de

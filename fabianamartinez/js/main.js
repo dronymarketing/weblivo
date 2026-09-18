@@ -12,7 +12,6 @@ import { createMorph } from './vendor/morphicons/dom.js';
   var destacadas = document.querySelector('#destacadas');
   var menu       = document.querySelector('.menu');
   var abrirBtn   = document.querySelector('.nav__hamburguesa');
-  var cerrarBtn  = document.querySelector('.menu__cerrar');
   var WA_NUMERO_FABIANA = '59894236869';
 
   /* ----------------------------------------------------------
@@ -25,6 +24,50 @@ import { createMorph } from './vendor/morphicons/dom.js';
   var X_D    = 'M18 6 6 18M6 6 18 18';
   var hamPath  = document.getElementById('nav-hamburguesa-path');
   var hamMorph = hamPath ? createMorph(hamPath, MENU_D) : null;
+
+  /* Curva de tiempo exacta de la cortina (--curva, 750ms) llevada a JS,
+     para que el morph de la hamburguesa avance pegado al mismo avance
+     visual del clip-path — no una spring suelta por su cuenta, sino
+     la MISMA duración y el MISMO ritmo con que se abre/cierra la
+     cortina, para que el efecto se note durante todo el gesto. */
+  function cubicBezier(p1x, p1y, p2x, p2y) {
+    function a(x1, x2) { return 1 - 3 * x2 + 3 * x1; }
+    function b(x1, x2) { return 3 * x2 - 6 * x1; }
+    function c(x1) { return 3 * x1; }
+    function calc(t, x1, x2) { return ((a(x1, x2) * t + b(x1, x2)) * t + c(x1)) * t; }
+    function slope(t, x1, x2) { return 3 * a(x1, x2) * t * t + 2 * b(x1, x2) * t + c(x1); }
+    function tForX(x) {
+      var t = x;
+      for (var i = 0; i < 8; i++) {
+        var dx = calc(t, p1x, p2x) - x;
+        if (Math.abs(dx) < 1e-6) return t;
+        var d = slope(t, p1x, p2x);
+        if (Math.abs(d) < 1e-6) break;
+        t -= dx / d;
+      }
+      return t;
+    }
+    return function (x) {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      return calc(tForX(x), p1y, p2y);
+    };
+  }
+  var curvaEase = cubicBezier(.16, 1, .3, 1);
+  var CORTINA_MS = 750;
+  var morphRaf = 0;
+  function morphSync(destino) {
+    if (!hamMorph) return;
+    if (morphRaf) cancelAnimationFrame(morphRaf);
+    var inicio = null;
+    function paso(ts) {
+      if (inicio === null) inicio = ts;
+      var lineal = Math.min((ts - inicio) / CORTINA_MS, 1);
+      hamMorph.seek(destino, curvaEase(lineal));
+      morphRaf = lineal < 1 ? requestAnimationFrame(paso) : 0;
+    }
+    morphRaf = requestAnimationFrame(paso);
+  }
 
   /* ----------------------------------------------------------
      ALTO REAL DE PANTALLA — Chrome Android no siempre aplica
@@ -105,8 +148,11 @@ import { createMorph } from './vendor/morphicons/dom.js';
   function abrirMenu(abrir) {
     if (!menu) return;
     menu.classList.toggle('abierto', abrir);
-    if (abrirBtn) abrirBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
-    if (hamMorph) hamMorph.morphTo(abrir ? X_D : MENU_D, 'bouncy');
+    if (abrirBtn) {
+      abrirBtn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+      abrirBtn.setAttribute('aria-label', abrir ? 'Cerrar menú' : 'Abrir menú');
+    }
+    morphSync(abrir ? X_D : MENU_D);
     document.body.classList.toggle('menu-abierto', abrir);
     /* overflow:hidden en html Y body (no alcanza con solo body).
        Se prueba deliberadamente SIN el truco de position:fixed +
@@ -118,8 +164,11 @@ import { createMorph } from './vendor/morphicons/dom.js';
     document.documentElement.style.overflow = abrir ? 'hidden' : '';
     document.body.style.overflow = abrir ? 'hidden' : '';
   }
-  if (abrirBtn)  abrirBtn.addEventListener('click', function () { abrirMenu(true); });
-  if (cerrarBtn) cerrarBtn.addEventListener('click', function () { abrirMenu(false); });
+  if (abrirBtn) {
+    abrirBtn.addEventListener('click', function () {
+      abrirMenu(abrirBtn.getAttribute('aria-expanded') !== 'true');
+    });
+  }
   if (menu) {
     menu.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () { abrirMenu(false); });
@@ -249,6 +298,18 @@ import { createMorph } from './vendor/morphicons/dom.js';
       var cont = img.closest('[data-rotulo]');
       if (cont) cont.classList.add('sin-foto');
     });
+  });
+
+  /* ----------------------------------------------------------
+     Evita el menú nativo "Descargar imagen" al mantener presionado
+     sobre cualquier foto del sitio (Android dispara "contextmenu" en
+     el long-press; -webkit-touch-callout de iOS no cubre este caso).
+     Se engancha en document y se filtra por img[data-fallback] —el
+     mismo atributo que ya marca toda foto de contenido— para que
+     también cubra fotos agregadas a futuro sin tocar este archivo.
+  ---------------------------------------------------------- */
+  document.addEventListener('contextmenu', function (e) {
+    if (e.target.closest('img[data-fallback]')) e.preventDefault();
   });
 
   /* ----------------------------------------------------------
