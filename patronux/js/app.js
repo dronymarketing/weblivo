@@ -52,6 +52,7 @@
         imageDelay:   500,
         counterEnter: 850,
         bgWipe:      1200,
+        morph:        800,  // la foto viaja del preloader al hero
         morphDelay:   100   // el contenido entra MIENTRAS se abre la cortina
       };
 
@@ -59,18 +60,26 @@
       capa.className = 'preloader';
       capa.setAttribute('aria-hidden', 'true');
       capa.innerHTML =
+        '<div class="preloader__fondo"></div>' +
         '<div class="preloader__caja">' +
           '<img class="preloader__foto" src="img/marquee.jpg" alt="">' +
-          '<p class="preloader__marca">Patronux S.A.</p>' +
-          '<p class="preloader__n">0</p>' +
+          '<div class="preloader__texto">' +
+            '<p class="preloader__marca">Patronux S.A.</p>' +
+            '<p class="preloader__barra"><i></i></p>' +
+            '<p class="preloader__n">0</p>' +
+          '</div>' +
         '</div>';
       document.body.appendChild(capa);
 
       var num = capa.querySelector('.preloader__n');
+      var barra = capa.querySelector('.preloader__barra i');
+      var foto = capa.querySelector('.preloader__foto');
       var arranque = performance.now();
       (function contar(ahora) {
         var t = (ahora || arranque) - arranque - T.imageDelay;
-        num.textContent = Math.round(Math.min(1, Math.max(0, t / T.counterEnter)) * 100);
+        var p = Math.min(1, Math.max(0, t / T.counterEnter));
+        num.textContent = Math.round(p * 100);
+        barra.style.setProperty('--avance', p.toFixed(3));
         if (t < T.counterEnter) requestAnimationFrame(contar);
       })();
 
@@ -78,6 +87,22 @@
       function sacar() {
         if (fuera) return;
         fuera = true;
+
+        // Morph: la foto viaja hasta el lugar exacto que ocupa en el hero,
+        // así la entrada se lee como un solo movimiento y no como un corte.
+        var destino = document.querySelector('.marquee__foto');
+        if (destino && foto) {
+          var a = foto.getBoundingClientRect();
+          var b = destino.getBoundingClientRect();
+          if (a.width && b.width) {
+            foto.style.transition = 'transform ' + T.morph + 'ms cubic-bezier(.73,.15,.15,.99)';
+            foto.style.transform =
+              'translate(' + ((b.left + b.width / 2) - (a.left + a.width / 2)).toFixed(1) + 'px,' +
+                             ((b.top + b.height / 2) - (a.top + a.height / 2)).toFixed(1) + 'px) ' +
+              'scale(' + (b.width / a.width).toFixed(4) + ')';
+          }
+        }
+
         capa.classList.add('es-fuera');
         // Solapado: sin esto el titular entra recién con la cortina ya
         // afuera y la entrada se siente en dos tiempos.
@@ -265,7 +290,6 @@
        ---------------------------------------------------------- */
     var crece = document.querySelector('.crece');
     var marco = crece ? crece.querySelector('.crece__marco') : null;
-    var pie = crece ? crece.querySelector('.crece__pie') : null;
 
     function actualizarCrece() {
       if (!crece || !marco) return;
@@ -293,7 +317,6 @@
         window.innerHeight / marco.offsetHeight
       ) * 1.02;
       marco.style.setProperty('--escala', (1 + (escalaMax - 1) * t).toFixed(4));
-      if (pie) pie.style.setProperty('--pie-op', (1 - t * 0.8).toFixed(3));
     }
 
     /* ----------------------------------------------------------

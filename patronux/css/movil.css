@@ -17,27 +17,50 @@
   z-index: 300;
   display: grid;
   place-items: center;
+  pointer-events: none;
+}
+
+/* El fondo va en su propia capa porque es el único que lleva el recorte:
+   si el clip-path estuviera en el contenedor, cortaría la foto justo
+   mientras viaja hacia el hero. */
+.preloader__fondo {
+  position: absolute;
+  inset: 0;
   background: var(--texto);
   clip-path: inset(0%);
   transition: clip-path 1200ms cubic-bezier(.73, .15, .15, .99);
-  pointer-events: none;
 }
+.preloader.es-fuera .preloader__fondo { clip-path: inset(50% 0%); }
 .preloader__caja {
+  position: relative;
   display: grid;
   justify-items: center;
   gap: var(--sp-4);
+}
+
+/* La misma foto que queda en el hero: al salir viaja hasta su lugar
+   en vez de desaparecer, y la entrada se lee como un solo movimiento. */
+.preloader__foto {
+  width: 52vw;
+  max-width: 300px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 700ms var(--ease-re), transform 700ms var(--ease-re);
+  will-change: transform;
+}
+.preloader.es-listo .preloader__foto { opacity: 1; transform: none; }
+
+.preloader__texto {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
   opacity: 0;
   transition: opacity 400ms var(--ease-re);
 }
-.preloader.es-listo .preloader__caja { opacity: 1; }
-
-/* Foto chica al centro, como la de RE mientras carga */
-.preloader__foto {
-  width: 38vw;
-  max-width: 200px;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-}
+.preloader.es-listo .preloader__texto { opacity: 1; }
+.preloader.es-fuera .preloader__texto { opacity: 0; transition-duration: 300ms; }
 
 .preloader__marca {
   font-family: var(--font-micro);
@@ -47,6 +70,22 @@
   letter-spacing: .28em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .6);
+}
+
+/* Regla que se llena: la medida es el gesto del oficio */
+.preloader__barra {
+  width: 148px;
+  height: 1px;
+  background: rgba(255, 255, 255, .22);
+  position: relative;
+  overflow: hidden;
+}
+.preloader__barra i {
+  position: absolute;
+  inset: 0;
+  background: #FFFFFF;
+  transform: scaleX(var(--avance, 0));
+  transform-origin: 0 50%;
 }
 
 /* Contador de porcentaje: el detalle que hace leer la espera como
@@ -60,8 +99,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.preloader.es-fuera { clip-path: inset(50% 0%); }
-.preloader.es-fuera .preloader__caja { opacity: 0; transition-duration: 200ms; }
 
 /* ============================================================
    HEADER
@@ -365,34 +402,40 @@
 /* ---------- Scroll cue ----------
    Es un <a> de verdad: se puede tocar, funciona sin JS y es accesible.
    Va también en móvil, no se esconde. */
+/* Mismo cue que losparaisos: texto arriba, círculo de 32px abajo.
+   El <a> completo pasa los 44px de área táctil. */
 .cue {
   position: absolute;
   left: 50%;
-  bottom: 32px;
+  bottom: 28px;
   transform: translateX(-50%);
-  display: grid;
-  place-items: center;
-  width: 76px; height: 76px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--cat) 28%, transparent);
-  color: var(--cat-suave);
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--cat);
 }
 .cue__texto {
-  font-family: var(--font-micro);
-  font-variation-settings: 'wdth' 125;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: var(--cat-suave);
 }
-.cue .icon { width: 16px; height: 16px; animation: bajar 2s ease-in-out infinite; }
-@keyframes bajar {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(8px); }
+.cue__circulo {
+  width: 32px; height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--cat) 35%, transparent);
+}
+.cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: .75; }
+  50%      { transform: translateY(4px); opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cue .icon { animation: none; }
+  .cue .icon { animation: none; opacity: 1; }
 }
 
 /* ============================================================
@@ -430,14 +473,6 @@
 .crece__marco img {
   width: 100%; height: 100%;
   object-fit: cover;
-}
-.crece__pie {
-  position: absolute;
-  left: var(--margen-lateral);
-  bottom: var(--sp-3);
-  color: #FFFFFF;
-  mix-blend-mode: difference;
-  opacity: var(--pie-op, 1);
 }
 
 /* ============================================================
@@ -603,18 +638,38 @@
 }
 .proyecto__titulo { color: var(--cat); }
 
-/* Aviso de contenido de muestra: en pantalla, no solo en el código */
-.aviso {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
-  color: var(--cat-suave);
-  font-size: var(--fs-small);
-  line-height: 1.5;
+/* ---------- Obras contadas una por una ----------
+   La foto no ocupa el ancho completo y alterna de lado: es la
+   composición asimétrica que usa RE en sus bloques de contenido. */
+.obras { display: grid; gap: var(--sp-6); }
+
+.obra { display: grid; gap: var(--sp-3); }
+
+.obra__foto {
+  width: 84%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
 }
-.aviso .icon { margin-top: 2px; color: var(--cat); }
+.obra:nth-child(even) .obra__foto { margin-left: auto; }
+.obra__foto img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.obra__cuerpo { display: grid; gap: 10px; }
+.obra__lugar { color: var(--cat-suave); }
+.obra__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: var(--ls-h3);
+  color: var(--cat);
+}
+.obra__texto {
+  color: var(--cat-suave);
+  max-width: var(--max-lectura);
+}
 
 /* ---------- Contacto ---------- */
 .contacto { display: grid; gap: var(--sp-4); }

@@ -8,13 +8,15 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#FFFFFF">
 
-<link rel="stylesheet" href="css/tokens.css?v=3">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
-<link rel="stylesheet" href="css/base.css?v=3">
-<link rel="stylesheet" href="css/movil.css?v=3">
-<link rel="stylesheet" href="css/escritorio.css?v=3" media="(min-width: 768px)">
+<link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css?v=4">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=4">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/movil.css?v=4">
+<link rel="stylesheet" href="css/escritorio.css?v=4" media="(min-width: 768px)">
 
-<script src="js/app.js?v=3"></script>
+<script src="js/app.js?v=4"></script>
 </head>
 <body>
 
@@ -71,8 +73,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Empalmes y conexiones</li>
       </ul>
       <figure class="servicio__foto">
-        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-        <img src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
+        <img decoding="async" loading="lazy" src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
       </figure>
     </article>
 
@@ -86,8 +87,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drenaje pluvial</li>
       </ul>
       <figure class="servicio__foto">
-        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-        <img src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
       </figure>
     </article>
 
@@ -101,8 +101,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Bombeo y distribución</li>
       </ul>
       <figure class="servicio__foto">
-        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-        <img src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
       </figure>
     </article>
 
@@ -116,8 +115,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Obra nueva y refacción</li>
       </ul>
       <figure class="servicio__foto">
-        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-        <img src="img/servicio-sanitaria.jpg" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-sanitaria.jpg" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
       </figure>
     </article>
 
@@ -173,7 +171,6 @@
 
     <div class="pie__legal">
       <span>© 2026 Patronux S.A. — Todos los derechos reservados.</span>
-      <span>Borrador — sitio en construcción</span>
     </div>
   </div>
 </footer>

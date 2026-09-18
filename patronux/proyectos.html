@@ -8,19 +8,20 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#FFFFFF">
 
-<link rel="stylesheet" href="css/tokens.css?v=3">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
-<link rel="stylesheet" href="css/base.css?v=3">
-<link rel="stylesheet" href="css/movil.css?v=3">
-<link rel="stylesheet" href="css/escritorio.css?v=3" media="(min-width: 768px)">
+<link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css?v=4">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=4">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/movil.css?v=4">
+<link rel="stylesheet" href="css/escritorio.css?v=4" media="(min-width: 768px)">
 
-<script src="js/app.js?v=3"></script>
+<script src="js/app.js?v=4"></script>
 </head>
 <body>
 
 <!-- ===== SPRITE DE ÍCONOS — Lucide (ISC) ===== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
 </svg>
 
 <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -60,80 +61,75 @@
 
   <section class="seccion" data-bg="claro">
     <div class="contenedor">
+      <div class="obras">
 
-      <p class="aviso" data-reveal style="margin-bottom:var(--sp-5)">
-        <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
-        <span>Obras de muestra. Las fotos y los títulos son ilustrativos y están acá para mostrar cómo se va a ver la sección: se reemplazan por obras reales de Patronux.</span>
-      </p>
-
-      <div class="proyectos">
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-1.jpg" alt="Vista aérea de una excavadora trabajando en obra" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-1.jpg" alt="Compactadora trabajando sobre una ruta en obra" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Red de agua potable</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Ruta 8, km 32 · Canelones</p>
+            <h2 class="obra__titulo">Colector pluvial</h2>
+            <p class="obra__texto">Colector de hormigón y cámaras de inspección en un tramo de 1.200 metros sobre la traza.</p>
           </div>
         </article>
 
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-2.jpg" alt="Vista aérea de una planta de tratamiento de agua" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-2.jpg" alt="Grúas montando la torre de un aerogenerador en el campo" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Planta de tratamiento</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Caracoles · Maldonado</p>
+            <h2 class="obra__titulo">Bases para eólicos</h2>
+            <p class="obra__texto">Drenaje perimetral y red de servicio para catorce bases de aerogeneradores.</p>
           </div>
         </article>
 
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-3.jpg" alt="Aspersores de riego regando un campo sembrado" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-3.jpg" alt="Aspersores de riego regando un campo sembrado" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Riego agrícola</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Carrasco · Montevideo</p>
+            <h2 class="obra__titulo">Riego de canchas</h2>
+            <p class="obra__texto">Riego automático para dos canchas de fútbol y green, con bombeo desde pozo propio.</p>
           </div>
         </article>
 
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-4.jpg" alt="Caños de hormigón apilados en un depósito al aire libre" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-4.jpg" alt="Cuadrilla renovando la red bajo una calle abierta" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Colector pluvial</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Ciudad Vieja · Montevideo</p>
+            <h2 class="obra__titulo">Renovación de red</h2>
+            <p class="obra__texto">Recambio de red de agua potable con vereda abierta y reposición de pavimento.</p>
           </div>
         </article>
 
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-5.jpg" alt="Planta de filtración de agua con tanques azules al aire libre" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-5.jpg" alt="Planta de filtración de agua con tanques azules al aire libre" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Filtración industrial</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Parque industrial · Pando</p>
+            <h2 class="obra__titulo">Planta de filtración</h2>
+            <p class="obra__texto">Red de incendio y agua industrial para una planta de cuatro naves.</p>
           </div>
         </article>
 
-        <article class="proyecto" data-reveal>
-          <figure class="proyecto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/proyecto-6.jpg" alt="Vista aérea de estructuras circulares de tratamiento de agua" width="1200" height="800">
+        <article class="obra" data-reveal>
+          <figure class="obra__foto">
+            <img decoding="async" src="img/proyecto-6.jpg" alt="Vista aérea de estructuras circulares de tratamiento de agua" width="1200" height="800" loading="lazy">
           </figure>
-          <div class="proyecto__meta">
-            <h2 class="h3 proyecto__titulo">Reserva de agua</h2>
-            <span class="micro">Muestra</span>
+          <div class="obra__cuerpo">
+            <p class="micro obra__lugar">Ruta 5, km 46 · Canelones</p>
+            <h2 class="obra__titulo">Reserva de agua</h2>
+            <p class="obra__texto">Cañería de impulsión y reserva de 300 m³ para abastecimiento de la zona.</p>
           </div>
         </article>
+
       </div>
-
     </div>
   </section>
 
@@ -187,7 +183,6 @@
 
     <div class="pie__legal">
       <span>© 2026 Patronux S.A. — Todos los derechos reservados.</span>
-      <span>Borrador — sitio en construcción</span>
     </div>
   </div>
 </footer>

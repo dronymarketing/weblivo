@@ -94,10 +94,21 @@
 
 /* ---------- Proyectos ---------- */
 .proyectos {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-5) var(--sp-3);
 }
-.proyectos--tres { grid-template-columns: repeat(3, 1fr); }
+
+/* ---------- Obras ---------- */
+.obras { gap: var(--sp-7); }
+
+.obra {
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-5);
+  align-items: center;
+}
+.obra__foto { width: 100%; }
+/* Las pares invierten el orden: la foto va a la derecha */
+.obra:nth-child(even) .obra__foto { order: 2; }
 
 /* ---------- Contacto ---------- */
 .contacto {
