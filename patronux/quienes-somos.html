@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Quiénes somos — Patronux S.A.</title>
+<meta name="description" content="Constructora uruguaya con ingenieros y personal de obra cualificado, y más de 40 años acumulados de experiencia en instalaciones de agua, saneamiento y riego.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#FFFFFF">
+
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/tokens-proyecto.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/movil.css">
+<link rel="stylesheet" href="css/escritorio.css" media="(min-width: 768px)">
+
+<script src="js/app.js"></script>
+</head>
+<body>
+
+<!-- ===== SPRITE DE ÍCONOS — Lucide (ISC) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-derecha" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<!-- ===== HEADER — si cambia, cambiar en TODAS las páginas ===== -->
+<header class="header">
+  <a class="header__logo" href="index.html" aria-label="Patronux S.A. — inicio">
+    Patronux <span>S.A.</span>
+  </a>
+  <button class="hamburguesa" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
+    <span class="hamburguesa__lineas" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Principal">
+  <ul class="menu__lista">
+    <li class="menu__item"><a class="menu__link" href="index.html"><span class="n">01</span>Inicio</a></li>
+    <li class="menu__item"><a class="menu__link" href="quienes-somos.html" aria-current="page"><span class="n">02</span>Quiénes Somos</a></li>
+    <li class="menu__item"><a class="menu__link" href="servicios.html"><span class="n">03</span>Servicios</a></li>
+    <li class="menu__item"><a class="menu__link" href="proyectos.html"><span class="n">04</span>Proyectos</a></li>
+    <li class="menu__item"><a class="menu__link" href="contacto.html"><span class="n">05</span>Contacto</a></li>
+  </ul>
+  <div class="menu__pie">
+    <a href="tel:+59824090752">2409 0752</a>
+    <a href="tel:+59898994123">098 994 123</a>
+    <a href="mailto:patronuxsa@gmail.com">patronuxsa@gmail.com</a>
+  </div>
+</nav>
+
+<main id="contenido">
+
+  <section class="pagina-hero contenedor" data-bg="claro">
+    <p class="micro pagina-hero__micro">02 — Quiénes somos</p>
+    <h1 class="pagina-hero__titulo">Oficio, no improvisación</h1>
+    <p class="pagina-hero__bajada">Una constructora uruguaya dedicada a lo que va bajo tierra y adentro de las paredes: el agua que entra y la que sale.</p>
+    <figure class="pagina-hero__foto">
+      <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
+      <img src="img/hero.jpg" alt="Caño de drenaje colocado dentro de una zanja abierta en obra" width="1600" height="898">
+    </figure>
+  </section>
+
+  <section class="seccion" data-bg="claro">
+    <div class="contenedor">
+      <div class="sobre">
+        <div class="sobre__texto">
+          <p data-reveal>Patronux S.A. es una empresa constructora uruguaya especializada en instalaciones de agua, saneamiento y riego.</p>
+          <p data-reveal>Trabajamos con ingenieros y personal de obra cualificado, con más de 40 años acumulados de experiencia en el ramo.</p>
+          <p data-reveal>Hacemos instalación sanitaria en propiedades residenciales y en complejos comerciales, redes de agua potable para la industria y el hogar, sistemas de drenaje y saneamiento, y riego deportivo y agrícola.</p>
+        </div>
+
+        <figure class="sobre__foto" data-reveal>
+          <!-- FOTO DE MUESTRA — reemplazar por foto del equipo real de Patronux -->
+          <img src="img/empresa-2.jpg" alt="Casco de seguridad amarillo apoyado en una obra en construcción" width="1200" height="1500">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion franja" data-bg="alt">
+    <div class="contenedor">
+      <div class="seccion__encabezado">
+        <p class="micro seccion__micro" data-reveal>En números</p>
+        <h2 class="seccion__titulo" data-reveal>Lo que nos respalda</h2>
+      </div>
+
+      <div class="cifras" data-reveal>
+        <div class="cifra">
+          <p class="cifra__n">+40</p>
+          <p class="cifra__t">Años de experiencia acumulada</p>
+        </div>
+        <div class="cifra">
+          <p class="cifra__n">4</p>
+          <p class="cifra__t">Áreas de especialidad</p>
+        </div>
+      </div>
+
+      <p style="margin-top:var(--sp-4)" data-reveal><a class="link-flecha" href="servicios.html">Ver los servicios
+        <svg class="icon" aria-hidden="true"><use href="#i-derecha"/></svg></a></p>
+    </div>
+  </section>
+
+  <section class="seccion" data-bg="claro">
+    <div class="contenedor">
+      <div class="seccion__encabezado">
+        <p class="micro seccion__micro" data-reveal>Contacto</p>
+        <h2 class="seccion__titulo" data-reveal>Hablemos de tu obra</h2>
+      </div>
+      <div class="acciones" data-reveal>
+        <a class="boton boton--solido" href="mailto:patronuxsa@gmail.com">Escribirnos</a>
+        <a class="boton" href="contacto.html">Ver contacto</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== PIE — si cambia, cambiar en TODAS las páginas ===== -->
+<footer class="pie" data-bg="tinta">
+  <div class="contenedor">
+    <p class="pie__marca">Patronux S.A.</p>
+
+    <div class="pie__grilla">
+      <div>
+        <p class="pie__t">Secciones</p>
+        <ul class="pie__lista">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="quienes-somos.html">Quiénes Somos</a></li>
+          <li><a href="servicios.html">Servicios</a></li>
+          <li><a href="proyectos.html">Proyectos</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="pie__t">Contacto</p>
+        <ul class="pie__lista">
+          <li><a href="tel:+59824090752">2409 0752</a></li>
+          <li><a href="tel:+59898994123">098 994 123</a></li>
+          <li><a href="mailto:patronuxsa@gmail.com">patronuxsa@gmail.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="pie__t">Dónde estamos</p>
+        <ul class="pie__lista">
+          <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Joaqu%C3%ADn+Requena+1497%2C+Montevideo%2C+Uruguay" target="_blank" rel="noopener">Joaquín Requena 1497 Apto 3</a></li>
+          <li><span>Montevideo, CP 11200</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pie__legal">
+      <span>© 2026 Patronux S.A. — Todos los derechos reservados.</span>
+      <span>Borrador — sitio en construcción</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

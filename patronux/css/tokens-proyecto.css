@@ -1,0 +1,135 @@
+/* ============================================================
+   PATRONUX S.A. — tokens del proyecto
+   Estética RE (realevate.agency) como dirección: navy sobre blanco,
+   editorial, tipográfica, casi sin color.
+   Pisa a tokens.css.
+
+   Las tipografías de RE son comerciales. Acá van los reemplazos libres:
+   Roslindale Display -> Playfair Display
+   Google Sans        -> Inter
+   Monument Extended  -> Archivo (eje wdth expandido)
+   ============================================================ */
+
+/* Registradas como color para que el cambio de categoría se interpole
+   en vez de saltar. Si el navegador no soporta @property, cambia de golpe. */
+@property --cat {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1F2B5E;
+}
+@property --cat-suave {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #626C95;
+}
+
+:root {
+  transition: --cat 600ms var(--ease-re), --cat-suave 600ms var(--ease-re);
+
+  /* ---------- Paleta ---------- */
+  --fondo:       #FFFFFF;
+  --fondo-alt:   #F4F5F8;   /* franja neutra, apenas fría */
+  --texto:       #1F2B5E;   /* navy: dominante y texto. 13.41:1 sobre blanco */
+  --texto-suave: #626C95;   /* secundario. 5.12:1 sobre blanco */
+  --acento:      #1F2B5E;
+  --neutro:      #626C95;
+  --velo:        rgba(31, 43, 94, .06);
+
+  /* Color de la categoría activa. El JS lo pisa por sección (efecto J). */
+  --cat:       var(--texto);
+  --cat-suave: var(--texto-suave);
+
+  /* ---------- Color por categoría de servicio — efecto J ----------
+     Cada servicio tiñe la página cuando entra en pantalla.
+     Todos verificados: color y muted pasan 4.5:1 sobre blanco. */
+  --cat-agua:              #14375F;   /* 12.06:1 */
+  --cat-agua-suave:        #4E6A8C;   /*  5.58:1 */
+  --cat-saneamiento:       #16343A;   /* 13.24:1 */
+  --cat-saneamiento-suave: #4C6B71;   /*  5.76:1 */
+  --cat-riego:             #1E3D2A;   /* 11.96:1 */
+  --cat-riego-suave:       #4F6E5B;   /*  5.65:1 */
+  --cat-sanitaria:         #2A2733;   /* 14.62:1 */
+  --cat-sanitaria-suave:   #625E70;   /*  6.26:1 */
+
+  /* ---------- Tipografía ---------- */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-cuerpo:  'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-micro:   'Archivo', var(--font-cuerpo);
+
+  /* Escala fluida con piso duro, tomada de la IDEA de RE (vw con
+     multiplicador por dispositivo), no de sus números crudos: su
+     --desktop-text-size de 1.2vw daría ~10px a 375px de ancho. */
+  --fs-h1:    clamp(40px, 11.5vw, 76px);
+  --fs-h2:    clamp(28px,  7.6vw, 44px);
+  --fs-h3:    clamp(22px,  5.6vw, 30px);
+  --fs-body:  16px;
+  --fs-small: 14px;
+  --fs-micro: 11px;
+  --fs-marquee: 16vw;   /* la palabra gigante del marquee */
+
+  /* Interlineados por debajo de 1 en los títulos: la firma editorial de RE */
+  --lh-h1: 1;
+  --lh-h2: .94;
+  --lh-h3: 1.05;
+
+  /* El tracking se cierra a medida que el texto crece */
+  --ls-h1:    -.03em;
+  --ls-h2:    -.03em;
+  --ls-h3:    -.02em;
+  --ls-body:  -.01em;
+  --ls-micro:  .18em;
+
+  /* ---------- Medidas ----------
+     RE no declara ancho de contenedor, de lectura ni padding de sección:
+     todo escala con la ventana y en monitor ancho las líneas no tienen tope.
+     Se completa con el estándar. */
+  --max-contenedor: 1200px;
+  --max-lectura:     460px;
+  --margen-lateral:   24px;   /* el 4.5vw de RE da 17px a 375px: muy poco */
+
+  --radio-recto: 0;           /* RE usa botones rectos. Rubro constructor: recto */
+  --alto-boton:  52px;        /* RE usa 41px, por debajo del piso táctil de 44 */
+
+  /* ---------- Movimiento — paquete «Realevate» ----------
+     Curva propia: arranca más rápido y frena más seco que la nuestra.
+     Se siente decidido, no suave. */
+  --ease-re:   cubic-bezier(.7, .6, 0, 1);
+  --dur-re:    800ms;
+  --dur-micro: 300ms;
+  --dur-menu:  550ms;
+  --dur-cierre: 350ms;
+  --stagger:   90ms;
+
+  /* Hero que crece — efecto K, parámetros medidos en RE.
+     RE recorre 110svh. En móvil se baja a 70: el recorrido se paga con
+     pulgar, y el efecto se lee igual. */
+  --hero-crece-recorrido:  70svh;
+  --hero-crece-pausa:       5svh;
+  --hero-crece-escala:         2;
+
+  /* ---------- Rebordes — firma Livo ----------
+     currentColor a 15%, no un gris fijo: se adapta al fondo de cada sección.
+     El reborde reemplaza a la sombra. */
+  --borde: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+
+  /* ---------- Barras del sistema ---------- */
+  --barra-inferior: var(--fondo);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --fs-body:  17px;
+    --margen-lateral: 40px;
+    --hero-crece-recorrido: 110svh;   /* el valor de RE: con mouse no cuesta */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-re:     1ms;
+    --dur-menu:   1ms;
+    --dur-cierre: 1ms;
+    --dur-micro:  1ms;
+    --stagger:    0ms;
+  }
+}

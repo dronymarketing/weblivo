@@ -1,0 +1,565 @@
+/* ============================================================
+   PATRONUX S.A. — MÓVIL
+   Este archivo es la web en el celular. No lleva ni una media query.
+   Lo que cambia de 768px para arriba va en escritorio.css.
+   ============================================================ */
+
+/* ============================================================
+   PRELOADER — efecto A del paquete «Realevate»
+   Marco que se abre desde el centro y descubre la web.
+   El JS lo crea; si el JS no corre, no existe y la web se ve igual.
+   ============================================================ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: var(--texto);
+  clip-path: inset(0%);
+  transition: clip-path 900ms var(--ease-re);
+  pointer-events: none;
+}
+.preloader__marca {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--fondo);
+  opacity: 0;
+  transition: opacity 400ms var(--ease-re);
+}
+.preloader.es-listo .preloader__marca { opacity: 1; }
+.preloader.es-fuera { clip-path: inset(50% 0%); }
+.preloader.es-fuera .preloader__marca { opacity: 0; transition-duration: 200ms; }
+
+/* ============================================================
+   HEADER
+   Hamburguesa, fijo, logo izquierda, botón derecha.
+   Arranca transparente sobre el hero y toma fondo a los 80px.
+   ============================================================ */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-alto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--margen-lateral);
+  background: transparent;
+  transition: background var(--dur-micro) var(--ease-re),
+              border-color var(--dur-micro) var(--ease-re);
+  border-bottom: 1px solid transparent;
+}
+.header.es-solido {
+  background: var(--fondo);
+  border-bottom-color: color-mix(in srgb, var(--cat) 12%, transparent);
+}
+
+/* Con el menú abierto el panel es navy y el header queda por encima:
+   sin esto, el logo y la hamburguesa son navy sobre navy y desaparecen. */
+.menu-abierto .header {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+.menu-abierto .header__logo,
+.menu-abierto .hamburguesa { color: #FFFFFF; }
+.menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
+
+.header__logo {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cat);
+}
+.header__logo span {
+  font-weight: 400;
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--cat-suave);
+}
+
+/* Hamburguesa: tres líneas de 1px, área táctil 44x44 */
+.hamburguesa {
+  width: 44px; height: 44px;
+  margin-right: -10px;
+  display: grid;
+  place-items: center;
+  color: var(--cat);
+}
+.hamburguesa__lineas {
+  position: relative;
+  width: 22px; height: 12px;
+}
+.hamburguesa__lineas i {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%; height: 1px;
+  background: currentColor;
+  transition: transform var(--dur-micro) var(--ease-re),
+              opacity var(--dur-micro) var(--ease-re);
+}
+.hamburguesa__lineas i:nth-child(1) { top: 0; }
+.hamburguesa__lineas i:nth-child(2) { top: 50%; }
+.hamburguesa__lineas i:nth-child(3) { top: 100%; }
+
+.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(2) {
+  opacity: 0;
+}
+.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ---------- Menú: cortina desde arriba ----------
+   Lo sobrio para institucional. 550ms. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: var(--texto);
+  color: #FFFFFF;
+  transform: translateY(-100%);
+  transition: transform var(--dur-menu) var(--ease-re),
+              visibility 0s linear var(--dur-menu);
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--nav-alto) var(--margen-lateral) var(--sp-5);
+  overflow-y: auto;
+}
+.menu.es-abierto {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform var(--dur-menu) var(--ease-re), visibility 0s;
+}
+
+.menu__lista { display: flex; flex-direction: column; gap: 4px; }
+
+.menu__item {
+  opacity: 0;
+  transform: translateY(12px);
+}
+/* Los ítems entran DESPUÉS del panel, escalonados. Al cerrar se van
+   todos juntos con el panel: cerrar tiene que sentirse más rápido. */
+.menu.es-abierto .menu__item {
+  opacity: 1;
+  transform: none;
+  transition: opacity 400ms var(--ease-re) var(--retraso),
+              transform 400ms var(--ease-re) var(--retraso);
+}
+
+.menu__link {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-block: 12px;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+}
+.menu__link .n {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  opacity: .5;
+}
+.menu__link[aria-current='page'] { text-decoration: underline; text-underline-offset: 6px; }
+
+.menu__pie {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  display: grid;
+  gap: 6px;
+  color: rgba(255, 255, 255, .72);
+  font-size: var(--fs-small);
+}
+.menu__pie a { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* ============================================================
+   HERO — blanco, tipográfico. Pantalla completa con scroll cue.
+   svh, nunca vh ni dvh. min-height, nunca height.
+   Sin overflow:hidden: el overflow del marquee va en su contenedor.
+   ============================================================ */
+.hero {
+  min-height: calc(100vh - var(--nav-alto));
+  min-height: calc(100svh - var(--nav-alto));
+  margin-top: var(--nav-alto);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  padding-top: var(--sp-5);
+}
+
+.hero__cuerpo { display: grid; gap: var(--sp-3); }
+
+.hero__micro { color: var(--cat-suave); }
+
+.hero__titulo { color: var(--cat); }
+
+/* Efecto G — el titular se arma por palabras. Cada palabra sube desde
+   abajo detrás de una máscara. Solo en el hero: en más de un lugar, cansa. */
+.palabra { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.palabra i {
+  display: inline-block;
+  font-style: inherit;
+  transform: translateY(105%);
+}
+.js .hero__titulo.es-dentro .palabra i {
+  transform: none;
+  transition: transform var(--dur-re) var(--ease-re);
+  transition-delay: var(--retraso, 0ms);
+}
+
+.hero__bajada {
+  max-width: var(--max-lectura);
+  color: var(--cat-suave);
+}
+
+/* ---------- Marquee — efecto I ----------
+   Una palabra gigante que se repite y se desplaza, con una foto encima
+   que tapa parte del texto. Un solo marquee por sitio, y va en el hero.
+   El overflow:hidden vive acá, nunca en la sección hero. */
+.marquee {
+  position: relative;
+  margin-top: var(--sp-5);
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+  padding-top: var(--sp-2);
+}
+.marquee__pista {
+  display: flex;
+  width: max-content;
+  animation: correr 26s linear infinite;
+}
+.marquee__pista span {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-marquee);
+  line-height: .9;
+  letter-spacing: -.04em;
+  color: var(--cat);
+  padding-right: .18em;
+  white-space: nowrap;
+}
+@keyframes correr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__pista { animation: none; }
+}
+
+.marquee__foto {
+  position: absolute;
+  top: 50%;
+  right: 14%;
+  transform: translateY(-42%);
+  width: 26vw;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+/* ---------- Scroll cue ----------
+   Es un <a> de verdad: se puede tocar, funciona sin JS y es accesible.
+   Va también en móvil, no se esconde. */
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-top: 6px;
+  color: var(--cat-suave);
+}
+.cue__texto {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+.cue .icon { animation: bajar 2s ease-in-out infinite; }
+@keyframes bajar {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cue .icon { animation: none; }
+}
+
+/* ============================================================
+   FIGURA QUE CRECE — efecto K
+   La foto arranca en un recuadro y crece con el scroll.
+   Escala 2 sobre 110svh con 5svh de pausa al final: sin esa pausa
+   el efecto termina de golpe y se siente cortado.
+   ============================================================ */
+/* El alto reserva el scroll del efecto: una pantalla para el pin, más el
+   recorrido del crecimiento, más la pausa del final. Sin sumar la pantalla
+   del pin, el recorrido real es la diferencia y la foto crece de golpe. */
+.crece {
+  height: calc(100svh + var(--hero-crece-recorrido) + var(--hero-crece-pausa));
+  position: relative;
+}
+.crece__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.crece__marco {
+  width: calc(100% - var(--margen-lateral) * 2);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  will-change: transform;
+}
+.js .crece__marco { transform: scale(var(--escala, 1)); }
+.crece__marco img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.crece__pie {
+  position: absolute;
+  left: var(--margen-lateral);
+  bottom: var(--sp-3);
+  color: #FFFFFF;
+  mix-blend-mode: difference;
+  opacity: var(--pie-op, 1);
+}
+
+/* ============================================================
+   SECCIONES
+   ============================================================ */
+.seccion__encabezado {
+  display: grid;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.seccion__micro { color: var(--cat-suave); }
+.seccion__titulo { color: var(--cat); }
+
+.franja { background: var(--fondo-alt); }
+
+/* ---------- Adelanto: quiénes somos ---------- */
+.sobre { display: grid; gap: var(--sp-4); }
+.sobre__texto { display: grid; gap: var(--sp-2); max-width: var(--max-lectura); }
+.sobre__texto p { color: var(--cat-suave); }
+
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.cifra__n {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--cat);
+}
+.cifra__t {
+  margin-top: 6px;
+  color: var(--cat-suave);
+  font-size: var(--fs-small);
+}
+
+.sobre__foto { aspect-ratio: 4 / 5; }
+.sobre__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Servicios ----------
+   Cada tarjeta declara su categoría con data-cat. El color lo pone el JS
+   sobre la página entera cuando la sección entra en pantalla (efecto J). */
+.servicios { display: grid; gap: var(--sp-5); }
+
+.servicio {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.servicio__n {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  color: var(--cat-suave);
+}
+.servicio__titulo { color: var(--cat); }
+.servicio__texto { color: var(--cat-suave); max-width: var(--max-lectura); }
+.servicio__foto { aspect-ratio: 4 / 3; margin-top: var(--sp-1); }
+.servicio__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Página de servicios: bloques grandes que tiñen la página */
+.servicio--pleno { gap: var(--sp-3); padding-top: var(--sp-4); }
+.servicio--pleno .servicio__lista {
+  display: grid;
+  gap: 10px;
+  margin-top: var(--sp-1);
+}
+.servicio__lista li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: var(--cat-suave);
+  font-size: var(--fs-small);
+}
+.servicio__lista .icon { margin-top: 3px; color: var(--cat); }
+
+/* ---------- Proyectos ---------- */
+.proyectos { display: grid; gap: var(--sp-4); }
+
+.proyecto { display: grid; gap: var(--sp-2); }
+.proyecto__foto { aspect-ratio: 3 / 2; overflow: hidden; }
+.proyecto__foto img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-re) var(--ease-re);
+}
+.proyecto:hover .proyecto__foto img { transform: scale(1.04); }
+.proyecto__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+  color: var(--cat-suave);
+}
+.proyecto__titulo { color: var(--cat); }
+
+/* Aviso de contenido de muestra: en pantalla, no solo en el código */
+.aviso {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+  color: var(--cat-suave);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.aviso .icon { margin-top: 2px; color: var(--cat); }
+
+/* ---------- Contacto ---------- */
+.contacto { display: grid; gap: var(--sp-4); }
+.datos { display: grid; gap: var(--sp-3); }
+.dato {
+  display: grid;
+  gap: 4px;
+  padding-top: var(--sp-2);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.dato__t {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--cat-suave);
+}
+.dato__v {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  color: var(--cat);
+}
+a.dato__v { display: inline-flex; align-items: center; min-height: 44px; }
+
+.acciones { display: grid; gap: 12px; }
+
+/* ============================================================
+   ENCABEZADO DE PÁGINA INTERNA
+   ============================================================ */
+.pagina-hero {
+  margin-top: var(--nav-alto);
+  padding-top: var(--sp-6);
+  padding-bottom: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+}
+.pagina-hero__micro { color: var(--cat-suave); }
+.pagina-hero__titulo { color: var(--cat); }
+.pagina-hero__bajada { color: var(--cat-suave); max-width: var(--max-lectura); }
+
+.pagina-hero__foto {
+  margin-top: var(--sp-2);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+.pagina-hero__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ============================================================
+   PIE
+   ============================================================ */
+.pie {
+  background: var(--texto);
+  color: rgba(255, 255, 255, .72);
+  padding-block: var(--sp-5);
+}
+.pie__marca {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: #FFFFFF;
+}
+.pie__grilla {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+.pie__t {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+  margin-bottom: 10px;
+}
+.pie__lista { display: grid; gap: 2px; }
+.pie__lista a, .pie__lista span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+.pie__legal {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-small);
+  color: rgba(255, 255, 255, .5);
+}

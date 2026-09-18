@@ -1,0 +1,129 @@
+/* ============================================================
+   PATRONUX S.A. — ESCRITORIO (768px para arriba)
+   Se carga por el atributo media del link: acá adentro no hace falta
+   envolver nada. Solo lo que CAMBIA respecto de móvil.
+   ============================================================ */
+
+/* ---------- Header ---------- */
+.menu {
+  padding: var(--nav-alto) var(--margen-lateral) var(--sp-6);
+  justify-content: flex-end;
+}
+.menu__lista {
+  max-width: var(--max-contenedor);
+  width: 100%;
+  margin-inline: auto;
+}
+.menu__link { font-size: 64px; padding-block: 6px; }
+.menu__link .n { font-size: 11px; }
+.menu__pie {
+  max-width: var(--max-contenedor);
+  width: 100%;
+  margin-inline: auto;
+  margin-top: var(--sp-6);
+  grid-template-columns: repeat(3, 1fr);
+  display: grid;
+}
+
+/* ---------- Hero ---------- */
+.hero { padding-top: var(--sp-6); }
+
+.hero__cuerpo {
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+}
+.hero__bajada {
+  justify-self: end;
+  text-align: left;
+  max-width: 420px;
+}
+
+.marquee { margin-top: var(--sp-6); padding-top: var(--sp-3); }
+.marquee__pista { animation-duration: 34s; }
+.marquee__foto {
+  right: 22%;
+  width: 11vw;
+  max-width: 150px;
+}
+
+/* ---------- Figura que crece ---------- */
+.crece__marco {
+  width: min(62%, 760px);
+  aspect-ratio: 16 / 9;
+}
+
+/* ---------- Secciones ---------- */
+.seccion__encabezado {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+/* ---------- Quiénes somos ---------- */
+.sobre {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.sobre__foto { aspect-ratio: 4 / 5; }
+.cifras { grid-template-columns: repeat(2, 1fr); }
+.cifra__n { font-size: 60px; }
+
+/* ---------- Servicios ---------- */
+.servicios { gap: var(--sp-6); }
+
+.servicio {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+  align-items: start;
+}
+.servicio__n { grid-column: 1 / -1; }
+.servicio__foto { grid-row: span 3; margin-top: 0; aspect-ratio: 4 / 3; }
+
+.servicio--pleno {
+  grid-template-columns: 1fr 1.1fr;
+  gap: var(--sp-5);
+  padding-top: var(--sp-5);
+}
+.servicio--pleno .servicio__foto { grid-row: 2 / span 3; }
+
+/* ---------- Proyectos ---------- */
+.proyectos {
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-5) var(--sp-3);
+}
+.proyectos--tres { grid-template-columns: repeat(3, 1fr); }
+
+/* ---------- Contacto ---------- */
+.contacto {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.acciones { grid-auto-flow: column; justify-content: start; }
+.dato__v { font-size: 26px; }
+
+/* ---------- Página interna ---------- */
+.pagina-hero {
+  padding-top: var(--sp-7);
+  padding-bottom: var(--sp-5);
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: var(--sp-5);
+}
+.pagina-hero__micro  { grid-column: 1 / -1; }
+.pagina-hero__bajada { padding-bottom: 6px; }
+.pagina-hero__foto { grid-column: 1 / -1; aspect-ratio: 21 / 9; }
+
+/* ---------- Pie ---------- */
+.pie__grilla {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
+}
+.pie__marca { font-size: 44px; }
+.pie__legal {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
