@@ -57,13 +57,8 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero contenedor" data-bg="claro">
-    <div class="hero__cuerpo">
-      <p class="micro hero__micro">Patronux S.A. — Uruguay</p>
-      <h1 class="hero__titulo" data-palabras>Obras de agua y saneamiento</h1>
-      <p class="hero__bajada">Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
-    </div>
-
-    <!-- Marquee — efecto I. Un solo marquee por sitio, y va en el hero. -->
+    <!-- Marquee — efecto I. Va arriba y es el protagonista del hero:
+         la foto tapa parte de la palabra y obliga a completarla. -->
     <div class="marquee" aria-hidden="true">
       <div class="marquee__pista">
         <span>Patronux · Patronux · Patronux · </span>
@@ -71,6 +66,13 @@
       </div>
       <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
       <img class="marquee__foto" src="img/marquee.jpg" alt="" width="800" height="1067">
+    </div>
+
+    <div class="hero__cuerpo">
+      <p class="micro hero__micro">Patronux S.A. — Uruguay</p>
+      <h1 class="hero__titulo" data-palabras>Obras de agua y saneamiento</h1>
+      <p class="hero__bajada">Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
+      <p class="micro chip">+40 años de experiencia</p>
     </div>
 
     <a class="cue" href="#obra">
@@ -129,41 +131,46 @@
   <!-- ===== ADELANTO — SERVICIOS ===== -->
   <section class="seccion franja" id="servicios" data-bg="alt">
     <div class="contenedor">
-      <div class="seccion__encabezado">
+      <div class="seccion__encabezado seccion__encabezado--centro">
         <p class="micro seccion__micro" data-reveal>02 — Servicios</p>
         <h2 class="seccion__titulo" data-reveal>Lo que hacemos</h2>
       </div>
 
-      <div class="servicios">
-        <article class="servicio" data-cat="agua" data-reveal>
-          <p class="servicio__n">01</p>
-          <h3 class="servicio__titulo">Redes de agua potable</h3>
-          <p class="servicio__texto">Agua potable para industria y vivienda, del empalme a la canilla.</p>
-          <figure class="servicio__foto">
+      <!-- Tarjetas de categoría: cada una rellena con el color de su
+           especialidad y lleva a su bloque en la página de servicios. -->
+      <div class="tarjetas-cat">
+        <a class="tarjeta-cat" data-cat="agua" href="servicios.html#agua" data-reveal>
+          <div class="tarjeta-cat__texto">
+            <h3 class="tarjeta-cat__titulo">Agua potable</h3>
+            <p class="tarjeta-cat__desc">Redes para industria y vivienda</p>
+          </div>
+          <figure class="tarjeta-cat__foto">
             <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
             <img src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
           </figure>
-        </article>
+        </a>
 
-        <article class="servicio" data-cat="saneamiento" data-reveal>
-          <p class="servicio__n">02</p>
-          <h3 class="servicio__titulo">Saneamiento y drenaje</h3>
-          <p class="servicio__texto">Colectores, desagües y drenaje pluvial para obra nueva y refacción.</p>
-          <figure class="servicio__foto">
+        <a class="tarjeta-cat" data-cat="saneamiento" href="servicios.html#saneamiento" data-reveal>
+          <div class="tarjeta-cat__texto">
+            <h3 class="tarjeta-cat__titulo">Saneamiento</h3>
+            <p class="tarjeta-cat__desc">Colectores, desagües y pluvial</p>
+          </div>
+          <figure class="tarjeta-cat__foto">
             <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
             <img src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
           </figure>
-        </article>
+        </a>
 
-        <article class="servicio" data-cat="riego" data-reveal>
-          <p class="servicio__n">03</p>
-          <h3 class="servicio__titulo">Riego deportivo y agrícola</h3>
-          <p class="servicio__texto">Riego para canchas deportivas, campos y explotaciones agrícolas.</p>
-          <figure class="servicio__foto">
+        <a class="tarjeta-cat" data-cat="riego" href="servicios.html#riego" data-reveal>
+          <div class="tarjeta-cat__texto">
+            <h3 class="tarjeta-cat__titulo">Riego y bombeo</h3>
+            <p class="tarjeta-cat__desc">Canchas deportivas y campos</p>
+          </div>
+          <figure class="tarjeta-cat__foto">
             <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
             <img src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
           </figure>
-        </article>
+        </a>
       </div>
 
       <p style="margin-top:var(--sp-4)" data-reveal><a class="link-flecha" href="servicios.html">Ver los servicios

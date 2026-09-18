@@ -50,8 +50,22 @@
       var capa = document.createElement('div');
       capa.className = 'preloader';
       capa.setAttribute('aria-hidden', 'true');
-      capa.innerHTML = '<p class="preloader__marca">Patronux S.A.</p>';
+      capa.innerHTML =
+        '<div class="preloader__caja">' +
+          '<img class="preloader__foto" src="img/marquee.jpg" alt="">' +
+          '<p class="preloader__marca">Patronux S.A.</p>' +
+          '<p class="preloader__n">0</p>' +
+        '</div>';
       document.body.appendChild(capa);
+
+      // Contador de 0 a 100 mientras dura la cortina
+      var num = capa.querySelector('.preloader__n');
+      var arranque = performance.now();
+      (function contar(ahora) {
+        var t = Math.min(1, ((ahora || arranque) - arranque) / 1300);
+        num.textContent = Math.round(t * 100);
+        if (t < 1) requestAnimationFrame(contar);
+      })();
 
       var fuera = false;
       function sacar() {
@@ -263,7 +277,12 @@
       var pausa = svhPau / (svhRec + svhPau);
       var t = Math.min(1, avance / (1 - pausa));
 
-      var escalaMax = parseFloat(estilos.getPropertyValue('--hero-crece-escala')) || 2;
+      // La escala que hace que la foto termine a sangre, cubriendo la
+      // pantalla exacta. offsetWidth/Height no los afecta el transform.
+      var escalaMax = Math.max(
+        window.innerWidth / marco.offsetWidth,
+        window.innerHeight / marco.offsetHeight
+      ) * 1.02;
       marco.style.setProperty('--escala', (1 + (escalaMax - 1) * t).toFixed(4));
       if (pie) pie.style.setProperty('--pie-op', (1 - t * 0.8).toFixed(3));
     }
@@ -285,7 +304,25 @@
       var n = elegido.getAttribute('data-bg');
       if (n === 'tinta') return estilos.getPropertyValue('--texto').trim();
       if (n === 'alt')   return estilos.getPropertyValue('--fondo-alt').trim();
+      if (n === 'cat')   return colorDe(elegido.getAttribute('data-cat')).color;
       return estilos.getPropertyValue('--fondo').trim();
+    }
+
+    // Un color es oscuro si su luminancia relativa es baja. Se usa para
+    // decidir si el header va en blanco o en navy.
+    function esOscuro(color) {
+      if (!color) return false;
+      var m = color.match(/^#([0-9a-f]{6})$/i);
+      var r, g, b;
+      if (m) {
+        var v = parseInt(m[1], 16);
+        r = (v >> 16) & 255; g = (v >> 8) & 255; b = v & 255;
+      } else {
+        m = color.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+        if (!m) return false;
+        r = +m[1]; g = +m[2]; b = +m[3];
+      }
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
     }
 
     function pintarBarras() {
@@ -295,6 +332,11 @@
                                : fondoEn(window.innerHeight - 1);
       if (metaTema && arriba) metaTema.setAttribute('content', arriba);
       if (abajo) raiz.style.setProperty('--barra-inferior', abajo);
+
+      // Sobre un bloque de color oscuro, el logo navy no se lee.
+      if (header && !abiertoMenu) {
+        header.classList.toggle('sobre-oscuro', esOscuro(fondoEn(header.offsetHeight / 2)));
+      }
     }
 
     /* ----------------------------------------------------------

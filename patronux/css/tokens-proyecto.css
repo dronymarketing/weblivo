@@ -40,8 +40,12 @@
   --cat-suave: var(--texto-suave);
 
   /* ---------- Color por categoría de servicio — efecto J ----------
-     Cada servicio tiñe la página cuando entra en pantalla.
-     Todos verificados: color y muted pasan 4.5:1 sobre blanco. */
+     En RE el color de la categoría tiñe BLOQUES ENTEROS, no solo el texto:
+     cada tarjeta es un rectángulo de color sólido con la foto al costado.
+     Por eso cada categoría necesita su par: el color de relleno y el tono
+     apagado para el texto secundario sobre blanco.
+     Todos verificados: color y suave pasan 4.5:1 sobre blanco, y el blanco
+     sobre el color pasa de 11:1 para arriba. */
   --cat-agua:              #14375F;   /* 12.06:1 */
   --cat-agua-suave:        #4E6A8C;   /*  5.58:1 */
   --cat-saneamiento:       #16343A;   /* 13.24:1 */
@@ -65,7 +69,7 @@
   --fs-body:  16px;
   --fs-small: 14px;
   --fs-micro: 11px;
-  --fs-marquee: 16vw;   /* la palabra gigante del marquee */
+  --fs-marquee: 21vw;   /* la palabra gigante del marquee */
 
   /* Interlineados por debajo de 1 en los títulos: la firma editorial de RE */
   --lh-h1: 1;

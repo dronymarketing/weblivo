@@ -20,20 +20,46 @@
   transition: clip-path 900ms var(--ease-re);
   pointer-events: none;
 }
+.preloader__caja {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  opacity: 0;
+  transition: opacity 400ms var(--ease-re);
+}
+.preloader.es-listo .preloader__caja { opacity: 1; }
+
+/* Foto chica al centro, como la de RE mientras carga */
+.preloader__foto {
+  width: 38vw;
+  max-width: 200px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
 .preloader__marca {
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: .28em;
   text-transform: uppercase;
-  color: var(--fondo);
-  opacity: 0;
-  transition: opacity 400ms var(--ease-re);
+  color: rgba(255, 255, 255, .6);
 }
-.preloader.es-listo .preloader__marca { opacity: 1; }
+
+/* Contador de porcentaje: el detalle que hace leer la espera como
+   intencional y no como demora. */
+.preloader__n {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
 .preloader.es-fuera { clip-path: inset(50% 0%); }
-.preloader.es-fuera .preloader__marca { opacity: 0; transition-duration: 200ms; }
+.preloader.es-fuera .preloader__caja { opacity: 0; transition-duration: 200ms; }
 
 /* ============================================================
    HEADER
@@ -68,6 +94,15 @@
 .menu-abierto .header__logo,
 .menu-abierto .hamburguesa { color: #FFFFFF; }
 .menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
+
+/* Sobre un bloque de color oscuro, el header pasa a blanco y no toma fondo */
+.header.sobre-oscuro {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+.header.sobre-oscuro .header__logo,
+.header.sobre-oscuro .hamburguesa { color: #FFFFFF; }
+.header.sobre-oscuro .header__logo span { color: rgba(255, 255, 255, .6); }
 
 .header__logo {
   display: flex;
@@ -205,16 +240,34 @@
   margin-top: var(--nav-alto);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Reparte el sobrante entre marquee y texto en vez de amontonarlo
+     arriba: centrado dejaba media pantalla vacía sobre el marquee. */
+  justify-content: space-evenly;
   position: relative;
-  padding-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  padding-bottom: 132px;       /* deja lugar al cue, que va absoluto */
+  text-align: center;          /* RE centra todo el hero en móvil */
 }
 
-.hero__cuerpo { display: grid; gap: var(--sp-3); }
+.hero__cuerpo {
+  display: grid;
+  gap: var(--sp-3);
+  justify-items: center;
+}
 
 .hero__micro { color: var(--cat-suave); }
 
 .hero__titulo { color: var(--cat); }
+
+/* Chip con reborde fino — el recurso de RE para el dato de apoyo */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  color: var(--cat);
+}
 
 /* Efecto G — el titular se arma por palabras. Cada palabra sube desde
    abajo detrás de una máscara. Solo en el hero: en más de un lugar, cansa. */
@@ -233,6 +286,7 @@
 .hero__bajada {
   max-width: var(--max-lectura);
   color: var(--cat-suave);
+  margin-inline: auto;
 }
 
 /* ---------- Marquee — efecto I ----------
@@ -241,10 +295,8 @@
    El overflow:hidden vive acá, nunca en la sección hero. */
 .marquee {
   position: relative;
-  margin-top: var(--sp-5);
+  margin-bottom: var(--sp-4);
   overflow: hidden;
-  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
-  padding-top: var(--sp-2);
 }
 .marquee__pista {
   display: flex;
@@ -269,12 +321,15 @@
   .marquee__pista { animation: none; }
 }
 
+/* La foto va ENCIMA del texto y lo tapa: la palabra se lee entrecortada
+   y eso es el efecto. Centrada, como en RE. */
 .marquee__foto {
   position: absolute;
   top: 50%;
-  right: 14%;
-  transform: translateY(-42%);
-  width: 26vw;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46vw;
+  max-width: 240px;
   aspect-ratio: 3 / 4;
   object-fit: cover;
 }
@@ -287,23 +342,23 @@
   left: 50%;
   bottom: 32px;
   transform: translateX(-50%);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding-top: 6px;
+  display: grid;
+  place-items: center;
+  width: 76px; height: 76px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cat) 28%, transparent);
   color: var(--cat-suave);
+  gap: 4px;
 }
 .cue__texto {
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: .24em;
+  letter-spacing: .18em;
   text-transform: uppercase;
 }
-.cue .icon { animation: bajar 2s ease-in-out infinite; }
+.cue .icon { width: 16px; height: 16px; animation: bajar 2s ease-in-out infinite; }
 @keyframes bajar {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(8px); }
@@ -333,9 +388,13 @@
   place-items: center;
   overflow: hidden;
 }
+/* Arranca en un recuadro chico y vertical, como el de RE. La escala final
+   la calcula el JS para que termine cubriendo la pantalla exacta: con un
+   número fijo, en pantallas altas queda corta y se ven los bordes. */
 .crece__marco {
-  width: calc(100% - var(--margen-lateral) * 2);
-  aspect-ratio: 16 / 10;
+  width: 58%;
+  max-width: 420px;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   will-change: transform;
 }
@@ -363,6 +422,21 @@
 }
 .seccion__micro { color: var(--cat-suave); }
 .seccion__titulo { color: var(--cat); }
+
+/* Encabezado centrado con filete vertical arriba — el remate editorial
+   de RE para abrir una sección. */
+.seccion__encabezado--centro {
+  justify-items: center;
+  text-align: center;
+}
+.seccion__encabezado--centro::before {
+  content: '';
+  width: 1px;
+  height: 44px;
+  background: currentColor;
+  opacity: .28;
+  margin-bottom: var(--sp-1);
+}
 
 .franja { background: var(--fondo-alt); }
 
@@ -394,16 +468,58 @@
 .sobre__foto { aspect-ratio: 4 / 5; }
 .sobre__foto img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ---------- Servicios ----------
-   Cada tarjeta declara su categoría con data-cat. El color lo pone el JS
-   sobre la página entera cuando la sección entra en pantalla (efecto J). */
-.servicios { display: grid; gap: var(--sp-5); }
+/* ---------- Color por categoría — efecto J ----------
+   El color vive en el atributo de cada bloque, no enterrado en el JS.
+   Rellena bloques enteros: es lo que hace que el recurso se vea. */
+[data-cat='agua']        { --relleno: var(--cat-agua); }
+[data-cat='saneamiento'] { --relleno: var(--cat-saneamiento); }
+[data-cat='riego']       { --relleno: var(--cat-riego); }
+[data-cat='sanitaria']   { --relleno: var(--cat-sanitaria); }
 
-.servicio {
+/* ---------- Tarjeta de categoría ----------
+   Rectángulo de color con la foto al costado, apiladas y pegadas.
+   Es el bloque de la vidriera del inicio. */
+.tarjetas-cat { display: grid; gap: 10px; }
+
+.tarjeta-cat {
+  display: grid;
+  grid-template-columns: 1fr 36%;
+  min-height: 136px;
+  background: var(--relleno);
+  color: #FFFFFF;
+}
+.tarjeta-cat__texto {
+  padding: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.tarjeta-cat__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+.tarjeta-cat__desc {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: rgba(255, 255, 255, .75);
+}
+.tarjeta-cat__foto { overflow: hidden; }
+.tarjeta-cat__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Servicio a bloque completo (página de servicios) ----------
+   La sección entera toma el color de la categoría. */
+.servicios { display: grid; gap: 10px; }
+
+.servicio--pleno {
+  background: var(--relleno);
+  color: #FFFFFF;
+  padding: var(--sp-5) var(--margen-lateral);
   display: grid;
   gap: var(--sp-2);
-  padding-top: var(--sp-3);
-  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
 }
 .servicio__n {
   font-family: var(--font-micro);
@@ -411,16 +527,13 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: .2em;
-  color: var(--cat-suave);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
 }
-.servicio__titulo { color: var(--cat); }
-.servicio__texto { color: var(--cat-suave); max-width: var(--max-lectura); }
-.servicio__foto { aspect-ratio: 4 / 3; margin-top: var(--sp-1); }
-.servicio__foto img { width: 100%; height: 100%; object-fit: cover; }
+.servicio__titulo { color: #FFFFFF; }
+.servicio__texto { color: rgba(255, 255, 255, .78); max-width: var(--max-lectura); }
 
-/* Página de servicios: bloques grandes que tiñen la página */
-.servicio--pleno { gap: var(--sp-3); padding-top: var(--sp-4); }
-.servicio--pleno .servicio__lista {
+.servicio__lista {
   display: grid;
   gap: 10px;
   margin-top: var(--sp-1);
@@ -429,10 +542,17 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  color: var(--cat-suave);
+  color: rgba(255, 255, 255, .78);
   font-size: var(--fs-small);
 }
-.servicio__lista .icon { margin-top: 3px; color: var(--cat); }
+.servicio__lista .icon { margin-top: 3px; color: #FFFFFF; }
+
+.servicio__foto {
+  aspect-ratio: 4 / 3;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+}
+.servicio__foto img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Proyectos ---------- */
 .proyectos { display: grid; gap: var(--sp-4); }

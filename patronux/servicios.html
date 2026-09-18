@@ -58,82 +58,70 @@
     <p class="pagina-hero__bajada">Cuatro especialidades, un mismo oficio: que el agua llegue donde tiene que llegar y salga por donde corresponde.</p>
   </section>
 
-  <!-- Cada bloque tiñe la página con el color de su categoría — efecto J -->
-  <section class="seccion" data-bg="claro">
-    <div class="contenedor">
-      <div class="servicios">
+  <!-- Cada bloque toma el color de su categoría — efecto J -->
+  <div class="servicios">
 
-        <article class="servicio servicio--pleno" data-cat="agua" data-reveal>
-          <p class="servicio__n">01 — Agua potable</p>
-          <h2 class="servicio__titulo">Redes de agua potable</h2>
-          <div>
-            <p class="servicio__texto">Agua potable para industria y vivienda, del empalme a la canilla.</p>
-            <ul class="servicio__lista">
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes para la industria</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes para el hogar</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Empalmes y conexiones</li>
-            </ul>
-          </div>
-          <figure class="servicio__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
-          </figure>
-        </article>
+    <article class="servicio--pleno" id="agua" data-cat="agua" data-bg="cat" data-reveal>
+      <p class="servicio__n">01 — Agua potable</p>
+      <h2 class="servicio__titulo">Redes de agua potable</h2>
+      <p class="servicio__texto">Agua potable para industria y vivienda, del empalme a la canilla.</p>
+      <ul class="servicio__lista">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes para la industria</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes para el hogar</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Empalmes y conexiones</li>
+      </ul>
+      <figure class="servicio__foto">
+        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
+        <img src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
+      </figure>
+    </article>
 
-        <article class="servicio servicio--pleno" data-cat="saneamiento" data-reveal>
-          <p class="servicio__n">02 — Saneamiento</p>
-          <h2 class="servicio__titulo">Saneamiento y drenaje</h2>
-          <div>
-            <p class="servicio__texto">Colectores, desagües y drenaje pluvial para obra nueva y refacción.</p>
-            <ul class="servicio__lista">
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes de desagüe</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Colectores y cámaras</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drenaje pluvial</li>
-            </ul>
-          </div>
-          <figure class="servicio__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
-          </figure>
-        </article>
+    <article class="servicio--pleno" id="saneamiento" data-cat="saneamiento" data-bg="cat" data-reveal>
+      <p class="servicio__n">02 — Saneamiento</p>
+      <h2 class="servicio__titulo">Saneamiento y drenaje</h2>
+      <p class="servicio__texto">Colectores, desagües y drenaje pluvial para obra nueva y refacción.</p>
+      <ul class="servicio__lista">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Redes de desagüe</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Colectores y cámaras</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drenaje pluvial</li>
+      </ul>
+      <figure class="servicio__foto">
+        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
+        <img src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
+      </figure>
+    </article>
 
-        <article class="servicio servicio--pleno" data-cat="riego" data-reveal>
-          <p class="servicio__n">03 — Riego</p>
-          <h2 class="servicio__titulo">Riego deportivo y agrícola</h2>
-          <div>
-            <p class="servicio__texto">Riego para canchas deportivas, campos y explotaciones agrícolas.</p>
-            <ul class="servicio__lista">
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Canchas y campos deportivos</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Explotaciones agrícolas</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Bombeo y distribución</li>
-            </ul>
-          </div>
-          <figure class="servicio__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
-          </figure>
-        </article>
+    <article class="servicio--pleno" id="riego" data-cat="riego" data-bg="cat" data-reveal>
+      <p class="servicio__n">03 — Riego</p>
+      <h2 class="servicio__titulo">Riego deportivo y agrícola</h2>
+      <p class="servicio__texto">Riego para canchas deportivas, campos y explotaciones agrícolas.</p>
+      <ul class="servicio__lista">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Canchas y campos deportivos</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Explotaciones agrícolas</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Bombeo y distribución</li>
+      </ul>
+      <figure class="servicio__foto">
+        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
+        <img src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
+      </figure>
+    </article>
 
-        <article class="servicio servicio--pleno" data-cat="sanitaria" data-reveal>
-          <p class="servicio__n">04 — Sanitaria</p>
-          <h2 class="servicio__titulo">Instalación sanitaria</h2>
-          <div>
-            <p class="servicio__texto">Sanitaria completa en vivienda, edificios y complejos comerciales.</p>
-            <ul class="servicio__lista">
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Vivienda y edificios</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Complejos comerciales</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Obra nueva y refacción</li>
-            </ul>
-          </div>
-          <figure class="servicio__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
-            <img src="img/servicio-sanitaria.jpg" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
-          </figure>
-        </article>
+    <article class="servicio--pleno" id="sanitaria" data-cat="sanitaria" data-bg="cat" data-reveal>
+      <p class="servicio__n">04 — Sanitaria</p>
+      <h2 class="servicio__titulo">Instalación sanitaria</h2>
+      <p class="servicio__texto">Sanitaria completa en vivienda, edificios y complejos comerciales.</p>
+      <ul class="servicio__lista">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Vivienda y edificios</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Complejos comerciales</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Obra nueva y refacción</li>
+      </ul>
+      <figure class="servicio__foto">
+        <!-- FOTO DE MUESTRA — reemplazar por foto de obra real de Patronux -->
+        <img src="img/servicio-sanitaria.jpg" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
+      </figure>
+    </article>
 
-      </div>
-    </div>
-  </section>
+  </div>
 
   <section class="seccion franja" data-bg="alt">
     <div class="contenedor">

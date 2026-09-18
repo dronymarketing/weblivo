@@ -28,28 +28,17 @@
 /* ---------- Hero ---------- */
 .hero { padding-top: var(--sp-6); }
 
-.hero__cuerpo {
-  grid-template-columns: 1fr;
-  gap: var(--sp-4);
-}
-.hero__bajada {
-  justify-self: end;
-  text-align: left;
-  max-width: 420px;
-}
+.hero__cuerpo { gap: var(--sp-3); }
+.hero__bajada { max-width: 520px; }
 
-.marquee { margin-top: var(--sp-6); padding-top: var(--sp-3); }
+.marquee { margin-bottom: var(--sp-5); }
 .marquee__pista { animation-duration: 34s; }
-.marquee__foto {
-  right: 22%;
-  width: 11vw;
-  max-width: 150px;
-}
+.marquee__foto { width: 15vw; max-width: 260px; }
 
 /* ---------- Figura que crece ---------- */
 .crece__marco {
-  width: min(62%, 760px);
-  aspect-ratio: 16 / 9;
+  width: 26%;
+  max-width: 420px;
 }
 
 /* ---------- Secciones ---------- */
@@ -59,6 +48,7 @@
   gap: var(--sp-4);
   margin-bottom: var(--sp-5);
 }
+.seccion__encabezado--centro { grid-template-columns: 1fr; }
 
 /* ---------- Quiénes somos ---------- */
 .sobre {
@@ -70,23 +60,24 @@
 .cifras { grid-template-columns: repeat(2, 1fr); }
 .cifra__n { font-size: 60px; }
 
-/* ---------- Servicios ---------- */
-.servicios { gap: var(--sp-6); }
+/* ---------- Tarjetas de categoría ---------- */
+/* Con más alto, space-between separaba título y bajada media tarjeta.
+   168px mantiene la proporción que tienen en móvil. */
+.tarjeta-cat { min-height: 168px; grid-template-columns: 1fr 42%; }
+.tarjeta-cat__texto { padding: var(--sp-3); }
+.tarjeta-cat__titulo { font-size: 40px; }
 
-.servicio {
+/* ---------- Servicios ---------- */
+/* El padding centra el contenido respetando el ancho de contenedor, sin
+   un wrapper extra: el bloque de color sigue yendo a sangre. */
+.servicio--pleno {
+  padding: var(--sp-6) max(var(--margen-lateral), calc((100% - var(--max-contenedor)) / 2));
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-4);
+  column-gap: var(--sp-5);
   align-items: start;
 }
-.servicio__n { grid-column: 1 / -1; }
-.servicio__foto { grid-row: span 3; margin-top: 0; aspect-ratio: 4 / 3; }
-
-.servicio--pleno {
-  grid-template-columns: 1fr 1.1fr;
-  gap: var(--sp-5);
-  padding-top: var(--sp-5);
-}
-.servicio--pleno .servicio__foto { grid-row: 2 / span 3; }
+.servicio__n     { grid-column: 1 / -1; }
+.servicio__foto  { grid-row: 2 / span 3; margin-top: 0; }
 
 /* ---------- Proyectos ---------- */
 .proyectos {
