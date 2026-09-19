@@ -91,7 +91,27 @@
         '<p class="preloader__marca">Patronux S.A.</p>' +
         '<div class="preloader__frames">' + frames + '</div>' +
         '<div class="preloader__contador">' + digito + digito + '</div>';
+      // Los frames van EXACTAMENTE sobre el hueco de la foto del hero: el
+      // relevo final tiene que leerse como la misma foto, no como dos.
+      var marco = capa.querySelector('.preloader__frames');
+      var slot  = document.querySelector('.hero__hueco');
+      function ubicarFrames() {
+        if (!slot || !marco) return;
+        var r = slot.getBoundingClientRect();
+        if (!r.width) return;
+        marco.style.setProperty('--pre-top',   r.top.toFixed(1) + 'px');
+        marco.style.setProperty('--pre-left',  r.left.toFixed(1) + 'px');
+        marco.style.setProperty('--pre-ancho', r.width.toFixed(1) + 'px');
+        marco.style.setProperty('--pre-alto',  r.height.toFixed(1) + 'px');
+      }
+      ubicarFrames();
+      // La capa es fija y el hueco no: si se scrollea con la cortina
+      // puesta, hay que seguirlo o el relevo saltaría.
+      window.addEventListener('scroll', ubicarFrames, { passive: true });
+      window.addEventListener('resize', ubicarFrames);
+
       document.body.appendChild(capa);
+      ubicarFrames();
 
       var cajas = capa.querySelectorAll('.preloader__frame');
       var rodillos = capa.querySelectorAll('.preloader__digito i');
@@ -116,11 +136,22 @@
       function sacar() {
         if (fuera) return;
         fuera = true;
+        ubicarFrames();
+        // El relevo es en el sitio: el frame está sobre el hueco, y cuando
+        // la capa se va la foto del hero ya está abierta debajo, idéntica.
+        raiz.classList.add('hubo-preloader');
+        // El fondo navy del <html> se saca ACÁ, con la cortina todavía
+        // cubriendo todo: si se saca al final, la cortina sube sobre una
+        // página igual de navy y no revela nada — el sitio aparecía de
+        // golpe recién al terminar el barrido.
+        raiz.classList.remove('preloader-pendiente');
         capa.classList.add('es-fuera');
-        // El hero abre mientras la cortina todavía se está yendo.
+        // El hero abre mientras la cortina todavía se está yendo. La foto
+        // no parpadea: el frame sigue encima del hueco hasta el final.
         setTimeout(abrirHero, T.morphDelay);
+        window.removeEventListener('scroll', ubicarFrames);
+        window.removeEventListener('resize', ubicarFrames);
         setTimeout(function () {
-          raiz.classList.remove('preloader-pendiente');
           if (capa.parentNode) capa.parentNode.removeChild(capa);
         }, T.bgWipe);
       }
