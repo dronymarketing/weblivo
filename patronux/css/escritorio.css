@@ -48,11 +48,9 @@
   margin-top: 0;
 }
 
-/* ---------- Figura que crece ---------- */
-.crece__marco {
-  width: 26%;
-  max-width: 420px;
-}
+/* La figura que crece toma su tamaño de la variable en movil.css y el
+   resto lo maneja el JS: un max-width acá le impedía llegar a la
+   pantalla completa. */
 
 /* ---------- Secciones ---------- */
 .seccion__encabezado {
@@ -72,6 +70,22 @@
 .sobre__foto { aspect-ratio: 4 / 5; }
 .cifras { grid-template-columns: repeat(2, 1fr); }
 .cifra__n { font-size: 60px; }
+
+/* ---------- Bloques de dato ----------
+   Grilla de 12 columnas con la foto y el texto en posiciones nombradas y
+   asimétricas, como la de RE: nunca a mitades. */
+.valores { gap: var(--sp-7); }
+
+.valor {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--sp-3);
+  align-items: center;
+}
+.valor__foto   { grid-column: 2 / 6;  width: 100%; }
+.valor__cuerpo { grid-column: 7 / 11; }
+
+.valor--invertido .valor__foto   { grid-column: 8 / 12; }
+.valor--invertido .valor__cuerpo { grid-column: 3 / 7; grid-row: 1; }
 
 /* ---------- Tarjetas de categoría ---------- */
 /* Con más alto, space-between separaba título y bajada media tarjeta.

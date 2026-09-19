@@ -559,17 +559,18 @@
   place-items: center;
   overflow: hidden;
 }
-/* Arranca en un recuadro chico y vertical, como el de RE. La escala final
-   la calcula el JS para que termine cubriendo la pantalla exacta: con un
-   número fijo, en pantallas altas queda corta y se ven los bordes. */
+/* La máscara arranca cuadrada y se convierte en la pantalla entera.
+   RE anima WIDTH y HEIGHT de la caja, no un scale: con scale la foto
+   crece pero conserva su proporción y nunca llena el viewport. Al animar
+   la caja, el object-fit reencuadra la foto sola y el final es fullscreen
+   exacto sea cual sea la pantalla. */
 .crece__marco {
-  width: 58%;
-  max-width: 420px;
-  aspect-ratio: 3 / 4;
+  width: var(--hero-visual-size);
+  height: var(--hero-visual-size);
   overflow: hidden;
-  will-change: transform;
+  contain: layout paint;
+  will-change: width, height;
 }
-.js .crece__marco { transform: scale(var(--escala, 1)); }
 .crece__marco img {
   width: 100%; height: 100%;
   object-fit: cover;
@@ -607,6 +608,36 @@
 .sobre { display: grid; gap: var(--sp-4); }
 .sobre__texto { display: grid; gap: var(--sp-2); max-width: var(--max-lectura); }
 .sobre__texto p { color: var(--cat-suave); }
+
+/* ---------- Bloques de dato ----------
+   El patrón de category-values de RE: foto vertical en proporción
+   708/908 que no ocupa el ancho completo y alterna de lado, con el dato
+   en dos líneas y sans debajo. */
+.valores { display: grid; gap: var(--sp-6); }
+
+.valor { display: grid; gap: var(--sp-3); }
+
+.valor__foto {
+  width: 62%;
+  aspect-ratio: 708 / 908;
+  overflow: hidden;
+}
+.valor--invertido .valor__foto { margin-left: auto; }
+.valor__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.valor__dato {
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  color: var(--cat);
+}
+.valor__texto {
+  margin-top: var(--sp-2);
+  color: var(--cat-suave);
+  max-width: var(--max-lectura);
+}
 
 .cifras {
   display: grid;

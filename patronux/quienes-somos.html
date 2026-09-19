@@ -10,13 +10,13 @@
 
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=5">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=5">
-<link rel="stylesheet" href="css/base.css?v=5">
-<link rel="stylesheet" href="css/movil.css?v=5">
-<link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=6">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=6">
+<link rel="stylesheet" href="css/base.css?v=6">
+<link rel="stylesheet" href="css/movil.css?v=6">
+<link rel="stylesheet" href="css/escritorio.css?v=6" media="(min-width: 768px)">
 
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 </head>
 <body>
 
@@ -86,18 +86,49 @@
         <h2 class="seccion__titulo" data-reveal>Lo que nos respalda</h2>
       </div>
 
-      <div class="cifras" data-reveal>
-        <div class="cifra">
-          <p class="cifra__n">+40</p>
-          <p class="cifra__t">Años de experiencia acumulada</p>
-        </div>
-        <div class="cifra">
-          <p class="cifra__n">4</p>
-          <p class="cifra__t">Áreas de especialidad</p>
-        </div>
+      <div class="valores">
+        <article class="valor" data-reveal>
+          <figure class="valor__foto">
+            <img decoding="async" loading="lazy" src="img/dato-1.jpg" alt="Casco de seguridad apoyado en una obra en construcción" width="708" height="908">
+          </figure>
+          <div class="valor__cuerpo">
+            <h3 class="valor__dato">+40<br>años</h3>
+            <p class="valor__texto">El personal acumula más de cuarenta años de experiencia en redes de agua y saneamiento.</p>
+          </div>
+        </article>
+
+        <article class="valor valor--invertido" data-reveal>
+          <figure class="valor__foto">
+            <img decoding="async" loading="lazy" src="img/dato-2.jpg" alt="Manos con guantes ajustando la unión de un caño" width="708" height="908">
+          </figure>
+          <div class="valor__cuerpo">
+            <h3 class="valor__dato">4<br>frentes</h3>
+            <p class="valor__texto">Agua potable, saneamiento y drenaje, riego deportivo y agrícola, e instalación sanitaria.</p>
+          </div>
+        </article>
+
+        <article class="valor" data-reveal>
+          <figure class="valor__foto">
+            <img decoding="async" loading="lazy" src="img/dato-3.jpg" alt="Soldadura de caños de acero en obra" width="708" height="908">
+          </figure>
+          <div class="valor__cuerpo">
+            <h3 class="valor__dato">90%<br>enterrado</h3>
+            <p class="valor__texto">Casi toda la obra queda bajo tierra: se ve una vez, mientras se hace, y tiene que durar décadas.</p>
+          </div>
+        </article>
+
+        <article class="valor valor--invertido" data-reveal>
+          <figure class="valor__foto">
+            <img decoding="async" loading="lazy" src="img/dato-4.jpg" alt="Medidores de agua conectados por cañerías" width="708" height="908">
+          </figure>
+          <div class="valor__cuerpo">
+            <h3 class="valor__dato">Equipo<br>propio</h3>
+            <p class="valor__texto">Ingenieros y personal de obra cualificado en cada etapa, del proyecto a la prueba final.</p>
+          </div>
+        </article>
       </div>
 
-      <p style="margin-top:var(--sp-4)" data-reveal><a class="link-flecha" href="servicios.html">Ver los servicios
+      <p style="margin-top:var(--sp-5)" data-reveal><a class="link-flecha" href="servicios.html">Ver los servicios
         <svg class="icon" aria-hidden="true"><use href="#i-derecha"/></svg></a></p>
     </div>
   </section>

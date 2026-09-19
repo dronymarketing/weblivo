@@ -305,9 +305,21 @@
     var crece = document.querySelector('.crece');
     var marco = crece ? crece.querySelector('.crece__marco') : null;
 
+    // Tamaño de partida de la máscara: el mismo cuadrado que la foto del
+    // hero. Se lee del CSS una sola vez por ancho de ventana.
+    var ladoInicial = 0, anchoMedido = 0;
+    function medirMarco() {
+      if (!marco) return;
+      marco.style.width = '';
+      marco.style.height = '';
+      ladoInicial = marco.offsetWidth;
+      anchoMedido = window.innerWidth;
+    }
+
     function actualizarCrece() {
       if (!crece || !marco) return;
-      if (quieto) { marco.style.setProperty('--escala', 1); return; }
+      if (quieto) return;
+      if (!ladoInicial || anchoMedido !== window.innerWidth) medirMarco();
 
       var caja = crece.getBoundingClientRect();
       var alto = window.innerHeight;
@@ -324,13 +336,12 @@
       var pausa = svhPau / (svhRec + svhPau);
       var t = Math.min(1, avance / (1 - pausa));
 
-      // La escala que hace que la foto termine a sangre, cubriendo la
-      // pantalla exacta. offsetWidth/Height no los afecta el transform.
-      var escalaMax = Math.max(
-        window.innerWidth / marco.offsetWidth,
-        window.innerHeight / marco.offsetHeight
-      ) * 1.02;
-      marco.style.setProperty('--escala', (1 + (escalaMax - 1) * t).toFixed(4));
+      // La caja va del cuadrado a la pantalla entera. El object-fit de la
+      // foto se encarga de reencuadrarla mientras tanto.
+      var w = ladoInicial + (window.innerWidth - ladoInicial) * t;
+      var h = ladoInicial + (alto - ladoInicial) * t;
+      marco.style.width  = w.toFixed(1) + 'px';
+      marco.style.height = h.toFixed(1) + 'px';
     }
 
     /* ----------------------------------------------------------
