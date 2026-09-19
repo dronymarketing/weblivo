@@ -189,9 +189,11 @@
 .menu-abierto .hamburguesa { color: #FFFFFF; }
 .menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
 
-/* Sobre un bloque de color oscuro, el header pasa a blanco y no toma fondo */
+/* Sobre un bloque de color oscuro, el header pasa a blanco. No va fondo
+   sólido, pero sí un velo: transparente del todo, el contenido del bloque
+   pasa por debajo y el logo se lee encima de otro texto. */
 .header.sobre-oscuro {
-  background: transparent;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0));
   border-bottom-color: transparent;
 }
 .header.sobre-oscuro .header__logo,
@@ -202,6 +204,7 @@
   display: flex;
   align-items: baseline;
   gap: 7px;
+  transition: color var(--dur-micro) var(--ease-re);
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-weight: 600;
@@ -224,33 +227,16 @@
   display: grid;
   place-items: center;
   color: var(--cat);
+  transition: color var(--dur-micro) var(--ease-re);
+  -webkit-tap-highlight-color: transparent;
 }
-.hamburguesa__lineas {
-  position: relative;
-  width: 22px; height: 12px;
-}
-.hamburguesa__lineas i {
-  position: absolute;
-  left: 0;
+/* El trazado lo deforma js/hamburguesa.js con morphicons: acá va sólo el
+   tamaño. El stroke-width queda en 1 como el resto de las filetas. */
+.hamburguesa__ico {
+  width: 26px; height: 26px;
   display: block;
-  width: 100%; height: 1px;
-  background: currentColor;
-  transition: transform var(--dur-micro) var(--ease-re),
-              opacity var(--dur-micro) var(--ease-re);
 }
-.hamburguesa__lineas i:nth-child(1) { top: 0; }
-.hamburguesa__lineas i:nth-child(2) { top: 50%; }
-.hamburguesa__lineas i:nth-child(3) { top: 100%; }
-
-.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(2) {
-  opacity: 0;
-}
-.hamburguesa[aria-expanded='true'] .hamburguesa__lineas i:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
+/* Sin JS el ícono se queda en las tres líneas, que es un menú igual. */
 
 /* ---------- Menú: cortina desde arriba ----------
    Lo sobrio para institucional. 550ms. */
@@ -341,6 +327,8 @@
 .hero {
   min-height: 100vh;
   min-height: 100svh;
+  /* El nav se compensa con padding y no con margen: así el hero arranca en
+     top 0 y las coordenadas de la foto dentro de él no cambian al pegarse. */
   padding-top: var(--nav-alto);
   display: flex;
   flex-direction: column;
@@ -348,8 +336,7 @@
      arriba: centrado dejaba media pantalla vacía sobre el marquee. */
   justify-content: space-evenly;
   position: relative;
-  padding-top: var(--sp-3);
-  padding-bottom: 132px;       /* deja lugar al cue, que va absoluto */
+  padding-bottom: var(--sp-4);
   text-align: center;          /* RE centra todo el hero en móvil */
 }
 
@@ -522,6 +509,16 @@
   width: 100%; height: 100%;
   object-fit: cover;
 }
+/* Velo navy que sube con el crecimiento: al arrancar la foto está limpia
+   y al ocupar la pantalla entera queda teñida del color de la marca. */
+.hero__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--texto);
+  opacity: calc(var(--hero-velo, 0) * 0.58);
+  pointer-events: none;
+}
 
 /* Sin JS no hay medidas calculadas: la foto se muestra en el flujo.
    El :not va sobre html, no suelto: suelto matchea cualquier ancestro
@@ -570,11 +567,11 @@ html:not(.js) .hero__visual {
    Va también en móvil, no se esconde. */
 /* Mismo cue que losparaisos: texto arriba, círculo de 32px abajo.
    El <a> completo pasa los 44px de área táctil. */
+/* Va en el flujo, como en losparaisos, y no absoluto: cuando el contenido
+   del hero pasaba de una pantalla, el cue quedaba por debajo del borde
+   inferior — en Android se veía el círculo cortado contra el canto. */
 .cue {
-  position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -734,7 +731,10 @@ html:not(.js) .hero__visual {
 
 /* ---------- Servicio a bloque completo (página de servicios) ----------
    La sección entera toma el color de la categoría. */
-.servicios { display: grid; gap: 10px; }
+/* Sin separación: los bloques van a sangre y cada uno con su color. Con
+   gap se colaba una franja blanca de la página entre bloque y bloque, y
+   el cambio de color se leía como un salto. */
+.servicios { display: grid; gap: 0; }
 
 .servicio--pleno {
   background: var(--relleno);
@@ -787,15 +787,17 @@ html:not(.js) .hero__visual {
   transition: transform var(--dur-re) var(--ease-re);
 }
 .proyecto:hover .proyecto__foto img { transform: scale(1.04); }
-.proyecto__meta {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--sp-2);
+/* Un pie solo: el nombre de la obra y dónde está, en el mismo registro y
+   en el mismo renglón. Antes eran dos bloques enfrentados y se leían como
+   dos datos sueltos en vez de como el pie de la foto. */
+.proyecto__pie {
   padding-top: 10px;
   border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
-  color: var(--cat-suave);
+  color: var(--cat);
+  text-wrap: pretty;
 }
-.proyecto__titulo { color: var(--cat); }
+.proyecto__pie span { color: var(--cat-suave); }
+.proyecto__pie span::before { content: ' — '; }
 
 /* ---------- Obras contadas una por una ----------
    La foto no ocupa el ancho completo y alterna de lado: es la

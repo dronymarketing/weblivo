@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Servicios — Patronux S.A.</title>
-<meta name="description" content="Redes de agua potable, saneamiento y drenaje, riego deportivo y agrícola, e instalación sanitaria en vivienda y complejos comerciales.">
+<meta name="description" content="Redes de agua potable, saneamiento y drenaje, infraestructura para parques eólicos, riego deportivo y agrícola, e instalación sanitaria.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#FFFFFF">
 
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=10">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=10">
-<link rel="stylesheet" href="css/base.css?v=10">
-<link rel="stylesheet" href="css/movil.css?v=10">
-<link rel="stylesheet" href="css/escritorio.css?v=10" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=11">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=11">
+<link rel="stylesheet" href="css/base.css?v=11">
+<link rel="stylesheet" href="css/movil.css?v=11">
+<link rel="stylesheet" href="css/escritorio.css?v=11" media="(min-width: 768px)">
 
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=11"></script>
 </head>
 <body>
 
@@ -33,7 +33,9 @@
     Patronux <span>S.A.</span>
   </a>
   <button class="hamburguesa" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
-    <span class="hamburguesa__lineas" aria-hidden="true"><i></i><i></i><i></i></span>
+    <svg class="hamburguesa__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path id="hamburguesa-trazo" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
   </button>
 </header>
 
@@ -57,7 +59,7 @@
   <section class="pagina-hero contenedor" data-bg="claro">
     <p class="micro pagina-hero__micro">03 — Servicios</p>
     <h1 class="pagina-hero__titulo">Lo que hacemos</h1>
-    <p class="pagina-hero__bajada">Cuatro especialidades, un mismo oficio: que el agua llegue donde tiene que llegar y salga por donde corresponde.</p>
+    <p class="pagina-hero__bajada">Cinco frentes, un mismo oficio: lo que va bajo tierra y sostiene lo que se ve arriba.</p>
   </section>
 
   <!-- Cada bloque toma el color de su categoría — efecto J -->
@@ -73,7 +75,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Empalmes y conexiones</li>
       </ul>
       <figure class="servicio__foto">
-        <img decoding="async" loading="lazy" src="img/servicio-agua.jpg" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
+        <img decoding="async" loading="lazy" src="img/servicio-agua.jpg?v=11" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
       </figure>
     </article>
 
@@ -87,12 +89,26 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drenaje pluvial</li>
       </ul>
       <figure class="servicio__foto">
-        <img decoding="async" loading="lazy" src="img/servicio-saneamiento.jpg" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-saneamiento.jpg?v=11" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
+      </figure>
+    </article>
+
+    <article class="servicio--pleno" id="eolico" data-cat="eolico" data-bg="cat" data-reveal>
+      <p class="servicio__n">03 — Eólicos</p>
+      <h2 class="servicio__titulo">Infraestructura para eólicos</h2>
+      <p class="servicio__texto">La obra civil que hace posible montar un aerogenerador en el campo.</p>
+      <ul class="servicio__lista">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Caminería y plateas de montaje</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drenaje y canalizaciones</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Parques en Colonia</li>
+      </ul>
+      <figure class="servicio__foto">
+        <img decoding="async" loading="lazy" src="img/servicio-eolico.jpg?v=11" alt="Grúa junto a la base de una torre de aerogenerador en obra" width="1200" height="900">
       </figure>
     </article>
 
     <article class="servicio--pleno" id="riego" data-cat="riego" data-bg="cat" data-reveal>
-      <p class="servicio__n">03 — Riego</p>
+      <p class="servicio__n">04 — Riego</p>
       <h2 class="servicio__titulo">Riego deportivo y agrícola</h2>
       <p class="servicio__texto">Riego para canchas deportivas, campos y explotaciones agrícolas.</p>
       <ul class="servicio__lista">
@@ -101,12 +117,12 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Bombeo y distribución</li>
       </ul>
       <figure class="servicio__foto">
-        <img decoding="async" loading="lazy" src="img/servicio-riego.jpg" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-riego.jpg?v=11" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
       </figure>
     </article>
 
     <article class="servicio--pleno" id="sanitaria" data-cat="sanitaria" data-bg="cat" data-reveal>
-      <p class="servicio__n">04 — Sanitaria</p>
+      <p class="servicio__n">05 — Sanitaria</p>
       <h2 class="servicio__titulo">Instalación sanitaria</h2>
       <p class="servicio__texto">Sanitaria completa en vivienda, edificios y complejos comerciales.</p>
       <ul class="servicio__lista">
@@ -115,7 +131,7 @@
         <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Obra nueva y refacción</li>
       </ul>
       <figure class="servicio__foto">
-        <img decoding="async" loading="lazy" src="img/servicio-sanitaria.jpg" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
+        <img decoding="async" loading="lazy" src="img/servicio-sanitaria.jpg?v=11" alt="Manos instalando caños de acero en una obra interior" width="1066" height="800">
       </figure>
     </article>
 
@@ -175,5 +191,6 @@
   </div>
 </footer>
 
+<script type="module" src="js/hamburguesa.js?v=11"></script>
 </body>
 </html>

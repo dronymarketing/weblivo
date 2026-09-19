@@ -54,6 +54,8 @@
   --cat-riego-suave:       #4F6E5B;   /*  5.65:1 */
   --cat-sanitaria:         #2A2733;   /* 14.62:1 */
   --cat-sanitaria-suave:   #625E70;   /*  6.26:1 */
+  --cat-eolico:            #2C3A45;   /* 11.68:1 */
+  --cat-eolico-suave:      #61707C;   /*  5.10:1 */
 
   /* ---------- Tipografía ---------- */
   --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
