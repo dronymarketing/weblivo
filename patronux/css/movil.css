@@ -322,10 +322,12 @@
 }
 .js .hero { position: sticky; top: 0; }
 
+/* El nav se compensa con padding y no con margen: así el hero arranca en
+   top 0 y las coordenadas de la foto dentro de él no cambian al pegarse. */
 .hero {
-  min-height: calc(100vh - var(--nav-alto));
-  min-height: calc(100svh - var(--nav-alto));
-  margin-top: var(--nav-alto);
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: var(--nav-alto);
   display: flex;
   flex-direction: column;
   /* Reparte el sobrante entre marquee y texto en vez de amontonarlo
@@ -490,10 +492,13 @@
 }
 
 /* La foto: una sola en toda la página. Arranca cuadrada sobre el marquee
-   y con el scroll crece hasta cubrir la pantalla. Va fija porque tiene
-   que poder salirse del recorte del marquee y del ancho del contenedor. */
+   y con el scroll crece hasta cubrir la pantalla.
+   Va absoluta DENTRO del hero, no fija al viewport: mientras el hero está
+   pegado se comporta igual, pero cuando el stage termina sube con él y
+   deja pasar la sección siguiente. Con fixed quedaba clavada y el
+   contenido de abajo se le superponía. */
 .hero__visual {
-  position: fixed;
+  position: absolute;
   z-index: 3;
   overflow: hidden;
   will-change: width, height, top, left;

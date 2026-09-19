@@ -310,10 +310,17 @@
     // La caja de partida se mide UNA vez, con el hero en su posición
     // inicial. El hueco viaja con el scroll, así que leerlo en cada
     // cuadro haría interpolar contra una base que se mueve.
+    var heroEl = document.querySelector('.hero-stage .hero');
     var base = null, baseAncho = 0;
     function medirBase() {
       var r = hueco.getBoundingClientRect();
-      base = { w: r.width, h: r.height, x: r.left, y: r.top };
+      var hr = heroEl.getBoundingClientRect();
+      // Coordenadas relativas al hero, que es el padre posicionado.
+      base = {
+        w: r.width, h: r.height,
+        x: r.left - hr.left, y: r.top - hr.top,
+        heroX: hr.left, heroY: hr.top
+      };
       baseAncho = window.innerWidth;
     }
 
@@ -342,12 +349,14 @@
       var t = Math.min(1, avance / (1 - svhPau / (svhRec + svhPau)));
 
       // Al avance 0 la foto calza en su hueco sobre el marquee; al 1
-      // ocupa la ventana completa.
-      var w0 = h.w, h0 = h.h, x0 = h.x, y0 = h.y;
-      visual.style.width  = (w0 + (window.innerWidth - w0) * t).toFixed(1) + 'px';
-      visual.style.height = (h0 + (alto - h0) * t).toFixed(1) + 'px';
-      visual.style.left   = (x0 * (1 - t)).toFixed(1) + 'px';
-      visual.style.top    = (y0 * (1 - t)).toFixed(1) + 'px';
+      // ocupa la ventana completa. Todo relativo al hero: cuando el stage
+      // termina y el hero se despega, la foto sube con él y deja pasar la
+      // sección siguiente en vez de quedar clavada encima.
+      var x1 = -h.heroX, y1 = -h.heroY;
+      visual.style.width  = (h.w + (window.innerWidth - h.w) * t).toFixed(1) + 'px';
+      visual.style.height = (h.h + (alto - h.h) * t).toFixed(1) + 'px';
+      visual.style.left   = (h.x + (x1 - h.x) * t).toFixed(1) + 'px';
+      visual.style.top    = (h.y + (y1 - h.y) * t).toFixed(1) + 'px';
 
       // El texto se retira mientras la foto toma la pantalla
       raiz.style.setProperty('--hero-op', (1 - Math.min(1, t * 1.6)).toFixed(3));
