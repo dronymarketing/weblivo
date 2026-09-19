@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=11', 'img/pre-2.jpg?v=11', 'img/pre-3.jpg?v=11',
-                   'img/pre-4.jpg?v=11', 'img/marquee.jpg?v=11'];
+      var FOTOS = ['img/pre-1.jpg?v=12', 'img/pre-2.jpg?v=12', 'img/pre-3.jpg?v=12',
+                   'img/pre-4.jpg?v=12', 'img/marquee.jpg?v=12'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -380,7 +380,6 @@
     var stage  = document.querySelector('.hero-stage');
     var visual = document.querySelector('.hero__visual');
     var hueco  = document.querySelector('.hero__hueco');
-    var heroTapaArriba = false;
 
     // La caja de partida se mide UNA vez, con el hero en su posición
     // inicial. El hueco viaja con el scroll, así que leerlo en cada
@@ -435,17 +434,15 @@
 
       // El texto se retira mientras la foto toma la pantalla
       raiz.style.setProperty('--hero-op', (1 - Math.min(1, t * 1.6)).toFixed(3));
-      // Y la foto se va tiñendo del navy de la marca, como en RE: cuanto
-      // más pantalla ocupa, más oscura, para que lo que viene después
-      // entre sobre un fondo y no sobre un paisaje a pleno sol.
-      raiz.style.setProperty('--hero-velo', t.toFixed(3));
 
-      // ¿La foto ya cubre la franja del header? Sólo entonces el logo
-      // puede ir en blanco: antes, arriba todavía hay página clara.
-      var anchoAhora = h.w + (window.innerWidth - h.w) * t;
-      var topAhora   = h.y + (y1 - h.y) * t;
-      heroTapaArriba = anchoAhora >= window.innerWidth * 0.96 &&
-                       topAhora <= (header ? header.offsetHeight / 2 : 32);
+      // El velo navy NO acompaña al crecimiento: la foto crece limpia, se
+      // sostiene a pantalla completa y recién se tiñe cuando empieza a
+      // irse. Mientras el stage dura, el hero está pegado arriba y esto da
+      // 0; después sube y la foto se va oscureciendo al salir.
+      var heroTop = heroEl.getBoundingClientRect().top;
+      var salida = heroEl.offsetHeight > 0 ? -heroTop / heroEl.offsetHeight : 0;
+      salida = Math.min(1, Math.max(0, salida * 1.8));
+      raiz.style.setProperty('--hero-velo', salida.toFixed(3));
     }
 
 
@@ -490,21 +487,18 @@
     function pintarBarras() {
       var abiertoMenu = menu && menu.classList.contains('es-abierto');
       var navy = estilos.getPropertyValue('--texto').trim();
-      // Con la cortina puesta la pantalla es navy de arriba abajo, y la
-      // barra de Android tiene que acompañar o queda un canto blanco.
+      // Con la cortina puesta la pantalla es navy de arriba abajo: la barra
+      // del navegador la acompaña, y al terminar vuelve a seguir la página.
       var cortina = raiz.classList.contains('cortina');
-      // La foto del hero a pantalla completa también es fondo oscuro.
-      var oscuroArriba = cortina || heroTapaArriba;
 
-      var arriba = (abiertoMenu || oscuroArriba) ? navy : fondoEn(0);
+      var arriba = (abiertoMenu || cortina) ? navy : fondoEn(0);
       var abajo  = (abiertoMenu || cortina) ? navy : fondoEn(window.innerHeight - 1);
       if (metaTema && arriba) metaTema.setAttribute('content', arriba);
       if (abajo) raiz.style.setProperty('--barra-inferior', abajo);
 
       // Sobre un bloque de color oscuro, el logo navy no se lee.
       if (header && !abiertoMenu) {
-        header.classList.toggle('sobre-oscuro',
-          oscuroArriba || esOscuro(fondoEn(header.offsetHeight / 2)));
+        header.classList.toggle('sobre-oscuro', esOscuro(fondoEn(header.offsetHeight / 2)));
       }
     }
 

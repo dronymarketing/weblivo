@@ -189,11 +189,9 @@
 .menu-abierto .hamburguesa { color: #FFFFFF; }
 .menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
 
-/* Sobre un bloque de color oscuro, el header pasa a blanco. No va fondo
-   sólido, pero sí un velo: transparente del todo, el contenido del bloque
-   pasa por debajo y el logo se lee encima de otro texto. */
+/* Sobre un bloque de color oscuro, el header pasa a blanco y no toma fondo */
 .header.sobre-oscuro {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0));
+  background: transparent;
   border-bottom-color: transparent;
 }
 .header.sobre-oscuro .header__logo,
@@ -204,7 +202,6 @@
   display: flex;
   align-items: baseline;
   gap: 7px;
-  transition: color var(--dur-micro) var(--ease-re);
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-weight: 600;
@@ -227,7 +224,6 @@
   display: grid;
   place-items: center;
   color: var(--cat);
-  transition: color var(--dur-micro) var(--ease-re);
   -webkit-tap-highlight-color: transparent;
 }
 /* El trazado lo deforma js/hamburguesa.js con morphicons: acá va sólo el
