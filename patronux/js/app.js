@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=14', 'img/pre-2.jpg?v=14', 'img/pre-3.jpg?v=14',
-                   'img/pre-4.jpg?v=14', 'img/marquee.jpg?v=14'];
+      var FOTOS = ['img/pre-1.jpg?v=15', 'img/pre-2.jpg?v=15', 'img/pre-3.jpg?v=15',
+                   'img/pre-4.jpg?v=15', 'img/marquee.jpg?v=15'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -476,7 +476,12 @@
       visual.style.top    = (h.y + (y1 - h.y) * t).toFixed(1) + 'px';
 
       // El texto se retira mientras la foto toma la pantalla
-      raiz.style.setProperty('--hero-op', (1 - Math.min(1, t * 1.6)).toFixed(3));
+      // Un solo valor manda las dos cosas: el texto del hero se retira
+      // mientras el anillo del cue se completa. Cuando el cue termina de
+      // desaparecer, el círculo está cerrado.
+      var avanceCue = Math.min(1, t * 1.6);
+      raiz.style.setProperty('--hero-op', (1 - avanceCue).toFixed(3));
+      raiz.style.setProperty('--cue-avance', avanceCue.toFixed(3));
 
       // El velo navy NO acompaña al crecimiento: la foto crece limpia, se
       // sostiene a pantalla completa y recién se tiñe cuando empieza a

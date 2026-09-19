@@ -327,17 +327,26 @@
 .hero {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--vh100, 100svh);   /* alto real medido: el bug de Chrome Android */
   /* El nav se compensa con padding y no con margen: así el hero arranca en
      top 0 y las coordenadas de la foto dentro de él no cambian al pegarse. */
   padding-top: var(--nav-alto);
   display: flex;
   flex-direction: column;
-  /* Reparte el sobrante entre marquee y texto en vez de amontonarlo
-     arriba: centrado dejaba media pantalla vacía sobre el marquee. */
-  justify-content: space-evenly;
   position: relative;
-  padding-bottom: var(--sp-4);
+  padding-bottom: 28px;        /* el mismo pie que en losparaisos */
   text-align: center;          /* RE centra todo el hero en móvil */
+}
+
+/* El trío central se come todo el sobrante y lo reparte entre sus partes;
+   el cue queda afuera, al fondo del hero, que es donde va en losparaisos y
+   en fabianamartinez. Con el cue adentro del reparto quedaba flotando a
+   media altura, con un hueco muerto debajo. */
+.hero__centro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 /* El bloque de texto no ocupa todo el ancho: RE lo limita a 42vw por la
@@ -430,13 +439,13 @@
    escalonados: es el otherElementsDelay de RE. */
 .js:not(.listo) .hero__cuerpo > *,
 .js:not(.listo) .hero__firma,
-.js:not(.listo) .cue {
+.js:not(.listo) .cue > * {
   opacity: 0;
   transform: translateY(14px);
 }
 .js.listo .hero__cuerpo > *,
 .js.listo .hero__firma,
-.js.listo .cue {
+.js.listo .cue > * {
   opacity: 1;
   transform: none;
   transition: opacity 900ms cubic-bezier(.22, 1, .36, 1) var(--retraso, 300ms),
@@ -452,7 +461,7 @@
   .js:not(.listo) .marquee__foto { transform: none; }
   .js:not(.listo) .hero__cuerpo > *,
   .js:not(.listo) .hero__firma,
-  .js:not(.listo) .cue { opacity: 1; transform: none; }
+  .js:not(.listo) .cue > * { opacity: 1; transform: none; }
 }
 .marquee__pista {
   display: flex;
@@ -557,8 +566,12 @@ html:not(.js) .hero__visual {
   transition: none;
 }
 
-/* Mientras la foto crece, el texto del hero se retira */
-.hero__cuerpo, .hero__firma, .cue, .marquee__reveal {
+/* Mientras la foto crece, el texto del hero se retira.
+   Va sobre los CONTENEDORES y no sobre las mismas piezas que anima la
+   entrada: puesto en la pieza, la regla de entrada (.js.listo .cue, tres
+   clases) le ganaba a ésta (.cue, una) y el cue y la firma se quedaban
+   opacos encima de la foto a pantalla completa. */
+.hero__centro, .cue {
   opacity: var(--hero-op, 1);
 }
 
@@ -567,11 +580,12 @@ html:not(.js) .hero__visual {
    Va también en móvil, no se esconde. */
 /* Mismo cue que losparaisos: texto arriba, círculo de 32px abajo.
    El <a> completo pasa los 44px de área táctil. */
-/* Va en el flujo, como en losparaisos, y no absoluto: cuando el contenido
-   del hero pasaba de una pantalla, el cue quedaba por debajo del borde
-   inferior — en Android se veía el círculo cortado contra el canto. */
+/* Va en el flujo, como en losparaisos y fabianamartinez, y no absoluto:
+   cuando el contenido del hero pasaba de una pantalla, el cue quedaba por
+   debajo del borde inferior — en Android se veía el círculo cortado. */
 .cue {
   margin-inline: auto;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -585,12 +599,33 @@ html:not(.js) .hero__visual {
   letter-spacing: .02em;
   color: var(--cat-suave);
 }
+/* El borde del círculo lo dibuja el anillo, no un border: así el trazo de
+   avance se apoya exactamente encima de la pista. */
 .cue__circulo {
+  position: relative;
   width: 32px; height: 32px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--cat) 35%, transparent);
+}
+.cue__anillo {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);     /* el avance arranca arriba, a las 12 */
+  transform-origin: center;
+}
+.cue__anillo circle {
+  fill: none;
+  stroke-width: 1;
+}
+.cue__pista { stroke: color-mix(in srgb, var(--cat) 35%, transparent); }
+/* 2·π·15.5 = 97.39: la vuelta completa en unidades del viewBox. */
+.cue__avance {
+  stroke: var(--cat);
+  stroke-linecap: round;
+  stroke-dasharray: 97.39;
+  stroke-dashoffset: calc(97.39px * (1 - var(--cue-avance, 0)));
 }
 .cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
 @keyframes cue {
