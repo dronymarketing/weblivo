@@ -17,6 +17,19 @@
 
   var quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Se decide acá, antes del primer pintado, si va la cortina: el <style>
+  // crítico del head pinta el fondo navy en cuanto aparece la clase.
+  var vaPreloader = false;
+  if (!quieto && /(^|\/)(index\.html)?$/.test(location.pathname)) {
+    try {
+      vaPreloader = !sessionStorage.getItem('patronux-visto');
+      if (vaPreloader) sessionStorage.setItem('patronux-visto', '1');
+    } catch (e) {
+      vaPreloader = true;   // modo privado: se muestra igual
+    }
+  }
+  if (vaPreloader) raiz.classList.add('preloader-pendiente');
+
   document.addEventListener('DOMContentLoaded', function () {
 
     /* ----------------------------------------------------------
@@ -36,86 +49,86 @@
     }
 
     /* ----------------------------------------------------------
-       A · Preloader con marco que se abre
-       Solo existe si este JS lo crea. Una vez por sesión.
-       Tope duro por setTimeout: si algo falla, igual se va.
+       A · Preloader — mecánica y tiempos del site-preloader de RE.
+       Pasan cinco fotos, cada una abriéndose con clip-path desde el
+       centro mientras baja de scale 1.5, y el contador salta a los
+       valores medidos en vez de correr parejo: así la espera se lee
+       como una carga real y no como un relleno.
+       Curvas de GSAP pasadas a cubic-bezier:
+         power4.out (.22,1,.36,1) · expo.out (.16,1,.3,1)
        ---------------------------------------------------------- */
     (function preloader() {
-      if (quieto) return;
-      try {
-        if (sessionStorage.getItem('patronux-visto')) return;
-        sessionStorage.setItem('patronux-visto', '1');
-      } catch (e) { /* modo privado: se muestra igual, una sola vez */ }
+      if (!vaPreloader) { setTimeout(abrirHero, 60); return; }
 
-      // Timings del site-preloader de RE, en milisegundos
+      // Los tiempos de RE dejaban la cortina 4,2s en pantalla. Se conserva
+      // la mecánica y se acorta el paso: la entrada cierra en ~3s.
       var T = {
-        imageDelay:   500,
-        counterEnter: 850,
-        bgWipe:      1200,
-        morph:        800,  // la foto viaja del preloader al hero
-        morphDelay:   100   // el contenido entra MIENTRAS se abre la cortina
+        imageDelay:    300,   // antes de la primera foto
+        paso:          420,   // counterTickDuration
+        counterEnter:  600,
+        exitRevealDelay: 400,
+        bgWipe:       1200,
+        morphDelay:    100
       };
+      var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
+      var FOTOS = ['img/pre-1.jpg', 'img/pre-2.jpg', 'img/pre-3.jpg',
+                   'img/pre-4.jpg', 'img/marquee.jpg'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
       capa.setAttribute('aria-hidden', 'true');
+
+      var frames = FOTOS.map(function (src) {
+        return '<div class="preloader__frame"><img src="' + src + '" alt="" decoding="async"></div>';
+      }).join('');
+
+      var digito = '<span class="preloader__digito"><i>' +
+        '0123456789'.split('').map(function (d) { return '<b>' + d + '</b>'; }).join('') +
+        '</i></span>';
+
       capa.innerHTML =
         '<div class="preloader__fondo"></div>' +
-        '<div class="preloader__caja">' +
-          '<img class="preloader__foto" src="img/marquee.jpg" alt="">' +
-          '<div class="preloader__texto">' +
-            '<p class="preloader__marca">Patronux S.A.</p>' +
-            '<p class="preloader__barra"><i></i></p>' +
-            '<p class="preloader__n">0</p>' +
-          '</div>' +
-        '</div>';
+        '<p class="preloader__marca">Patronux S.A.</p>' +
+        '<div class="preloader__frames">' + frames + '</div>' +
+        '<div class="preloader__contador">' + digito + digito + '</div>';
       document.body.appendChild(capa);
 
-      var num = capa.querySelector('.preloader__n');
-      var barra = capa.querySelector('.preloader__barra i');
-      var foto = capa.querySelector('.preloader__foto');
-      var arranque = performance.now();
-      (function contar(ahora) {
-        var t = (ahora || arranque) - arranque - T.imageDelay;
-        var p = Math.min(1, Math.max(0, t / T.counterEnter));
-        num.textContent = Math.round(p * 100);
-        barra.style.setProperty('--avance', p.toFixed(3));
-        if (t < T.counterEnter) requestAnimationFrame(contar);
-      })();
+      var cajas = capa.querySelectorAll('.preloader__frame');
+      var rodillos = capa.querySelectorAll('.preloader__digito i');
+
+      function marcar(n) {
+        rodillos[0].style.setProperty('--n', Math.floor(n / 10));
+        rodillos[1].style.setProperty('--n', n % 10);
+      }
+      marcar(0);
+
+      // Cada foto que entra empuja el contador a su escalón
+      PASOS.forEach(function (valor, i) {
+        setTimeout(function () {
+          if (cajas[i]) cajas[i].classList.add('es-visible');
+          marcar(valor);
+        }, T.imageDelay + i * T.paso);
+      });
+
+      var finPasos = T.imageDelay + (PASOS.length - 1) * T.paso + T.counterEnter;
 
       var fuera = false;
       function sacar() {
         if (fuera) return;
         fuera = true;
-
-        // Morph: la foto viaja hasta el lugar exacto que ocupa en el hero,
-        // así la entrada se lee como un solo movimiento y no como un corte.
-        var destino = document.querySelector('.marquee__foto');
-        if (destino && foto) {
-          var a = foto.getBoundingClientRect();
-          var b = destino.getBoundingClientRect();
-          if (a.width && b.width) {
-            foto.style.transition = 'transform ' + T.morph + 'ms cubic-bezier(.73,.15,.15,.99)';
-            foto.style.transform =
-              'translate(' + ((b.left + b.width / 2) - (a.left + a.width / 2)).toFixed(1) + 'px,' +
-                             ((b.top + b.height / 2) - (a.top + a.height / 2)).toFixed(1) + 'px) ' +
-              'scale(' + (b.width / a.width).toFixed(4) + ')';
-          }
-        }
-
         capa.classList.add('es-fuera');
-        // Solapado: sin esto el titular entra recién con la cortina ya
-        // afuera y la entrada se siente en dos tiempos.
-        setTimeout(arrancarTitular, T.morphDelay);
+        // El hero abre mientras la cortina todavía se está yendo.
+        setTimeout(abrirHero, T.morphDelay);
         setTimeout(function () {
+          raiz.classList.remove('preloader-pendiente');
           if (capa.parentNode) capa.parentNode.removeChild(capa);
         }, T.bgWipe);
       }
 
-      requestAnimationFrame(function () { capa.classList.add('es-listo'); });
-      setTimeout(sacar, T.imageDelay + T.counterEnter);
-      setTimeout(sacar, 3500);   // tope duro
+      setTimeout(sacar, finPasos + T.exitRevealDelay);
+      setTimeout(sacar, 7000);   // tope duro
     })();
+
 
     /* ----------------------------------------------------------
        HEADER — fondo sólido a los 80px
@@ -208,13 +221,14 @@
       });
     }
 
-    function arrancarTitular() {
+    // Abre el hero: la foto se descubre con clip-path, el marquee se
+    // revela desde abajo y el resto entra escalonado detrás.
+    function abrirHero() {
+      raiz.classList.add('listo');
       if (titular) titular.classList.add('es-dentro');
     }
     // Si no hubo preloader (segunda visita en la sesión, o reduced motion),
     // el titular entra igual.
-    var hayPreloader = document.querySelector('.preloader');
-    if (!hayPreloader) setTimeout(arrancarTitular, 120);
 
     /* ----------------------------------------------------------
        Reveals al entrar en pantalla

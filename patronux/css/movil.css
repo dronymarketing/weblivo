@@ -9,60 +9,110 @@
    Marco que se abre desde el centro y descubre la web.
    El JS lo crea; si el JS no corre, no existe y la web se ve igual.
    ============================================================ */
-/* Timings y curva medidos del site-preloader de RE:
-   bgWipeDuration 1.2s con cubic-bezier(.73,.15,.15,.99). */
+/* ============================================================
+   PRELOADER — mecánica y tiempos del site-preloader de RE.
+   Las curvas de GSAP, pasadas a cubic-bezier:
+     power4.out  -> (.22, 1, .36, 1)
+     power2.inOut-> (.45, 0, .55, 1)
+     expo.out    -> (.16, 1, .3, 1)
+   ============================================================ */
 .preloader {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 1200;
   display: grid;
   place-items: center;
   pointer-events: none;
+  overflow: hidden;
 }
 
-/* El fondo va en su propia capa porque es el único que lleva el recorte:
-   si el clip-path estuviera en el contenedor, cortaría la foto justo
-   mientras viaja hacia el hero. */
+/* El fondo se cierra hacia ARRIBA (el borde de abajo sube hasta el 100%),
+   no se abre desde el centro. */
 .preloader__fondo {
   position: absolute;
   inset: 0;
   background: var(--texto);
-  clip-path: inset(0%);
+  clip-path: inset(0% 0% 0% 0%);
   transition: clip-path 1200ms cubic-bezier(.73, .15, .15, .99);
 }
-.preloader.es-fuera .preloader__fondo { clip-path: inset(50% 0%); }
-.preloader__caja {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: var(--sp-4);
-}
+.preloader.es-fuera .preloader__fondo { clip-path: inset(0% 0% 100% 0%); }
 
-/* La misma foto que queda en el hero: al salir viaja hasta su lugar
-   en vez de desaparecer, y la entrada se lee como un solo movimiento. */
-.preloader__foto {
-  width: 52vw;
-  max-width: 300px;
-  aspect-ratio: 1 / 1;
+/* Las fotos se muestran del tamaño EXACTO que tiene la del hero: por eso
+   el cambio al final se lee como continuidad y no como un corte. */
+.preloader__frames {
+  position: relative;
+  z-index: 2;
+  width: var(--hero-visual-size);
+  height: var(--hero-visual-size);
+  overflow: hidden;
+}
+.preloader__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(50% 50% 50% 50%);
+  transition: clip-path 1500ms cubic-bezier(.22, 1, .36, 1);
+  will-change: clip-path;
+}
+.preloader__frame.es-visible { clip-path: inset(0% 0% 0% 0%); }
+.preloader__frame img {
+  width: 100%; height: 100%;
   object-fit: cover;
-  opacity: 0;
-  transform: scale(1.06);
-  transition: opacity 700ms var(--ease-re), transform 700ms var(--ease-re);
+  transform: scale(1.5);
+  transform-origin: center center;
+  transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
   will-change: transform;
 }
-.preloader.es-listo .preloader__foto { opacity: 1; transform: none; }
-
-.preloader__texto {
-  display: grid;
-  justify-items: center;
-  gap: 14px;
-  opacity: 0;
-  transition: opacity 400ms var(--ease-re);
+.preloader__frame.es-visible img { transform: none; }
+/* ---------- Contador de rodillo ----------
+   Dos columnas con los diez dígitos apilados que se desplazan, como el
+   de RE. Un número que simplemente cambia de texto no se lee igual. */
+.preloader__contador {
+  position: absolute;
+  left: 50%;
+  bottom: max(8vh, 2rem);
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  gap: .02em;
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
+  font-size: 5.5vw;
+  line-height: 1;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
 }
-.preloader.es-listo .preloader__texto { opacity: 1; }
-.preloader.es-fuera .preloader__texto { opacity: 0; transition-duration: 300ms; }
+.preloader__digito {
+  position: relative;
+  width: .65em;
+  height: 1em;
+  overflow: hidden;
+}
+.preloader__digito i {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  transform: translateY(calc(var(--n, 0) * -1em));
+  transition: transform 600ms cubic-bezier(.16, 1, .3, 1);
+  will-change: transform;
+}
+.preloader__digito b {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: inherit;
+}
 
 .preloader__marca {
+  position: absolute;
+  top: max(6vh, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-weight: 500;
@@ -72,20 +122,11 @@
   color: rgba(255, 255, 255, .6);
 }
 
-/* Regla que se llena: la medida es el gesto del oficio */
-.preloader__barra {
-  width: 148px;
-  height: 1px;
-  background: rgba(255, 255, 255, .22);
-  position: relative;
-  overflow: hidden;
-}
-.preloader__barra i {
-  position: absolute;
-  inset: 0;
-  background: #FFFFFF;
-  transform: scaleX(var(--avance, 0));
-  transform-origin: 0 50%;
+/* Al salir, el contador y la marca se van antes que el fondo */
+.preloader.es-fuera .preloader__contador,
+.preloader.es-fuera .preloader__marca {
+  opacity: 0;
+  transition: opacity 450ms cubic-bezier(.32, 0, .67, 0);
 }
 
 /* Contador de porcentaje: el detalle que hace leer la espera como
@@ -362,6 +403,46 @@
   margin-bottom: var(--sp-4);
   overflow: hidden;
 }
+
+/* El texto del marquee se revela desde abajo, con el origen en su base */
+.marquee__reveal {
+  transform-origin: 50% 100%;
+  overflow: hidden;
+}
+.js:not(.listo) .marquee__reveal { clip-path: inset(100% 0% 0% 0%); }
+.js.listo .marquee__reveal {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1200ms cubic-bezier(.22, 1, .36, 1) 150ms;
+}
+
+/* Los demás elementos del hero entran 0.3s después de la foto,
+   escalonados: es el otherElementsDelay de RE. */
+.js:not(.listo) .hero__cuerpo > *,
+.js:not(.listo) .hero__firma,
+.js:not(.listo) .cue {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.js.listo .hero__cuerpo > *,
+.js.listo .hero__firma,
+.js.listo .cue {
+  opacity: 1;
+  transform: none;
+  transition: opacity 900ms cubic-bezier(.22, 1, .36, 1) var(--retraso, 300ms),
+              transform 900ms cubic-bezier(.22, 1, .36, 1) var(--retraso, 300ms);
+}
+.js.listo .hero__cuerpo > :nth-child(2) { --retraso: 400ms; }
+.js.listo .hero__firma { --retraso: 500ms; }
+.js.listo .cue         { --retraso: 600ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js:not(.listo) .marquee__reveal,
+  .js:not(.listo) .marquee__visual { clip-path: none; }
+  .js:not(.listo) .marquee__foto { transform: none; }
+  .js:not(.listo) .hero__cuerpo > *,
+  .js:not(.listo) .hero__firma,
+  .js:not(.listo) .cue { opacity: 1; transform: none; }
+}
 .marquee__pista {
   display: flex;
   width: max-content;
@@ -388,15 +469,34 @@
 }
 
 /* La foto va ENCIMA del texto y lo tapa: la palabra se lee entrecortada
-   y eso es el efecto. Centrada, como en RE. */
-.marquee__foto {
+   y eso es el efecto. Centrada, como en RE.
+   El centrado vive en el envoltorio y la apertura en la imagen, para que
+   un transform no pise al otro. */
+.marquee__visual {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: var(--hero-visual-size);    /* cuadrada, 20vw por la escala */
   height: var(--hero-visual-size);
+  overflow: hidden;
+  clip-path: inset(0% 0% 0% 0%);
+}
+.marquee__foto {
+  width: 100%; height: 100%;
   object-fit: cover;
+}
+
+/* Estado de entrada: la foto arranca cerrada y ampliada, y se abre.
+   Solo desde JS, para que sin JS se vea igual. */
+.js:not(.listo) .marquee__visual { clip-path: inset(50% 50% 50% 50%); }
+.js:not(.listo) .marquee__foto  { transform: scale(1.5); }
+.js.listo .marquee__visual {
+  transition: clip-path 1500ms cubic-bezier(.22, 1, .36, 1);
+}
+.js.listo .marquee__foto {
+  transform: none;
+  transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
 }
 
 /* ---------- Scroll cue ----------

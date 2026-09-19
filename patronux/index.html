@@ -11,13 +11,19 @@
 <link rel="preload" as="image" href="img/marquee.jpg" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=4">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=4">
-<link rel="stylesheet" href="css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=4">
-<link rel="stylesheet" href="css/escritorio.css?v=4" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=5">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=5">
+<link rel="stylesheet" href="css/base.css?v=5">
+<link rel="stylesheet" href="css/movil.css?v=5">
+<link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 768px)">
 
-<script src="js/app.js?v=4"></script>
+<style>
+/* Crítico: pinta el fondo del preloader antes de que cargue nada más.
+   Sin esto se ve un flash blanco antes de la cortina. */
+html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
+</style>
+
+<script src="js/app.js?v=5"></script>
 </head>
 <body>
 
@@ -64,11 +70,15 @@
     <!-- Marquee — efecto I. Es el titular gigante del hero: la foto tapa
          parte de la frase y obliga a completarla. -->
     <div class="marquee" aria-hidden="true">
-      <div class="marquee__pista">
-        <span>Agua y saneamiento · </span>
-        <span>Agua y saneamiento · </span>
+      <div class="marquee__reveal">
+        <div class="marquee__pista">
+          <span>Agua y saneamiento · </span>
+          <span>Agua y saneamiento · </span>
+        </div>
       </div>
-      <img class="marquee__foto" src="img/marquee.jpg" alt="" width="800" height="800" fetchpriority="high">
+      <span class="marquee__visual">
+        <img class="marquee__foto" src="img/marquee.jpg" alt="" width="800" height="800" fetchpriority="high">
+      </span>
     </div>
 
     <div class="hero__cuerpo">
