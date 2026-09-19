@@ -37,11 +37,9 @@
 }
 .preloader.es-fuera .preloader__fondo { clip-path: inset(0% 0% 100% 0%); }
 
-/* Las fotos ocupan el hueco EXACTO de la foto del hero — mismo tamaño y
-   misma posición, que el JS mide y escribe en estas variables. Así el
-   relevo al final no se ve: es el mismo plano, que nunca se movió.
-   Centradas en la pantalla se veían dos fotos iguales en dos lugares
-   distintos mientras la cortina subía. */
+/* Las fotos esperan CENTRADAS en la pantalla y al salir viajan hasta el
+   hueco que les toca en el hero. El JS mide las dos posiciones y las
+   escribe acá; el tamaño es el mismo, así que sólo se mueven. */
 .preloader__frames {
   position: absolute;
   z-index: 2;
@@ -51,8 +49,17 @@
   height: var(--pre-alto,  var(--hero-visual-size));
   overflow: hidden;
 }
-/* Los frames se quedan hasta que la capa entera se va: el fondo tapa el
-   hero mientras sube, así que esconderlos antes dejaría el hueco vacío. */
+/* El viaje al hueco del hero. Va con power2.inOut y no con power4.out:
+   entre dos posiciones conocidas, la curva de reveal gasta el 87% del
+   recorrido en los primeros 120ms y el movimiento se lee como un salto.
+   Las medidas van en top/left/width/height y no en transform porque el
+   destino es un rect medido: con transform habría que arrastrar la escala. */
+.preloader.es-fuera .preloader__frames {
+  transition: top 1100ms cubic-bezier(.45, 0, .55, 1),
+              left 1100ms cubic-bezier(.45, 0, .55, 1),
+              width 1100ms cubic-bezier(.45, 0, .55, 1),
+              height 1100ms cubic-bezier(.45, 0, .55, 1);
+}
 .preloader__frame {
   position: absolute;
   inset: 0;
@@ -538,10 +545,20 @@ html:not(.js) .hero__visual {
   transform: none;
   transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
 }
-/* Con cortina la foto ya se abrió ahí mismo durante la carga: si volviera
-   a abrirse se vería el mismo plano descubrirse dos veces seguidas. */
-.js.hubo-preloader.listo .hero__visual,
-.js.hubo-preloader.listo .hero__visual img { transition: none; }
+/* Con cortina, la foto del hero espera tapada mientras la de la cortina
+   viaja hasta su hueco: si se abriera antes se verían las dos. Cuando
+   aterriza, se descubre acá sin animación — ya se abrió durante la carga,
+   volver a abrirla sería descubrir el mismo plano dos veces. */
+.js.hubo-preloader .hero__visual { clip-path: inset(50% 50% 50% 50%); }
+.js.hubo-preloader .hero__visual img { transform: scale(1.5); }
+.js.hubo-preloader.foto-entregada .hero__visual {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: none;
+}
+.js.hubo-preloader.foto-entregada .hero__visual img {
+  transform: none;
+  transition: none;
+}
 
 /* Mientras la foto crece, el texto del hero se retira */
 .hero__cuerpo, .hero__firma, .cue, .marquee__reveal {

@@ -68,7 +68,8 @@
         counterEnter:  600,
         exitRevealDelay: 400,
         bgWipe:       1200,
-        morphDelay:    100
+        morphDelay:    100,
+        morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
       var FOTOS = ['img/pre-1.jpg', 'img/pre-2.jpg', 'img/pre-3.jpg',
@@ -91,27 +92,36 @@
         '<p class="preloader__marca">Patronux S.A.</p>' +
         '<div class="preloader__frames">' + frames + '</div>' +
         '<div class="preloader__contador">' + digito + digito + '</div>';
-      // Los frames van EXACTAMENTE sobre el hueco de la foto del hero: el
-      // relevo final tiene que leerse como la misma foto, no como dos.
+      // La foto de la cortina espera CENTRADA en la pantalla, y al salir
+      // viaja hasta el hueco que le toca en el hero. Es un solo plano que
+      // se acomoda: por eso el relevo no se nota.
       var marco = capa.querySelector('.preloader__frames');
       var slot  = document.querySelector('.hero__hueco');
-      function ubicarFrames() {
-        if (!slot || !marco) return;
-        var r = slot.getBoundingClientRect();
-        if (!r.width) return;
+
+      function poner(r) {
+        if (!marco || !r || !r.width) return;
         marco.style.setProperty('--pre-top',   r.top.toFixed(1) + 'px');
         marco.style.setProperty('--pre-left',  r.left.toFixed(1) + 'px');
         marco.style.setProperty('--pre-ancho', r.width.toFixed(1) + 'px');
         marco.style.setProperty('--pre-alto',  r.height.toFixed(1) + 'px');
       }
-      ubicarFrames();
-      // La capa es fija y el hueco no: si se scrollea con la cortina
-      // puesta, hay que seguirlo o el relevo saltaría.
-      window.addEventListener('scroll', ubicarFrames, { passive: true });
-      window.addEventListener('resize', ubicarFrames);
+      // Partida: centrada, con el tamaño que va a tener en el hero.
+      function centro() {
+        var d = slot ? slot.getBoundingClientRect() : null;
+        var lado = d && d.width ? d.width : Math.min(window.innerWidth, window.innerHeight) * 0.45;
+        return { top: (window.innerHeight - lado) / 2,
+                 left: (window.innerWidth - lado) / 2,
+                 width: lado, height: lado };
+      }
+      // Llegada: el hueco del hero, tal cual está en pantalla.
+      function destino() { return slot ? slot.getBoundingClientRect() : null; }
+
+      function centrar() { poner(centro()); }
+      centrar();
+      window.addEventListener('resize', centrar);
 
       document.body.appendChild(capa);
-      ubicarFrames();
+      centrar();
 
       var cajas = capa.querySelectorAll('.preloader__frame');
       var rodillos = capa.querySelectorAll('.preloader__digito i');
@@ -136,9 +146,10 @@
       function sacar() {
         if (fuera) return;
         fuera = true;
-        ubicarFrames();
-        // El relevo es en el sitio: el frame está sobre el hueco, y cuando
-        // la capa se va la foto del hero ya está abierta debajo, idéntica.
+        window.removeEventListener('resize', centrar);
+
+        // Mientras dura el morph la foto del hero sigue tapada: si se
+        // abriera ya, se verían dos — la que viaja y la que espera.
         raiz.classList.add('hubo-preloader');
         // El fondo navy del <html> se saca ACÁ, con la cortina todavía
         // cubriendo todo: si se saca al final, la cortina sube sobre una
@@ -146,11 +157,21 @@
         // golpe recién al terminar el barrido.
         raiz.classList.remove('preloader-pendiente');
         capa.classList.add('es-fuera');
-        // El hero abre mientras la cortina todavía se está yendo. La foto
-        // no parpadea: el frame sigue encima del hueco hasta el final.
+
+        // El destino se fija en el cuadro siguiente: en el mismo, el
+        // navegador recalcula una sola vez y no habría transición.
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { poner(destino()); });
+        });
+
+        // El hero abre mientras la cortina todavía se está yendo.
         setTimeout(abrirHero, T.morphDelay);
-        window.removeEventListener('scroll', ubicarFrames);
-        window.removeEventListener('resize', ubicarFrames);
+
+        // Relevo: cuando la foto aterriza en el hueco, la del hero se
+        // descubre ahí mismo, sin animación. Las dos quedan superpuestas e
+        // idénticas hasta que la capa se va, al terminar el barrido: si se
+        // sacara con el relevo, el fondo se cortaría al 92% del recorrido.
+        setTimeout(function () { raiz.classList.add('foto-entregada'); }, T.morph);
         setTimeout(function () {
           if (capa.parentNode) capa.parentNode.removeChild(capa);
         }, T.bgWipe);
