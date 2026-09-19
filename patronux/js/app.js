@@ -298,51 +298,61 @@
     }
 
     /* ----------------------------------------------------------
-       K · Hero que crece con el scroll
-       Escala 2 sobre 110svh, con 5svh de pausa al final: sin la pausa
-       el efecto termina de golpe y se siente cortado.
+       K · La foto del hero crece hasta la pantalla entera.
+       Es UNA sola foto: la misma que descansa sobre el marquee. RE anima
+       width y height de la caja (no un scale), así el object-fit
+       reencuadra y el final es el viewport exacto en cualquier pantalla.
        ---------------------------------------------------------- */
-    var crece = document.querySelector('.crece');
-    var marco = crece ? crece.querySelector('.crece__marco') : null;
+    var stage  = document.querySelector('.hero-stage');
+    var visual = document.querySelector('.hero__visual');
+    var hueco  = document.querySelector('.hero__hueco');
 
-    // Tamaño de partida de la máscara: el mismo cuadrado que la foto del
-    // hero. Se lee del CSS una sola vez por ancho de ventana.
-    var ladoInicial = 0, anchoMedido = 0;
-    function medirMarco() {
-      if (!marco) return;
-      marco.style.width = '';
-      marco.style.height = '';
-      ladoInicial = marco.offsetWidth;
-      anchoMedido = window.innerWidth;
+    // La caja de partida se mide UNA vez, con el hero en su posición
+    // inicial. El hueco viaja con el scroll, así que leerlo en cada
+    // cuadro haría interpolar contra una base que se mueve.
+    var base = null, baseAncho = 0;
+    function medirBase() {
+      var r = hueco.getBoundingClientRect();
+      base = { w: r.width, h: r.height, x: r.left, y: r.top };
+      baseAncho = window.innerWidth;
     }
 
-    function actualizarCrece() {
-      if (!crece || !marco) return;
+    function colocarVisual() {
+      if (!visual || !hueco || !stage) return;
       if (quieto) return;
-      if (!ladoInicial || anchoMedido !== window.innerWidth) medirMarco();
 
-      var caja = crece.getBoundingClientRect();
       var alto = window.innerHeight;
-      var recorrido = caja.height - alto;
-      if (recorrido <= 0) return;
 
-      var avance = (0 - caja.top) / recorrido;
+      // Avance del crecimiento dentro del scroll que reservó el stage
+      var caja = stage.getBoundingClientRect();
+      var recorrido = caja.height - alto;
+      var avance = recorrido > 0 ? (0 - caja.top) / recorrido : 0;
       avance = Math.min(1, Math.max(0, avance));
 
-      // La pausa del final: el crecimiento termina antes que el recorrido.
-      // Sin ella el efecto termina de golpe y se siente cortado.
+      if (!base || baseAncho !== window.innerWidth) {
+        if (avance > 0) return;   // esperamos a estar arriba para medir
+        medirBase();
+      }
+      var h = base;
+
+      // La pausa del final: el crecimiento termina antes que el recorrido,
+      // así el efecto no corta de golpe.
       var svhRec = parseFloat(estilos.getPropertyValue('--hero-crece-recorrido')) || 70;
       var svhPau = parseFloat(estilos.getPropertyValue('--hero-crece-pausa')) || 5;
-      var pausa = svhPau / (svhRec + svhPau);
-      var t = Math.min(1, avance / (1 - pausa));
+      var t = Math.min(1, avance / (1 - svhPau / (svhRec + svhPau)));
 
-      // La caja va del cuadrado a la pantalla entera. El object-fit de la
-      // foto se encarga de reencuadrarla mientras tanto.
-      var w = ladoInicial + (window.innerWidth - ladoInicial) * t;
-      var h = ladoInicial + (alto - ladoInicial) * t;
-      marco.style.width  = w.toFixed(1) + 'px';
-      marco.style.height = h.toFixed(1) + 'px';
+      // Al avance 0 la foto calza en su hueco sobre el marquee; al 1
+      // ocupa la ventana completa.
+      var w0 = h.w, h0 = h.h, x0 = h.x, y0 = h.y;
+      visual.style.width  = (w0 + (window.innerWidth - w0) * t).toFixed(1) + 'px';
+      visual.style.height = (h0 + (alto - h0) * t).toFixed(1) + 'px';
+      visual.style.left   = (x0 * (1 - t)).toFixed(1) + 'px';
+      visual.style.top    = (y0 * (1 - t)).toFixed(1) + 'px';
+
+      // El texto se retira mientras la foto toma la pantalla
+      raiz.style.setProperty('--hero-op', (1 - Math.min(1, t * 1.6)).toFixed(3));
     }
+
 
     /* ----------------------------------------------------------
        Barras del sistema
@@ -406,14 +416,14 @@
       requestAnimationFrame(function () {
         pendiente = false;
         estadoHeader();
-        actualizarCrece();
+        colocarVisual();
         pintarBarras();
       });
     }
 
     window.addEventListener('scroll', alScrollear, { passive: true });
     window.addEventListener('resize', alScrollear);
-    actualizarCrece();
+    colocarVisual();
     pintarBarras();
   });
 })();

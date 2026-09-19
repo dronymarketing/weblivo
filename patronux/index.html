@@ -11,11 +11,11 @@
 <link rel="preload" as="image" href="img/marquee.jpg" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=6">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=6">
-<link rel="stylesheet" href="css/base.css?v=6">
-<link rel="stylesheet" href="css/movil.css?v=6">
-<link rel="stylesheet" href="css/escritorio.css?v=6" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=7">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=7">
+<link rel="stylesheet" href="css/base.css?v=7">
+<link rel="stylesheet" href="css/movil.css?v=7">
+<link rel="stylesheet" href="css/escritorio.css?v=7" media="(min-width: 768px)">
 
 <style>
 /* Crítico: pinta el fondo del preloader antes de que cargue nada más.
@@ -23,7 +23,7 @@
 html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
 </style>
 
-<script src="js/app.js?v=6"></script>
+<script src="js/app.js?v=7"></script>
 </head>
 <body>
 
@@ -63,47 +63,45 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
 
 <main id="contenido">
 
-  <!-- ===== HERO ===== -->
-  <section class="hero contenedor" data-bg="claro">
-    <h1 class="visualmente-oculto">Patronux S.A. — Obras de agua y saneamiento en Montevideo</h1>
+  <!-- ===== HERO =====
+       El stage reserva el scroll que consume el crecimiento de la foto.
+       El hero queda fijo mientras dura, como el category-hero de RE. -->
+  <div class="hero-stage" id="obra">
+    <section class="hero contenedor" data-bg="claro">
+      <h1 class="visualmente-oculto">Patronux S.A. — Obras de agua y saneamiento en Montevideo</h1>
 
-    <!-- Marquee — efecto I. Es el titular gigante del hero: la foto tapa
-         parte de la frase y obliga a completarla. -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee__reveal">
-        <div class="marquee__pista">
-          <span>Agua y saneamiento · </span>
-          <span>Agua y saneamiento · </span>
+      <!-- Marquee — efecto I. La frase gigante corre por detrás de la foto. -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee__reveal">
+          <div class="marquee__pista">
+            <span>Agua y saneamiento · </span>
+            <span>Agua y saneamiento · </span>
+          </div>
         </div>
+        <span class="hero__hueco"></span>
       </div>
-      <span class="marquee__visual">
-        <img class="marquee__foto" src="img/marquee.jpg" alt="" width="800" height="800" fetchpriority="high">
-      </span>
-    </div>
 
-    <div class="hero__cuerpo">
-      <p class="hero__lead" data-palabras>Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
-      <p class="micro chip">+40 años de experiencia</p>
-    </div>
-
-    <p class="micro hero__firma">Patronux S.A. — Uruguay</p>
-
-    <a class="cue" href="#obra" aria-label="Ver más">
-      <span class="cue__texto">Ver más</span>
-      <span class="cue__circulo" aria-hidden="true">
-        <svg class="icon" aria-hidden="true"><use href="#i-abajo"/></svg>
-      </span>
-    </a>
-  </section>
-
-  <!-- ===== FIGURA QUE CRECE — efecto K ===== -->
-  <section class="crece" id="obra" data-bg="claro" aria-label="Obra de saneamiento">
-    <div class="crece__pin">
-      <figure class="crece__marco">
-        <img decoding="async" loading="lazy" src="img/crece.jpg" alt="Operario soldando un caño dentro de una zanja en obra" width="600" height="800">
+      <!-- La foto vive fuera del marquee porque tiene que poder crecer
+           más allá de su recorte, hasta ocupar la pantalla entera. -->
+      <figure class="hero__visual">
+        <img src="img/marquee.jpg" alt="Operario soldando un caño de gran diámetro en obra" width="800" height="800" fetchpriority="high">
       </figure>
-    </div>
-  </section>
+
+      <div class="hero__cuerpo">
+        <p class="hero__lead" data-palabras>Redes de agua potable, saneamiento y riego para la industria, la vivienda y el campo.</p>
+        <p class="micro chip">+40 años de experiencia</p>
+      </div>
+
+      <p class="micro hero__firma">Patronux S.A. — Uruguay</p>
+
+      <a class="cue" href="#empresa" aria-label="Ver más">
+        <span class="cue__texto">Ver más</span>
+        <span class="cue__circulo" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-abajo"/></svg>
+        </span>
+      </a>
+    </section>
+  </div>
 
   <!-- ===== ADELANTO — QUIÉNES SOMOS ===== -->
   <section class="seccion" id="empresa" data-bg="claro">

@@ -314,6 +314,14 @@
    svh, nunca vh ni dvh. min-height, nunca height.
    Sin overflow:hidden: el overflow del marquee va en su contenedor.
    ============================================================ */
+/* El stage reserva el scroll que consume el crecimiento de la foto:
+   una pantalla para el hero más el recorrido más la pausa del final. */
+.hero-stage {
+  position: relative;
+  height: calc(100svh + var(--hero-crece-recorrido) + var(--hero-crece-pausa));
+}
+.js .hero { position: sticky; top: 0; }
+
 .hero {
   min-height: calc(100vh - var(--nav-alto));
   min-height: calc(100svh - var(--nav-alto));
@@ -468,35 +476,60 @@
   .marquee__pista { animation: none; }
 }
 
-/* La foto va ENCIMA del texto y lo tapa: la palabra se lee entrecortada
-   y eso es el efecto. Centrada, como en RE.
-   El centrado vive en el envoltorio y la apertura en la imagen, para que
-   un transform no pise al otro. */
-.marquee__visual {
+/* Hueco del tamaño de la foto dentro del marquee: marca dónde arranca y
+   corta la frase por detrás, aunque la foto misma viva afuera. */
+.hero__hueco {
+  display: block;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: var(--hero-visual-size);    /* cuadrada, 20vw por la escala */
+  width: var(--hero-visual-size);
   height: var(--hero-visual-size);
-  overflow: hidden;
-  clip-path: inset(0% 0% 0% 0%);
+  background: var(--fondo);
 }
-.marquee__foto {
+
+/* La foto: una sola en toda la página. Arranca cuadrada sobre el marquee
+   y con el scroll crece hasta cubrir la pantalla. Va fija porque tiene
+   que poder salirse del recorte del marquee y del ancho del contenedor. */
+.hero__visual {
+  position: fixed;
+  z-index: 3;
+  overflow: hidden;
+  will-change: width, height, top, left;
+  pointer-events: none;
+}
+.hero__visual img {
   width: 100%; height: 100%;
   object-fit: cover;
 }
 
-/* Estado de entrada: la foto arranca cerrada y ampliada, y se abre.
-   Solo desde JS, para que sin JS se vea igual. */
-.js:not(.listo) .marquee__visual { clip-path: inset(50% 50% 50% 50%); }
-.js:not(.listo) .marquee__foto  { transform: scale(1.5); }
-.js.listo .marquee__visual {
+/* Sin JS no hay medidas calculadas: la foto se muestra en el flujo.
+   El :not va sobre html, no suelto: suelto matchea cualquier ancestro
+   sin la clase y la regla se aplica siempre. */
+html:not(.js) .hero__visual {
+  position: relative;
+  width: var(--hero-visual-size);
+  height: var(--hero-visual-size);
+  margin: 0 auto;
+}
+
+/* Entrada: la máscara se abre desde el centro mientras la foto
+   desescala, igual que el hero-visual de RE. */
+.js:not(.listo) .hero__visual { clip-path: inset(50% 50% 50% 50%); }
+.js:not(.listo) .hero__visual img { transform: scale(1.5); }
+.js.listo .hero__visual {
+  clip-path: inset(0% 0% 0% 0%);
   transition: clip-path 1500ms cubic-bezier(.22, 1, .36, 1);
 }
-.js.listo .marquee__foto {
+.js.listo .hero__visual img {
   transform: none;
   transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Mientras la foto crece, el texto del hero se retira */
+.hero__cuerpo, .hero__firma, .cue, .marquee__reveal {
+  opacity: var(--hero-op, 1);
 }
 
 /* ---------- Scroll cue ----------
@@ -536,44 +569,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .cue .icon { animation: none; opacity: 1; }
-}
-
-/* ============================================================
-   FIGURA QUE CRECE — efecto K
-   La foto arranca en un recuadro y crece con el scroll.
-   Escala 2 sobre 110svh con 5svh de pausa al final: sin esa pausa
-   el efecto termina de golpe y se siente cortado.
-   ============================================================ */
-/* El alto reserva el scroll del efecto: una pantalla para el pin, más el
-   recorrido del crecimiento, más la pausa del final. Sin sumar la pantalla
-   del pin, el recorrido real es la diferencia y la foto crece de golpe. */
-.crece {
-  height: calc(100svh + var(--hero-crece-recorrido) + var(--hero-crece-pausa));
-  position: relative;
-}
-.crece__pin {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-/* La máscara arranca cuadrada y se convierte en la pantalla entera.
-   RE anima WIDTH y HEIGHT de la caja, no un scale: con scale la foto
-   crece pero conserva su proporción y nunca llena el viewport. Al animar
-   la caja, el object-fit reencuadra la foto sola y el final es fullscreen
-   exacto sea cual sea la pantalla. */
-.crece__marco {
-  width: var(--hero-visual-size);
-  height: var(--hero-visual-size);
-  overflow: hidden;
-  contain: layout paint;
-  will-change: width, height;
-}
-.crece__marco img {
-  width: 100%; height: 100%;
-  object-fit: cover;
 }
 
 /* ============================================================
