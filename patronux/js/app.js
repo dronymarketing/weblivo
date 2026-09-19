@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=13', 'img/pre-2.jpg?v=13', 'img/pre-3.jpg?v=13',
-                   'img/pre-4.jpg?v=13', 'img/marquee.jpg?v=13'];
+      var FOTOS = ['img/pre-1.jpg?v=14', 'img/pre-2.jpg?v=14', 'img/pre-3.jpg?v=14',
+                   'img/pre-4.jpg?v=14', 'img/marquee.jpg?v=14'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -534,16 +534,19 @@
       // del navegador la acompaña, y al terminar vuelve a seguir la página.
       var cortina = raiz.classList.contains('cortina');
 
-      var arriba = (abiertoMenu || cortina) ? navy : fondoEn(0);
-      var abajo  = (abiertoMenu || cortina) ? navy : fondoEn(window.innerHeight - 1);
-      if (metaTema && arriba) metaTema.setAttribute('content', arriba);
+      // El nav cambia en cuanto su CANTO DE ABAJO toca un color nuevo, no
+      // cuando la sección le llega a la mitad: el borde inferior es el que
+      // se apoya sobre el bloque. La barra del navegador se mide en el
+      // mismo punto, así las dos cambian en el mismo instante en vez de
+      // una después de la otra.
+      var canto = header ? header.offsetHeight : 0;
+      var bajoNav = (abiertoMenu || cortina) ? navy : fondoEn(canto);
+      var abajo   = (abiertoMenu || cortina) ? navy : fondoEn(window.innerHeight - 1);
+      if (metaTema && bajoNav) metaTema.setAttribute('content', bajoNav);
       if (abajo) raiz.style.setProperty('--barra-inferior', abajo);
 
-      // El nav toma el color de la sección que tiene debajo — el mismo que
-      // va a la barra del navegador, así las dos se mueven juntas. Y si
-      // ese color es oscuro, el logo pasa a blanco para poder leerse.
+      // Si ese color es oscuro, el logo pasa a blanco para poder leerse.
       if (header && !abiertoMenu) {
-        var bajoNav = cortina ? navy : fondoEn(header.offsetHeight / 2);
         if (bajoNav) header.style.setProperty('--header-fondo', bajoNav);
         header.classList.toggle('sobre-oscuro', esOscuro(bajoNav));
       }
