@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=12', 'img/pre-2.jpg?v=12', 'img/pre-3.jpg?v=12',
-                   'img/pre-4.jpg?v=12', 'img/marquee.jpg?v=12'];
+      var FOTOS = ['img/pre-1.jpg?v=13', 'img/pre-2.jpg?v=13', 'img/pre-3.jpg?v=13',
+                   'img/pre-4.jpg?v=13', 'img/marquee.jpg?v=13'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -328,6 +328,49 @@
     }
 
     /* ----------------------------------------------------------
+       CONTADORES — los números suben al entrar en pantalla.
+       El valor final ya está escrito en el HTML: sin JS, o con el
+       movimiento reducido, se ve igual pero quieto.
+       ---------------------------------------------------------- */
+    var contadores = document.querySelectorAll('[data-contador]');
+    if (contadores.length && !quieto && 'IntersectionObserver' in window) {
+      var CUENTA_MS = 1600;
+      var suave = function (x) { return 1 - Math.pow(1 - x, 4); };   // power4.out
+
+      function contar(el) {
+        var destino = parseFloat(el.getAttribute('data-contador'));
+        if (isNaN(destino)) return;
+        var pre = el.getAttribute('data-prefijo') || '';
+        var suf = el.getAttribute('data-sufijo') || '';
+        var inicio = null;
+        function paso(ts) {
+          if (inicio === null) inicio = ts;
+          var avance = Math.min((ts - inicio) / CUENTA_MS, 1);
+          var valor = Math.round(destino * suave(avance));
+          el.textContent = pre + valor.toLocaleString('es-UY') + suf;
+          if (avance < 1) requestAnimationFrame(paso);
+        }
+        requestAnimationFrame(paso);
+      }
+
+      var obsCuenta = new IntersectionObserver(function (entradas) {
+        entradas.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          obsCuenta.unobserve(e.target);
+          contar(e.target);
+        });
+      }, { threshold: 0.6 });
+
+      Array.prototype.forEach.call(contadores, function (el) {
+        // Se pone en cero recién acá: si el JS no corre, el número queda
+        // en su valor final en vez de quedar en cero para siempre.
+        var pre = el.getAttribute('data-prefijo') || '';
+        el.textContent = pre + '0' + (el.getAttribute('data-sufijo') || '');
+        obsCuenta.observe(el);
+      });
+    }
+
+    /* ----------------------------------------------------------
        J · Color por categoría
        Cada sección con data-cat tiñe la página entera cuando pasa
        por el medio de la pantalla.
@@ -496,9 +539,13 @@
       if (metaTema && arriba) metaTema.setAttribute('content', arriba);
       if (abajo) raiz.style.setProperty('--barra-inferior', abajo);
 
-      // Sobre un bloque de color oscuro, el logo navy no se lee.
+      // El nav toma el color de la sección que tiene debajo — el mismo que
+      // va a la barra del navegador, así las dos se mueven juntas. Y si
+      // ese color es oscuro, el logo pasa a blanco para poder leerse.
       if (header && !abiertoMenu) {
-        header.classList.toggle('sobre-oscuro', esOscuro(fondoEn(header.offsetHeight / 2)));
+        var bajoNav = cortina ? navy : fondoEn(header.offsetHeight / 2);
+        if (bajoNav) header.style.setProperty('--header-fondo', bajoNav);
+        header.classList.toggle('sobre-oscuro', esOscuro(bajoNav));
       }
     }
 

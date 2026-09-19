@@ -133,6 +133,9 @@
   --dur-micro: 300ms;
   --dur-menu:  550ms;
   --dur-cierre: 350ms;
+  /* El nav cambia de color al mismo ritmo que la sección que tiñe la
+     página: los 600ms del transition de --cat, más arriba. */
+  --dur-seccion: 600ms;
   --stagger:   90ms;
 
   /* Hero que crece — efecto K, parámetros medidos en RE.
@@ -181,6 +184,7 @@
     --dur-menu:   1ms;
     --dur-cierre: 1ms;
     --dur-micro:  1ms;
+    --dur-seccion: 1ms;
     --stagger:    0ms;
   }
 }

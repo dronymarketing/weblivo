@@ -169,13 +169,17 @@
   align-items: center;
   justify-content: space-between;
   padding-inline: var(--margen-lateral);
-  background: transparent;
-  transition: background var(--dur-micro) var(--ease-re),
+  /* El nav va SIEMPRE sólido, nunca transparente: el color lo escribe el
+     JS con el de la sección que tiene debajo, y por defecto es el blanco
+     de la página. Transparente, el contenido pasaba por abajo y el logo
+     quedaba encima de otro texto. */
+  background: var(--header-fondo, var(--fondo));
+  transition: background var(--dur-seccion) var(--ease-re),
+              color var(--dur-seccion) var(--ease-re),
               border-color var(--dur-micro) var(--ease-re);
   border-bottom: 1px solid transparent;
 }
 .header.es-solido {
-  background: var(--fondo);
   border-bottom-color: color-mix(in srgb, var(--cat) 12%, transparent);
 }
 
@@ -189,11 +193,9 @@
 .menu-abierto .hamburguesa { color: #FFFFFF; }
 .menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
 
-/* Sobre un bloque de color oscuro, el header pasa a blanco y no toma fondo */
-.header.sobre-oscuro {
-  background: transparent;
-  border-bottom-color: transparent;
-}
+/* Sobre un bloque de color oscuro el nav toma ese color y el logo pasa a
+   blanco. La fileta sobra: el corte ya lo marca el cambio de color. */
+.header.sobre-oscuro { border-bottom-color: transparent; }
 .header.sobre-oscuro .header__logo,
 .header.sobre-oscuro .hamburguesa { color: #FFFFFF; }
 .header.sobre-oscuro .header__logo span { color: rgba(255, 255, 255, .6); }
@@ -202,6 +204,7 @@
   display: flex;
   align-items: baseline;
   gap: 7px;
+  transition: color var(--dur-seccion) var(--ease-re);
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-weight: 600;
@@ -224,6 +227,7 @@
   display: grid;
   place-items: center;
   color: var(--cat);
+  transition: color var(--dur-seccion) var(--ease-re);
   -webkit-tap-highlight-color: transparent;
 }
 /* El trazado lo deforma js/hamburguesa.js con morphicons: acá va sólo el
@@ -688,6 +692,7 @@ html:not(.js) .hero__visual {
    Rellena bloques enteros: es lo que hace que el recurso se vea. */
 [data-cat='agua']        { --relleno: var(--cat-agua); }
 [data-cat='saneamiento'] { --relleno: var(--cat-saneamiento); }
+[data-cat='eolico']      { --relleno: var(--cat-eolico); }
 [data-cat='riego']       { --relleno: var(--cat-riego); }
 [data-cat='sanitaria']   { --relleno: var(--cat-sanitaria); }
 

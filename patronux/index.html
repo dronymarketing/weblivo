@@ -8,14 +8,14 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#FFFFFF">
 
-<link rel="preload" as="image" href="img/marquee.jpg?v=12" fetchpriority="high">
+<link rel="preload" as="image" href="img/marquee.jpg?v=13" fetchpriority="high">
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=12">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=12">
-<link rel="stylesheet" href="css/base.css?v=12">
-<link rel="stylesheet" href="css/movil.css?v=12">
-<link rel="stylesheet" href="css/escritorio.css?v=12" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=13">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=13">
+<link rel="stylesheet" href="css/base.css?v=13">
+<link rel="stylesheet" href="css/movil.css?v=13">
+<link rel="stylesheet" href="css/escritorio.css?v=13" media="(min-width: 768px)">
 
 <style>
 /* Crítico: pinta el fondo del preloader antes de que cargue nada más.
@@ -23,7 +23,7 @@
 html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
 </style>
 
-<script src="js/app.js?v=12"></script>
+<script src="js/app.js?v=13"></script>
 </head>
 <body>
 
@@ -86,7 +86,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
       <!-- La foto vive fuera del marquee porque tiene que poder crecer
            más allá de su recorte, hasta ocupar la pantalla entera. -->
       <figure class="hero__visual">
-        <img src="img/marquee.jpg?v=12" alt="Vista aérea de un parque eólico sobre las lomadas al atardecer" width="1080" height="1920" fetchpriority="high">
+        <img src="img/marquee.jpg?v=13" alt="Vista aérea de un parque eólico sobre las lomadas al atardecer" width="1080" height="1920" fetchpriority="high">
       </figure>
 
       <div class="hero__cuerpo">
@@ -110,22 +110,40 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
     <div class="contenedor">
       <div class="seccion__encabezado">
         <p class="micro seccion__micro" data-reveal>01 — Quiénes somos</p>
-        <h2 class="seccion__titulo" data-reveal>Oficio, no improvisación</h2>
+        <h2 class="seccion__titulo" data-reveal>Ingeniería antes que obra</h2>
       </div>
 
       <div class="sobre">
         <div class="sobre__texto">
-          <p data-reveal>Patronux S.A. es una empresa constructora uruguaya especializada en instalaciones de agua, saneamiento y riego.</p>
+          <p data-reveal>Patronux S.A. es una empresa constructora uruguaya especializada en agua, saneamiento, riego y obra civil para parques eólicos.</p>
           <p data-reveal>Trabajamos con ingenieros y personal de obra cualificado, con más de 40 años acumulados de experiencia en el ramo.</p>
 
+          <!-- Los números arrancan en cero y suben al entrar en pantalla.
+               El valor final está en el HTML: sin JS se ve igual, quieto. -->
           <div class="cifras" data-reveal>
             <div class="cifra">
-              <p class="cifra__n">+40</p>
+              <p class="cifra__n" data-contador="40" data-prefijo="+">+40</p>
               <p class="cifra__t">Años de experiencia acumulada</p>
             </div>
             <div class="cifra">
-              <p class="cifra__n">5</p>
-              <p class="cifra__t">Áreas de especialidad</p>
+              <p class="cifra__n" data-contador="5">5</p>
+              <p class="cifra__t">Especialidades de obra</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra__n" data-contador="48">48</p>
+              <p class="cifra__t">Aerogeneradores con obra civil</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra__n" data-contador="120" data-prefijo="+">+120</p>
+              <p class="cifra__t">Kilómetros de red instalados</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra__n" data-contador="36">36</p>
+              <p class="cifra__t">Campos con riego proyectado</p>
+            </div>
+            <div class="cifra">
+              <p class="cifra__n" data-contador="9">9</p>
+              <p class="cifra__t">Departamentos con obra hecha</p>
             </div>
           </div>
 
@@ -134,7 +152,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
         </div>
 
         <figure class="sobre__foto" data-reveal>
-          <img decoding="async" loading="lazy" src="img/empresa-1.jpg?v=12" alt="Operario de obra con casco y ropa de trabajo, de perfil" width="900" height="1125">
+          <img decoding="async" loading="lazy" src="img/empresa-1.jpg?v=13" alt="Técnico de Patronux con chaleco de la empresa frente a una torre de alta tensión" width="900" height="1125">
         </figure>
       </div>
     </div>
@@ -157,7 +175,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
             <p class="tarjeta-cat__desc">Redes para industria y vivienda</p>
           </div>
           <figure class="tarjeta-cat__foto">
-            <img decoding="async" loading="lazy" src="img/servicio-agua.jpg?v=12" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
+            <img decoding="async" loading="lazy" src="img/servicio-agua.jpg?v=13" alt="Caños metálicos de agua conectados entre sí en una instalación exterior" width="1200" height="900">
           </figure>
         </a>
 
@@ -167,7 +185,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
             <p class="tarjeta-cat__desc">Colectores, desagües y pluvial</p>
           </div>
           <figure class="tarjeta-cat__foto">
-            <img decoding="async" loading="lazy" src="img/servicio-saneamiento.jpg?v=12" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
+            <img decoding="async" loading="lazy" src="img/servicio-saneamiento.jpg?v=13" alt="Colocación de cañería en una zanja abierta en la calle" width="1066" height="800">
           </figure>
         </a>
 
@@ -177,7 +195,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
             <p class="tarjeta-cat__desc">Obra civil para aerogeneradores</p>
           </div>
           <figure class="tarjeta-cat__foto">
-            <img decoding="async" loading="lazy" src="img/servicio-eolico.jpg?v=12" alt="Grúa junto a la base de una torre de aerogenerador en obra" width="1200" height="900">
+            <img decoding="async" loading="lazy" src="img/servicio-eolico.jpg?v=13" alt="Grúa junto a la base de una torre de aerogenerador en obra" width="1200" height="900">
           </figure>
         </a>
 
@@ -187,7 +205,7 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
             <p class="tarjeta-cat__desc">Canchas deportivas y campos</p>
           </div>
           <figure class="tarjeta-cat__foto">
-            <img decoding="async" loading="lazy" src="img/servicio-riego.jpg?v=12" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
+            <img decoding="async" loading="lazy" src="img/servicio-riego.jpg?v=13" alt="Aspersor regando un cultivo verde en el campo" width="1066" height="800">
           </figure>
         </a>
       </div>
@@ -208,21 +226,21 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
       <div class="proyectos">
         <article class="proyecto" data-reveal>
           <figure class="proyecto__foto">
-            <img decoding="async" src="img/proyecto-7.jpg?v=12" alt="Camino de acceso a un parque eólico sobre las lomadas al atardecer" width="1200" height="800" loading="lazy">
+            <img decoding="async" src="img/proyecto-7.jpg?v=13" alt="Camino de acceso a un parque eólico sobre las lomadas al atardecer" width="1200" height="800" loading="lazy">
           </figure>
           <h3 class="micro proyecto__pie">Parque eólico<span>Ruta 21 · Colonia</span></h3>
         </article>
 
         <article class="proyecto" data-reveal>
           <figure class="proyecto__foto">
-            <img decoding="async" src="img/proyecto-1.jpg?v=12" alt="Compactadora trabajando sobre una ruta en obra" width="1200" height="800" loading="lazy">
+            <img decoding="async" src="img/proyecto-1.jpg?v=13" alt="Compactadora trabajando sobre una ruta en obra" width="1200" height="800" loading="lazy">
           </figure>
           <h3 class="micro proyecto__pie">Colector pluvial<span>Ruta 8, km 32 · Canelones</span></h3>
         </article>
 
         <article class="proyecto" data-reveal>
           <figure class="proyecto__foto">
-            <img decoding="async" src="img/proyecto-3.jpg?v=12" alt="Aspersores de riego regando un campo sembrado" width="1200" height="800" loading="lazy">
+            <img decoding="async" src="img/proyecto-3.jpg?v=13" alt="Aspersores de riego regando un campo sembrado" width="1200" height="800" loading="lazy">
           </figure>
           <h3 class="micro proyecto__pie">Riego de canchas<span>Carrasco · Montevideo</span></h3>
         </article>
@@ -310,6 +328,6 @@ html.preloader-pendiente, html.preloader-pendiente body { background: #1F2B5E; }
   </div>
 </footer>
 
-<script type="module" src="js/hamburguesa.js?v=12"></script>
+<script type="module" src="js/hamburguesa.js?v=13"></script>
 </body>
 </html>
