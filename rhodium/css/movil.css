@@ -139,9 +139,9 @@
   backdrop-filter: none;
 }
 
-/* Logo original de Rhodium (PNG 186×49, fondo transparente) */
-.nav__logo { display: block; padding-block: 8px; }
-.nav__logo img { height: 30px; width: auto; }
+/* Logo original de Rhodium (PNG recortado al dibujo, fondo transparente) */
+.nav__logo { display: flex; align-items: center; min-height: 44px; }
+.nav__logo img { height: 21px; width: auto; }
 
 .nav__acciones { display: flex; align-items: center; gap: 6px; }
 
@@ -658,7 +658,7 @@
 }
 .pie__columnas a { display: flex; align-items: center; min-height: 40px; font-size: var(--fs-small); }
 .pie__logo {
-  width: 186px;
+  width: 173px;
   height: auto;
   margin-top: var(--sp-6);
 }
