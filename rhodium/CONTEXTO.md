@@ -42,12 +42,20 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 
+## Hero del inicio
+
+- Foto real de la recepción (la pasó el cliente), en blanco y negro como el resto: `img/hero.jpg`.
+- Trae el ícono de Gemini abajo a la derecha (a ~90% del alto de la imagen). Lo tapa el degradé de
+  `.hero--inicio::before`, que llega a negro pleno al 85%. La foto se ancla arriba en celular
+  (`object-position: 50% 0%`) y al 46% en escritorio. Verificado en 13 tamaños: el ícono queda
+  siempre bajo negro pleno o fuera de cuadro. Si se cambia el encuadre o el degradé, volver a verificar.
+
 ## PENDIENTE
 
 - Logo: el original en alta (img/logo.png?v=2, 858×164, fondo transparente). En el nav: clamp(17px, 5.8vw, 26px) en celular para que entre el botón «Consultar» con texto, 48px en escritorio. Si el cliente tiene SVG, mejor todavía.
 - Caché: la web manda CSS y JS con 4 h de caché. Cada vez que cambian, subir el ?v= en los tres HTML.
 - Retratos reales del Dr. Mantrana y la Dra. Grundinger.
-- Foto real del consultorio para el hero.
+- Foto del hero en horizontal o en más resolución: la que hay (img/hero.jpg) es vertical de 720×1452; en escritorio se amplía al doble y se ve blanda.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
 
 ## Cómo se generó

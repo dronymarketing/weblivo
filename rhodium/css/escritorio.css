@@ -18,6 +18,8 @@
 
 /* ---------- Hero ---------- */
 .hero { padding-bottom: 136px; }
+/* En escritorio la foto vertical se ve por la franja del medio: lámparas, logo y mostrador */
+.hero__foto--recepcion img { object-position: 50% 46%; }
 .hero__titulo { line-height: .82; }
 .hero__sub { max-width: 40ch; font-size: 18px; }
 .hero--pagina .hero__titulo { font-size: clamp(88px, 11vw, 170px); }

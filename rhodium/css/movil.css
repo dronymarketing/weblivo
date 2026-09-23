@@ -285,6 +285,21 @@
 }
 .hero__foto { position: absolute; inset: 0; z-index: -2; }
 .hero__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Foto real de la recepción (vertical). En celular se ancla arriba: las lámparas
+   y el logo quedan a la vista y el piso se corta o cae bajo el degradé. */
+.hero__foto--recepcion img { object-position: 50% 0%; }
+/* El piso de la foto trae el ícono de Gemini (a ~90% del alto de la imagen).
+   En el inicio el degradé llega a negro pleno antes (85%) para taparlo siempre. */
+.hero--inicio::before {
+  background: linear-gradient(180deg,
+    var(--velo-foto-1) 0%,
+    var(--velo-foto-0) 30%,
+    var(--velo-foto-1) 55%,
+    var(--velo-foto-2) 74%,
+    var(--fondo) 85%,
+    var(--fondo) 100%);
+}
 .hero::before {
   content: '';
   position: absolute;

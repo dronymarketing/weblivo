@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#020203">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Italiana-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=11">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=11">
-<link rel="stylesheet" href="css/fuentes.css?v=11">
-<link rel="stylesheet" href="css/base.css?v=11">
-<link rel="stylesheet" href="css/movil.css?v=11">
-<link rel="stylesheet" href="css/escritorio.css?v=11" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=12">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=12">
+<link rel="stylesheet" href="css/fuentes.css?v=12">
+<link rel="stylesheet" href="css/base.css?v=12">
+<link rel="stylesheet" href="css/movil.css?v=12">
+<link rel="stylesheet" href="css/escritorio.css?v=12" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -75,12 +75,12 @@
 <main>
 
   <!-- ============ HERO — fijo (D), lo demás le pasa por encima ============ -->
-  <section class="hero" id="inicio">
-    <picture class="hero__foto">
-      <!-- FOTO DE MUESTRA (Pexels 7789603 / 16571732) — reemplazar por foto del consultorio de Rhodium -->
-      <source media="(min-width: 768px)" srcset="img/hero-escritorio.jpg">
-      <img src="img/hero-movil.jpg" alt="Consultorio con camilla y luces lineales en el techo, en blanco y negro" fetchpriority="high">
-    </picture>
+  <section class="hero hero--inicio" id="inicio">
+    <div class="hero__foto hero__foto--recepcion">
+      <!-- Foto real de la recepción de Rhodium (la pasó el cliente). Abajo a la derecha trae
+           el ícono de Gemini: lo tapa el degradé del hero (ver .hero--inicio::before en movil.css) -->
+      <img src="img/hero.jpg" alt="Recepción de Rhodium: mostrador de acero, lámparas de globo y el logo en la pared" fetchpriority="high">
+    </div>
     <p class="antetitulo">Cirugía plástica · Montevideo</p>
     <h1 class="hero__titulo">Rhodium<sup>®</sup></h1>
     <p class="hero__sub">Cirugía plástica, reconstructiva y estética. Cada caso, analizado a tu medida.</p>
@@ -317,6 +317,6 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=11"></script>
+<script src="js/main.js?v=12"></script>
 </body>
 </html>
