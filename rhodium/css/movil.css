@@ -579,8 +579,7 @@
 }
 .pila-activa .proc {
   position: absolute;
-  inset: calc(var(--i, 0) * 12px) 0 0 0;
-  top: calc(var(--i, 0) * 12px);
+  inset: 0;   /* todas a la misma altura: cada foto tapa entera a la anterior, sin bordes asomando */
 }
 .pila-activa .proc__tarjeta {
   height: 100%;
