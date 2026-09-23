@@ -420,6 +420,10 @@
 .nosotros .perfil__foto img { position: absolute; inset: 0; object-position: 50% 30%; }
 .nosotros .seccion__pie { margin-top: var(--sp-2); }
 
+/* Secciones de una sola pantalla: la sección no suma padding propio,
+   el aire lo pone .pantalla */
+.seccion--pantalla { padding-block: 0; }
+
 /* Pantallas bajas: se comprime el aire y se saca la descripción
    (está completa en nosotros.html), para no pasarse de una pantalla. */
 @media (max-height: 740px) {
@@ -588,6 +592,22 @@
 }
 .materiales__desc { margin-top: 4px; color: var(--texto-suave); }
 
+/* Materiales a pantalla completa: el marquee absorbe lo que sobra */
+#materiales .marquee {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--sp-3);
+}
+@media (max-height: 740px) {
+  #materiales .pantalla { padding-block: 24px; }
+  #materiales .marquee { padding-block: var(--sp-2); }
+  #materiales .marquee__foto { width: 34vw; }
+  #materiales .materiales__lista { margin-top: var(--sp-2); }
+  #materiales .materiales__lista li { padding-block: var(--sp-2); }
+}
+
 /* ============================================================
    PROCESO — grilla de revista numerada
    ============================================================ */
@@ -614,6 +634,28 @@
   text-transform: uppercase;
 }
 .paso__desc { margin-top: 6px; color: var(--texto-suave); }
+
+/* Proceso a pantalla completa: los cuatro pasos se reparten el alto */
+#proceso .encabezado { margin-bottom: var(--sp-3); }
+#proceso .pasos { flex: 1 1 auto; grid-auto-rows: 1fr; }
+#proceso .paso { align-content: center; }
+@media (max-height: 860px) {
+  #proceso .pantalla { padding-block: 24px; }
+  #proceso .encabezado { margin-bottom: var(--sp-2); }
+  #proceso .paso { padding-block: 12px; }
+  #proceso .paso__num { font-size: 36px; }
+  #proceso .paso__nombre { font-size: 22px; }
+}
+@media (max-height: 680px) {
+  #proceso .encabezado .bajada { display: none; }
+}
+@media (max-height: 600px) {
+  #proceso .paso { padding-block: 8px; }
+  #proceso .paso__desc { font-size: 13px; line-height: 1.4; margin-top: 2px; }
+  #materiales .marquee__pista span { font-size: 26vw; }
+  #materiales .marquee__foto { width: 26vw; }
+  #materiales .materiales__desc { font-size: 13px; line-height: 1.4; }
+}
 
 /* ============================================================
    CONTACTO — cierre sobre foto

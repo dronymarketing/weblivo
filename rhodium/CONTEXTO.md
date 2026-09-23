@@ -33,7 +33,11 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
   La foto es `flex: 1` y absorbe lo que sobra: la pantalla mide exacto sin aire suelto.
   En pantallas bajas (`max-height: 740px`) se saca la descripción; en `max-height: 600px` también la bajada.
 - Verificado exacto de 320×568 a 1920×1080. Si se le agrega contenido, volver a medir en pantallas chicas.
-- Pendiente de decidir: llevar Filosofía, Materiales, Proceso y Contacto a pantalla completa.
+- Materiales y Proceso también son una `.pantalla` (sección con `.seccion--pantalla`, sin padding propio).
+  Materiales: el marquee absorbe lo que sobra. Proceso: los cuatro pasos se reparten el alto; en escritorio,
+  número grande arriba y texto abajo. Compresiones por `max-height` (860 / 740 / 680 / 600px).
+- Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
+- Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 
 ## PENDIENTE
 

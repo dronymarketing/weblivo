@@ -130,3 +130,14 @@
 
 /* ---------- Pie ---------- */
 .pie__columnas { grid-template-columns: repeat(3, 1fr); max-width: 760px; }
+
+/* Proceso a pantalla completa: cada paso ocupa el alto de su columna,
+   número grande arriba y texto abajo */
+#proceso .pasos { grid-auto-rows: 1fr; }
+#proceso .paso {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: var(--sp-3);
+}
+#proceso .paso__num { font-size: clamp(96px, 11vw, 180px); line-height: .8; }
