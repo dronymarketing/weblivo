@@ -9,7 +9,8 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
   El inicio conserva todas sus secciones, y cada una termina en un botón con flecha hacia su página
   (Materiales no tiene página propia). Ya no hay leyenda ↗/↓ en el menú.
 - **Contacto del inicio:** sencillo, con dirección, horario, WhatsApp y un mapa de Google
-  (iframe `maps/embed`, oscurecido con filtros CSS). El completo está en contacto.html.
+  (iframe `maps/embed`, oscurecido con filtros CSS). Es una `.pantalla` (40px arriba y abajo): el mapa
+  absorbe lo que sobra; bajo 600px de alto se esconde el horario. El completo está en contacto.html.
 - **Contacto sobre foto** (título, WhatsApp y datos en vidrio) va **solo en contacto.html**.
   Santi pidió sacarlo del final de las demás páginas: para eso está la página de contacto.
 - **Estética:** de cero, con dos referencias en `refs/`.

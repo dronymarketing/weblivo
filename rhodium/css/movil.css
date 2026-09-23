@@ -886,6 +886,22 @@
   background: var(--fondo-alt);
 }
 .mapa--grande { aspect-ratio: 3 / 4; }
+
+/* Contacto del inicio a pantalla completa (40px arriba y abajo, como las demás):
+   el mapa absorbe lo que sobra */
+.contacto-simple__cuerpo.pantalla { display: flex; gap: var(--sp-4); }
+.contacto-simple .mapa { flex: 1 1 auto; min-height: 180px; aspect-ratio: auto; }
+@media (max-height: 700px) {
+  .contacto-simple__cuerpo.pantalla { gap: var(--sp-3); }
+  .contacto-simple__acciones { margin-top: var(--sp-3); }
+  .contacto-simple .titulo + .contacto-simple__dato { margin-top: var(--sp-2); }
+  .contacto-simple .mapa { min-height: 130px; }
+}
+@media (max-height: 600px) {
+  .contacto-simple__dato + .contacto-simple__dato { display: none; }   /* el horario está en contacto.html */
+  .contacto-simple__acciones .btn { min-height: 44px; }
+  .contacto-simple .mapa { min-height: 100px; }
+}
 .mapa iframe {
   position: absolute;
   inset: 0;

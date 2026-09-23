@@ -154,7 +154,9 @@
 #proceso .paso__num { font-size: clamp(96px, 11vw, 180px); line-height: .8; }
 
 /* ---------- Contacto sencillo del inicio: texto a la izquierda, mapa a la derecha ---------- */
-.contacto-simple__cuerpo { grid-template-columns: 1fr 1.2fr; column-gap: var(--sp-6); align-items: center; }
+.contacto-simple__cuerpo.pantalla { display: grid; grid-template-columns: 1fr 1.2fr; column-gap: var(--sp-6); align-items: stretch; }
+.contacto-simple__cuerpo.pantalla > div:first-child { align-self: center; }
+.contacto-simple .mapa { height: 100%; }
 .mapa { aspect-ratio: 16 / 10; }
 .mapa--grande { aspect-ratio: 21 / 9; }
 
