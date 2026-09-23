@@ -27,7 +27,8 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## PENDIENTE
 
-- Logo: el original en alta (img/logo.png?v=2, 858×164, fondo transparente sacado del JPG negro). En el nav va a 34px en celular (el botón de WhatsApp queda solo con ícono debajo de 480px) y 48px en escritorio. Si el cliente tiene SVG, mejor todavía.
+- Logo: el original en alta (img/logo.png?v=2, 858×164, fondo transparente). En el nav: clamp(17px, 5.8vw, 26px) en celular para que entre el botón «Consultar» con texto, 48px en escritorio. Si el cliente tiene SVG, mejor todavía.
+- Caché: la web manda CSS y JS con 4 h de caché. Cada vez que cambian, subir el ?v= en los tres HTML.
 - Retratos reales del Dr. Mantrana y la Dra. Grundinger.
 - Foto real del consultorio para el hero.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
