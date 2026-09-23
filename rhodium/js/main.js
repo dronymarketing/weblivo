@@ -198,4 +198,41 @@
       gsap.fromTo(img, { scale: zoom }, { scale: 1, ease: 'none', scrollTrigger: st() });
     });
   }
+
+  /* ----------------------------------------------------------
+     PROCEDIMIENTOS (E) — pila anclada. La pantalla queda fija
+     mientras cada foto sube y tapa entera a la anterior; el
+     scroll sigue recién cuando llegó la última. Scroll nativo:
+     el pin de ScrollTrigger solo reserva el recorrido.
+  ---------------------------------------------------------- */
+  var pila = document.querySelector('[data-pila]');
+  if (pila && window.gsap && window.ScrollTrigger && !reducido) {
+    var tarjetas = pila.querySelectorAll('.proc');
+    if (tarjetas.length > 1) {
+      pila.classList.add('pila-activa');
+      var altoNav = function () { return nav ? nav.offsetHeight : 0; };
+      /* recorrido por foto: 80% de pantalla en celular (más se hace eterno
+         con el pulgar), 100% en escritorio */
+      var tramo = function () { return window.innerHeight * (window.innerWidth < 768 ? 0.8 : 1); };
+      var tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: pila,
+          start: function () { return 'top ' + altoNav() + 'px'; },
+          end: function () { return '+=' + tramo() * (tarjetas.length - 1 + 0.35); },
+          pin: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          invalidateOnRefresh: true
+        }
+      });
+      for (var i = 1; i < tarjetas.length; i++) {
+        tl.fromTo(tarjetas[i], { yPercent: 105 }, { yPercent: 0, duration: 1 }, i - 1);
+        /* la de atrás se achica y se apaga con un velo negro opaco —
+           nunca con opacity: se vería a través de la que sube */
+        tl.to(tarjetas[i - 1].querySelector('.proc__tarjeta'), { scale: 0.94, '--apagado': 0.6, duration: 1 }, i - 1);
+      }
+      tl.to({}, { duration: 0.35 });   /* un respiro con la última foto arriba antes de soltar */
+    }
+  }
 })();

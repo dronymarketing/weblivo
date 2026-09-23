@@ -82,6 +82,12 @@
 .proc__num { top: var(--sp-4); left: var(--sp-4); }
 .proc__nombre { font-size: 48px; }
 
+/* Pila anclada en escritorio: título a la izquierda, la pila ocupa
+   todo el alto de la columna derecha */
+.pila-activa .procs__cuerpo { align-items: stretch; }
+.pila-activa .procs__cuerpo .encabezado { position: static; align-self: end; margin-bottom: 0; }
+.pila-activa .procs__lista { height: 100%; }
+
 /* ---------- Materiales ---------- */
 .marquee__pista span { font-size: 22vw; }
 .marquee__foto { width: 22vw; max-width: 340px; }

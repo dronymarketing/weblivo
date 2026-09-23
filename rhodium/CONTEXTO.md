@@ -44,6 +44,14 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 
+## Procedimientos del inicio — pila anclada (E)
+
+- La sección es una `.pantalla` que se fija con el pin de ScrollTrigger (`[data-pila]`, `js/main.js`).
+  Cada tarjeta sube desde abajo y tapa entera a la anterior, que se achica (0.94) y se apaga con
+  un velo negro opaco (`--apagado` en `::after`). Nunca con `opacity`: se ve a través.
+- Recorrido: 80% de pantalla por foto en celular, 100% en escritorio, más un respiro con la última.
+- Sin JS o con movimiento reducido no se agrega `.pila-activa` y queda la lista de tarjetas normal.
+
 ## Hero del inicio
 
 - Foto real de la recepción (la pasó el cliente), en blanco y negro como el resto: `img/hero.jpg`.

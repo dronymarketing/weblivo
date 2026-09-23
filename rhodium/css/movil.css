@@ -564,6 +564,44 @@
 }
 .proc__desc { margin-top: var(--sp-1); color: var(--texto-foto); max-width: 34ch; }
 
+/* ---------- Pila anclada (E) — solo con JS y GSAP (.pila-activa) ----------
+   La pantalla se fija (pin de ScrollTrigger) y cada tarjeta sube desde abajo
+   hasta cubrir entera a la anterior, que se achica y se oscurece detrás.
+   Recién cuando llega la última se suelta el scroll. Sin JS o con movimiento
+   reducido queda la lista de tarjetas de arriba, una debajo de la otra. */
+.pila-activa .encabezado { margin-bottom: var(--sp-3); }
+.pila-activa .seccion__pie { margin-top: var(--sp-3); }
+.pila-activa .procs__lista {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 240px;
+  overflow: hidden;   /* va en la pila, nunca en el hero */
+}
+.pila-activa .proc {
+  position: absolute;
+  inset: calc(var(--i, 0) * 12px) 0 0 0;
+  top: calc(var(--i, 0) * 12px);
+}
+.pila-activa .proc__tarjeta {
+  height: 100%;
+  max-height: none;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.pila-activa .proc__tarjeta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  opacity: var(--apagado, 0);
+  pointer-events: none;
+}
+@media (max-height: 700px) {
+  .pila-activa .encabezado .bajada { display: none; }
+  .pila-activa .encabezado { margin-bottom: var(--sp-2); }
+}
+
 /* ============================================================
    MATERIALES — marquee con foto encima (I)
    ============================================================ */
