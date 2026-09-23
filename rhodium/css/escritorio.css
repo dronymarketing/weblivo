@@ -139,7 +139,8 @@
 .atencion .perfil__desc { margin-top: 0; }
 
 /* ---------- Pie ---------- */
-.pie__columnas { grid-template-columns: repeat(3, 1fr); max-width: 760px; }
+.pie__columnas { grid-template-columns: 1fr 1fr 1.4fr; max-width: 900px; margin-inline: auto; }
+.pie__contacto { grid-column: auto; }
 
 /* Proceso a pantalla completa: cada paso ocupa el alto de su columna,
    número grande arriba y texto abajo */

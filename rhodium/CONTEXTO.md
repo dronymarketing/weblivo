@@ -78,6 +78,11 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Foto del hero en horizontal o en más resolución: la que hay (img/hero.jpg) es vertical de 720×1452; en escritorio se amplía al doble y se ve blanda.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
 
+## Pie
+
+- Columnas: Páginas · Seguinos · Contacto (dirección, teléfono y mail, simplificados).
+- Logo centrado con 48px arriba y abajo; debajo, solo «© 2026 Rhodium Plastic Surgery» centrado.
+
 ## Cómo se generó
 
 Los seis HTML repiten header, menú y pie idénticos (el ítem de la página actual lleva `aria-current="page"`).
