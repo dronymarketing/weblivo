@@ -141,7 +141,7 @@
 
 /* Logo original de Rhodium (PNG recortado al dibujo, fondo transparente) */
 .nav__logo { display: flex; align-items: center; min-height: 44px; }
-.nav__logo img { height: 21px; width: auto; }
+.nav__logo img { height: clamp(22px, 6.9vw, 26px); width: auto; }
 
 .nav__acciones { display: flex; align-items: center; gap: 6px; }
 
