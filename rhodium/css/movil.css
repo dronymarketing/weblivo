@@ -916,5 +916,5 @@
    ============================================================ */
 .pasos--pagina .paso__desc { max-width: var(--max-lectura); }
 
-/* Hero de proceso.html: foto horizontal, en celular se centra en las manos */
-.hero__foto--proceso img { object-position: 42% 50%; }
+/* Hero de proceso.html: en celular, foto vertical con los dos en cuadro */
+.hero__foto--proceso img { object-position: 50% 30%; }

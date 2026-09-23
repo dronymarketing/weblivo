@@ -162,3 +162,6 @@
 
 /* ---------- Páginas nuevas ---------- */
 .pasos--pagina { grid-template-columns: repeat(4, 1fr); column-gap: var(--sp-4); }
+
+/* Hero de proceso.html: foto horizontal, médico y paciente en cuadro */
+.hero__foto--proceso img { object-position: 50% 35%; }
