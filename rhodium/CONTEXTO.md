@@ -7,7 +7,11 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - **Tipo:** sitio institucional, **páginas separadas** (Santi cambió del híbrido mixto el 23/9).
   Cada ítem del menú abre su página: nosotros, procedimientos, filosofia, proceso y contacto (.html).
   El inicio conserva todas sus secciones, y cada una termina en un botón con flecha hacia su página
-  (Materiales no tiene página propia). Ya no hay leyenda ↗/↓ en el menú.
+  Ya no hay leyenda ↗/↓ en el menú.
+- **Numeración del inicio = orden del menú:** 01 Nosotros · 02 Procedimientos · 03 Filosofía ·
+  04 Proceso · 05 Contacto, y las secciones van en ese orden (las bandas de foto no llevan número).
+  Nada en el inicio que no pertenezca a una página del menú: Materiales se mudó a procedimientos.html
+  (sección 02, a pantalla completa).
 - **Contacto del inicio:** sencillo, con dirección, horario, WhatsApp y un mapa de Google
   (iframe `maps/embed`, oscurecido con filtros CSS). Es una `.pantalla` (40px arriba y abajo): el mapa
   absorbe lo que sobra; bajo 600px de alto se esconde el horario. El completo está en contacto.html.
@@ -40,7 +44,7 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
   La foto es `flex: 1` y absorbe lo que sobra: la pantalla mide exacto sin aire suelto.
   En pantallas bajas (`max-height: 740px`) se saca la descripción; en `max-height: 600px` también la bajada.
 - Verificado exacto de 320×568 a 1920×1080. Si se le agrega contenido, volver a medir en pantallas chicas.
-- Materiales y Proceso también son una `.pantalla` (sección con `.seccion--pantalla`, sin padding propio).
+- Materiales (hoy en procedimientos.html) y Proceso también son una `.pantalla` (sección con `.seccion--pantalla`, sin padding propio).
   Materiales: el marquee absorbe lo que sobra. Proceso: los cuatro pasos se reparten el alto; en escritorio,
   número grande arriba y texto abajo. Compresiones por `max-height` (860 / 740 / 680 / 660 / 600px).
 - Margen de cada pantalla: **40px arriba y abajo, fijo en todos los tamaños** (como #nosotros de Fabiana).

@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#020203">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Italiana-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=19">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=19">
-<link rel="stylesheet" href="css/fuentes.css?v=19">
-<link rel="stylesheet" href="css/base.css?v=19">
-<link rel="stylesheet" href="css/movil.css?v=19">
-<link rel="stylesheet" href="css/escritorio.css?v=19" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=20">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=20">
+<link rel="stylesheet" href="css/fuentes.css?v=20">
+<link rel="stylesheet" href="css/base.css?v=20">
+<link rel="stylesheet" href="css/movil.css?v=20">
+<link rel="stylesheet" href="css/escritorio.css?v=20" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -181,6 +181,33 @@
       </div>
     </section>
 
+    <!-- ============ MATERIALES — marquee con foto encima (I), a pantalla completa ============ -->
+    <section class="seccion seccion--alt seccion--pantalla" id="materiales">
+      <div class="contenedor pantalla">
+        <p class="antetitulo" data-reveal><span class="antetitulo__num">02</span><span class="antetitulo__linea"></span>Materiales</p>
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee__pista">
+            <span>Mentor — Teosyal — </span><span>Mentor — Teosyal — </span>
+          </div>
+          <div class="marquee__foto">
+            <!-- FOTO DE MUESTRA (Pexels 5857416, recortada y en blanco y negro) -->
+            <img src="img/materiales.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+        <h2 class="titulo" data-reveal>Con qué trabajamos</h2>
+        <ul class="materiales__lista">
+          <li data-reveal>
+            <h3 class="materiales__nombre">Implantes Mentor</h3>
+            <p class="materiales__desc">Implantes mamarios de silicona fabricados en Estados Unidos.</p>
+          </li>
+          <li data-reveal>
+            <h3 class="materiales__nombre">Rellenos Teosyal</h3>
+            <p class="materiales__desc">Ácido hialurónico del laboratorio suizo Teoxane.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
   </div>
 </main>
 
@@ -213,6 +240,6 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=19"></script>
+<script src="js/main.js?v=20"></script>
 </body>
 </html>
