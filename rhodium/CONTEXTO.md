@@ -26,6 +26,7 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
   Transparente → glass sobre el hero → sólido.
 - **Glass:** sí, solo sobre foto (nav sobre el hero, botón del hero, rótulos de bandas, datos de contacto).
 - **Acción principal:** WhatsApp +598 93 873 857.
+- **Instagram de la clínica:** @rhodiumsurgery (confirmado por Santi; el @rhodium_ps de la web vieja no va).
 - Santi pidió **no** mostrar en pantalla avisos de "foto de muestra": el cliente sabe que es borrador.
   Las fotos de muestra están marcadas solo en comentarios del HTML.
 - Sin antes/después (promesa de resultados): en su lugar va la sección Proceso.
