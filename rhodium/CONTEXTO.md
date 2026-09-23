@@ -27,7 +27,7 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## PENDIENTE
 
-- Logo en SVG o PNG más grande: el original que hay (img/logo.png) mide 173×34: en el nav va a 26px en celular y 34px (tamaño real) en escritorio; más grande se ablanda.
+- Logo: ya está el original en alta (img/logo.png, 858×164, fondo transparente sacado del JPG negro). Si el cliente tiene SVG, mejor todavía.
 - Retratos reales del Dr. Mantrana y la Dra. Grundinger.
 - Foto real del consultorio para el hero.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
