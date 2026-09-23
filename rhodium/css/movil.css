@@ -837,7 +837,37 @@
 }
 .pie__columnas a { display: flex; align-items: center; min-height: 40px; font-size: var(--fs-small); }
 .pie__contacto { grid-column: 1 / -1; }
-.pie__contacto a { overflow-wrap: anywhere; }
+.pie__contacto a, .pie__dato {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  font-size: var(--fs-small);
+  overflow-wrap: anywhere;
+}
+.pie__contacto .ico, .pie__contacto .ico-marca { width: 16px; height: 16px; flex-shrink: 0; color: var(--texto-suave); }
+.pie__dato { color: var(--texto-suave); }
+/* Mapa chico: el iframe no recibe toques (así no atrapa el scroll con el dedo);
+   tocarlo abre Google Maps */
+.pie__contacto a.pie__mapa {
+  position: relative;
+  display: block;
+  height: 140px;
+  min-height: 0;
+  margin-top: var(--sp-1);
+  border: var(--borde);
+  overflow: hidden;
+  background: var(--fondo-alt);
+}
+.pie__mapa iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  filter: grayscale(1) invert(.92) contrast(.85);
+}
 /* Logo centrado, con el mismo aire arriba y abajo */
 .pie__logo {
   display: block;

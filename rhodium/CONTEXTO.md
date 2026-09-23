@@ -80,7 +80,8 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## Pie
 
-- Columnas: Páginas · Seguinos · Contacto (dirección, teléfono y mail, simplificados).
+- Columnas: Páginas · Contacto, con íconos: Instagram, WhatsApp, mail, horario y un mapa chico de Google
+  (el iframe no recibe toques para no atrapar el scroll; tocarlo abre Maps). Sin teléfono: ya está en el nav.
 - Logo centrado con 48px arriba y abajo; debajo, solo «© 2026 Rhodium Plastic Surgery» centrado.
 
 ## Cómo se generó
