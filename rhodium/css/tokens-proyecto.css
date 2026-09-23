@@ -1,13 +1,14 @@
 /* ============================================================
-   RHODIUM — Paleta del proyecto
+   RHODIUM — Paleta y tipografía del proyecto
    Monocroma y bien dark. Sale de cuantizar las dos referencias
    (refs/ref-seo-dark.jpg y refs/ref-sokolov.jpg) a 8 colores.
    Pisa a las paletas por tono de tokens.css.
    ============================================================ */
 
 :root {
+  /* ---------- Color ---------- */
   --fondo:        #020203;  /* negro de ambas refs (#020204 / #000000) */
-  --fondo-alt:    #0f0f11;  /* ref 1, 18% — tarjetas y bandas */
+  --fondo-alt:    #0f0f11;  /* ref 1, 18% — bandas y superficies */
   --superficie:   #1e1e1f;  /* ref 1, 13% — hover y superficie alta */
   --neutro:       #444444;  /* ref 1, 19% — solo decorativo, nunca texto */
   --acento:       #f2f1f0;  /* sin color: el acento es el blanco */
@@ -16,5 +17,24 @@
   --texto-suave:  #8a8a8b;  /* #787879 de ref 1 subido: 5,9:1 fondo · 5,3:1 fondo-alt */
   --velo:         rgba(255, 255, 255, .04);
 
+  /* Sobre foto */
+  --texto-foto:   rgba(242, 241, 240, .84);
+  --glass-fondo:  rgba(2, 2, 3, .14);   /* el negro de la sección al 14% */
+  --glass-solido: rgba(2, 2, 3, .86);   /* respaldo sin backdrop-filter */
+  --velo-foto-0:  rgba(2, 2, 3, .15);
+  --velo-foto-1:  rgba(2, 2, 3, .55);
+  --velo-foto-2:  rgba(2, 2, 3, .88);
+
   --barra-inferior: var(--fondo);
+
+  /* ---------- Tipografía ---------- */
+  --font-display: "Italiana", "Didot", serif;
+  --font-body:    "Neue Haas Grotesk Display Pro", "Helvetica Neue", Arial, sans-serif;
+
+  --fs-display:   clamp(64px, 19vw, 96px);  /* RHODIUM del hero */
+  --fs-revista:   44px;                     /* títulos de sección, registro revista */
+  --fs-cita:      36px;
+  --fs-nombre:    28px;
+
+  --curva-re:     cubic-bezier(.7, .6, 0, 1);  /* solo el título por palabras */
 }
