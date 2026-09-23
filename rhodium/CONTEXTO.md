@@ -35,7 +35,10 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Verificado exacto de 320×568 a 1920×1080. Si se le agrega contenido, volver a medir en pantallas chicas.
 - Materiales y Proceso también son una `.pantalla` (sección con `.seccion--pantalla`, sin padding propio).
   Materiales: el marquee absorbe lo que sobra. Proceso: los cuatro pasos se reparten el alto; en escritorio,
-  número grande arriba y texto abajo. Compresiones por `max-height` (860 / 740 / 680 / 600px).
+  número grande arriba y texto abajo. Compresiones por `max-height` (860 / 740 / 680 / 660 / 600px).
+- Margen de cada pantalla: **40px arriba y abajo, fijo en todos los tamaños** (como #nosotros de Fabiana).
+  Las compresiones por altura achican solo el aire de adentro, nunca ese margen. Medido con el borde
+  visible del contenido (texto, foto, filete): 40px ±3 de interlineado en todas.
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 

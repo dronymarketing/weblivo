@@ -38,7 +38,6 @@
 
 /* Nosotros a pantalla completa: foto y texto en dos columnas,
    alternando el lado de la foto entre una pantalla y la otra */
-.nosotros .pantalla { padding-block: 56px; }
 .nosotros .perfil {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -83,6 +82,7 @@
 /* ---------- Materiales ---------- */
 .marquee__pista span { font-size: 22vw; }
 .marquee__foto { width: 22vw; max-width: 340px; }
+#materiales .marquee { max-height: calc(min(22vw, 340px) * 4 / 3); }
 .materiales__lista { grid-template-columns: 1fr 1fr; column-gap: var(--sp-5); }
 .materiales__lista li:last-child { border-bottom: 0; }
 .materiales__lista li { border-bottom: var(--borde); }
@@ -139,5 +139,6 @@
   flex-direction: column;
   justify-content: space-between;
   padding-top: var(--sp-3);
+  padding-bottom: 0;   /* el final visible del texto cae justo en el margen de la pantalla */
 }
 #proceso .paso__num { font-size: clamp(96px, 11vw, 180px); line-height: .8; }

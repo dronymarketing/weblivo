@@ -400,7 +400,8 @@
   min-height: calc(var(--vh100, 100svh) - var(--nav-alto));
   display: flex;
   flex-direction: column;
-  padding-block: 40px;
+  padding-block: 40px;   /* fijo en todos los tamaños, como #nosotros de fabianamartinez:
+                            en pantallas bajas se comprime el aire de adentro, nunca este */
 }
 
 /* Nosotros: dos pantallas, un cirujano en cada una */
@@ -419,6 +420,10 @@
 }
 .nosotros .perfil__foto img { position: absolute; inset: 0; object-position: 50% 30%; }
 .nosotros .seccion__pie { margin-top: var(--sp-2); }
+/* El link de Instagram mide 44px para el dedo, pero el texto ocupa ~16:
+   se compensa abajo para que el margen visible sea el de la pantalla */
+.nosotros .perfil__ig { display: flex; width: fit-content; }
+.nosotros .pantalla:first-child .perfil__ig { margin-bottom: -13px; }
 
 /* Secciones de una sola pantalla: la sección no suma padding propio,
    el aire lo pone .pantalla */
@@ -427,7 +432,6 @@
 /* Pantallas bajas: se comprime el aire y se saca la descripción
    (está completa en nosotros.html), para no pasarse de una pantalla. */
 @media (max-height: 740px) {
-  .nosotros .pantalla { padding-block: 24px; }
   .nosotros .encabezado { margin-bottom: var(--sp-2); }
   .nosotros .encabezado .bajada { margin-top: 8px; }
   .nosotros .perfil__texto { margin-top: 12px; padding-top: 12px; }
@@ -598,14 +602,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: var(--sp-3);
+  max-height: calc(40vw * 4 / 3);
+  margin-block: var(--sp-3);
+  padding-block: 0;
 }
+/* Si el marquee llega a su tope, lo que sobra se reparte entre los bloques */
+#materiales .pantalla { justify-content: space-between; }
+/* La foto toma el alto del marquee: nunca se sale por arriba ni por abajo */
+#materiales .marquee__foto { width: auto; height: 100%; }
 @media (max-height: 740px) {
-  #materiales .pantalla { padding-block: 24px; }
-  #materiales .marquee { padding-block: var(--sp-2); }
-  #materiales .marquee__foto { width: 34vw; }
+  #materiales .marquee { margin-block: var(--sp-2); }
   #materiales .materiales__lista { margin-top: var(--sp-2); }
   #materiales .materiales__lista li { padding-block: var(--sp-2); }
+}
+@media (max-height: 660px) {
+  #materiales .marquee { margin-block: var(--sp-1); }
+  #materiales .materiales__lista li { padding-block: 12px; }
 }
 
 /* ============================================================
@@ -640,7 +652,6 @@
 #proceso .pasos { flex: 1 1 auto; grid-auto-rows: 1fr; }
 #proceso .paso { align-content: center; }
 @media (max-height: 860px) {
-  #proceso .pantalla { padding-block: 24px; }
   #proceso .encabezado { margin-bottom: var(--sp-2); }
   #proceso .paso { padding-block: 12px; }
   #proceso .paso__num { font-size: 36px; }
@@ -648,12 +659,13 @@
 }
 @media (max-height: 680px) {
   #proceso .encabezado .bajada { display: none; }
+  #proceso .paso { padding-block: 8px; }
+  #proceso .paso__desc { margin-top: 2px; }
 }
 @media (max-height: 600px) {
   #proceso .paso { padding-block: 8px; }
   #proceso .paso__desc { font-size: 13px; line-height: 1.4; margin-top: 2px; }
   #materiales .marquee__pista span { font-size: 26vw; }
-  #materiales .marquee__foto { width: 26vw; }
   #materiales .materiales__desc { font-size: 13px; line-height: 1.4; }
 }
 
