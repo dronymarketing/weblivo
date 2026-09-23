@@ -23,7 +23,7 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Santi pidió **no** mostrar en pantalla avisos de "foto de muestra": el cliente sabe que es borrador.
   Las fotos de muestra están marcadas solo en comentarios del HTML.
 - Sin antes/después (promesa de resultados): en su lugar va la sección Proceso.
-- Los cirujanos van con fotos de banco no identificables (con tapaboca).
+- Los cirujanos van con sus fotos reales (las pasó el cliente, en blanco y negro): img/mantrana.jpg e img/grundinger.jpg.
 
 ## Pantalla completa (metodología de fabianamartinez)
 
@@ -56,7 +56,6 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 - Logo: el original en alta (img/logo.png?v=2, 858×164, fondo transparente). En el nav: clamp(17px, 5.8vw, 26px) en celular para que entre el botón «Consultar» con texto, 48px en escritorio. Si el cliente tiene SVG, mejor todavía.
 - Caché: la web manda CSS y JS con 4 h de caché. Cada vez que cambian, subir el ?v= en los tres HTML.
-- Retratos reales del Dr. Mantrana y la Dra. Grundinger.
 - Foto del hero en horizontal o en más resolución: la que hay (img/hero.jpg) es vertical de 720×1452; en escritorio se amplía al doble y se ve blanda.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
 
