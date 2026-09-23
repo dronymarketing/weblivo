@@ -382,6 +382,58 @@
 
 .seccion__pie { margin-top: var(--sp-5); }
 
+/* ------------------------------------------------------------
+   PANTALLA COMPLETA — metodología de fabianamartinez.
+   Cada .pantalla mide exactamente lo visible debajo del nav:
+   min-height (nunca height), con --vh100 medido por JS para el
+   bug de la barra de Chrome Android. Resta --nav-alto porque no
+   arranca en scrollY:0: cuando se llega acá el nav ya está encima.
+   Lo que sobra lo absorbe la foto (flex), así nunca queda aire
+   suelto ni asoma la pantalla siguiente.
+   ------------------------------------------------------------ */
+.pantalla {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: var(--vh100, 100svh);
+  min-height: calc(100vh - var(--nav-alto));
+  min-height: calc(100svh - var(--nav-alto));
+  min-height: calc(var(--vh100, 100svh) - var(--nav-alto));
+  display: flex;
+  flex-direction: column;
+  padding-block: 40px;
+}
+
+/* Nosotros: dos pantallas, un cirujano en cada una */
+.nosotros { padding-block: 0; }
+.nosotros .encabezado { margin-bottom: var(--sp-3); }
+.nosotros .perfil {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.nosotros .perfil__foto {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 160px;
+  aspect-ratio: auto;
+}
+.nosotros .perfil__foto img { position: absolute; inset: 0; object-position: 50% 30%; }
+.nosotros .seccion__pie { margin-top: var(--sp-2); }
+
+/* Pantallas bajas: se comprime el aire y se saca la descripción
+   (está completa en nosotros.html), para no pasarse de una pantalla. */
+@media (max-height: 740px) {
+  .nosotros .pantalla { padding-block: 24px; }
+  .nosotros .encabezado { margin-bottom: var(--sp-2); }
+  .nosotros .encabezado .bajada { margin-top: 8px; }
+  .nosotros .perfil__texto { margin-top: 12px; padding-top: 12px; }
+  .nosotros .perfil__desc { display: none; }
+}
+@media (max-height: 600px) {
+  .nosotros .encabezado .bajada { display: none; }
+  .nosotros .perfil__foto { min-height: 120px; }
+}
+
 /* ============================================================
    FILOSOFÍA — tipografía protagonista
    ============================================================ */

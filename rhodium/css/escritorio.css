@@ -36,6 +36,20 @@
 .perfiles { grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
 .perfiles .perfil:nth-child(2) { margin-top: var(--sp-7); }
 
+/* Nosotros a pantalla completa: foto y texto en dos columnas,
+   alternando el lado de la foto entre una pantalla y la otra */
+.nosotros .pantalla { padding-block: 56px; }
+.nosotros .perfil {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-6);
+}
+.nosotros .perfil__foto { min-height: 280px; }
+.nosotros .perfil__texto { align-self: end; margin-top: 0; }
+.nosotros .pantalla:nth-child(2) .perfil__foto { order: 2; }
+.nosotros .seccion__pie { margin-top: var(--sp-3); }
+.nosotros .perfil__desc { max-width: 40ch; }
+
 /* ---------- Filosofía ---------- */
 .filosofia__cuerpo {
   display: grid;

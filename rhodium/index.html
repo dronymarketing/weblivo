@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#020203">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Italiana-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=8">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=8">
-<link rel="stylesheet" href="css/fuentes.css?v=8">
-<link rel="stylesheet" href="css/base.css?v=8">
-<link rel="stylesheet" href="css/movil.css?v=8">
-<link rel="stylesheet" href="css/escritorio.css?v=8" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=9">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=9">
+<link rel="stylesheet" href="css/fuentes.css?v=9">
+<link rel="stylesheet" href="css/base.css?v=9">
+<link rel="stylesheet" href="css/movil.css?v=9">
+<link rel="stylesheet" href="css/escritorio.css?v=9" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -98,43 +98,43 @@
 
   <div class="sobre-hero">
 
-    <!-- ============ NOSOTROS — adelanto ============ -->
-    <section class="seccion" id="siguiente">
-      <div class="contenedor">
+    <!-- ============ NOSOTROS — adelanto, en dos pantallas completas (como fabianamartinez) ============ -->
+    <section class="seccion nosotros" id="siguiente">
+      <div class="contenedor pantalla">
         <header class="encabezado">
           <p class="antetitulo" data-reveal><span class="antetitulo__num">01</span><span class="antetitulo__linea"></span>Nosotros</p>
           <h2 class="titulo" data-reveal>Un equipo, un criterio</h2>
           <p class="bajada" data-reveal>Cirugía plástica, reconstructiva y estética en manos de dos especialistas.</p>
         </header>
-        <div class="perfiles">
-          <article class="perfil" data-reveal>
-            <div class="perfil__foto">
-              <!-- FOTO DE MUESTRA (Pexels 15960473) — reemplazar por retrato del Dr. Mantrana -->
-              <img src="img/equipo-1.jpg" alt="Cirujano con tapaboca y túnica blanca, colocándose guantes" loading="lazy">
+        <article class="perfil" data-reveal>
+          <div class="perfil__foto">
+            <!-- FOTO DE MUESTRA (Pexels 15960473) — reemplazar por retrato del Dr. Mantrana -->
+            <img src="img/equipo-1.jpg" alt="Cirujano con tapaboca y túnica blanca, colocándose guantes" loading="lazy">
+          </div>
+          <div class="perfil__texto">
+            <p class="perfil__rol">Cirujano plástico</p>
+            <h3 class="perfil__nombre">Dr. Gustavo Mantrana</h3>
+            <p class="perfil__desc">Formado en Venezuela, con más de 15 años de experiencia en la especialidad.</p>
+            <a class="perfil__ig" href="https://www.instagram.com/cpmantrana/" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg>@cpmantrana</a>
+          </div>
+        </article>
+      </div>
+      <div class="contenedor pantalla">
+        <article class="perfil" data-reveal>
+          <div class="perfil__foto">
+            <!-- FOTO DE MUESTRA (Pexels 4586993) — reemplazar por retrato de la Dra. Grundinger -->
+            <img src="img/equipo-2.jpg" alt="Cirujana con gorro y tapaboca en el quirófano" loading="lazy">
+          </div>
+          <div class="perfil__texto">
+            <p class="perfil__rol">Cirujana plástica</p>
+            <h3 class="perfil__nombre">Dra. Jeannette Grundinger</h3>
+            <p class="perfil__desc">Especialista en cirugía plástica, reconstructiva y estética.</p>
+            <a class="perfil__ig" href="https://www.instagram.com/dragrundinger/" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg>@dragrundinger</a>
+            <div class="seccion__pie">
+              <a class="btn btn--linea" href="nosotros.html">Conocé al equipo<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
             </div>
-            <div class="perfil__texto">
-              <p class="perfil__rol">Cirujano plástico</p>
-              <h3 class="perfil__nombre">Dr. Gustavo Mantrana</h3>
-              <p class="perfil__desc">Formado en Venezuela, con más de 15 años de experiencia en la especialidad.</p>
-              <a class="perfil__ig" href="https://www.instagram.com/cpmantrana/" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg>@cpmantrana</a>
-            </div>
-          </article>
-          <article class="perfil" data-reveal>
-            <div class="perfil__foto">
-              <!-- FOTO DE MUESTRA (Pexels 4586993) — reemplazar por retrato de la Dra. Grundinger -->
-              <img src="img/equipo-2.jpg" alt="Cirujana con gorro y tapaboca en el quirófano" loading="lazy">
-            </div>
-            <div class="perfil__texto">
-              <p class="perfil__rol">Cirujana plástica</p>
-              <h3 class="perfil__nombre">Dra. Jeannette Grundinger</h3>
-              <p class="perfil__desc">Especialista en cirugía plástica, reconstructiva y estética.</p>
-              <a class="perfil__ig" href="https://www.instagram.com/dragrundinger/" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg>@dragrundinger</a>
-            </div>
-          </article>
-        </div>
-        <div class="seccion__pie" data-reveal>
-          <a class="btn btn--linea" href="nosotros.html">Conocé al equipo<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
-        </div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -317,6 +317,6 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 </body>
 </html>

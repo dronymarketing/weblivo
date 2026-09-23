@@ -9,6 +9,22 @@
   var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ----------------------------------------------------------
+     ALTO REAL DE PANTALLA (como fabianamartinez) — Chrome Android
+     no siempre aplica 100svh en el primer pintado. Se mide y se
+     pisa por CSS en var(--vh100, 100svh): sigue siendo min-height.
+     visualViewport.resize es el que dispara cuando la barra de
+     direcciones se esconde o aparece al scrollear.
+  ---------------------------------------------------------- */
+  function fijarAltoReal() {
+    var alto = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    raiz.style.setProperty('--vh100', alto + 'px');
+  }
+  fijarAltoReal();
+  window.addEventListener('resize', fijarAltoReal);
+  window.addEventListener('orientationchange', fijarAltoReal);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fijarAltoReal);
+
+  /* ----------------------------------------------------------
      NAV — transparente en el tope, glass sobre el hero,
      sólido cuando el contenido ya tapó el hero.
   ---------------------------------------------------------- */

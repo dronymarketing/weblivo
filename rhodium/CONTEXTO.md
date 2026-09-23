@@ -25,6 +25,16 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Sin antes/después (promesa de resultados): en su lugar va la sección Proceso.
 - Los cirujanos van con fotos de banco no identificables (con tapaboca).
 
+## Pantalla completa (metodología de fabianamartinez)
+
+- `.pantalla` en `movil.css`: `min-height: calc(var(--vh100, 100svh) - var(--nav-alto))`, con `--vh100`
+  medido en `js/main.js` (resize, orientationchange y visualViewport.resize). Nunca `height`.
+- Nosotros (adelanto del inicio) son dos `.pantalla`: encabezado + Dr. Mantrana, y Dra. Grundinger + botón.
+  La foto es `flex: 1` y absorbe lo que sobra: la pantalla mide exacto sin aire suelto.
+  En pantallas bajas (`max-height: 740px`) se saca la descripción; en `max-height: 600px` también la bajada.
+- Verificado exacto de 320×568 a 1920×1080. Si se le agrega contenido, volver a medir en pantallas chicas.
+- Pendiente de decidir: llevar Filosofía, Materiales, Proceso y Contacto a pantalla completa.
+
 ## PENDIENTE
 
 - Logo: el original en alta (img/logo.png?v=2, 858×164, fondo transparente). En el nav: clamp(17px, 5.8vw, 26px) en celular para que entre el botón «Consultar» con texto, 48px en escritorio. Si el cliente tiene SVG, mejor todavía.
