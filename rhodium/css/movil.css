@@ -951,3 +951,37 @@
 
 /* Hero de proceso.html: en celular, foto vertical con los dos en cuadro */
 .hero__foto--proceso img { object-position: 50% 30%; }
+
+/* ============================================================
+   CONTACTO (página) — las dos secciones a pantalla completa,
+   40px arriba y abajo como el resto
+   ============================================================ */
+.contacto--pantalla { padding-block: 0; }
+.contacto--pantalla .contacto__cuerpo { justify-content: space-between; gap: var(--sp-4); }
+.contacto--pantalla .datos { margin-top: 0; }
+@media (max-height: 760px) {
+  .contacto--pantalla .datos a, .contacto--pantalla .datos p { min-height: 48px; padding-block: 6px; }
+  .contacto--pantalla .contacto__acciones { margin-top: var(--sp-3); }
+}
+@media (max-height: 680px) {
+  .contacto--pantalla .bajada { display: none; }
+  .contacto--pantalla .datos a, .contacto--pantalla .datos p { min-height: 44px; padding-block: 4px; }
+}
+@media (max-height: 600px) {
+  .contacto--pantalla .contacto__acciones { margin-top: 12px; }
+  .contacto--pantalla .datos a, .contacto--pantalla .datos p { font-size: var(--fs-small); min-height: 40px; padding-block: 2px; }
+  .contacto--pantalla .contacto__cuerpo { gap: var(--sp-2); }
+  .contacto--pantalla .contacto__acciones .btn { min-height: 44px; }
+  #ubicacion .encabezado .bajada { display: none; }
+  #ubicacion .mapa--grande { min-height: 140px; }
+  #ubicacion .seccion__pie .btn { min-height: 44px; }
+}
+
+/* Ubicación: el mapa absorbe lo que sobra */
+#ubicacion .encabezado { margin-bottom: var(--sp-3); }
+#ubicacion .mapa--grande { flex: 1 1 auto; min-height: 180px; aspect-ratio: auto; }
+#ubicacion .seccion__pie { margin-top: var(--sp-3); }
+@media (max-height: 680px) {
+  #ubicacion .encabezado { margin-bottom: var(--sp-2); }
+  #ubicacion .seccion__pie { margin-top: var(--sp-2); }
+}

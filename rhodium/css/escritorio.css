@@ -167,3 +167,7 @@
 
 /* Hero de proceso.html: foto horizontal, médico y paciente en cuadro */
 .hero__foto--proceso img { object-position: 50% 35%; }
+
+/* Contacto (página) a pantalla completa en escritorio */
+.contacto--pantalla .contacto__cuerpo.pantalla { display: grid; grid-template-columns: 1.3fr 1fr; column-gap: var(--sp-6); align-content: center; align-items: center; }
+#ubicacion .mapa--grande { aspect-ratio: auto; }

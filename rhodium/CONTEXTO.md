@@ -78,6 +78,12 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Foto del hero en horizontal o en más resolución: la que hay (img/hero.jpg) es vertical de 720×1452; en escritorio se amplía al doble y se ve blanda.
 - Biografía de la Dra. Grundinger (la web vieja solo trae el título).
 
+## Página de contacto
+
+- Sus dos secciones son `.pantalla` (40px arriba y abajo): «Agendá tu consulta» sobre foto, con los
+  datos abajo (`space-between`), y «Cómo llegar», donde el mapa absorbe lo que sobra. Exactas de
+  320×568 a 1920×1080; en pantallas bajas se achican las filas de datos y se esconden las bajadas.
+
 ## Pie
 
 - Columnas: Páginas · Contacto, con íconos: Instagram, WhatsApp, mail, horario y un mapa chico de Google
