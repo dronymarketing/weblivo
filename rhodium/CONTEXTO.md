@@ -23,7 +23,7 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Santi pidió **no** mostrar en pantalla avisos de "foto de muestra": el cliente sabe que es borrador.
   Las fotos de muestra están marcadas solo en comentarios del HTML.
 - Sin antes/después (promesa de resultados): en su lugar va la sección Proceso.
-- Los cirujanos van con sus fotos reales (las pasó el cliente, en blanco y negro): img/mantrana.jpg e img/grundinger.jpg.
+- Los cirujanos van con sus fotos reales (las pasó el cliente, en blanco y negro): img/mantrana.jpg e img/grundinger.jpg. María Verónica Sánchez (atención al paciente) también, en su recuadro de nosotros.html: img/sanchez.jpg.
 
 ## Pantalla completa (metodología de fabianamartinez)
 

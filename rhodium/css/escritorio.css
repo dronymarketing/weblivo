@@ -128,7 +128,9 @@
   align-items: end;
 }
 .ficha:nth-child(even) .perfil__foto { order: 2; }
-.atencion { display: grid; grid-template-columns: 1fr 1.2fr; column-gap: var(--sp-6); padding: var(--sp-5); }
+.atencion { display: grid; grid-template-columns: 220px 1fr 1.2fr; column-gap: var(--sp-5); align-items: center; padding: var(--sp-5); }
+.atencion__foto { margin-bottom: 0; }
+.atencion .perfil__desc { margin-top: 0; }
 
 /* ---------- Pie ---------- */
 .pie__columnas { grid-template-columns: repeat(3, 1fr); max-width: 760px; }

@@ -758,6 +758,14 @@
   border: var(--borde);
   border-radius: var(--radio-recto);
 }
+.atencion__foto {
+  aspect-ratio: 4 / 5;
+  margin-bottom: var(--sp-3);
+  overflow: hidden;
+  background: var(--fondo-alt);
+}
+.atencion__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+.atencion .perfil__desc { margin-top: var(--sp-2); }
 
 /* ============================================================
    PIE
