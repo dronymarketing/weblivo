@@ -171,7 +171,12 @@
     el.style.setProperty('--i', hermanos.indexOf(el));
   });
 
-  if ('IntersectionObserver' in window && !reducido) {
+  /* Con GSAP las apariciones van atadas al scroll (más abajo, después
+     de la pila anclada). Sin GSAP: una sola vez, al entrar en pantalla. */
+  var scrub = !!(window.gsap && window.ScrollTrigger) && !reducido;
+  if (scrub) {
+    raiz.classList.add('reveal-scrub');
+  } else if ('IntersectionObserver' in window && !reducido) {
     var io = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (en) {
         if (!en.isIntersecting) return;
@@ -217,6 +222,7 @@
       var tl = gsap.timeline({
         defaults: { ease: 'none' },
         scrollTrigger: {
+          refreshPriority: 1,   /* se mide antes que todo lo que está debajo del pin */
           trigger: pila,
           start: function () { return 'top ' + altoNav() + 'px'; },
           end: function () { return '+=' + tramo() * (tarjetas.length - 1 + 0.35); },
@@ -234,5 +240,40 @@
       }
       tl.to({}, { duration: 0.35 });   /* un respiro con la última foto arriba antes de soltar */
     }
+  }
+  /* ----------------------------------------------------------
+     APARICIONES ATADAS AL SCROLL — títulos, párrafos e imágenes
+     avanzan con el dedo y retroceden si se sube: no se animan
+     una vez y quedan quietas. Van al final para que se midan
+     con el recorrido de la pila anclada ya reservado.
+  ---------------------------------------------------------- */
+  if (scrub) {
+    var tramoAparicion = function (el, i) {
+      /* hermanos en la misma fila: cada uno arranca un poco después */
+      var corrimiento = Math.min(i || 0, 4) * 4;
+      return { trigger: el, start: 'top ' + (96 - corrimiento) + '%', end: 'top ' + (72 - corrimiento) + '%', scrub: 0.6 };
+    };
+
+    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+      var i = parseInt(el.style.getPropertyValue('--i'), 10) || 0;
+      gsap.fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, ease: 'none', scrollTrigger: tramoAparicion(el, i) });
+    });
+
+    document.querySelectorAll('[data-palabras]').forEach(function (el) {
+      /* y: 0 explícito: si no, GSAP hereda el translateY(105%) del CSS como píxeles */
+      gsap.fromTo(el.querySelectorAll('.palabra > span'), { y: 0, yPercent: 105 },
+        { y: 0, yPercent: 0, ease: 'none', stagger: 0.12,
+          scrollTrigger: { trigger: el, start: 'top 92%', end: 'top 55%', scrub: 0.6 } });
+    });
+
+    /* Fotos: se acercan de 1.15 a 1 mientras cruzan la pantalla
+       (el contenedor recorta con overflow: hidden) */
+    document.querySelectorAll('.perfil__foto img, .item__foto img, .atencion__foto img').forEach(function (img) {
+      gsap.fromTo(img, { scale: 1.15 }, { scale: 1, ease: 'none',
+        scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'center 45%', scrub: 0.6 } });
+    });
+
+    if (ScrollTrigger.sort) ScrollTrigger.sort();
+    window.addEventListener('load', function () { ScrollTrigger.refresh(); });
   }
 })();

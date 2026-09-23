@@ -92,6 +92,11 @@ strong { font-weight: 500; }
 }
 .js [data-palabras].is-in .palabra > span { transform: none; }
 
+/* Con GSAP, las apariciones las mueve el scroll (js/main.js): sin transición CSS,
+   que si no el dedo y la animación van desfasados */
+.reveal-scrub [data-reveal],
+.reveal-scrub [data-palabras] .palabra > span { transition: none; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .js [data-reveal] { opacity: 1; transform: none; transition: none; }

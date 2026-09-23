@@ -55,6 +55,14 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 
+## Animaciones atadas al scroll
+
+- Con GSAP, las apariciones (`[data-reveal]`), los títulos por palabras (`[data-palabras]`) y las fotos
+  de perfiles, procedimientos y atención van con `scrub`: avanzan con el dedo y retroceden al subir.
+  No se animan una sola vez. Se crean al final de `main.js` (después de la pila, que lleva
+  `refreshPriority: 1`) para medirse con el recorrido del pin ya reservado.
+- Sin GSAP o con movimiento reducido: la aparición única de siempre (IntersectionObserver) o nada.
+
 ## Procedimientos del inicio — pila anclada (E)
 
 - La sección es una `.pantalla` que se fija con el pin de ScrollTrigger (`[data-pila]`, `js/main.js`).
