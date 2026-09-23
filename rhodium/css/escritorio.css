@@ -1,0 +1,118 @@
+/* ============================================================
+   RHODIUM — ESCRITORIO (≥768px, cargado por el atributo media)
+   Solo lo que cambia.
+   ============================================================ */
+
+:root {
+  --fs-display: clamp(96px, 15vw, 230px);
+  --fs-revista: clamp(56px, 6.4vw, 96px);
+  --fs-cita:    clamp(48px, 5.4vw, 84px);
+  --fs-nombre:  36px;
+}
+
+.nav__logo { font-size: 26px; }
+.nav__wa { padding: 0 20px 0 16px; }
+
+.menu { width: 440px; padding-inline: 48px; }
+.menu__lista a { font-size: 34px; min-height: 72px; }
+
+/* ---------- Hero ---------- */
+.hero { padding-bottom: 136px; }
+.hero__titulo { line-height: .82; }
+.hero__sub { max-width: 40ch; font-size: 18px; }
+.hero--pagina .hero__titulo { font-size: clamp(88px, 11vw, 170px); }
+
+/* ---------- Encabezado de revista: título a la izquierda, bajada a la derecha ---------- */
+.encabezado {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  column-gap: var(--sp-6);
+  align-items: end;
+}
+.encabezado .antetitulo { grid-column: 1 / -1; }
+.encabezado .bajada { margin-top: 0; }
+
+/* ---------- Nosotros ---------- */
+.perfiles { grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+.perfiles .perfil:nth-child(2) { margin-top: var(--sp-7); }
+
+/* ---------- Filosofía ---------- */
+.filosofia__cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 2.4fr;
+  column-gap: var(--sp-6);
+}
+.filosofia__cuerpo .antetitulo { align-self: start; margin-top: var(--sp-4); }
+.filosofia__texto { margin-left: auto; font-size: 18px; }
+
+/* ---------- Banda ---------- */
+.banda__marco { min-height: 100vh; min-height: 100svh; }
+.banda__rotulo { left: 40px; bottom: 40px; }
+
+/* ---------- Procedimientos: título anclado a la izquierda ---------- */
+.procs__cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  column-gap: var(--sp-6);
+  align-items: start;
+}
+.procs__cuerpo .encabezado {
+  display: block;
+  position: sticky;
+  top: calc(var(--nav-alto) + 48px);
+}
+.procs__cuerpo .seccion__pie { margin-top: var(--sp-4); }
+.proc__tarjeta { height: 78vh; max-height: 720px; padding: var(--sp-4); }
+.proc__num { top: var(--sp-4); left: var(--sp-4); }
+.proc__nombre { font-size: 48px; }
+
+/* ---------- Materiales ---------- */
+.marquee__pista span { font-size: 22vw; }
+.marquee__foto { width: 22vw; max-width: 340px; }
+.materiales__lista { grid-template-columns: 1fr 1fr; column-gap: var(--sp-5); }
+.materiales__lista li:last-child { border-bottom: 0; }
+.materiales__lista li { border-bottom: var(--borde); }
+.materiales__nombre { font-size: 34px; }
+
+/* ---------- Proceso: cuatro columnas ---------- */
+.pasos { grid-template-columns: repeat(4, 1fr); column-gap: var(--sp-4); }
+.paso {
+  grid-template-columns: 1fr;
+  border-bottom: 0;
+  padding-top: var(--sp-4);
+}
+.paso:last-child { border-bottom: 0; }
+.paso__num { font-size: 72px; }
+
+/* ---------- Contacto ---------- */
+.contacto { padding-block: 200px 120px; }
+.contacto__cuerpo {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  column-gap: var(--sp-6);
+  align-items: end;
+}
+.datos { margin-top: 0; }
+
+/* ---------- Página de procedimientos: alterna foto y texto ---------- */
+.item {
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-6);
+  align-items: end;
+}
+.item__foto { max-height: 80vh; }
+.item:nth-child(even) .item__foto { order: 2; }
+.item__nombre { font-size: 56px; }
+.item__desc { font-size: 18px; }
+
+/* ---------- Página nosotros ---------- */
+.ficha {
+  grid-template-columns: 1fr 1.2fr;
+  column-gap: var(--sp-6);
+  align-items: end;
+}
+.ficha:nth-child(even) .perfil__foto { order: 2; }
+.atencion { display: grid; grid-template-columns: 1fr 1.2fr; column-gap: var(--sp-6); padding: var(--sp-5); }
+
+/* ---------- Pie ---------- */
+.pie__columnas { grid-template-columns: repeat(3, 1fr); max-width: 760px; }

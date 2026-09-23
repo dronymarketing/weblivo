@@ -1,0 +1,97 @@
+/* ============================================================
+   RHODIUM — Base: reset, tipografía, utilidades y apariciones
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--fondo);
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Barra inferior del sistema */
+body::after {
+  content: '';
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--barra-inferior);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+ul, ol { list-style: none; }
+strong { font-weight: 500; }
+
+[id] { scroll-margin-top: calc(var(--nav-alto) + 16px); }
+
+:focus-visible { outline: 1px solid var(--texto); outline-offset: 3px; }
+
+.solo-lectores {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Íconos: Lucide (trazo) y Simple Icons (relleno) ---------- */
+.ico {
+  width: 20px; height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ico-marca {
+  width: 20px; height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* ---------- Apariciones al scroll (B) ----------
+   El estado oculto existe solo si el JS puso .js en <html>. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-scroll) var(--ease),
+              transform var(--dur-scroll) var(--ease);
+  transition-delay: calc(var(--i, 0) * var(--stagger));
+}
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+
+/* ---------- Título por palabras (G) ---------- */
+.js [data-palabras] .palabra {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: .06em;
+}
+.js [data-palabras] .palabra > span {
+  display: inline-block;
+  transform: translateY(105%);
+  transition: transform 800ms var(--curva-re);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.js [data-palabras].is-in .palabra > span { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .js [data-palabras] .palabra > span { transform: none; transition: none; }
+  .cue .ico, .marquee__pista { animation: none; }
+}

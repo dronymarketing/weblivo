@@ -1,0 +1,684 @@
+/* ============================================================
+   RHODIUM — MÓVIL
+   Todo el diseño en el celular. Sin media queries.
+   ============================================================ */
+
+.contenedor {
+  width: 100%;
+  max-width: var(--max-contenedor);
+  margin-inline: auto;
+  padding-inline: var(--margen-lateral);
+}
+
+/* Todo lo que pasa por encima del hero fijo (D) necesita fondo opaco */
+.sobre-hero {
+  position: relative;
+  z-index: 2;
+  background: var(--fondo);
+}
+
+.seccion { padding-block: var(--sp-seccion); }
+.seccion--alt { background: var(--fondo-alt); }
+
+/* ---------- Encabezados de revista ---------- */
+.antetitulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-micro);
+  font-weight: 400;
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.antetitulo__num { color: var(--texto); }
+.antetitulo__linea {
+  width: 32px; height: 1px;
+  background: currentColor;
+  opacity: .5;
+}
+
+.titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-revista);
+  line-height: 1.02;
+  letter-spacing: -.005em;
+  text-transform: uppercase;
+  margin-top: var(--sp-2);
+}
+
+.bajada {
+  max-width: var(--max-lectura);
+  margin-top: var(--sp-2);
+  color: var(--texto-suave);
+}
+
+.encabezado { margin-bottom: var(--sp-5); }
+
+/* ---------- Botones — cápsula (registro moda) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--alto-boton);
+  padding: 0 26px;
+  border-radius: var(--radio-capsula);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease),
+              color var(--dur-micro) var(--ease),
+              border-color var(--dur-micro) var(--ease);
+}
+.btn .ico, .btn .ico-marca { width: 18px; height: 18px; }
+.btn--claro { background: var(--texto); color: var(--fondo); }
+.btn--claro:active { background: var(--acento-claro); }
+.btn--linea { border: var(--borde); color: var(--texto); }
+.btn--linea:active { background: var(--velo); }
+
+/* Glass: solo sobre foto */
+.glass {
+  background: var(--glass-fondo);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: var(--borde-claro);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: var(--glass-solido); }
+}
+
+.enlace-flecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  padding-block: 12px;
+  border-bottom: var(--borde);
+}
+
+/* ============================================================
+   NAV — como Los Paraísos: logo · WhatsApp + hamburguesa
+   Transparente en el tope, glass sobre el hero, sólido después.
+   ============================================================ */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: var(--nav-alto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--margen-lateral);
+  border-bottom: 1px solid transparent;
+  transition: background-color var(--dur-micro) var(--ease),
+              border-color var(--dur-micro) var(--ease);
+}
+.nav.es-glass {
+  background: var(--glass-fondo);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border-bottom-color: rgba(255, 255, 255, .12);
+}
+.nav.es-solido {
+  background: var(--fondo);
+  border-bottom-color: rgba(255, 255, 255, .1);
+}
+.menu-abierto .nav {
+  background: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* PENDIENTE: logo de Rhodium en SVG. Mientras, va el nombre en Italiana. */
+.nav__logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding-block: 11px;
+}
+
+.nav__acciones { display: flex; align-items: center; gap: 6px; }
+
+.nav__wa {
+  min-height: 44px;
+  padding: 0 16px 0 14px;
+  gap: 8px;
+  font-size: 11px;
+}
+.nav__wa .ico-marca { width: 16px; height: 16px; }
+
+.nav__hamburguesa {
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  margin-right: -10px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--texto);
+}
+.ham { position: relative; width: 22px; height: 13px; }
+.ham span {
+  position: absolute;
+  left: 0; width: 100%; height: 1px;
+  background: currentColor;
+  transition: transform var(--dur-micro) var(--ease), opacity var(--dur-micro) var(--ease);
+}
+.ham span:nth-child(1) { top: 0; }
+.ham span:nth-child(2) { top: 6px; }
+.ham span:nth-child(3) { top: 12px; }
+.menu-abierto .ham span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-abierto .ham span:nth-child(2) { opacity: 0; }
+.menu-abierto .ham span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ---------- Menú: panel desde la derecha ---------- */
+.menu__velo {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background: rgba(2, 2, 3, .6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-cierre) var(--ease);
+}
+.menu {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 55;
+  width: 86vw;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--nav-alto) + var(--sp-4)) var(--margen-lateral) calc(var(--sp-4) + env(safe-area-inset-bottom));
+  background: var(--fondo-alt);
+  border-left: var(--borde-claro);
+  overflow-y: auto;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform var(--dur-cierre) var(--ease), visibility 0s linear var(--dur-cierre);
+}
+.menu-abierto .menu__velo {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: var(--dur-menu);
+}
+.menu-abierto .menu {
+  transform: none;
+  visibility: visible;
+  transition: transform var(--dur-menu) var(--ease), visibility 0s;
+}
+
+.menu__lista li { border-top: var(--borde); }
+.menu__lista li:last-child { border-bottom: var(--borde); }
+.menu__lista a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.menu__lista a[aria-current] { color: var(--texto-suave); }
+.menu__lista .ico { color: var(--texto-suave); }
+
+.menu__leyenda {
+  display: flex;
+  gap: 20px;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.menu__leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.menu__leyenda .ico { width: 14px; height: 14px; }
+
+.menu__pie { margin-top: auto; padding-top: var(--sp-5); }
+.menu__pie .btn { margin-bottom: var(--sp-3); }
+.menu__datos { font-size: var(--fs-small); color: var(--texto-suave); line-height: 1.8; }
+.menu__redes { display: flex; gap: 8px; margin-top: var(--sp-2); }
+.menu__redes a {
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  border: var(--borde);
+  border-radius: var(--radio-capsula);
+}
+
+/* Los ítems entran después del panel, escalonados; al cerrar se van juntos */
+.js .menu [data-menu-item] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-cierre) var(--ease), transform var(--dur-cierre) var(--ease);
+}
+.js.menu-abierto .menu [data-menu-item] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 400ms var(--ease), transform 400ms var(--ease);
+  transition-delay: calc(180ms + var(--i, 0) * 60ms);
+}
+.menu-abierto { overflow: hidden; }
+
+/* ============================================================
+   HERO — pantalla completa, fijo (D): lo demás le pasa por encima
+   ============================================================ */
+.hero {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: calc(var(--nav-alto) + var(--sp-4)) var(--margen-lateral) 128px;
+}
+.hero__foto { position: absolute; inset: 0; z-index: -2; }
+.hero__foto img { width: 100%; height: 100%; object-fit: cover; }
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg,
+    var(--velo-foto-1) 0%,
+    var(--velo-foto-0) 30%,
+    var(--velo-foto-1) 58%,
+    var(--velo-foto-2) 84%,
+    var(--fondo) 100%);
+}
+.hero__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display);
+  line-height: .9;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  margin-top: var(--sp-2);
+}
+.hero__titulo sup {
+  font-family: var(--font-body);
+  font-size: .14em;
+  vertical-align: top;
+  margin-left: .1em;
+  letter-spacing: 0;
+}
+.hero__sub {
+  max-width: 30ch;
+  margin-top: var(--sp-2);
+  color: var(--texto-foto);
+}
+.hero__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-4); }
+.hero .antetitulo { color: var(--texto-foto); }
+
+/* Scroll cue */
+.cue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 44px;
+  font-size: var(--fs-micro);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--texto-foto);
+}
+.cue .ico { width: 18px; height: 18px; stroke-width: 1; animation: cue 2s ease-in-out infinite; }
+@keyframes cue { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+/* Hero de páginas internas: mismo esquema */
+.hero--pagina .hero__titulo { font-size: clamp(48px, 15vw, 80px); }
+
+/* ============================================================
+   NOSOTROS — adelanto (revista)
+   ============================================================ */
+.perfiles { display: grid; gap: var(--sp-5); }
+.perfil__foto {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--fondo-alt);
+}
+.perfil__foto img { width: 100%; height: 100%; object-fit: cover; }
+.perfil__texto { border-top: var(--borde); margin-top: var(--sp-2); padding-top: var(--sp-2); }
+.perfil__rol {
+  font-size: var(--fs-micro);
+  font-weight: 400;
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.perfil__nombre {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-nombre);
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.perfil__desc { margin-top: var(--sp-1); color: var(--texto-suave); }
+.perfil__ig {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 4px;
+  font-size: var(--fs-small);
+}
+.perfil__ig .ico-marca { width: 16px; height: 16px; }
+
+.seccion__pie { margin-top: var(--sp-5); }
+
+/* ============================================================
+   FILOSOFÍA — tipografía protagonista
+   ============================================================ */
+.filosofia { border-top: var(--borde); }
+.cita {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-cita);
+  line-height: 1.08;
+  text-transform: uppercase;
+  margin-top: var(--sp-4);
+}
+.filosofia__texto {
+  max-width: var(--max-lectura);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: var(--borde);
+  color: var(--texto-suave);
+}
+
+/* ============================================================
+   BANDA DE FOTO — reveal atado al scroll (C)
+   ============================================================ */
+.banda { position: relative; }
+.banda__marco {
+  position: relative;
+  min-height: 88vh;
+  min-height: 88svh;
+  overflow: hidden;
+}
+.banda__marco img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banda__rotulo {
+  position: absolute;
+  left: var(--margen-lateral);
+  bottom: var(--sp-4);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--radio-capsula);
+  font-size: var(--fs-micro);
+  font-weight: 400;
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   PROCEDIMIENTOS — galería anclada (E): las tarjetas se apilan
+   ============================================================ */
+.procs__lista { display: grid; gap: var(--sp-3); }
+.proc {
+  position: sticky;
+  top: calc(var(--nav-alto) + 16px + var(--i, 0) * 14px);
+}
+.proc__tarjeta {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 72vh;
+  height: 72svh;
+  max-height: 600px;
+  padding: var(--sp-3);
+  border: var(--borde-claro);
+  background: var(--fondo-alt);
+  overflow: hidden;
+}
+.proc__tarjeta img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.proc__tarjeta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--velo-foto-0) 30%, var(--velo-foto-2) 88%);
+}
+.proc__num {
+  position: absolute;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  color: var(--texto-foto);
+}
+.proc__nombre {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.proc__desc { margin-top: var(--sp-1); color: var(--texto-foto); max-width: 34ch; }
+
+/* ============================================================
+   MATERIALES — marquee con foto encima (I)
+   ============================================================ */
+.marquee {
+  position: relative;
+  overflow: hidden;   /* va en el contenedor del marquee, nunca en el hero */
+  padding-block: var(--sp-5);
+  margin-inline: calc(var(--margen-lateral) * -1);
+}
+.marquee__pista {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.marquee__pista span {
+  font-family: var(--font-display);
+  font-size: 34vw;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-right: .25em;
+}
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee__foto {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 40vw;
+  aspect-ratio: 3 / 4;
+  transform: translate(-50%, -50%);
+  border: var(--borde-claro);
+  overflow: hidden;
+}
+.marquee__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.materiales__lista { display: grid; gap: 0; margin-top: var(--sp-4); }
+.materiales__lista li { padding-block: var(--sp-3); border-top: var(--borde); }
+.materiales__lista li:last-child { border-bottom: var(--borde); }
+.materiales__nombre {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.materiales__desc { margin-top: 4px; color: var(--texto-suave); }
+
+/* ============================================================
+   PROCESO — grilla de revista numerada
+   ============================================================ */
+.pasos { display: grid; }
+.paso {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+  border-top: var(--borde);
+}
+.paso:last-child { border-bottom: var(--borde); }
+.paso__num {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: .9;
+  color: var(--texto-suave);
+}
+.paso__nombre {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.paso__desc { margin-top: 6px; color: var(--texto-suave); }
+
+/* ============================================================
+   CONTACTO — cierre sobre foto
+   ============================================================ */
+.contacto {
+  position: relative;
+  isolation: isolate;
+  padding-block: var(--sp-7) var(--sp-seccion);
+}
+.contacto__foto { position: absolute; inset: 0; z-index: -2; }
+.contacto__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.contacto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--fondo) 0%, var(--velo-foto-1) 28%, var(--velo-foto-1) 55%, var(--velo-foto-2) 80%, var(--fondo) 100%);
+}
+.contacto .bajada { color: var(--texto-foto); }
+.contacto .antetitulo { color: var(--texto-foto); }
+.contacto__acciones { margin-top: var(--sp-4); }
+
+.datos {
+  margin-top: var(--sp-6);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radio-recto);
+}
+.datos li + li { border-top: 1px solid rgba(255, 255, 255, .12); }
+.datos a, .datos p {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding-block: 10px;
+  font-size: var(--fs-body);
+}
+.datos .ico, .datos .ico-marca { color: var(--texto-foto); }
+
+/* ============================================================
+   PROCEDIMIENTOS (página) — lista de revista
+   ============================================================ */
+.catalogo { display: grid; gap: var(--sp-6); }
+.item { display: grid; gap: var(--sp-2); }
+.item__foto {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--fondo-alt);
+}
+.item__foto img { width: 100%; height: 100%; object-fit: cover; }
+.item__texto { border-top: var(--borde); padding-top: var(--sp-2); }
+.item__num { font-size: var(--fs-micro); letter-spacing: var(--ls-micro); color: var(--texto-suave); }
+.item__nombre {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.item__desc { margin-top: var(--sp-1); color: var(--texto-suave); max-width: var(--max-lectura); }
+.item .enlace-flecha { margin-top: var(--sp-2); }
+
+/* ============================================================
+   NOSOTROS (página)
+   ============================================================ */
+.ficha { display: grid; gap: var(--sp-3); }
+.ficha + .ficha { margin-top: var(--sp-6); }
+.ficha .perfil__desc { max-width: var(--max-lectura); }
+
+.atencion {
+  margin-top: var(--sp-6);
+  padding: var(--sp-4) var(--sp-3);
+  border: var(--borde);
+  border-radius: var(--radio-recto);
+}
+
+/* ============================================================
+   PIE
+   ============================================================ */
+.pie {
+  position: relative;
+  z-index: 2;
+  background: var(--fondo);
+  border-top: var(--borde);
+  padding-top: var(--sp-6);
+  padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
+}
+.pie__columnas { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+.pie__titulo {
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: var(--sp-1);
+}
+.pie__columnas a { display: flex; align-items: center; min-height: 40px; font-size: var(--fs-small); }
+.pie__marca {
+  font-family: var(--font-display);
+  font-size: calc((min(100vw, var(--max-contenedor)) - 2 * var(--margen-lateral)) / 4.45);  /* llena el ancho sin desbordar */
+  line-height: .85;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  margin-top: var(--sp-6);
+  white-space: nowrap;
+}
+.pie__legal {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-2);
+  border-top: var(--borde);
+  font-size: 12px;
+  color: var(--texto-suave);
+}
