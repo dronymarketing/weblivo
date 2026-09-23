@@ -571,7 +571,7 @@ html:not(.js) .hero__visual {
    entrada: puesto en la pieza, la regla de entrada (.js.listo .cue, tres
    clases) le ganaba a ésta (.cue, una) y el cue y la firma se quedaban
    opacos encima de la foto a pantalla completa. */
-.hero__centro, .cue {
+.hero__centro {
   opacity: var(--hero-op, 1);
 }
 
@@ -586,18 +586,24 @@ html:not(.js) .hero__visual {
 .cue {
   margin-inline: auto;
   flex-shrink: 0;
+  /* Por encima de la foto (z-index 3) y fuera del desvanecido del centro:
+     el cue se queda visible mientras el resto del hero se retira. */
+  position: relative;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
   color: var(--cat);
+  transition: color var(--dur-micro) var(--ease-re);
 }
 .cue__texto {
   font-size: 12px;
   font-weight: 400;
   letter-spacing: .02em;
   color: var(--cat-suave);
+  transition: color var(--dur-micro) var(--ease-re);
 }
 /* El borde del círculo lo dibuja el anillo, no un border: así el trazo de
    avance se apoya exactamente encima de la pista. */
@@ -619,14 +625,21 @@ html:not(.js) .hero__visual {
   fill: none;
   stroke-width: 1;
 }
-.cue__pista { stroke: color-mix(in srgb, var(--cat) 35%, transparent); }
+/* Los dos trazos van con currentColor: así basta con cambiarle el color al
+   cue para que el anillo entero pase a blanco sobre la foto. */
+.cue__pista { stroke: currentColor; opacity: .35; }
 /* 2·π·15.5 = 97.39: la vuelta completa en unidades del viewBox. */
 .cue__avance {
-  stroke: var(--cat);
+  stroke: currentColor;
   stroke-linecap: round;
   stroke-dasharray: 97.39;
   stroke-dashoffset: calc(97.39px * (1 - var(--cue-avance, 0)));
 }
+
+/* Cuando la foto ya cubre el cue entero, texto, flecha y anillo pasan a
+   blanco: navy sobre la foto no se lee. */
+.hero.foto-encima .cue { color: #FFFFFF; }
+.hero.foto-encima .cue__texto { color: rgba(255, 255, 255, .85); }
 .cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
 @keyframes cue {
   0%, 100% { transform: translateY(0); opacity: .75; }

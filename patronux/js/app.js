@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=16', 'img/pre-2.jpg?v=16', 'img/pre-3.jpg?v=16',
-                   'img/pre-4.jpg?v=16', 'img/marquee.jpg?v=16'];
+      var FOTOS = ['img/pre-1.jpg?v=17', 'img/pre-2.jpg?v=17', 'img/pre-3.jpg?v=17',
+                   'img/pre-4.jpg?v=17', 'img/marquee.jpg?v=17'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -423,6 +423,7 @@
     var stage  = document.querySelector('.hero-stage');
     var visual = document.querySelector('.hero__visual');
     var hueco  = document.querySelector('.hero__hueco');
+    var cue    = document.querySelector('.hero .cue');
 
     // La caja de partida se mide UNA vez, con el hero en su posición
     // inicial. El hueco viaja con el scroll, así que leerlo en cada
@@ -476,12 +477,25 @@
       visual.style.top    = (h.y + (y1 - h.y) * t).toFixed(1) + 'px';
 
       // El texto se retira mientras la foto toma la pantalla
-      // Un solo valor manda las dos cosas: el texto del hero se retira
-      // mientras el anillo del cue se completa. Cuando el cue termina de
-      // desaparecer, el círculo está cerrado.
-      var avanceCue = Math.min(1, t * 1.6);
-      raiz.style.setProperty('--hero-op', (1 - avanceCue).toFixed(3));
-      raiz.style.setProperty('--cue-avance', avanceCue.toFixed(3));
+      // El texto del hero se retira mientras la foto toma la pantalla.
+      raiz.style.setProperty('--hero-op', (1 - Math.min(1, t * 1.6)).toFixed(3));
+      // El anillo, en cambio, se cierra con la secuencia ENTERA del stage,
+      // no con el crecimiento: llega al círculo completo recién cuando la
+      // foto terminó todo su recorrido de scroll.
+      raiz.style.setProperty('--cue-avance', avance.toFixed(3));
+
+      // El cue no se desvanece, así que cuando la foto lo tapa por completo
+      // tiene que pasar a blanco o queda navy sobre la imagen.
+      if (cue) {
+        var hr = heroEl.getBoundingClientRect();
+        var fx = hr.left + (h.x + (x1 - h.x) * t);
+        var fy = hr.top  + (h.y + (y1 - h.y) * t);
+        var fw = h.w + (window.innerWidth - h.w) * t;
+        var fh = h.h + (alto - h.h) * t;
+        var c = cue.getBoundingClientRect();
+        heroEl.classList.toggle('foto-encima',
+          fx <= c.left && fy <= c.top && fx + fw >= c.right && fy + fh >= c.bottom);
+      }
 
       // El velo navy NO acompaña al crecimiento: la foto crece limpia, se
       // sostiene a pantalla completa y recién se tiñe cuando empieza a
