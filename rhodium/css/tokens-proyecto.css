@@ -1,0 +1,20 @@
+/* ============================================================
+   RHODIUM — Paleta del proyecto
+   Monocroma y bien dark. Sale de cuantizar las dos referencias
+   (refs/ref-seo-dark.jpg y refs/ref-sokolov.jpg) a 8 colores.
+   Pisa a las paletas por tono de tokens.css.
+   ============================================================ */
+
+:root {
+  --fondo:        #020203;  /* negro de ambas refs (#020204 / #000000) */
+  --fondo-alt:    #0f0f11;  /* ref 1, 18% — tarjetas y bandas */
+  --superficie:   #1e1e1f;  /* ref 1, 13% — hover y superficie alta */
+  --neutro:       #444444;  /* ref 1, 19% — solo decorativo, nunca texto */
+  --acento:       #f2f1f0;  /* sin color: el acento es el blanco */
+  --acento-claro: #ffffff;
+  --texto:        #f2f1f0;  /* 18:1 sobre fondo */
+  --texto-suave:  #8a8a8b;  /* #787879 de ref 1 subido: 5,9:1 fondo · 5,3:1 fondo-alt */
+  --velo:         rgba(255, 255, 255, .04);
+
+  --barra-inferior: var(--fondo);
+}
