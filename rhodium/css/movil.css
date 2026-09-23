@@ -690,7 +690,7 @@
 .contacto {
   position: relative;
   isolation: isolate;
-  padding-block: var(--sp-7) var(--sp-seccion);
+  padding-block: var(--sp-seccion);
 }
 .contacto__foto { position: absolute; inset: 0; z-index: -2; }
 .contacto__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }

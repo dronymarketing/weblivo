@@ -39,6 +39,8 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Margen de cada pantalla: **40px arriba y abajo, fijo en todos los tamaños** (como #nosotros de Fabiana).
   Las compresiones por altura achican solo el aire de adentro, nunca ese margen. Medido con el borde
   visible del contenido (texto, foto, filete): 40px ±3 de interlineado en todas.
+- El resto de las secciones (Filosofía, Procedimientos, Contacto y las de nosotros.html y procedimientos.html)
+  también van con 40px arriba y abajo: `--sp-seccion: 40px` en `tokens-proyecto.css`, celular y escritorio.
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 

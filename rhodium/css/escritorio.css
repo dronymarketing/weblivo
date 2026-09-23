@@ -57,7 +57,8 @@
   grid-template-columns: 1fr 2.4fr;
   column-gap: var(--sp-6);
 }
-.filosofia__cuerpo .antetitulo { align-self: start; margin-top: var(--sp-4); }
+.filosofia__cuerpo .antetitulo { align-self: start; margin-top: 12px; }
+.filosofia__cuerpo .cita { margin-top: 0; }   /* el margen de la sección lo pone --sp-seccion (40px) */
 .filosofia__texto { margin-left: auto; font-size: 18px; }
 
 /* ---------- Banda ---------- */
@@ -101,7 +102,6 @@
 .paso__num { font-size: 72px; }
 
 /* ---------- Contacto ---------- */
-.contacto { padding-block: 200px 120px; }
 .contacto__cuerpo {
   display: grid;
   grid-template-columns: 1.3fr 1fr;

@@ -37,4 +37,13 @@
   --fs-nombre:    28px;
 
   --curva-re:     cubic-bezier(.7, .6, 0, 1);  /* solo el título por palabras */
+
+  /* ---------- Margen de sección ---------- */
+  /* 40px arriba y abajo en todas las secciones y en todos los tamaños,
+     el mismo de las pantallas completas (como #nosotros de fabianamartinez).
+     Pisa a --sp-seccion de tokens.css, también en su versión de escritorio. */
+  --sp-seccion:   40px;
+}
+@media (min-width: 768px) {
+  :root { --sp-seccion: 40px; }
 }
