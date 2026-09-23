@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#020203">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Italiana-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=16">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=16">
-<link rel="stylesheet" href="css/fuentes.css?v=16">
-<link rel="stylesheet" href="css/base.css?v=16">
-<link rel="stylesheet" href="css/movil.css?v=16">
-<link rel="stylesheet" href="css/escritorio.css?v=16" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=17">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=17">
+<link rel="stylesheet" href="css/fuentes.css?v=17">
+<link rel="stylesheet" href="css/base.css?v=17">
+<link rel="stylesheet" href="css/movil.css?v=17">
+<link rel="stylesheet" href="css/escritorio.css?v=17" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -47,17 +47,13 @@
 <div class="menu__velo" aria-hidden="true"></div>
 <nav class="menu" id="menu" aria-label="Menú principal">
   <ul class="menu__lista">
-    <li data-menu-item style="--i:0"><a href="nosotros.html" data-tipo="pagina">Nosotros<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
-    <li data-menu-item style="--i:1"><a href="procedimientos.html" data-tipo="pagina">Procedimientos<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
-    <li data-menu-item style="--i:2"><a href="#filosofia" data-tipo="ancla">Filosofía<svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg></a></li>
-    <li data-menu-item style="--i:3"><a href="#proceso" data-tipo="ancla">Proceso<svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg></a></li>
-    <li data-menu-item style="--i:4"><a href="#contacto" data-tipo="ancla">Contacto<svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg></a></li>
+    <li data-menu-item style="--i:0"><a href="nosotros.html">Nosotros<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
+    <li data-menu-item style="--i:1"><a href="procedimientos.html">Procedimientos<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
+    <li data-menu-item style="--i:2"><a href="filosofia.html">Filosofía<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
+    <li data-menu-item style="--i:3"><a href="proceso.html">Proceso<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
+    <li data-menu-item style="--i:4"><a href="contacto.html">Contacto<svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></li>
   </ul>
-  <p class="menu__leyenda" data-menu-item style="--i:5">
-    <span><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>Página</span>
-    <span><svg class="ico" aria-hidden="true"><use href="#i-arrow-down"/></svg>En el inicio</span>
-  </p>
-  <div class="menu__pie" data-menu-item style="--i:6">
+  <div class="menu__pie" data-menu-item style="--i:5">
     <a class="btn btn--claro" href="https://wa.me/59893873857?text=Hola%2C%20quisiera%20agendar%20una%20consulta%20en%20Rhodium." target="_blank" rel="noopener">
       <svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>
       Agendar consulta
@@ -143,6 +139,9 @@
         <div>
           <h2 class="cita" data-palabras>Nuestros pacientes son lo primero.</h2>
           <p class="filosofia__texto" data-reveal>Entendemos lo que buscás y analizamos cada caso en forma personalizada. Practicamos nuestra profesión con ética y responsabilidad.</p>
+          <div class="seccion__pie" data-reveal>
+            <a class="btn btn--linea" href="filosofia.html">Nuestra filosofía<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          </div>
         </div>
       </div>
     </section>
@@ -249,34 +248,31 @@
           <li class="paso" data-reveal><span class="paso__num">03</span><div><h3 class="paso__nombre">Cirugía</h3><p class="paso__desc">En quirófano, con el equipo y los materiales elegidos.</p></div></li>
           <li class="paso" data-reveal><span class="paso__num">04</span><div><h3 class="paso__nombre">Recuperación</h3><p class="paso__desc">Controles y seguimiento hasta el alta, paso a paso.</p></div></li>
         </ol>
+        <div class="seccion__pie" data-reveal>
+          <a class="btn btn--linea" href="proceso.html">Ver el proceso<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </div>
       </div>
     </section>
 
-  <!-- ============ CONTACTO ============ -->
-  <section class="contacto" id="contacto">
-    <div class="contacto__foto" aria-hidden="true">
-      <!-- FOTO DE MUESTRA (Pexels 33883306) — reemplazar por foto propia de Rhodium -->
-      <img src="img/cierre.jpg" alt="" loading="lazy">
-    </div>
-    <div class="contenedor contacto__cuerpo">
+  <!-- ============ CONTACTO — sencillo, con mapa; el completo está en contacto.html ============ -->
+  <section class="seccion contacto-simple" id="contacto">
+    <div class="contenedor contacto-simple__cuerpo">
       <div>
         <p class="antetitulo" data-reveal><span class="antetitulo__num">06</span><span class="antetitulo__linea"></span>Contacto</p>
         <h2 class="titulo" data-reveal>Agendá tu consulta</h2>
-        <p class="bajada" data-reveal>Escribinos por WhatsApp y coordinamos día y hora con el equipo.</p>
-        <div class="contacto__acciones" data-reveal>
+        <p class="contacto-simple__dato" data-reveal><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>Echevarriarza 3471/201, Montevideo</p>
+        <p class="contacto-simple__dato" data-reveal><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Lunes a viernes, de 9 a 18 h</p>
+        <div class="contacto-simple__acciones" data-reveal>
           <a class="btn btn--claro" href="https://wa.me/59893873857?text=Hola%2C%20quisiera%20agendar%20una%20consulta%20en%20Rhodium." target="_blank" rel="noopener">
             <svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>
             Agendar consulta
           </a>
+          <a class="btn btn--linea" href="contacto.html">Ver contacto<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
         </div>
       </div>
-      <ul class="datos glass" data-reveal>
-        <li><a href="https://www.google.com/maps/search/?api=1&query=Echevarriarza%203471%2C%20Montevideo%2C%20Uruguay" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-map-pin"/></svg>Echevarriarza 3471/201, Montevideo</a></li>
-        <li><p><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg>Lunes a viernes, de 9 a 18 h</p></li>
-        <li><a href="tel:+59893873857"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>+598 93 873 857</a></li>
-        <li><a href="mailto:rhodiumplasticsurgery@gmail.com"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>rhodiumplasticsurgery@gmail.com</a></li>
-        <li><a href="https://www.instagram.com/rhodiumsurgery/" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg>@rhodiumsurgery</a></li>
-      </ul>
+      <div class="mapa" data-reveal>
+        <iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1sEchevarriarza+3471,+Montevideo,+Uruguay" title="Mapa: Rhodium en Echevarriarza 3471, Montevideo" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
     </div>
   </section>
 
@@ -291,12 +287,9 @@
         <p class="pie__titulo">Páginas</p>
         <a href="nosotros.html">Nosotros</a>
         <a href="procedimientos.html">Procedimientos</a>
-      </div>
-      <div>
-        <p class="pie__titulo">En el inicio</p>
-        <a href="#filosofia">Filosofía</a>
-        <a href="#proceso">Proceso</a>
-        <a href="#contacto">Contacto</a>
+        <a href="filosofia.html">Filosofía</a>
+        <a href="proceso.html">Proceso</a>
+        <a href="contacto.html">Contacto</a>
       </div>
       <div>
         <p class="pie__titulo">Seguinos</p>
@@ -315,6 +308,6 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=16"></script>
+<script src="js/main.js?v=17"></script>
 </body>
 </html>

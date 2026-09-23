@@ -601,6 +601,10 @@
   .pila-activa .encabezado .bajada { display: none; }
   .pila-activa .encabezado { margin-bottom: var(--sp-2); }
 }
+@media (max-height: 600px) {
+  .pila-activa .procs__lista { min-height: 190px; }
+  .pila-activa .seccion__pie { margin-top: var(--sp-2); }
+}
 
 /* ============================================================
    MATERIALES — marquee con foto encima (I)
@@ -710,14 +714,21 @@
   #proceso .paso__num { font-size: 36px; }
   #proceso .paso__nombre { font-size: 22px; }
 }
-@media (max-height: 680px) {
+#proceso .seccion__pie { margin-top: var(--sp-3); }
+@media (max-height: 860px) {
   #proceso .encabezado .bajada { display: none; }
+  #proceso .seccion__pie { margin-top: var(--sp-2); }
+}
+@media (max-height: 700px) {
   #proceso .paso { padding-block: 8px; }
-  #proceso .paso__desc { margin-top: 2px; }
+  #proceso .paso__nombre { font-size: 20px; }
+  #proceso .paso__desc { margin-top: 2px; font-size: 14px; line-height: 1.4; }
 }
 @media (max-height: 600px) {
   #proceso .paso { padding-block: 8px; }
-  #proceso .paso__desc { font-size: 13px; line-height: 1.4; margin-top: 2px; }
+  #proceso .paso__desc { font-size: 13px; line-height: 1.35; margin-top: 2px; }
+  #proceso .paso__num { font-size: 28px; }
+  #proceso .seccion__pie .btn { min-height: 44px; }
   #materiales .marquee__pista span { font-size: 26vw; }
   #materiales .materiales__desc { font-size: 13px; line-height: 1.4; }
 }
@@ -847,3 +858,49 @@
    ============================================================ */
 .perfil__foto img.foto-mantrana   { object-position: 50% 38%; }
 .perfil__foto img.foto-grundinger { object-position: 62% 32%; }
+
+/* ============================================================
+   CONTACTO SENCILLO (inicio) y MAPA
+   El mapa de Google se pasa a oscuro con filtros: gris, invertido y
+   con menos contraste, para que no sea un parche blanco en la web dark.
+   ============================================================ */
+.contacto-simple { border-top: var(--borde); }
+.contacto-simple__cuerpo { display: grid; gap: var(--sp-4); }
+.contacto-simple__dato {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: var(--sp-2);
+  color: var(--texto-suave);
+}
+.contacto-simple .titulo + .contacto-simple__dato { margin-top: var(--sp-3); }
+.contacto-simple__dato + .contacto-simple__dato { margin-top: var(--sp-1); }
+.contacto-simple__dato .ico { width: 18px; height: 18px; flex-shrink: 0; }
+.contacto-simple__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-4); }
+
+.mapa {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: var(--borde);
+  overflow: hidden;
+  background: var(--fondo-alt);
+}
+.mapa--grande { aspect-ratio: 3 / 4; }
+.mapa iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: grayscale(1) invert(.92) contrast(.85);
+}
+
+/* ============================================================
+   PÁGINAS NUEVAS — Filosofía, Proceso y Contacto
+   ============================================================ */
+.pasos--pagina .paso__desc { max-width: var(--max-lectura); }
+.contacto-pagina { display: grid; gap: var(--sp-5); }
+.contacto-pagina .contacto__acciones { display: flex; flex-wrap: wrap; gap: 12px; }
+.datos--linea { margin-top: 0; padding: 0; border-top: var(--borde); border-bottom: var(--borde); }
+.datos--linea li + li { border-top: var(--borde); }
+.datos--linea .ico, .datos--linea .ico-marca { color: var(--texto-suave); }

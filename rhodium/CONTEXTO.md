@@ -4,9 +4,12 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## Decisiones de la entrevista
 
-- **Tipo:** sitio institucional, **híbrido mixto**. Nosotros y Procedimientos son páginas propias
-  con adelanto en el inicio; Filosofía, Proceso y Contacto son anclas del inicio.
-  En el menú, ↗ = página, ↓ = ancla del inicio.
+- **Tipo:** sitio institucional, **páginas separadas** (Santi cambió del híbrido mixto el 23/9).
+  Cada ítem del menú abre su página: nosotros, procedimientos, filosofia, proceso y contacto (.html).
+  El inicio conserva todas sus secciones, y cada una termina en un botón con flecha hacia su página
+  (Materiales no tiene página propia). Ya no hay leyenda ↗/↓ en el menú.
+- **Contacto del inicio:** sencillo, con dirección, horario, WhatsApp y un mapa de Google
+  (iframe `maps/embed`, oscurecido con filtros CSS). El completo está en contacto.html.
 - **Estética:** de cero, con dos referencias en `refs/`.
 - **Color:** monocromo y bien dark, sacado de cuantizar las refs (`css/tokens-proyecto.css`).
   Sin acento de color; todas las fotos van en blanco y negro.
@@ -69,5 +72,5 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## Cómo se generó
 
-Los tres HTML salieron de un script que repite header, menú y pie idénticos.
-De ahora en más se editan a mano: si cambia el header o el pie, cambiarlo en los tres archivos.
+Los seis HTML repiten header, menú y pie idénticos (el ítem de la página actual lleva `aria-current="page"`).
+Si cambia el header o el pie, cambiarlo en los seis archivos.

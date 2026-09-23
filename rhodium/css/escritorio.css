@@ -152,3 +152,13 @@
   padding-bottom: 0;   /* el final visible del texto cae justo en el margen de la pantalla */
 }
 #proceso .paso__num { font-size: clamp(96px, 11vw, 180px); line-height: .8; }
+
+/* ---------- Contacto sencillo del inicio: texto a la izquierda, mapa a la derecha ---------- */
+.contacto-simple__cuerpo { grid-template-columns: 1fr 1.2fr; column-gap: var(--sp-6); align-items: center; }
+.mapa { aspect-ratio: 16 / 10; }
+.mapa--grande { aspect-ratio: 21 / 9; }
+
+/* ---------- Páginas nuevas ---------- */
+.pasos--pagina { grid-template-columns: repeat(4, 1fr); column-gap: var(--sp-4); }
+.contacto-pagina { grid-template-columns: 1fr 1fr; column-gap: var(--sp-6); align-items: end; }
+.encabezado--simple { display: block; }
