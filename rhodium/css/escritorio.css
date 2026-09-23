@@ -160,5 +160,3 @@
 
 /* ---------- Páginas nuevas ---------- */
 .pasos--pagina { grid-template-columns: repeat(4, 1fr); column-gap: var(--sp-4); }
-.contacto-pagina { grid-template-columns: 1fr 1fr; column-gap: var(--sp-6); align-items: end; }
-.encabezado--simple { display: block; }

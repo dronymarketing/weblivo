@@ -10,6 +10,8 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
   (Materiales no tiene página propia). Ya no hay leyenda ↗/↓ en el menú.
 - **Contacto del inicio:** sencillo, con dirección, horario, WhatsApp y un mapa de Google
   (iframe `maps/embed`, oscurecido con filtros CSS). El completo está en contacto.html.
+- **Contacto sobre foto** (título, WhatsApp y datos en vidrio) va **solo en contacto.html**.
+  Santi pidió sacarlo del final de las demás páginas: para eso está la página de contacto.
 - **Estética:** de cero, con dos referencias en `refs/`.
 - **Color:** monocromo y bien dark, sacado de cuantizar las refs (`css/tokens-proyecto.css`).
   Sin acento de color; todas las fotos van en blanco y negro.

@@ -899,8 +899,3 @@
    PÁGINAS NUEVAS — Filosofía, Proceso y Contacto
    ============================================================ */
 .pasos--pagina .paso__desc { max-width: var(--max-lectura); }
-.contacto-pagina { display: grid; gap: var(--sp-5); }
-.contacto-pagina .contacto__acciones { display: flex; flex-wrap: wrap; gap: 12px; }
-.datos--linea { margin-top: 0; padding: 0; border-top: var(--borde); border-bottom: var(--borde); }
-.datos--linea li + li { border-top: var(--borde); }
-.datos--linea .ico, .datos--linea .ico-marca { color: var(--texto-suave); }
