@@ -8,12 +8,12 @@
 <meta name="theme-color" content="#020203">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Italiana-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=28">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=28">
-<link rel="stylesheet" href="css/fuentes.css?v=28">
-<link rel="stylesheet" href="css/base.css?v=28">
-<link rel="stylesheet" href="css/movil.css?v=28">
-<link rel="stylesheet" href="css/escritorio.css?v=28" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=30">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=30">
+<link rel="stylesheet" href="css/fuentes.css?v=30">
+<link rel="stylesheet" href="css/base.css?v=30">
+<link rel="stylesheet" href="css/movil.css?v=30">
+<link rel="stylesheet" href="css/escritorio.css?v=30" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -181,13 +181,16 @@
     <div class="banda" data-banda>
       <div class="banda__marco">
         <!-- FOTO DE MUESTRA (Pexels 34623497) -->
-        <img src="img/banda-1.jpg" alt="Retrato en blanco y negro de una mujer mirando hacia arriba" loading="lazy">
+        <picture style="display: contents">  <!-- en escritorio, versión horizontal (Pexels 16688312) -->
+          <source media="(min-width: 768px)" srcset="img/banda-1-escritorio.jpg">
+          <img src="img/banda-1.jpg" alt="Retrato en blanco y negro de una mujer mirando hacia arriba" loading="lazy">
+        </picture>
       </div>
       <p class="banda__rotulo glass">Ética y responsabilidad</p>
     </div>
 
     <!-- ============ FILOSOFÍA — título por palabras (G) ============ -->
-    <section class="seccion filosofia" id="filosofia">
+    <section class="seccion filosofia pantalla-escritorio" id="filosofia">
       <div class="contenedor filosofia__cuerpo">
         <p class="antetitulo" data-reveal><span class="antetitulo__num">03</span><span class="antetitulo__linea"></span>Filosofía Rhodium</p>
         <div>
@@ -204,7 +207,10 @@
     <div class="banda" data-banda>
       <div class="banda__marco">
         <!-- FOTO DE MUESTRA (Pexels 19217000) -->
-        <img src="img/banda-2.jpg" alt="Equipo quirúrgico operando bajo las lámparas del quirófano, en blanco y negro" loading="lazy">
+        <picture style="display: contents">  <!-- en escritorio, versión horizontal (Pexels 28736010) -->
+          <source media="(min-width: 768px)" srcset="img/banda-2-escritorio.jpg">
+          <img src="img/banda-2.jpg" alt="Equipo quirúrgico operando bajo las lámparas del quirófano, en blanco y negro" loading="lazy">
+        </picture>
       </div>
       <p class="banda__rotulo glass">Quirófano</p>
     </div>
@@ -287,6 +293,6 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=28"></script>
+<script src="js/main.js?v=30"></script>
 </body>
 </html>

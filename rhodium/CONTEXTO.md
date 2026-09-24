@@ -55,6 +55,19 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 - Filosofía y Contacto quedan como estaban (Santi eligió solo Materiales y Proceso).
 - Foto de Materiales: jeringa sobre negro (Pexels 5857416, `img/materiales.jpg`), en lugar del retrato.
 
+## Escritorio (la versión móvil está cerrada: no tocar movil.css ni base.css)
+
+- Todo lo de escritorio va en `escritorio.css` (solo carga desde 768px) o en `<source media="(min-width: 768px)">`.
+- Escala: cuerpo, textos chicos y antetítulos más grandes con `clamp`, botones de 56px,
+  contenedor hasta 1520px con margen lateral de 40 a 88px. El texto del hero se alinea con el contenedor.
+- Pantalla completa en escritorio: además de las `.pantalla`, las secciones con `.pantalla-escritorio`
+  (Filosofía del inicio y de nosotros.html, filosofia.html y proceso.html), cada ficha del equipo y cada
+  procedimiento de procedimientos.html. Exactas de 1024×768 a 2560×1440.
+- Fotos horizontales solo en escritorio (`<picture>` con `display: contents`): banda-1 → banda-1-escritorio
+  (Pexels 16688312), banda-2 → banda-2-escritorio (Pexels 28736010), hero de procedimientos → la misma
+  foto ensanchada con fondo negro. La foto real de la recepción (hero) no tiene versión horizontal.
+- Pie de escritorio: Páginas + Contacto en dos columnas con el mapa al lado, logo de 240px.
+
 ## Animaciones atadas al scroll
 
 - Con GSAP, las apariciones (`[data-reveal]`), los títulos por palabras (`[data-palabras]`) y las fotos
