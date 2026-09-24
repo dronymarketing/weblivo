@@ -1001,3 +1001,61 @@
   #ubicacion .encabezado { margin-bottom: var(--sp-2); }
   #ubicacion .seccion__pie { margin-top: var(--sp-2); }
 }
+
+/* ============================================================
+   BOTÓN PREMIUM DEL HERO — «Agendar consulta»
+   Un ciclo de 7s: primero una luz fina recorre el reborde de la
+   cápsula (una vuelta), después un brillo suave cruza el interior,
+   y descansa. Sin movimiento con «reducir movimiento».
+   ============================================================ */
+@property --filo {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.btn--premium {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* 1 · la luz que recorre el reborde */
+.btn--premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--filo), transparent 0 78%, rgba(255, 255, 255, .95) 88%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  animation: btn-filo 7s cubic-bezier(.55, 0, .45, 1) infinite 1.2s;
+}
+/* 2 · el brillo que cruza el interior */
+.btn--premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, .10) 42%, rgba(255, 255, 255, .26) 50%, rgba(255, 255, 255, .10) 58%, transparent 75%);
+  transform: translateX(-130%);
+  pointer-events: none;
+  animation: btn-brillo 7s cubic-bezier(.55, 0, .45, 1) infinite 1.2s;
+}
+@keyframes btn-filo {
+  0%        { --filo: 0deg;   opacity: 0; }
+  4%        { opacity: 1; }
+  34%       { --filo: 360deg; opacity: 1; }
+  40%, 100% { --filo: 360deg; opacity: 0; }
+}
+@keyframes btn-brillo {
+  0%, 36%   { transform: translateX(-130%); }
+  58%, 100% { transform: translateX(130%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--premium::before, .btn--premium::after { animation: none; opacity: 0; }
+}
