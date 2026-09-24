@@ -336,7 +336,7 @@
 .hero__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-4); }
 .hero .antetitulo { color: var(--texto-foto); }
 
-/* Scroll cue */
+/* Scroll cue — como en fabianamartinez: «Ver más» fino arriba de un círculo con la flecha */
 .cue {
   position: absolute;
   left: 50%;
@@ -345,15 +345,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 44px;
-  font-size: var(--fs-micro);
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: var(--texto-foto);
+  color: var(--texto);
 }
-.cue .ico { width: 18px; height: 18px; stroke-width: 1; animation: cue 2s ease-in-out infinite; }
-@keyframes cue { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+.cue__texto {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: .04em;
+  color: var(--texto-foto);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+}
+.cue__circulo {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .5);
+  background: rgba(0, 0, 0, .28);
+}
+.cue .ico { width: 14px; height: 14px; stroke-width: 1.25; animation: cue 2.4s ease-in-out infinite; }
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: .75; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
 
 /* Hero de páginas internas: mismo esquema */
 .hero--pagina .hero__titulo { font-size: clamp(48px, 15vw, 80px); }
