@@ -1004,58 +1004,58 @@
 
 /* ============================================================
    BOTÓN PREMIUM DEL HERO — «Agendar consulta»
-   Un ciclo de 7s: primero una luz fina recorre el reborde de la
-   cápsula (una vuelta), después un brillo suave cruza el interior,
-   y descansa. Sin movimiento con «reducir movimiento».
+   La receta del chip del hero de fabianamartinez, en blanco:
+   un resplandor muy tenue que respira detrás de la cápsula y un
+   filo apenas más claro que se desliza lento por el reborde.
+   Continuo y suave, sin destellos.
    ============================================================ */
-@property --filo {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
 .btn--premium {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
-/* 1 · la luz que recorre el reborde */
+/* resplandor que respira detrás */
 .btn--premium::before {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  padding: 1px;
-  border-radius: inherit;
-  background: conic-gradient(from var(--filo), transparent 0 78%, rgba(255, 255, 255, .95) 88%, transparent 96%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  opacity: 0;
+  z-index: -1;
+  width: 140%;
+  height: 220%;
+  left: -20%;
+  top: -60%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .5), transparent 72%);
+  opacity: .12;
+  filter: blur(6px);
   pointer-events: none;
-  animation: btn-filo 7s cubic-bezier(.55, 0, .45, 1) infinite 1.2s;
+  animation: btn-aura 7s ease-in-out infinite alternate;
 }
-/* 2 · el brillo que cruza el interior */
+@keyframes btn-aura {
+  0%   { transform: translate(-8%, -4%) scale(.9); }
+  100% { transform: translate(10%, 6%) scale(1.15); }
+}
+/* filo de luz que se desliza por el reborde */
 .btn--premium::after {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, .10) 42%, rgba(255, 255, 255, .26) 50%, rgba(255, 255, 255, .10) 58%, transparent 75%);
-  transform: translateX(-130%);
+  background-image: repeating-linear-gradient(115deg,
+    rgba(255, 255, 255, .14) 0px, rgba(255, 255, 255, .14) 135px,
+    rgba(255, 255, 255, .7) 150px,
+    rgba(255, 255, 255, .14) 165px, rgba(255, 255, 255, .14) 300px);
+  background-size: 300px 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: .75;
   pointer-events: none;
-  animation: btn-brillo 7s cubic-bezier(.55, 0, .45, 1) infinite 1.2s;
+  animation: btn-filo 7s linear infinite;
 }
 @keyframes btn-filo {
-  0%        { --filo: 0deg;   opacity: 0; }
-  4%        { opacity: 1; }
-  34%       { --filo: 360deg; opacity: 1; }
-  40%, 100% { --filo: 360deg; opacity: 0; }
-}
-@keyframes btn-brillo {
-  0%, 36%   { transform: translateX(-130%); }
-  58%, 100% { transform: translateX(130%); }
+  from { background-position-x: 0px; }
+  to   { background-position-x: -300px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn--premium::before, .btn--premium::after { animation: none; opacity: 0; }
+  .btn--premium::before, .btn--premium::after { animation: none; }
 }

@@ -87,8 +87,9 @@ Cirugía plástica en Montevideo. Web vieja: rhodiumplasticsurgery.com (de ahí 
 
 ## Hero del inicio
 
-- Botón «Agendar consulta» con `.btn--premium` (celular y escritorio): ciclo de 7s, primero una luz
-  fina recorre el reborde (conic-gradient con `@property --filo`), después un brillo cruza el interior.
+- Botón «Agendar consulta» con `.btn--premium` (celular y escritorio): la receta del chip del hero de
+  fabianamartinez en blanco — resplandor tenue que respira detrás y un filo apenas más claro que se
+  desliza lento por el reborde. Santi pidió algo suave: nada de destellos.
 
 - Foto real de la recepción (la pasó el cliente), en blanco y negro como el resto: `img/hero.jpg`.
 - Trae el ícono de Gemini abajo a la derecha (a ~90% del alto de la imagen). Lo tapa el degradé de
