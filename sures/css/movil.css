@@ -227,7 +227,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    achicar el área de toque. */
 .nav__hamburguesa{ margin-right:-14px; }
 
-/* Móvil: aire VISIBLE igual (16px) entre WhatsApp → lupa →
+/* Móvil: aire VISIBLE igual (24px, antes 16) entre WhatsApp → lupa →
    hamburguesa (criterio heredado de casasymas). Los límites de cada área táctil caen a
    mitad de cada espacio (8px de cada lado del dibujo):
    - lupa 34×44: 8 + trazo de 18 + 8 (el trazo arranca en x=3 de su caja
@@ -240,9 +240,9 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .nav__acciones{ gap:0; }
 .nav__acciones .nav__buscar,
 .nav__acciones .nav__hamburguesa{ display:flex; align-items:center; justify-content:flex-start; }
-.nav__acciones .nav__buscar{ width:34px; padding-left:5px; }
+.nav__acciones .nav__buscar{ width:42px; padding-left:5px; }
 .nav__acciones .nav__hamburguesa{ width:38px; padding-left:4px; }
-.nav__wa{ margin-right:5px; }
+.nav__wa{ margin-right:13px; }
 
 /* WhatsApp visible en el nav: toma el color del estado del nav
    (currentColor: blanco sobre el hero, verde con el nav sólido).
