@@ -32,6 +32,30 @@ pasada solo se cambió:
   WhatsApp no va en las redes del pie (ya está en el CTA y el menú) para
   que las 6 entren en una fila a 375px.
 - Textos del CTA en plural ("Contanos", "Escribinos"): es una empresa.
+- Adaptado de casasymas.com.uy (su "Quiénes somos" está privado — redirige
+  a un WordPress con login — así que el texto sale de su meta description):
+  - Meta description + Open Graph (vista previa al compartir):
+    `img/og.jpg`, 1200×1200, logo blanco sobre `--azul-900`.
+  - Favicon: `img/favicon.png`, el isotipo (casita con +) de su web.
+  - Logo vectorizado a `img/logo-casasymas.svg` (potrace sobre el PNG a
+    8×); es el que usa la máscara `.logo`. El PNG queda como fuente.
+  - Quiénes somos: su descripción ("Una empresa orientada a ofrecer un
+    servicio integral, transparente y cercano…").
+  - Cifras, todas contadas de su web: 4 departamentos (Montevideo,
+    Canelones, Maldonado, Colonia), 3 operaciones (venta, alquiler,
+    alquiler temporal), 5 tipos (casas, apartamentos, terrenos,
+    campos/chacras, locales), 11 cámaras y asociaciones (CIU, CPDE, ADIU,
+    CICAN, ADIP, APADUU, APPCU, CCU, CIC, CUIR, ADAPI).
+  - Proyectos: "Tu casa en nuestra lupa" / "Proyectos destacados" (sus
+    títulos). CTA: "Juntos encontramos el lugar ideal" (su frase del pie).
+  - Pie: Propiedades = Venta, Alquiler, Alquiler temporal, Proyectos;
+    Zonas = los 4 departamentos. Links a anclas del inicio (antes iban a
+    venta.html, etc., que no existen).
+- **Sigue siendo de muestra:** fotos y datos del hero, las 3 propiedades
+  destacadas y los 6 proyectos (nombres inventados sobre fotos de obra).
+- Paleta real de su web (sin aplicar, pendiente de decisión): marrón
+  `#361c10`, arena `#dcab7c` (fondo del header, con logo blanco), azul
+  `#3a6d8c` / `#2c4a63` (botones), naranja `#f29100` (detalles).
 
 Todo lo demás (propiedades, zonas, textos de "Quiénes somos", fotos) sigue
 siendo el contenido de muestra de Fabiana Martínez. Lo de abajo es el

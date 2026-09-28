@@ -180,7 +180,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .nav__logo .logo--blanco{ display:block; }
 .nav__logo .logo--color{ display:none; }
 
-/* Logo real de Casas y más: el PNG (blanco sobre transparente) se usa
+/* Logo real de Casas y más (SVG vectorizado del PNG que pasó Santi) se usa
    como máscara y el color lo pone currentColor — así un solo archivo
    sirve blanco sobre el hero, azul con el nav sólido, arena en el menú
    y blanco en el pie, siguiendo el color que ya tenía cada wordmark. */
@@ -188,8 +188,8 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .logo{
   display:block; height:var(--logo-alto); aspect-ratio:280 / 75;
   background:currentColor;
-  -webkit-mask:url(../img/logo-casasymas.png) center / contain no-repeat;
-  mask:url(../img/logo-casasymas.png) center / contain no-repeat;
+  -webkit-mask:url(../img/logo-casasymas.svg) center / contain no-repeat;
+  mask:url(../img/logo-casasymas.svg) center / contain no-repeat;
 }
 
 .nav__logo--texto{
