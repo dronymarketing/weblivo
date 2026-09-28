@@ -18,6 +18,10 @@ sube a `main` sin preguntar. Si la sesión arranca en una rama automática
 (`ccr-…`, `claude/…`), igual se sube a `main` al terminar cada cambio.
 Nunca con force-push: si `main` avanzó, primero traer lo nuevo.
 
+**Caché:** cada vez que se toca un CSS o JS, subir su `?v=` en el HTML
+(`movil.css?v=146` → `?v=147`). Si no, el navegador de la clienta sigue
+mostrando la versión vieja (en incógnito se ve bien y en ventana normal no).
+
 ## Antes de escribir una línea de código
 
 Hacé la entrevista completa. Reglas:

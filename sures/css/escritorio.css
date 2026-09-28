@@ -25,8 +25,8 @@
   .nav__logo--texto{ font-size:29px; line-height:34px; }
   .nav__enlaces{ display:none; }
   /* Escritorio: el mismo criterio con 24px de aire visible y todas las
-     áreas de 44: círculo → lupa (4 + 7 + 13), lupa → "MENÚ" (13 + 7 + 4). */
-  .nav__wa{ margin-right:7px; }
+     áreas de 44: "Consultar" → lupa (16 + 13), lupa → "MENÚ" (13 + 7 + 4). */
+  .nav__wa{ margin-right:16px; padding:0 20px 0 16px; }
   .nav__acciones .nav__buscar{ width:44px; padding-left:0; justify-content:center; margin-right:7px; }
   .nav__acciones .nav__hamburguesa{ width:auto; padding:8px 4px; }
   .menu__pie{ display:flex; gap:12px; }

@@ -36,11 +36,13 @@ proyectos y fichas.
   1366×657.
 - Sin botón "Guía" (era de casasymas; Sures no tiene guía): en el nav
   quedan WhatsApp, lupa y hamburguesa. Se borró su CSS.
-- WhatsApp del nav: rectangular como el de las redes del pie de
-  fabianamartinez (pedido de Santi) — cuadrado de 36px sin relleno,
-  reborde de 1px (currentColor al 40%) y esquinas de `--radio` (6px),
-  dentro del área táctil de 44px. Toma el color del nav: blanco sobre el
-  hero, verde con el nav sólido. Antes era un círculo verde relleno.
+- WhatsApp del nav: botón "Consultar" como el del nav de Rhodium (pedido
+  de Santi): cápsula con ícono de WhatsApp + "CONSULTAR" en mayúsculas
+  espaciadas, reborde fino y glass sobre el hero; con el nav sólido, texto
+  y reborde en verde, sin glass. Abre WhatsApp con "Hola, quisiera hacer
+  una consulta." Entra en 360px (logo, botón, lupa y hamburguesa). Antes
+  fue un círculo verde y después un cuadrado con reborde: descartados.
+- Caché: al tocar CSS/JS, subir el `?v=` en index.html.
 - Hero: los 5 proyectos del slider de su home, con sus fotos (1440px) y
   sus bajadas: Calyptus Zen II (entrega dic. 2026) · ODA Punta Carretas ·
   Brits · Trento · Cosmos Home. El chip de WhatsApp arma "Hola, quiero

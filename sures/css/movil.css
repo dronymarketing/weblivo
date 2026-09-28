@@ -235,30 +235,42 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    - hamburguesa 38×44: 8 + líneas de 16 + 14 que se meten en el margen,
      igual que antes (las líneas arrancan en x=4 → padding-left 4; las
      líneas siguen a 24px del borde de la pantalla).
-   - WhatsApp 44×44 (círculo 36 + 4 + 4) con 4px hasta la lupa.
+   - "Consultar" (cápsula de 44 de alto) con 8px hasta la lupa.
    Con áreas de 44 en todos, los espacios eran distintos. */
 .nav__acciones{ gap:0; }
 .nav__acciones .nav__buscar,
 .nav__acciones .nav__hamburguesa{ display:flex; align-items:center; justify-content:flex-start; }
 .nav__acciones .nav__buscar{ width:34px; padding-left:5px; }
 .nav__acciones .nav__hamburguesa{ width:38px; padding-left:4px; }
-.nav__wa{ margin-right:4px; }
+.nav__wa{ margin-right:8px; }
 
 /* WhatsApp visible en el nav: toma el color del estado del nav
    (currentColor: blanco sobre el hero, verde con el nav sólido).
    Alto 44px: piso táctil del estándar. */
-/* Rectangular como el WhatsApp de las redes del pie de fabianamartinez
-   (pedido de Santi, antes era un círculo verde relleno): cuadrado de 36px
-   sin relleno, reborde de 1px y esquinas de --radio, dibujado con
-   ::before adentro del área táctil de 44px (4px de cada lado, así los
-   espacios con la lupa quedan iguales que con el círculo). */
-.nav__wa{ position:relative; }
-.nav__wa::before{
-  content:""; position:absolute; inset:4px; pointer-events:none;
-  border:1px solid color-mix(in srgb, currentColor 40%, transparent);
-  border-radius:var(--radio);
+/* Botón "Consultar" como el del nav de Rhodium (pedido de Santi):
+   cápsula con ícono de WhatsApp + texto en mayúsculas espaciadas,
+   reborde fino y glass sobre el hero; con el nav sólido, sin glass y
+   con el reborde en el verde del nav. Alto 44px: piso táctil. */
+.nav__wa{
+  display:inline-flex; align-items:center; gap:8px;
+  min-height:44px; padding:0 16px 0 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(24,57,53,.14);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  backdrop-filter:blur(16px) saturate(140%);
+  color:var(--blanco);
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif;
+  font-size:11px; font-weight:400; letter-spacing:.12em; text-transform:uppercase;
+  white-space:nowrap;
+  transition:color 420ms var(--curva), border-color 420ms var(--curva), background-color 420ms var(--curva);
 }
-.nav__wa .ico{ width:20px; height:20px; }
+.nav__wa .ico{ width:16px; height:16px; flex:none; }
+.nav.es-solido .nav__wa{
+  color:var(--azul); border-color:rgba(1,100,80,.35);
+  background:transparent; -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+@media (max-width:349px){ .nav__wa{ padding:0 12px 0 10px; gap:6px; } }
 /* Debajo de 360px no entra todo: el buscador (que todavía no busca)
    es el que se va. */
 @media (max-width:359px){ .nav__buscar{ display:none; } }
