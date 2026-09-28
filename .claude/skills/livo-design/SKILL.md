@@ -10,6 +10,14 @@ un **borrador** que se le muestra a la clienta para cerrar el trabajo.
 
 Respondé siempre en español rioplatense.
 
+## Dónde se publica
+
+**Se trabaja directo en `main`** (pedido de Santi). La web sale de `main` por
+GitHub Pages (livo.com.uy), así que cada cambio terminado y verificado se
+sube a `main` sin preguntar. Si la sesión arranca en una rama automática
+(`ccr-…`, `claude/…`), igual se sube a `main` al terminar cada cambio.
+Nunca con force-push: si `main` avanzó, primero traer lo nuevo.
+
 ## Antes de escribir una línea de código
 
 Hacé la entrevista completa. Reglas:
