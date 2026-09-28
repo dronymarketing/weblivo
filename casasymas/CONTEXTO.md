@@ -101,6 +101,10 @@ pasada solo se cambió:
     8/17/27). La hamburguesa no se movió: líneas a 24px del borde.
     Logo a 25px de alto entre 360 y 374px; a 360px quedan 12px entre
     logo y guía. En escritorio todo sigue como antes.
+  - Botón de la guía: letra Light 300 (el peso más fino que hay) y
+    reborde de 36px de alto, igual que el círculo de WhatsApp (dibujado
+    con ::before 4px adentro; el botón sigue siendo de 44px táctiles).
+    Vale también en escritorio.
   - Menú hamburguesa sin scroll: alturas con `clamp(…svh…)` en ítems,
     padding y pie del menú. Entra en 360×640, 393×660 y 1366×657.
   - Redes del pie con `justify-content:space-between`: la primera y la

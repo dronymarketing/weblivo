@@ -247,15 +247,24 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    (currentColor): blanco sobre el hero, azul con el nav sólido.
    Alto 44px en los dos: piso táctil del estándar. En móvil la guía va
    en un renglón, a 9px, con los espacios igualados (ver .nav__acciones). */
+/* Letra Light (300, el peso más fino de la familia) y reborde de 36px
+   de alto, igual que el círculo de WhatsApp: el botón sigue midiendo 44
+   de alto (área táctil) y el reborde se dibuja 4px adentro arriba y
+   abajo con ::before. */
 .nav__guia{
+  position:relative;
   display:inline-flex; align-items:center; height:44px; padding:0 8px;
   margin-right:4px;
-  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
-  border-radius:999px; color:var(--blanco);
-  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
+  color:var(--blanco);
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:300;
   font-size:9px; line-height:1; letter-spacing:.04em; text-transform:uppercase;
   text-align:center; white-space:nowrap;
-  transition:border-color 420ms var(--curva), color 420ms var(--curva);
+  transition:color 420ms var(--curva);
+}
+.nav__guia::before{
+  content:""; position:absolute; inset:4px 0; pointer-events:none;
+  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius:999px;
 }
 .nav.es-solido .nav__guia{ color:var(--azul); }
 /* Círculo verde de 36px dibujado adentro del área táctil de 44px. El
