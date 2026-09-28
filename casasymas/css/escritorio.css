@@ -26,7 +26,9 @@
   .nav__enlaces{ display:none; }
   .nav__acciones{ gap:4px; }
   .nav__guia{ margin-right:10px; padding:0 14px; font-size:11px; letter-spacing:.14em; }
-  .nav__guia-corte{ display:none; }
+  /* En escritorio sobra lugar: la lupa vuelve a su área de 44px. */
+  .nav__acciones .nav__buscar{ width:44px; padding-left:0; justify-content:center; }
+  .nav__acciones .nav__hamburguesa{ width:auto; }
   .nav__wa{ margin-right:6px; }
   .menu__pie{ display:flex; gap:12px; }
   .menu__pie .btn{ width:auto; min-width:240px; }

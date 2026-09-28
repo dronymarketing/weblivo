@@ -93,11 +93,14 @@ pasada solo se cambió:
 - Ajustes de nav, menú y pie (pedido de Santi con captura del celular):
   - Ícono de WhatsApp del nav siempre blanco (= fondo del nav sólido);
     antes el nav sólido lo pintaba azul.
-  - "Guía para mudarse" completo también en móvil, en dos líneas (9.5px,
-    mayúscula). `.nav__acciones` sin gap en móvil y logo a 25px de alto
-    entre 360 y 374px, para que entre sin tocar el margen lateral ni la
-    posición de la hamburguesa (las líneas quedan a 24px del borde).
-    Medido: 15px mínimo entre logo y guía a 360px.
+  - "Guía para mudarse" en UN renglón también en móvil (9px, mayúscula,
+    .04em). Aire visible igualado a 8px entre guía → WhatsApp → lupa →
+    hamburguesa (medido en 360/375/393/412). Para lograrlo las áreas
+    táctiles se cortan a mitad de cada espacio: WhatsApp 44×44, lupa
+    26×44, hamburguesa 34×44 (con 44 en todas, los espacios eran
+    8/17/27). La hamburguesa no se movió: líneas a 24px del borde.
+    Logo a 25px de alto entre 360 y 374px; a 360px quedan 12px entre
+    logo y guía. En escritorio todo sigue como antes.
   - Menú hamburguesa sin scroll: alturas con `clamp(…svh…)` en ítems,
     padding y pie del menú. Entra en 360×640, 393×660 y 1366×657.
   - Redes del pie con `justify-content:space-between`: la primera y la

@@ -205,8 +205,13 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   line-height:1; text-align:center; margin-top:-1px;
 }
 
-/* gap 0 en móvil: cada botón ya tiene su propia área táctil de 44px con
-   aire alrededor del ícono; así la guía no se pega al logo a 360px. */
+/* Móvil: el aire VISIBLE entre guía, WhatsApp, lupa y hamburguesa es el
+   mismo (8px, pedido de Santi) y "Guía para mudarse" va en un renglón.
+   Para eso los límites de cada área táctil caen justo a mitad de cada
+   espacio: WhatsApp conserva 44px (círculo 36 + 4 + 4), la lupa queda
+   en 26×44 (trazo de 18 + 4 + 4) y la hamburguesa en 34×44 (4 + líneas
+   de 16 + los 14 que se meten en el margen, como antes). Es el costo de
+   igualar: con áreas de 44 en todos, los espacios visibles eran 8/17/27. */
 .nav__acciones{ display:flex; align-items:center; gap:0; }
 .nav__btn{
   width:44px; height:44px; display:grid; place-items:center;
@@ -227,20 +232,28 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    derecho del nav) para no tocar el símbolo, que es compartido, ni
    achicar el área de toque. */
 .nav__hamburguesa{ margin-right:-14px; }
+.nav__acciones .nav__buscar,
+.nav__acciones .nav__hamburguesa{ display:flex; align-items:center; justify-content:flex-start; }
+/* El trazo de la lupa arranca en x=3 de su caja de 24: con 1px de
+   padding queda a 4px del borde izquierdo del botón. */
+.nav__acciones .nav__buscar{ width:26px; padding-left:1px; }
+/* Las líneas arrancan en x=4 de su caja de 24: sin padding quedan a 4px
+   del borde izquierdo; 34 de ancho con margin-right:-14 deja las líneas
+   exactamente donde estaban (a 24px del borde de la pantalla). */
+.nav__acciones .nav__hamburguesa{ width:34px; }
 
 /* Guía para mudarse + WhatsApp (pedido de Santi: los dos visibles en
    el nav, como en casasymas.com.uy). Toman el color del estado del nav
    (currentColor): blanco sobre el hero, azul con el nav sólido.
-   Alto 44px en los dos: piso táctil del estándar. En móvil el texto de
-   la guía va en dos líneas ("Guía para / mudarse") para que entre
-   completo sin achicar el margen lateral ni mover la hamburguesa. */
+   Alto 44px en los dos: piso táctil del estándar. En móvil la guía va
+   en un renglón, a 9px, con los espacios igualados (ver .nav__acciones). */
 .nav__guia{
-  display:inline-flex; align-items:center; height:44px; padding:0 12px;
+  display:inline-flex; align-items:center; height:44px; padding:0 8px;
   margin-right:4px;
   border:1px solid color-mix(in srgb, currentColor 45%, transparent);
   border-radius:999px; color:var(--blanco);
   font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
-  font-size:9.5px; line-height:1.15; letter-spacing:.1em; text-transform:uppercase;
+  font-size:9px; line-height:1; letter-spacing:.04em; text-transform:uppercase;
   text-align:center; white-space:nowrap;
   transition:border-color 420ms var(--curva), color 420ms var(--curva);
 }
