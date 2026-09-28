@@ -19,8 +19,19 @@ pasada solo se cambió:
   inicio (Venta/Alquiler → #destacadas, Proyectos → #proyectos,
   Inmobiliarias → #nosotros, Mercado → #contacto) hasta que existan las
   páginas.
-- WhatsApp: +598 95 087 524 (el que publica casasymas.com.uy).
-- **PENDIENTE:** email e Instagram de Casas y más.
+- Contacto (de casasymas.com.uy, confirmado por Santi con captura):
+  WhatsApp/tel +598 95 087 524 · contacto@casasymas.com.uy.
+- Redes en el pie (íconos de Simple Icons en el sprite; LinkedIn sale de
+  simple-icons@10 porque las versiones nuevas lo sacaron):
+  Instagram https://www.instagram.com/casasymas_uy/ ·
+  Facebook https://www.facebook.com/casasymasuy ·
+  X/Twitter https://twitter.com/casasymas_uy ·
+  LinkedIn https://www.linkedin.com/in/casas-y-m%C3%A1s-by-caro-y-titi-1ab9ab225/ ·
+  YouTube https://www.youtube.com/channel/UCd8OPAqiVzuGmVO4Jy13ljQ ·
+  TikTok https://www.tiktok.com/@casasymas_uy.
+  WhatsApp no va en las redes del pie (ya está en el CTA y el menú) para
+  que las 6 entren en una fila a 375px.
+- Textos del CTA en plural ("Contanos", "Escribinos"): es una empresa.
 
 Todo lo demás (propiedades, zonas, textos de "Quiénes somos", fotos) sigue
 siendo el contenido de muestra de Fabiana Martínez. Lo de abajo es el

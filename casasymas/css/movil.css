@@ -1206,7 +1206,10 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .pie li{ padding:2px 0; }
 /* margin-top en 0: el espacio de abajo del logo también lo pone
    .pie__logo--texto (padding-bottom), sin sumarle nada más acá. */
-.pie__redes{ display:flex; gap:8px; margin-top:0; }
+/* 6 redes (6×44 + 5×8 = 304px, entran en una fila a 375px). WhatsApp no
+   va acá: ya está en el CTA y en el menú. wrap solo como resguardo en
+   pantallas de 320px. */
+.pie__redes{ display:flex; flex-wrap:wrap; gap:8px; margin-top:0; }
 .pie__redes a{
   width:44px; height:44px; display:grid; place-items:center;
   border:var(--borde-claro); border-radius:var(--radio); color:var(--blanco);
