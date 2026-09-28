@@ -36,12 +36,12 @@ proyectos y fichas.
   1366×657.
 - Sin botón "Guía" (era de casasymas; Sures no tiene guía): en el nav
   quedan WhatsApp, lupa y hamburguesa. Se borró su CSS.
-- WhatsApp del nav: botón "Consultar" como el del nav de Rhodium (pedido
-  de Santi): cápsula con ícono de WhatsApp + "CONSULTAR" en mayúsculas
-  espaciadas, reborde fino y glass sobre el hero; con el nav sólido, texto
-  y reborde en verde, sin glass. Abre WhatsApp con "Hola, quisiera hacer
-  una consulta." Entra en 360px (logo, botón, lupa y hamburguesa). Antes
-  fue un círculo verde y después un cuadrado con reborde: descartados.
+- WhatsApp del nav: círculo verde de 36px (pedido final de Santi; se
+  probaron y descartaron un cuadrado con reborde y la cápsula "Consultar"
+  de Rhodium). Espacio visible IGUAL, medido en píxeles: WhatsApp → lupa →
+  hamburguesa = 16px en móvil y 24px en escritorio (WhatsApp → lupa →
+  "MENÚ"). Las líneas de la hamburguesa quedan al mismo margen que el
+  logo del otro lado: 24px en móvil, 40px en escritorio.
 - Caché: al tocar CSS/JS, subir el `?v=` en index.html.
 - Hero: los 5 proyectos del slider de su home, con sus fotos (1440px) y
   sus bajadas: Calyptus Zen II (entrega dic. 2026) · ODA Punta Carretas ·
