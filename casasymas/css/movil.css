@@ -205,7 +205,9 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   line-height:1; text-align:center; margin-top:-1px;
 }
 
-.nav__acciones{ display:flex; align-items:center; gap:4px; }
+/* gap 0 en móvil: cada botón ya tiene su propia área táctil de 44px con
+   aire alrededor del ícono; así la guía no se pega al logo a 360px. */
+.nav__acciones{ display:flex; align-items:center; gap:0; }
 .nav__btn{
   width:44px; height:44px; display:grid; place-items:center;
   background:none; border:0; cursor:pointer; padding:0;
@@ -229,26 +231,31 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 /* Guía para mudarse + WhatsApp (pedido de Santi: los dos visibles en
    el nav, como en casasymas.com.uy). Toman el color del estado del nav
    (currentColor): blanco sobre el hero, azul con el nav sólido.
-   Alto 44px en los dos: piso táctil del estándar. En móvil la guía dice
-   solo "Guía" para que entre todo a 360px; el aria-label lleva el
-   nombre completo. */
+   Alto 44px en los dos: piso táctil del estándar. En móvil el texto de
+   la guía va en dos líneas ("Guía para / mudarse") para que entre
+   completo sin achicar el margen lateral ni mover la hamburguesa. */
 .nav__guia{
-  display:inline-flex; align-items:center; height:44px; padding:0 14px;
-  margin-right:2px;
+  display:inline-flex; align-items:center; height:44px; padding:0 12px;
+  margin-right:4px;
   border:1px solid color-mix(in srgb, currentColor 45%, transparent);
   border-radius:999px; color:var(--blanco);
   font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
-  font-size:11px; letter-spacing:.14em; text-transform:uppercase; white-space:nowrap;
+  font-size:9.5px; line-height:1.15; letter-spacing:.1em; text-transform:uppercase;
+  text-align:center; white-space:nowrap;
   transition:border-color 420ms var(--curva), color 420ms var(--curva);
 }
-.nav__guia-largo{ display:none; }
 .nav.es-solido .nav__guia{ color:var(--azul); }
-/* Círculo verde de 36px dibujado adentro del área táctil de 44px. */
+/* Círculo verde de 36px dibujado adentro del área táctil de 44px. El
+   ícono va del color del fondo del nav: blanco sobre el hero y también
+   con el nav sólido (que es blanco). */
 .nav__wa{ background:radial-gradient(circle, var(--wa) 18px, transparent 18.5px); }
-.nav__btn.nav__wa{ color:var(--blanco); }
+.nav__btn.nav__wa,
+.nav.es-solido .nav__btn.nav__wa{ color:var(--blanco); }
 .nav__wa .ico{ width:18px; height:18px; }
-/* Debajo de 360px no entra todo: el buscador (que todavía no busca)
-   es el que se va. */
+/* Entre 360 y 374px el logo baja a 25px de alto para que la guía no se
+   pegue a él; debajo de 360px además se va el buscador (que todavía no
+   busca). */
+@media (max-width:374px){ :root{ --logo-alto:25px; } }
 @media (max-width:359px){ .nav__buscar{ display:none; } }
 .nav__enlaces{ display:none; }
 
@@ -305,7 +312,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .menu{
   position:fixed; inset:0; z-index:90;
   display:flex; flex-direction:column;
-  padding:calc(var(--nav-alto) + 28px) var(--margen) 36px;
+  padding:calc(var(--nav-alto) + clamp(8px, 3.5svh, 28px)) var(--margen) clamp(20px, 4.5svh, 36px);
   background:var(--azul-900);
   color:var(--arena);
   /* Cortina: el panel no se mueve ni traslada — solo se revela con
@@ -364,8 +371,8 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .menu__lista li + li{ border-top:1px solid rgba(237,225,210,.18); }
 .menu__lista a,.menu__lista button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  width:100%; padding:16px 0; background:none; border:0; cursor:pointer;
-  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:300; font-size:26px;
+  width:100%; padding:clamp(9px, 2svh, 16px) 0; background:none; border:0; cursor:pointer;
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:300; font-size:clamp(21px, 3.6svh, 26px);
   letter-spacing:.02em; text-transform:uppercase; color:var(--arena); text-align:left;
 }
 .menu__sub{ max-height:0; overflow:hidden; transition:max-height 420ms var(--curva); }
@@ -373,7 +380,9 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .menu__sub a{ font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-size:16px; padding:10px 0 10px 16px; }
 .menu__desplegable[aria-expanded="true"] .ico{ transform:rotate(180deg); }
 .menu__desplegable .ico{ transition:transform 320ms var(--curva); }
-.menu__pie{ margin-top:auto; padding-top:28px; }
+/* padding-top chico: con 6 ítems + 2 botones el menú tiene que entrar
+   en 640px de alto sin scroll (celulares con la barra del navegador). */
+.menu__pie{ margin-top:auto; padding-top:clamp(14px, 3svh, 28px); }
 /* Misma forma cápsula que el resto de los botones de la web. */
 .menu__wa{ border-radius:999px; }
 .menu__guia{
@@ -1237,10 +1246,11 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .pie li{ padding:2px 0; }
 /* margin-top en 0: el espacio de abajo del logo también lo pone
    .pie__logo--texto (padding-bottom), sin sumarle nada más acá. */
-/* 6 redes (6×44 + 5×8 = 304px, entran en una fila a 375px). WhatsApp no
-   va acá: ya está en el CTA y en el menú. wrap solo como resguardo en
-   pantallas de 320px. */
-.pie__redes{ display:flex; flex-wrap:wrap; gap:8px; margin-top:0; }
+/* 6 redes repartidas de borde a borde del contenedor (space-between):
+   la primera y la última tocan los márgenes laterales y la fila queda
+   centrada. WhatsApp no va acá: ya está en el CTA y en el menú. gap y
+   wrap solo como resguardo en pantallas de 320px. */
+.pie__redes{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-top:0; }
 .pie__redes a{
   width:44px; height:44px; display:grid; place-items:center;
   border:var(--borde-claro); border-radius:var(--radio); color:var(--blanco);

@@ -90,6 +90,20 @@ pasada solo se cambió:
 - Se borraron las fotos de muestra de Fabiana que ya no se usan
   (`img/zonas/`, `img/zonas-grid/` y las viejas de `img/propiedades/`);
   siguen en `fabianamartinez/`.
+- Ajustes de nav, menú y pie (pedido de Santi con captura del celular):
+  - Ícono de WhatsApp del nav siempre blanco (= fondo del nav sólido);
+    antes el nav sólido lo pintaba azul.
+  - "Guía para mudarse" completo también en móvil, en dos líneas (9.5px,
+    mayúscula). `.nav__acciones` sin gap en móvil y logo a 25px de alto
+    entre 360 y 374px, para que entre sin tocar el margen lateral ni la
+    posición de la hamburguesa (las líneas quedan a 24px del borde).
+    Medido: 15px mínimo entre logo y guía a 360px.
+  - Menú hamburguesa sin scroll: alturas con `clamp(…svh…)` en ítems,
+    padding y pie del menú. Entra en 360×640, 393×660 y 1366×657.
+  - Redes del pie con `justify-content:space-between`: la primera y la
+    última tocan los márgenes, la fila queda centrada.
+  - Pie, columna Contacto: "Escribinos" → "Guía para mudarse" (link a la
+    guía en casasymas.com.uy).
 - **Ya no queda contenido de muestra** en el inicio: todo sale de
   casasymas.com.uy. Las destacadas y los proyectos de su home rotan, así
   que los elegidos pueden dejar de aparecer allá.
