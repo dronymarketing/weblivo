@@ -245,14 +245,20 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .nav__wa{ margin-right:4px; }
 
 /* WhatsApp visible en el nav: toma el color del estado del nav
-   (currentColor). Alto 44px: piso táctil del estándar. */
-/* Círculo verde de 36px dibujado adentro del área táctil de 44px. */
-.nav__wa{ background:radial-gradient(circle, var(--wa) 18px, transparent 18.5px); }
-/* Ícono blanco también con el nav sólido (si no, .es-solido .nav__btn lo
-   pinta azul). */
-.nav__btn.nav__wa,
-.nav.es-solido .nav__btn.nav__wa{ color:var(--blanco); }
-.nav__wa .ico{ width:18px; height:18px; }
+   (currentColor: blanco sobre el hero, verde con el nav sólido).
+   Alto 44px: piso táctil del estándar. */
+/* Rectangular como el WhatsApp de las redes del pie de fabianamartinez
+   (pedido de Santi, antes era un círculo verde relleno): cuadrado de 36px
+   sin relleno, reborde de 1px y esquinas de --radio, dibujado con
+   ::before adentro del área táctil de 44px (4px de cada lado, así los
+   espacios con la lupa quedan iguales que con el círculo). */
+.nav__wa{ position:relative; }
+.nav__wa::before{
+  content:""; position:absolute; inset:4px; pointer-events:none;
+  border:1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius:var(--radio);
+}
+.nav__wa .ico{ width:20px; height:20px; }
 /* Debajo de 360px no entra todo: el buscador (que todavía no busca)
    es el que se va. */
 @media (max-width:359px){ .nav__buscar{ display:none; } }
