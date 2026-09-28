@@ -173,3 +173,121 @@
 @media (min-width:1400px){
   .hero__zona{ font-size:130px; }
 }
+
+/* ============================================================
+   VERSIÓN DE ESCRITORIO — con los parámetros de Rhodium
+   (pedido de Santi). Solo este archivo, desde 900px: el celular
+   no cambia. Cada sección ocupa una pantalla exacta con 40px
+   arriba y abajo, la letra escala para pantalla grande, el
+   contenido usa más ancho y el pie es más grande.
+   ============================================================ */
+@media (min-width:900px){
+
+  :root{
+    /* El contenido usa más ancho de la pantalla (como Rhodium) */
+    --contenedor: 1520px;
+    --margen:     clamp(40px, 4.5vw, 88px);
+    /* Escala de lectura: el cuerpo de 16px del celular se ve chico a 1440 */
+    --lectura:    560px;
+    --pantalla:   calc(var(--vh100, 100svh) - var(--nav-alto));
+  }
+  body{ font-size:clamp(17px, 1.25vw, 20px); }
+  h2{ font-size:clamp(40px, 3.3vw, 60px); }
+  .antetitulo{ font-size:13px; margin-bottom:16px; }
+  .solo-escritorio{ display:block !important; }
+
+  /* Botones de 56px, letra más grande */
+  .btn{ min-height:56px; padding:0 30px; font-size:16px; }
+  .btn .ico{ width:20px; height:20px; }
+  .btn--wa{ font-size:18px; }
+  .nosotros__btn,
+  .propiedad-fija__btn{ min-height:48px; padding:0 26px; font-size:16px; }
+
+  /* Hero: bajada más grande, alineado con el contenedor */
+  .hero__bajada{ font-size:clamp(17px, 1.35vw, 22px); max-width:46ch; }
+  .hero__pie{ padding-inline:var(--margen); }
+
+  /* ---------- Pantalla completa: 40px arriba y abajo ---------- */
+  #nosotros.seccion--completa,
+  #proyectos,
+  #contacto{
+    min-height:calc(100vh - var(--nav-alto));
+    min-height:var(--pantalla);
+    padding-block:40px;
+    display:flex; flex-direction:column;
+  }
+  #nosotros > .contenedor,
+  #proyectos > .contenedor,
+  #contacto > .contenedor{ flex:1 1 auto; display:flex; flex-direction:column; }
+
+  /* ---------- Conocenos: texto a la izquierda, foto a la derecha ---------- */
+  #nosotros .nosotros__todo{
+    display:grid; grid-template-columns:1fr 1.1fr; column-gap:clamp(40px, 5vw, 96px);
+    grid-template-rows:auto 1fr auto; row-gap:32px;
+  }
+  #nosotros .nosotros__intro{ grid-column:1; grid-row:1; }
+  #nosotros .cifras{ grid-column:1; grid-row:2; align-self:center; }
+  #nosotros .nosotros__destacadas{ grid-column:1; grid-row:3; }
+  .nosotros__foto{
+    grid-column:2; grid-row:1 / -1; margin:0; position:relative; min-height:0;
+    border-radius:var(--radio); overflow:hidden; background:var(--azul-800);
+  }
+  .nosotros__foto img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 60%; }
+  #nosotros .nosotros__intro p:not(.antetitulo){ font-size:clamp(17px, 1.25vw, 20px); }
+  #nosotros .cifra{ padding:18px 8px; }
+  #nosotros .cifra__ico{ width:22px; height:22px; }
+  #nosotros .cifra__num{ font-size:clamp(32px, 2.8vw, 48px); }
+  #nosotros .cifra__txt{ font-size:clamp(13px, .95vw, 15px); margin-top:8px; }
+  .nosotros__destacadas h3{ font-size:clamp(24px, 1.8vw, 30px); }
+  .nosotros__destacadas p{ font-size:clamp(15px, 1.05vw, 17px); }
+
+  /* ---------- Proyectos: encabezado + grilla 3×2 que llena el resto ---------- */
+  #proyectos .encabezado{ margin-bottom:32px; }
+  #proyectos .encabezado p:not(.antetitulo){ font-size:clamp(17px, 1.25vw, 20px); }
+  #proyectos .zonas{ flex:1 1 auto; grid-template-rows:1fr 1fr; gap:20px; min-height:0; }
+  #proyectos .zona{ aspect-ratio:auto; min-height:120px; }
+  /* Pantallas bajas: el encabezado de Proyectos se compacta para que la
+     grilla entre en la pantalla (como las compresiones de Rhodium) */
+  @media (max-height:760px){
+    #proyectos .encabezado{ margin-bottom:20px; }
+    #proyectos .encabezado .btn{ margin-top:12px; }
+    #proyectos .antetitulo{ margin-bottom:8px; }
+  }
+  #proyectos .zona__txt{ padding:20px 22px; }
+  .zona__nombre{ font-size:clamp(26px, 2vw, 34px); }
+  .zona__cant{ font-size:clamp(13px, .95vw, 15px); }
+
+  /* ---------- Destacadas: datos más grandes ---------- */
+  .propiedad-fija__specs{ --specs-font:clamp(14px, 1.05vw, 17px); }
+
+  /* ---------- Contacto: texto y datos a la izquierda, mapa a la derecha ---------- */
+  #contacto > .contenedor{
+    display:grid; grid-template-columns:1fr 1.25fr; column-gap:clamp(40px, 5vw, 96px);
+    align-items:stretch;
+  }
+  #contacto > .contenedor > .aparece:first-child{ display:flex; flex-direction:column; justify-content:center; }
+  .cta p:not(.antetitulo){ font-size:clamp(17px, 1.25vw, 20px); }
+  .cta__datos{ list-style:none; margin:40px 0 0; padding:32px 0 0; border-top:1px solid rgba(225,236,234,.18); }
+  .cta__datos li{ display:flex; align-items:center; gap:12px; min-height:44px; font-size:clamp(16px, 1.15vw, 18px); color:var(--arena); }
+  .cta__datos a{ display:inline-flex; align-items:center; gap:12px; color:inherit; }
+  .cta__datos .ico{ width:18px; height:18px; }
+  .cta__mapa{
+    position:relative; border-radius:var(--radio); overflow:hidden; min-height:320px;
+    border:1px solid rgba(225,236,234,.18); background:var(--azul-800);
+  }
+  .cta__mapa iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:0; pointer-events:none;
+    filter:grayscale(1) contrast(.9);
+  }
+
+  /* ---------- Pie: más grande ---------- */
+  .pie{ font-size:clamp(16px, 1.15vw, 18px); padding-block:72px 40px; }
+  .pie__logo--texto{ padding:0 0 32px; align-items:flex-start; }
+  .pie__logo--texto .logo{ height:96px; }   /* 240px de ancho, como el de Rhodium */
+  .pie__cols{ grid-template-columns:1.4fr 1fr 1fr 1.2fr; column-gap:clamp(40px, 4vw, 80px); padding-top:24px; }
+  .pie h3{ font-size:13px; margin-bottom:16px; }
+  .pie a{ min-height:44px; padding:0; }
+  .pie li{ padding:0; }
+  .pie__bloque ul li:not(:has(a)){ min-height:44px; display:flex; align-items:center; }
+  .pie__legal{ font-size:13px; margin-top:48px; padding-top:24px; }
+}

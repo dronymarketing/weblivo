@@ -50,6 +50,29 @@ proyectos y fichas.
   (pedido de Santi). `ajustarSpecsDestacadas` en main.js achica si no
   entra y, si sobra, lo reparte a los lados de las rayitas. En escritorio
   sigue centrada (otro armado).
+- Escritorio (desde 900px) con los parámetros de Rhodium (pedido de
+  Santi), todo en un bloque al final de `escritorio.css`; el celular no
+  cambia (lo único agregado en movil.css es `.solo-escritorio{display:none}`):
+  - Contenedor hasta 1520px, margen lateral clamp(40px, 4.5vw, 88px),
+    cuerpo clamp(17px, 1.25vw, 20px), h2 hasta 60px, antetítulos 13px,
+    botones de 56px.
+  - Pantalla exacta con 40px arriba y abajo: Conocenos, Proyectos y
+    Contacto. Verificado exacto (40/40) en 1024×768, 1280×720, 1366×657,
+    1440×900, 1920×1080 y 2560×1440.
+  - Conocenos: texto, cifras y "Propiedades destacadas" a la izquierda;
+    foto a la derecha, a todo el alto. Foto de banco (Pexels 35542465,
+    Nikolai Kolosov): la rambla de Montevideo desde el agua, en
+    `img/escritorio/montevideo-rambla.jpg`. No es una propiedad.
+  - Proyectos: encabezado y grilla 3×2 que llena lo que sobra de la
+    pantalla; en pantallas bajas (≤760px de alto) el encabezado se compacta.
+  - Contacto: texto, botones y datos (dirección, teléfono, mail) a la
+    izquierda; mapa de Divina Comedia 1595 a la derecha (iframe de Google
+    Maps como el de Rhodium, en gris).
+  - Pie más grande: letra clamp(16px, 1.15vw, 18px), links de 44px de
+    alto, logo de 240px de ancho alineado a la izquierda.
+  - Las fotos de propiedades y proyectos son las reales de Sures (1440px):
+    no se reemplazan con fotos de banco porque se leerían como propiedades
+    reales. En pantallas de 1920 o más se estiran un poco.
 - Caché: al tocar CSS/JS, subir el `?v=` en index.html.
 - Hero: los 5 proyectos del slider de su home, con sus fotos (1440px) y
   sus bajadas: Calyptus Zen II (entrega dic. 2026) · ODA Punta Carretas ·
