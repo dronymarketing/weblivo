@@ -460,6 +460,8 @@ import { createMorph } from './vendor/morphicons/dom.js';
      achicando en cascada — letra, espacio entre ítems, tamaño del
      ícono y espacio ícono-texto, en ese orden — hasta que entra todo.
      Nunca al revés, nunca más grande que los valores base del CSS.
+     En móvil y tablet, además, se estira hasta el ancho exacto de las
+     fotos (ver abajo).
   ---------------------------------------------------------- */
   function ajustarSpecsDestacadas() {
     var pasos = [
@@ -489,8 +491,31 @@ import { createMorph } from './vendor/morphicons/dom.js';
           ul.style.setProperty(p.prop, valor + p.unidad);
         }
       });
+
+      /* Móvil y tablet: la fila ocupa EXACTAMENTE el ancho de las fotos
+         de arriba (el primer texto en su borde izquierdo, el último en el
+         derecho). Lo que sobra se reparte en el espacio a cada lado de
+         las rayitas separadoras, así quedan centradas entre ítems. */
+      if (llenarAncho.matches) {
+        var items = ul.children.length;
+        /* scrollWidth nunca baja de clientWidth: el ancho real del
+           contenido se mide del primer ítem al último. */
+        var primero = ul.children[0].getBoundingClientRect();
+        var ultimo  = ul.children[items - 1].getBoundingClientRect();
+        var sobra = ul.clientWidth - (ultimo.right - primero.left);
+        if (items > 1 && sobra > 0) {
+          var gap = parseFloat(ul.style.getPropertyValue('--specs-gap')) || 0;
+          ul.style.setProperty('--specs-gap', (gap + sobra / (2 * (items - 1))) + 'px');
+          /* redondeos de subpíxel: si se pasó, se corrige de a 0.25px */
+          while (ul.scrollWidth > ul.clientWidth) {
+            gap = parseFloat(ul.style.getPropertyValue('--specs-gap')) - 0.25;
+            ul.style.setProperty('--specs-gap', gap + 'px');
+          }
+        }
+      }
     });
   }
+  var llenarAncho = window.matchMedia('(max-width: 899px)');
   ajustarSpecsDestacadas();
   window.addEventListener('load', ajustarSpecsDestacadas);
   window.addEventListener('resize', ajustarSpecsDestacadas);

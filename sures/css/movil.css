@@ -869,6 +869,16 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
   line-height:1.2; white-space:nowrap;
 }
 .propiedad-fija__specs li:last-child{ border-right:0; }
+/* Móvil y tablet (el escritorio, desde 900px, tiene otro armado): la fila
+   va de borde a borde de las fotos de arriba — el primer texto arranca en
+   el borde izquierdo de la foto y el último termina en el derecho
+   (pedido de Santi). Sin padding afuera del primero y el último; el JS
+   (ajustarSpecsDestacadas) reparte el espacio que sobra entre los ítems. */
+@media (max-width:899px){
+  .propiedad-fija__specs{ justify-content:flex-start; }
+  .propiedad-fija__specs li:first-child{ padding-left:0; }
+  .propiedad-fija__specs li:last-child{ padding-right:0; }
+}
 .propiedad-fija__specs .ico{
   width:var(--specs-ico); height:var(--specs-ico); flex:none;
 }

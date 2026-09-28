@@ -269,6 +269,13 @@ son archivos distintos y se trabajan por separado. Ver `construccion.md`.
 **Scroll siempre nativo.** Nunca Smooth Scrollbar, Locomotive, Lenis,
 ScrollSmoother ni implementaciones propias que bloqueen el body.
 
+**Filas de datos alineadas a las fotos.** Una fila de datos debajo de fotos
+(precio · zona · dormitorios · baños · m², o similar) va de borde a borde de
+las fotos de arriba: el primer texto arranca en el borde izquierdo de la foto
+y el último termina en el derecho, en cualquier ancho de pantalla. Se ajusta
+sola por JS (achica si no entra, reparte el espacio si sobra), nunca a mano.
+Ver `ajustarSpecsDestacadas` en `sures/js/main.js`.
+
 **Hero a pantalla completa con scroll cue** en todas las webs.
 `min-height` con `svh`, nunca `height`, nunca `dvh`.
 

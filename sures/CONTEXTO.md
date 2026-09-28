@@ -45,6 +45,11 @@ proyectos y fichas.
   corto que lupa → hamburguesa (20/24 en móvil, 28/32 en escritorio),
   porque el círculo verde relleno pesa más que los íconos de línea fina. Las líneas de la hamburguesa quedan al mismo margen que el
   logo del otro lado: 24px en móvil, 40px en escritorio.
+- Fila de datos de Destacadas (precio · zona · dorm · baños · m²): en
+  móvil y tablet (<900px) va de borde a borde de las fotos de arriba
+  (pedido de Santi). `ajustarSpecsDestacadas` en main.js achica si no
+  entra y, si sobra, lo reparte a los lados de las rayitas. En escritorio
+  sigue centrada (otro armado).
 - Caché: al tocar CSS/JS, subir el `?v=` en index.html.
 - Hero: los 5 proyectos del slider de su home, con sus fotos (1440px) y
   sus bajadas: Calyptus Zen II (entrega dic. 2026) · ODA Punta Carretas ·
