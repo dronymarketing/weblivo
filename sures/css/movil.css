@@ -242,7 +242,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .nav__acciones .nav__hamburguesa{ display:flex; align-items:center; justify-content:flex-start; }
 .nav__acciones .nav__buscar{ width:42px; padding-left:5px; }
 .nav__acciones .nav__hamburguesa{ width:38px; padding-left:4px; }
-.nav__wa{ margin-right:13px; }
+.nav__wa{ margin-right:9px; }
 
 /* WhatsApp visible en el nav: toma el color del estado del nav
    (currentColor: blanco sobre el hero, verde con el nav sólido).

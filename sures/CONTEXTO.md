@@ -40,7 +40,10 @@ proyectos y fichas.
   probaron y descartaron un cuadrado con reborde y la cápsula "Consultar"
   de Rhodium). Espacio visible IGUAL, medido en píxeles: WhatsApp → lupa →
   hamburguesa = 24px en móvil (igual al margen lateral) y 32px en
-  escritorio (WhatsApp → lupa → "MENÚ"). Santi pidió más aire: antes 16/24. Las líneas de la hamburguesa quedan al mismo margen que el
+  escritorio (WhatsApp → lupa → "MENÚ"). Santi pidió más aire: antes 16/24.
+  Corrección óptica (Santi lo veía más grande): WhatsApp → lupa va 4px más
+  corto que lupa → hamburguesa (20/24 en móvil, 28/32 en escritorio),
+  porque el círculo verde relleno pesa más que los íconos de línea fina. Las líneas de la hamburguesa quedan al mismo margen que el
   logo del otro lado: 24px en móvil, 40px en escritorio.
 - Caché: al tocar CSS/JS, subir el `?v=` en index.html.
 - Hero: los 5 proyectos del slider de su home, con sus fotos (1440px) y
