@@ -76,9 +76,9 @@
    con línea en verde). Sobre una sección oscura (.tema-verde,
    .tema-acento) hace falta la variante clara para que no se
    pierdan contra el fondo. */
-.tema-verde .antetitulo{ color:rgba(240,233,222,.8); }  /* el #016450 sobre este verde da 1.75:1, no se lee */
+.tema-verde .antetitulo{ color:rgba(225,236,234,.8); }  /* el #016450 sobre este verde da 1.75:1, no se lee */
 .tema-acento .antetitulo{ color:var(--arena); }
-.tema-verde .btn--linea{ color:var(--arena); border-color:rgba(240,233,222,.4); }
+.tema-verde .btn--linea{ color:var(--arena); border-color:rgba(225,236,234,.4); }
 .tema-acento .btn--linea{ color:var(--blanco); border-color:rgba(255,255,255,.35); }
 
 /* ---------- H · Carrusel con fundido ---------- */

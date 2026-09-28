@@ -86,7 +86,7 @@ proyectos y fichas.
   - Antetítulo sobre el verde profundo (CTA): crema al 80%, porque el
     #016450 sobre #183935 da 1.75:1 y no se lee.
   - Neutros derivados: `--tinta` #183935 · `--gris` #526A67 · `--arena`
-    #F0E9DE (texto claro sobre el verde) · `--fondo-alt` #FBFAF7.
+    #E1ECEA (el #016450 aclarado, 12% verde + 88% blanco; reemplazó al crema #F0E9DE por pedido de Santi: menú, CTA, pie y specs de Destacadas) · `--fondo-alt` #FBFAF7.
   - Temas (efectos.css): `.tema-crema` y `.tema-verde` (antes
     `.tema-marron`) alternan por sección; `.tema-acento` solo para
     detalles.

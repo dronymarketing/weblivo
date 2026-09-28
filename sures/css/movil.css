@@ -22,7 +22,7 @@
   --tinta:       #183935;
   --gris:        #526A67;   /* 75% --azul-900 sobre blanco — 5.8:1 */
   --fondo:       #FFFFFF;
-  --arena:       #F0E9DE;   /* crema cálido — texto claro sobre el verde (10:1) */
+  --arena:       #E1ECEA;   /* el verde #016450 aclarado: 12% verde + 88% blanco (pedido de Santi, reemplaza al crema) — texto claro sobre el verde profundo (11:1) */
   --fondo-alt:   #FBFAF7;   /* 25% --arena sobre blanco — fondo de las secciones claras */
   --blanco:      #FFFFFF;
 
@@ -366,7 +366,7 @@ body.menu-abierto .nav__wa{
   transition:opacity 240ms var(--curva);
 }
 body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
-.menu__lista li + li{ border-top:1px solid rgba(240,233,222,.18); }
+.menu__lista li + li{ border-top:1px solid rgba(225,236,234,.18); }
 .menu__lista a,.menu__lista button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
   width:100%; padding:clamp(8px, 1.8svh, 16px) 0; background:none; border:0; cursor:pointer;
@@ -861,11 +861,11 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
   --specs-font:13px; --specs-gap:6px; --specs-ico:14px; --specs-ico-gap:4px;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
   row-gap:6px; list-style:none; margin:0 0 20px; padding:0;
-  font-size:var(--specs-font); color:rgba(240,233,222,.82);
+  font-size:var(--specs-font); color:rgba(225,236,234,.82);
 }
 .propiedad-fija__specs li{
   display:flex; align-items:center; gap:var(--specs-ico-gap); flex-shrink:0;
-  padding:0 var(--specs-gap); border-right:1px solid rgba(240,233,222,.35);
+  padding:0 var(--specs-gap); border-right:1px solid rgba(225,236,234,.35);
   line-height:1.2; white-space:nowrap;
 }
 .propiedad-fija__specs li:last-child{ border-right:0; }
@@ -1214,7 +1214,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 /* padding-top en 0: el espacio de arriba del logo ahora lo pone
    completamente .pie__logo--texto (ver más abajo), para que no se
    sumen dos paddings y quede una franja vacía enorme. */
-.pie{ background:var(--azul-900); color:rgba(255,255,255,.82); padding-block:0 32px; font-size:14px; }
+.pie{ background:var(--azul-900); color:var(--arena); padding-block:0 32px; font-size:14px; }
 .pie__logo{ height:auto; }
 /* Mismo wordmark del nav (nombre + "Inmobiliaria" chico), pero bien
    grande y centrado, con el mismo margen arriba y abajo. */
