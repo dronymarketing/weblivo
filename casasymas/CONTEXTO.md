@@ -78,7 +78,21 @@ pasada solo se cambió:
   traen marca de agua de la inmobiliaria que la publica (MO); por eso ahí
   `extra-1` es la de la piscina (la marca es chica) y el fondo, con
   tinte, es la cocina.
-- **Sigue siendo de muestra:** fotos y datos del hero.
+- Hero: 5 propiedades reales de sus destacadas (fotos del CDN en tamaño
+  original a `img/propiedades/hero-*.jpg`; título y bajada con datos de
+  cada ficha; el chip de WhatsApp arma el mensaje con el título).
+  Se cambió solo el contenido: el mecanismo del hero (efecto D) queda
+  intacto, ver la sección 5 más abajo.
+  Chacra en Atlántida · Apartamento con terraza en Pocitos (temporal) ·
+  Apartamento a estrenar en el Centro · Casa en La Barra · Apartamento con
+  piscina en Pocitos (alquiler). Pinares queda afuera: su única foto sin
+  marca de agua grande ya se usa en Destacadas.
+- Se borraron las fotos de muestra de Fabiana que ya no se usan
+  (`img/zonas/`, `img/zonas-grid/` y las viejas de `img/propiedades/`);
+  siguen en `fabianamartinez/`.
+- **Ya no queda contenido de muestra** en el inicio: todo sale de
+  casasymas.com.uy. Las destacadas y los proyectos de su home rotan, así
+  que los elegidos pueden dejar de aparecer allá.
 - Paleta real de su web (sin aplicar, pendiente de decisión): marrón
   `#361c10`, arena `#dcab7c` (fondo del header, con logo blanco), azul
   `#3a6d8c` / `#2c4a63` (botones), naranja `#f29100` (detalles).
