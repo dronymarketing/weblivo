@@ -225,6 +225,31 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    derecho del nav) para no tocar el símbolo, que es compartido, ni
    achicar el área de toque. */
 .nav__hamburguesa{ margin-right:-14px; }
+
+/* Guía para mudarse + WhatsApp (pedido de Santi: los dos visibles en
+   el nav, como en casasymas.com.uy). Toman el color del estado del nav
+   (currentColor): blanco sobre el hero, azul con el nav sólido.
+   Alto 44px en los dos: piso táctil del estándar. En móvil la guía dice
+   solo "Guía" para que entre todo a 360px; el aria-label lleva el
+   nombre completo. */
+.nav__guia{
+  display:inline-flex; align-items:center; height:44px; padding:0 14px;
+  margin-right:2px;
+  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius:999px; color:var(--blanco);
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase; white-space:nowrap;
+  transition:border-color 420ms var(--curva), color 420ms var(--curva);
+}
+.nav__guia-largo{ display:none; }
+.nav.es-solido .nav__guia{ color:var(--azul); }
+/* Círculo verde de 36px dibujado adentro del área táctil de 44px. */
+.nav__wa{ background:radial-gradient(circle, var(--wa) 18px, transparent 18.5px); }
+.nav__btn.nav__wa{ color:var(--blanco); }
+.nav__wa .ico{ width:18px; height:18px; }
+/* Debajo de 360px no entra todo: el buscador (que todavía no busca)
+   es el que se va. */
+@media (max-width:359px){ .nav__buscar{ display:none; } }
 .nav__enlaces{ display:none; }
 
 /* ---------- Buscador del nav ---------- */
@@ -329,7 +354,9 @@ body.menu-abierto .nav{
   -webkit-backdrop-filter:none; backdrop-filter:none;
 }
 body.menu-abierto .nav__logo,
-body.menu-abierto .nav__buscar{
+body.menu-abierto .nav__buscar,
+body.menu-abierto .nav__guia,
+body.menu-abierto .nav__wa{
   opacity:0; pointer-events:none;
   transition:opacity 240ms var(--curva);
 }
@@ -349,6 +376,10 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .menu__pie{ margin-top:auto; padding-top:28px; }
 /* Misma forma cápsula que el resto de los botones de la web. */
 .menu__wa{ border-radius:999px; }
+.menu__guia{
+  border-radius:999px; margin-bottom:12px;
+  color:var(--arena); border-color:rgba(237,225,210,.35);
+}
 
 /* ============================================================
    HERO — fullscreen, carrusel de localidades

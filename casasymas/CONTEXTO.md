@@ -51,8 +51,22 @@ pasada solo se cambió:
   - Pie: Propiedades = Venta, Alquiler, Alquiler temporal, Proyectos;
     Zonas = los 4 departamentos. Links a anclas del inicio (antes iban a
     venta.html, etc., que no existen).
-- **Sigue siendo de muestra:** fotos y datos del hero, las 3 propiedades
-  destacadas y los 6 proyectos (nombres inventados sobre fotos de obra).
+- Proyectos: 6 proyectos reales de su home ("Proyectos destacados"; esa
+  lista rota en cada visita, se eligieron las 6 fotos de arquitectura más
+  claras). Fotos bajadas de cdn.casasymas.com.uy a `img/proyectos/`
+  (900px de ancho, a Rotunda se le recortó la franja negra de abajo).
+  Cada tarjeta y "Ver proyectos" linkean a su página en casasymas.com.uy
+  (pestaña nueva): More Atlántico, Lumen, Rotunda al Lago, Edificio
+  Cathan, Torres del Este, Andiko.
+- Nav: pedido de Santi, dos botones visibles junto al buscador y la
+  hamburguesa: "Guía" (en escritorio "Guía para mudarse") →
+  casasymas.com.uy/guia-para-mudarse-casasymas, y WhatsApp (círculo verde
+  de 36px dentro de 44px táctiles). Toman el color del estado del nav.
+  Debajo de 360px se oculta el buscador para que entre todo. En el menú
+  hamburguesa, "Guía para mudarse" va como botón línea arriba del
+  WhatsApp (en escritorio, los dos lado a lado).
+- **Sigue siendo de muestra:** fotos y datos del hero y las 3 propiedades
+  destacadas.
 - Paleta real de su web (sin aplicar, pendiente de decisión): marrón
   `#361c10`, arena `#dcab7c` (fondo del header, con logo blanco), azul
   `#3a6d8c` / `#2c4a63` (botones), naranja `#f29100` (detalles).
