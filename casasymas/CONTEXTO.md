@@ -65,8 +65,20 @@ pasada solo se cambió:
   Debajo de 360px se oculta el buscador para que entre todo. En el menú
   hamburguesa, "Guía para mudarse" va como botón línea arriba del
   WhatsApp (en escritorio, los dos lado a lado).
-- **Sigue siendo de muestra:** fotos y datos del hero y las 3 propiedades
-  destacadas.
+- Destacadas: 3 propiedades reales en venta de su home (la lista de
+  destacadas también rota). Datos de cada ficha, fotos bajadas en tamaño
+  original (/p/ en vez de /pth/ en el CDN) a `img/propiedades/`, botón
+  "Ver Propiedad" a la ficha en casasymas.com.uy:
+  - Casa con piscina en Pinares — U$S 280.000 · 3 dorm · 2 baños (dato
+    de la descripción; la ficha no lo carga) · 600 m² terreno.
+  - Casa en La Barra — U$S 259.000 · 4 dorm · 2 baños · 528 m² terreno.
+  - Chacra en Atlántida — U$S 995.000 · 9 dorm · 8 baños · 7,6 ha.
+  En escritorio la foto `extra-1` crece a pantalla completa (efecto de
+  la galería anclada): tiene que ser la más limpia. Las fotos de Pinares
+  traen marca de agua de la inmobiliaria que la publica (MO); por eso ahí
+  `extra-1` es la de la piscina (la marca es chica) y el fondo, con
+  tinte, es la cocina.
+- **Sigue siendo de muestra:** fotos y datos del hero.
 - Paleta real de su web (sin aplicar, pendiente de decisión): marrón
   `#361c10`, arena `#dcab7c` (fondo del header, con logo blanco), azul
   `#3a6d8c` / `#2c4a63` (botones), naranja `#f29100` (detalles).
