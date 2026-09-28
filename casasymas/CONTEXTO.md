@@ -4,8 +4,16 @@ Clon de `fabianamartinez/` (estética FM, mismo HTML/CSS/JS y paquete de
 animaciones) adaptado a Casas y más (casasymas.com.uy). En esta primera
 pasada solo se cambió:
 
-- Nombre: "Casas y más" (sub del wordmark: "Propiedades"). Título:
-  "Casas y más — El lugar para encontrar tu propiedad".
+- Nombre: "Casas y más". Título: "Casas y más — El lugar para encontrar
+  tu propiedad".
+- Logo real (lo pasó Santi): `img/logo-casasymas.png`, blanco sobre
+  transparente, recortado a 280×75. Reemplaza al wordmark de texto en nav,
+  menú y pie. Se pinta con `mask` + `background:currentColor` (clase
+  `.logo` en `movil.css`), así toma el color de cada estado: blanco sobre
+  el hero, azul con el nav sólido, arena en el menú, blanco en el pie.
+  Alto: `--logo-alto` (28px móvil / 34px escritorio), 56px en el pie.
+  El original es chico (296×100): si aparece un SVG o un PNG más grande,
+  reemplazar el archivo manteniendo la proporción.
 - Nav/menú, igual que el sitio real: Venta · Alquiler · Proyectos ·
   Inmobiliarias · Mercado. Por ahora son anclas provisorias a secciones del
   inicio (Venta/Alquiler → #destacadas, Proyectos → #proyectos,

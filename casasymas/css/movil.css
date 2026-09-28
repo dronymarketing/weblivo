@@ -180,7 +180,18 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 .nav__logo .logo--blanco{ display:block; }
 .nav__logo .logo--color{ display:none; }
 
-/* Wordmark de texto — provisorio hasta tener el isotipo/logo real */
+/* Logo real de Casas y más: el PNG (blanco sobre transparente) se usa
+   como máscara y el color lo pone currentColor — así un solo archivo
+   sirve blanco sobre el hero, azul con el nav sólido, arena en el menú
+   y blanco en el pie, siguiendo el color que ya tenía cada wordmark. */
+:root{ --logo-alto:28px; }
+.logo{
+  display:block; height:var(--logo-alto); aspect-ratio:280 / 75;
+  background:currentColor;
+  -webkit-mask:url(../img/logo-casasymas.png) center / contain no-repeat;
+  mask:url(../img/logo-casasymas.png) center / contain no-repeat;
+}
+
 .nav__logo--texto{
   height:auto;
   display:flex; flex-direction:column; justify-content:center; gap:0;
@@ -292,10 +303,10 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
      la barra de 60px; acá, al ser position:absolute, hay que
      calcularlo a mano: (60px de --nav-alto - 31px de alto real del
      wordmark) / 2). */
-  position:absolute; top:14px; left:var(--margen); height:auto;
+  position:absolute; top:calc((var(--nav-alto) - var(--logo-alto)) / 2); left:var(--margen); height:auto;
 }
 .menu__logo img{ height:28px; width:auto; }
-/* Mismo wordmark exacto que .nav__logo--texto (nombre + "Inmobiliaria" chico). */
+/* Mismo logo que .nav__logo--texto, en arena. */
 .menu__logo--texto{
   display:flex; flex-direction:column; justify-content:center; gap:0;
   font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
@@ -1182,6 +1193,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
      valor, para que el total de cada lado quede igual (40px). */
   margin:0; padding:0 0 40px;
 }
+.pie__logo--texto .logo{ height:56px; }
 .pie__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
   font-weight:300; font-size:15px; letter-spacing:.38em; text-transform:uppercase;
