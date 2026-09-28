@@ -91,22 +91,15 @@ pasada solo se cambió:
   (`img/zonas/`, `img/zonas-grid/` y las viejas de `img/propiedades/`);
   siguen en `fabianamartinez/`.
 - Ajustes de nav, menú y pie (pedido de Santi con captura del celular):
-  - WhatsApp del nav: sobre foto a pantalla completa (.es-tope/.es-glass,
-    o sea hero y Destacadas) va SIN relleno, con el mismo reborde que la
-    guía e ícono blanco (pedido de Santi: que combine con "Guía"). Con el
-    nav sólido (blanco) va círculo verde relleno con ícono blanco.
-  - "Guía para mudarse" en UN renglón también en móvil (9px, mayúscula,
-    .04em). Aire visible igualado a 8px entre guía → WhatsApp → lupa →
-    hamburguesa (medido en 360/375/393/412). Para lograrlo las áreas
-    táctiles se cortan a mitad de cada espacio: WhatsApp 44×44, lupa
-    26×44, hamburguesa 34×44 (con 44 en todas, los espacios eran
-    8/17/27). La hamburguesa no se movió: líneas a 24px del borde.
-    Logo a 25px de alto entre 360 y 374px; a 360px quedan 12px entre
-    logo y guía. En escritorio todo sigue como antes.
-  - Botón de la guía: letra Light 300 (el peso más fino que hay) y
-    reborde de 36px de alto, igual que el círculo de WhatsApp (dibujado
-    con ::before 4px adentro; el botón sigue siendo de 44px táctiles).
-    Vale también en escritorio.
+  - NAV: Santi pidió volver al nav como estaba al publicar el hero real
+    (commit 1285e52) — en móvil botón "GUÍA" corto (el aria-label lleva
+    el nombre completo; en escritorio "Guía para mudarse"), WhatsApp
+    círculo verde relleno en todos los estados, áreas de 44px con gap
+    4px, logo 28px. Se probaron y DESCARTARON: guía en dos líneas, guía
+    en un renglón con espacios igualados a 8px (áreas táctiles de 26/34),
+    letra Light con reborde de 36px, y WhatsApp sin relleno sobre fotos.
+    Lo único que se conservó de esas vueltas: ícono de WhatsApp blanco
+    también con el nav sólido (antes quedaba azul sobre verde).
   - Menú hamburguesa sin scroll: alturas con `clamp(…svh…)` en ítems,
     padding y pie del menú. Entra en 360×640, 393×660 y 1366×657.
   - Redes del pie con `justify-content:space-between`: la primera y la

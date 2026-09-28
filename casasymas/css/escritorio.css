@@ -24,11 +24,9 @@
   .nav__logo,.nav__logo img{ height:34px; }
   .nav__logo--texto{ font-size:29px; line-height:34px; }
   .nav__enlaces{ display:none; }
-  .nav__acciones{ gap:4px; }
-  .nav__guia{ margin-right:10px; padding:0 14px; font-size:11px; letter-spacing:.14em; }
-  /* En escritorio sobra lugar: la lupa vuelve a su área de 44px. */
-  .nav__acciones .nav__buscar{ width:44px; padding-left:0; justify-content:center; }
-  .nav__acciones .nav__hamburguesa{ width:auto; }
+  .nav__guia{ margin-right:10px; }
+  .nav__guia-corto{ display:none; }
+  .nav__guia-largo{ display:inline; }
   .nav__wa{ margin-right:6px; }
   .menu__pie{ display:flex; gap:12px; }
   .menu__pie .btn{ width:auto; min-width:240px; }
