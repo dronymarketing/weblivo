@@ -20,8 +20,8 @@
      Minimal, a la hba.com: logo + "MENÚ" + buscador. Nada de
      enlaces sueltos permanentes — todo vive en el menú a pantalla
      completa, en mobile y en escritorio por igual. */
-  :root{ --logo-alto:34px; }
-  .nav__logo,.nav__logo img{ height:34px; }
+  :root{ --logo-alto:48px; }
+  .nav__logo,.nav__logo img{ height:var(--logo-alto); }
   .nav__logo--texto{ font-size:29px; line-height:34px; }
   .nav__enlaces{ display:none; }
   /* Escritorio: el mismo criterio con 24px de aire visible y todas las

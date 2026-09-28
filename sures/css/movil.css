@@ -11,20 +11,18 @@
   --azul-900:    #183935;   /* verde profundo, su color dominante — 13:1 sobre blanco. Secciones oscuras, pie, menú */
   --azul-800:    #014D3E;   /* derivado, hover/active de --azul */
   --azul-600:    #1F7A66;   /* derivado, hover claro */
-  --rojo:        #B39359;   /* dorado Sures — 2.8:1, solo superficies y detalles (no texto chico) */
+  --rojo:        #016450;   /* sin dorado (pedido de Santi): superficies y detalles en el verde Sures */
   --rojo-txt:    #016450;   /* mismo valor que --azul, para texto y links */
   --wa:          #128C7E;   /* teal WhatsApp (estándar, no de marca) */
 
   /* Paleta secundaria (de su web) */
   --verde-logo:  #053A35;   /* el verde exacto del logo */
-  --dorado:      #B39359;
-  --dorado-claro:#C6AE82;   /* 25% hacia blanco — texto dorado sobre el verde (5.8:1) */
 
   /* Neutros (derivados de la paleta, no grises fijos) */
   --tinta:       #183935;
   --gris:        #526A67;   /* 75% --azul-900 sobre blanco — 5.8:1 */
   --fondo:       #FFFFFF;
-  --arena:       #F0E9DE;   /* 20% dorado sobre blanco — texto claro sobre el verde (10:1) */
+  --arena:       #F0E9DE;   /* crema cálido — texto claro sobre el verde (10:1) */
   --fondo-alt:   #FBFAF7;   /* 25% --arena sobre blanco — fondo de las secciones claras */
   --blanco:      #FFFFFF;
 
@@ -175,23 +173,24 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
              border-color 420ms var(--curva);
   border-bottom:1px solid transparent;
 }
-.nav__logo{ display:block; height:28px; }
+.nav__logo{ display:block; height:var(--logo-alto); }
 .nav__logo img{ height:28px; width:auto; pointer-events:none; }
 .nav__logo .logo--blanco{ display:block; }
 .nav__logo .logo--color{ display:none; }
 
-/* Logo real de Sures (SVG vectorizado de su logo de sures.com.uy) se usa
-   como máscara y el color lo pone currentColor — así un solo archivo
-   sirve blanco sobre el hero, azul con el nav sólido, arena en el menú
-   y blanco en el pie, siguiendo el color que ya tenía cada wordmark.
-   Nav y menú: solo la palabra "Sures" (a 28px de alto el "REAL ESTATE"
-   quedaría de 2px, ilegible). Pie: el logo completo, más grande. */
-:root{ --logo-alto:28px; }
+/* Logo real de Sures, completo ("Sures" + "REAL ESTATE"): el PNG que pasó
+   Santi (igual al logo_blanco.png de sures.com.uy), recortado al dibujo.
+   Se usa como máscara por su transparencia y el color lo pone
+   currentColor — así un solo archivo sirve blanco sobre el hero, verde
+   del logo con el nav sólido, arena en el menú y blanco en el pie.
+   40px de alto en móvil: la palabra "Sures" queda del mismo tamaño que
+   tenía sola (29px) y "REAL ESTATE" entra debajo. */
+:root{ --logo-alto:40px; }
 .logo{
-  display:block; height:var(--logo-alto); aspect-ratio:4076 / 1188;
+  display:block; height:var(--logo-alto); aspect-ratio:1018 / 408;
   background:currentColor;
-  -webkit-mask:url(../img/logo-sures-palabra.svg) center / contain no-repeat;
-  mask:url(../img/logo-sures-palabra.svg) center / contain no-repeat;
+  -webkit-mask:url(../img/logo-sures.png) center / contain no-repeat;
+  mask:url(../img/logo-sures.png) center / contain no-repeat;
 }
 
 .nav__logo--texto{
@@ -1011,9 +1010,8 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 #nosotros .cifra__txt,
 .nosotros__destacadas p{ color:var(--azul); }
 
-/* Degradé verde profundo (--azul-900) a dorado (--rojo), los dos
-   colores de Sures (en la base iba a arena, que sobre fondo claro se
-   perdía),
+/* Degradé verde profundo (--azul-900) a verde Sures (--azul, #016450)
+   — pedido de Santi, sin dorado,
    independiente en cada elemento (cada uno pinta su propio degradé
    dentro de su propia caja): "Quiénes somos" (antetítulo), el botón
    "Conocer más" y el título "Propiedades destacadas". Los íconos y
@@ -1025,7 +1023,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 #nosotros .nosotros__intro .antetitulo,
 .nosotros__btn,
 .nosotros__destacadas h3{
-  background:linear-gradient(to right, var(--azul-900), var(--rojo));
+  background:linear-gradient(to right, var(--azul-900), var(--azul));
   -webkit-background-clip:text; background-clip:text;
   color:transparent; -webkit-text-fill-color:transparent;
 }
@@ -1231,11 +1229,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
      valor, para que el total de cada lado quede igual (40px). */
   margin:0; padding:0 0 40px;
 }
-.pie__logo--texto .logo{
-  height:80px; aspect-ratio:4076 / 1632;
-  -webkit-mask-image:url(../img/logo-sures.svg);
-  mask-image:url(../img/logo-sures.svg);
-}
+.pie__logo--texto .logo{ height:80px; }
 .pie__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
   font-weight:300; font-size:15px; letter-spacing:.38em; text-transform:uppercase;
@@ -1248,11 +1242,10 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .pie li{ padding:2px 0; }
 /* margin-top en 0: el espacio de abajo del logo también lo pone
    .pie__logo--texto (padding-bottom), sin sumarle nada más acá. */
-/* 6 redes repartidas de borde a borde del contenedor (space-between):
-   la primera y la última tocan los márgenes laterales y la fila queda
-   centrada. WhatsApp no va acá: ya está en el CTA y en el menú. gap y
-   wrap solo como resguardo en pantallas de 320px. */
-.pie__redes{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-top:0; }
+/* Las 3 redes alineadas a la izquierda, con el mismo margen lateral que
+   el resto del pie y 12px entre cada una (pedido de Santi). WhatsApp no
+   va acá: ya está en el CTA y en el menú. */
+.pie__redes{ display:flex; flex-wrap:wrap; justify-content:flex-start; gap:12px; margin-top:0; }
 .pie__redes a{
   width:44px; height:44px; display:grid; place-items:center;
   border:var(--borde-claro); border-radius:var(--radio); color:var(--blanco);

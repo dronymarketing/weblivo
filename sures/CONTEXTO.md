@@ -9,21 +9,20 @@ proyectos y fichas.
 
 - Nombre: "Sures Real Estate". Título: "Sures Real Estate — Inmobiliaria y
   desarrolladora en Montevideo" (su propio título).
-- Logo real (sures.com.uy/sitio/img/logo_blanco.png, 1080×556),
-  vectorizado con potrace a dos SVG que se usan como máscara (`.logo`,
-  color por currentColor, igual que en casasymas):
-  - `img/logo-sures-palabra.svg`: solo "Sures". Va en nav y menú: a 28px
-    de alto el "REAL ESTATE" quedaría de 2px, ilegible.
-  - `img/logo-sures.svg`: logo completo con "REAL ESTATE". Va en el pie,
-    80px de alto.
-  - `img/logo-sures.png`: el PNG original recortado, como fuente.
+- Logo real: `img/logo-sures.png`, el PNG que pasó Santi (idéntico al
+  logo_blanco.png de sures.com.uy, 1080×556) recortado al dibujo
+  (1018×408). Completo ("Sures" + "REAL ESTATE") en nav, menú y pie, por
+  pedido de Santi. Se usa como máscara (`.logo`, color por currentColor):
+  40px de alto en móvil, 48px en escritorio, 80px en el pie. Se descartaron
+  los SVG vectorizados y el nav con solo la palabra "Sures".
 - Favicon: `img/favicon.png`, la "S" de su logo en blanco sobre su verde
   `#183935` (su favicon.ico es de 16px y no es la marca).
 - Vista previa al compartir: `img/og.jpg`, 1200×1200, logo blanco sobre
   su verde `#183935`.
 - Contacto (de su web): WhatsApp +598 97 442 288 · tel. 2603 7667 ·
   info@sures.com.uy · Divina Comedia 1595, Montevideo.
-- Redes del pie: Instagram https://www.instagram.com/suresrealestate/ ·
+- Redes del pie, alineadas a la izquierda con 12px entre cada una (pedido
+  de Santi): Instagram https://www.instagram.com/suresrealestate/ ·
   LinkedIn https://www.linkedin.com/company/suresrealestate ·
   YouTube https://www.youtube.com/@Suresinvestments. Su link de Facebook
   apunta a facebook.com a secas (sin página), así que no va. Se sacaron
@@ -71,17 +70,18 @@ proyectos y fichas.
   - `--azul` #016450 verde Sures (acento, texto e íconos sobre claro,
     7.2:1) · `--azul-900` #183935 verde profundo, su dominante (secciones
     oscuras, pie, menú, tinte de Destacadas, velo del hero).
-  - `--rojo`/`--dorado` #B39359 dorado (superficies y detalles, no texto
-    chico) · `--dorado-claro` #C6AE82 para texto dorado sobre el verde
-    (antetítulo del CTA, 5.8:1) · `--verde-logo` #053A35 (logo con el nav
-    sólido).
+  - SIN dorado (pedido de Santi): el #B39359 de su web se sacó de todos
+    lados. `--rojo` vale #016450, igual que `--azul`. `--verde-logo`
+    #053A35 (logo con el nav sólido).
+  - Antetítulo sobre el verde profundo (CTA): crema al 80%, porque el
+    #016450 sobre #183935 da 1.75:1 y no se lee.
   - Neutros derivados: `--tinta` #183935 · `--gris` #526A67 · `--arena`
     #F0E9DE (texto claro sobre el verde) · `--fondo-alt` #FBFAF7.
   - Temas (efectos.css): `.tema-crema` y `.tema-verde` (antes
-    `.tema-marron`) alternan por sección; `.tema-acento` y `.tema-dorado`
-    solo para detalles.
+    `.tema-marron`) alternan por sección; `.tema-acento` solo para
+    detalles.
   - El degradé de "Conocenos", "Conocer más" y "Propiedades destacadas"
-    va de verde a dorado.
+    va de verde profundo #183935 a verde Sures #016450.
   - Todas las rgba fijas del marrón/terracota/crema de FM pasaron a sus
     equivalentes verdes. WhatsApp sigue en su teal estándar.
 
