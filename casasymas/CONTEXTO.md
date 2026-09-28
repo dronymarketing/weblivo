@@ -91,8 +91,10 @@ pasada solo se cambió:
   (`img/zonas/`, `img/zonas-grid/` y las viejas de `img/propiedades/`);
   siguen en `fabianamartinez/`.
 - Ajustes de nav, menú y pie (pedido de Santi con captura del celular):
-  - Ícono de WhatsApp del nav siempre blanco (= fondo del nav sólido);
-    antes el nav sólido lo pintaba azul.
+  - WhatsApp del nav: sobre foto a pantalla completa (.es-tope/.es-glass,
+    o sea hero y Destacadas) va SIN relleno, con el mismo reborde que la
+    guía e ícono blanco (pedido de Santi: que combine con "Guía"). Con el
+    nav sólido (blanco) va círculo verde relleno con ícono blanco.
   - "Guía para mudarse" en UN renglón también en móvil (9px, mayúscula,
     .04em). Aire visible igualado a 8px entre guía → WhatsApp → lupa →
     hamburguesa (medido en 360/375/393/412). Para lograrlo las áreas

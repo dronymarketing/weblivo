@@ -267,10 +267,19 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   border-radius:999px;
 }
 .nav.es-solido .nav__guia{ color:var(--azul); }
-/* Círculo verde de 36px dibujado adentro del área táctil de 44px. El
-   ícono va del color del fondo del nav: blanco sobre el hero y también
-   con el nav sólido (que es blanco). */
-.nav__wa{ background:radial-gradient(circle, var(--wa) 18px, transparent 18.5px); }
+/* Círculo de 36px dibujado adentro del área táctil de 44px. El ícono va
+   siempre blanco. */
+/* Sobre foto a pantalla completa (hero y Destacadas → .es-tope y
+   .es-glass): círculo sin relleno, con el mismo reborde que la guía e
+   ícono blanco. Con el nav sólido (blanco): círculo verde relleno. */
+.nav__wa{ position:relative; }
+.nav__wa::before{
+  content:""; position:absolute; inset:4px; pointer-events:none;
+  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius:50%;
+}
+.nav.es-solido .nav__wa{ background:radial-gradient(circle, var(--wa) 18px, transparent 18.5px); }
+.nav.es-solido .nav__wa::before{ border-color:transparent; }
 .nav__btn.nav__wa,
 .nav.es-solido .nav__btn.nav__wa{ color:var(--blanco); }
 .nav__wa .ico{ width:18px; height:18px; }
