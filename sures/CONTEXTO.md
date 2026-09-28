@@ -66,9 +66,24 @@ proyectos y fichas.
   Carrasco, Punta Carretas (los de su home); Contacto con teléfono,
   WhatsApp, mail y dirección (link a Google Maps).
 - **Ya no queda contenido de muestra** en el inicio.
-- Paleta real de su web (sin aplicar, pendiente de decisión, igual que en
-  casasymas): verde `#183935` (dominante), verde del logo `#053a35`,
-  verde `#016450`, dorado `#b39359`. La web sigue con la paleta FM.
+- Paleta: la de Sures (pedido de Santi). Mismos nombres de variable que la
+  base (cambió el valor, no el rol), en `movil.css`:
+  - `--azul` #016450 verde Sures (acento, texto e íconos sobre claro,
+    7.2:1) · `--azul-900` #183935 verde profundo, su dominante (secciones
+    oscuras, pie, menú, tinte de Destacadas, velo del hero).
+  - `--rojo`/`--dorado` #B39359 dorado (superficies y detalles, no texto
+    chico) · `--dorado-claro` #C6AE82 para texto dorado sobre el verde
+    (antetítulo del CTA, 5.8:1) · `--verde-logo` #053A35 (logo con el nav
+    sólido).
+  - Neutros derivados: `--tinta` #183935 · `--gris` #526A67 · `--arena`
+    #F0E9DE (texto claro sobre el verde) · `--fondo-alt` #FBFAF7.
+  - Temas (efectos.css): `.tema-crema` y `.tema-verde` (antes
+    `.tema-marron`) alternan por sección; `.tema-acento` y `.tema-dorado`
+    solo para detalles.
+  - El degradé de "Conocenos", "Conocer más" y "Propiedades destacadas"
+    va de verde a dorado.
+  - Todas las rgba fijas del marrón/terracota/crema de FM pasaron a sus
+    equivalentes verdes. WhatsApp sigue en su teal estándar.
 
 Lo de abajo es el contexto heredado de casasymas y de Fabiana Martínez:
 sirve para entender las decisiones de diseño, pero los datos de cliente

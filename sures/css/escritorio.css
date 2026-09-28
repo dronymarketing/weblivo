@@ -121,7 +121,7 @@
   .encabezado{ display:flex; align-items:flex-end; justify-content:space-between; gap:40px; margin-bottom:40px; }
   .encabezado > div{ max-width:640px; }
 
-  .tarjeta:hover{ border-color:rgba(93,37,16,.42); }
+  .tarjeta:hover{ border-color:rgba(1,100,80,.42); }
   .tarjeta__titulo{ font-size:21px; }
   .tarjeta__precio{ font-size:26px; }
 

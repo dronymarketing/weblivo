@@ -258,7 +258,7 @@
   /* ============================================================
      F · SECCIONES CON NOMBRE DE COLOR
      El color vive en el nombre de la clase (.tema-crema,
-     .tema-terracota, ...), definido en efectos.css — cada
+     .tema-verde, ...), definido en efectos.css — cada
      sección ya pinta su propio fondo opaco (necesario para que
      el efecto D la tape correctamente contra el hero fijo). Lo
      único que el CSS no puede resolver solo es el meta

@@ -1,35 +1,35 @@
 /* ============================================================
-   CASAS Y MÁS — BORRADOR
+   SURES REAL ESTATE — BORRADOR
    movil.css · base 375px · SIN media queries
    ============================================================ */
 
 :root{
-  /* Marca — hex muestreados a nivel de píxel del branding (paleta primaria) */
-  --azul:        #5D2510;   /* terracota — 12.09:1 sobre blanco. Rol de acento/CTA (antes "azul") */
-  --azul-900:    #412F26;   /* marrón oscuro — 12.66:1 sobre blanco. Fondo hero/nav sólido */
-  --azul-800:    #4C2C1A;   /* intermedio, derivado para hover/active */
-  --azul-600:    #7A3216;   /* intermedio claro, derivado para hover claro */
-  --rojo:        #987145;   /* bronce — 4.39:1, solo superficies (no texto chico) */
-  --rojo-txt:    #5D2510;   /* terracota — mismo valor que --azul, para texto y links */
+  /* Marca — paleta real de sures.com.uy (logo y su CSS). Los nombres de
+     variable vienen de la base (fabianamartinez → casasymas); cambió el
+     valor, no el rol. */
+  --azul:        #016450;   /* verde Sures — 7.2:1 sobre blanco. Acento/CTA, texto e íconos sobre claro */
+  --azul-900:    #183935;   /* verde profundo, su color dominante — 13:1 sobre blanco. Secciones oscuras, pie, menú */
+  --azul-800:    #014D3E;   /* derivado, hover/active de --azul */
+  --azul-600:    #1F7A66;   /* derivado, hover claro */
+  --rojo:        #B39359;   /* dorado Sures — 2.8:1, solo superficies y detalles (no texto chico) */
+  --rojo-txt:    #016450;   /* mismo valor que --azul, para texto y links */
   --wa:          #128C7E;   /* teal WhatsApp (estándar, no de marca) */
 
-  /* Paleta secundaria (branding) */
-  --oliva-900:   #424530;
-  --oliva:       #6A6F4C;
-  --mostaza:     #EBC383;
-  --bronce:      #987145;
+  /* Paleta secundaria (de su web) */
+  --verde-logo:  #053A35;   /* el verde exacto del logo */
+  --dorado:      #B39359;
+  --dorado-claro:#C6AE82;   /* 25% hacia blanco — texto dorado sobre el verde (5.8:1) */
 
-  /* Neutros cálidos (sobre marrón, no azulados) */
-  --tinta:       #412F26;
-  --gris:        #6A6F4C;
-  --gris-suave:  #8C8471;
+  /* Neutros (derivados de la paleta, no grises fijos) */
+  --tinta:       #183935;
+  --gris:        #526A67;   /* 75% --azul-900 sobre blanco — 5.8:1 */
   --fondo:       #FFFFFF;
-  --arena:       #EDE1D2;   /* crema del branding original — sigue disponible, ya no es --fondo-alt */
-  --fondo-alt:   #FAF8F4;   /* 75% blanco / 25% --arena — más claro que el punto medio, pedido por el cliente */
+  --arena:       #F0E9DE;   /* 20% dorado sobre blanco — texto claro sobre el verde (10:1) */
+  --fondo-alt:   #FBFAF7;   /* 25% --arena sobre blanco — fondo de las secciones claras */
   --blanco:      #FFFFFF;
 
   /* Firma Livo: reborde 1px en currentColor 12–18%, reemplaza a la sombra */
-  --borde:       1px solid rgba(65,47,38,.14);
+  --borde:       1px solid rgba(24,57,53,.14);
   --borde-claro: 1px solid rgba(255,255,255,.18);
 
   /* Medidas móvil */
@@ -152,7 +152,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 }
 .btn--azul{ background:var(--azul); color:var(--blanco); }
 .btn--azul:active{ background:var(--azul-800); }
-.btn--linea{ background:transparent; color:var(--azul); border:1px solid rgba(93,37,16,.35); }
+.btn--linea{ background:transparent; color:var(--azul); border:1px solid rgba(1,100,80,.35); }
 .btn--wa{ background:var(--wa); color:var(--blanco); font-size:18px; }
 .btn--bloque{ display:flex; width:100%; }
 
@@ -200,7 +200,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   font-family:"Hello Branch",cursive; font-weight:400; font-size:24px;
   color:var(--blanco); line-height:1;
 }
-.nav.es-solido .nav__logo--texto{ color:var(--azul); }
+.nav.es-solido .nav__logo--texto{ color:var(--verde-logo); }  /* el verde exacto del logo */
 .nav__logo-sub{
   font-family:"Neue Haas Grotesk Display Pro",sans-serif;
   font-weight:300; font-size:8px; letter-spacing:.38em; text-transform:uppercase;
@@ -265,7 +265,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
   display:flex; align-items:center; gap:10px;
   padding:14px var(--margen);
   background:var(--blanco);
-  border-bottom:1px solid rgba(65,47,38,.14);
+  border-bottom:1px solid rgba(24,57,53,.14);
   opacity:0; transform:translateY(-8px); pointer-events:none;
   transition:opacity 260ms var(--curva), transform 260ms var(--curva);
 }
@@ -298,7 +298,7 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
 /* estado 3 — pasado el hero */
 .nav.es-solido{
   background:var(--blanco);
-  border-bottom-color:rgba(65,47,38,.14);
+  border-bottom-color:rgba(24,57,53,.14);
 }
 .nav.es-solido .logo--blanco{ display:none; }
 .nav.es-solido .logo--color{ display:block; }
@@ -367,7 +367,7 @@ body.menu-abierto .nav__wa{
   transition:opacity 240ms var(--curva);
 }
 body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
-.menu__lista li + li{ border-top:1px solid rgba(237,225,210,.18); }
+.menu__lista li + li{ border-top:1px solid rgba(240,233,222,.18); }
 .menu__lista a,.menu__lista button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
   width:100%; padding:clamp(8px, 1.8svh, 16px) 0; background:none; border:0; cursor:pointer;
@@ -416,10 +416,10 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .hero__velo{
   position:absolute; inset:0; z-index:-1;
   background:linear-gradient(180deg,
-    rgba(65,47,38,.55) 0%,
-    rgba(65,47,38,.18) 34%,
-    rgba(65,47,38,.62) 78%,
-    rgba(65,47,38,.80) 100%);
+    rgba(24,57,53,.55) 0%,
+    rgba(24,57,53,.18) 34%,
+    rgba(24,57,53,.62) 78%,
+    rgba(24,57,53,.80) 100%);
 }
 .hero__titulo{
   padding:0 var(--margen);
@@ -630,14 +630,14 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .hero-interna__foto img{ width:100%; height:100%; object-fit:cover; }
 .hero-interna__velo{
   position:absolute; inset:0; z-index:-1;
-  background:linear-gradient(180deg,rgba(65,47,38,.58) 0%,rgba(65,47,38,.32) 55%,rgba(65,47,38,.74) 100%);
+  background:linear-gradient(180deg,rgba(24,57,53,.58) 0%,rgba(24,57,53,.32) 55%,rgba(24,57,53,.74) 100%);
 }
 .hero-interna__cuerpo{
   padding:0 var(--margen); margin-bottom:auto;
   padding-top:calc(var(--nav-alto) + 26vh);
   color:var(--blanco);
 }
-.hero-interna__cuerpo .antetitulo{ color:#EEC3B3; }
+.hero-interna__cuerpo .antetitulo{ color:var(--arena); }
 .hero-interna__cuerpo h1{ font-size:36px; color:var(--blanco); text-shadow:0 2px 14px rgba(0,0,0,.35); }
 .hero-interna__cuerpo p{ max-width:var(--lectura); margin:10px 0 0; color:rgba(255,255,255,.9); }
 .hero-interna--busc{ padding-bottom:0; }
@@ -714,7 +714,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .zona img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .zona__velo{
   position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(65,47,38,0) 40%,rgba(65,47,38,.72) 100%);
+  background:linear-gradient(180deg,rgba(24,57,53,0) 40%,rgba(24,57,53,.72) 100%);
 }
 .zona__txt{ position:relative; padding:14px; color:var(--blanco); }
 .zona__nombre{ font-family:"Hello Branch",cursive; font-weight:400; font-size:20px; line-height:1.1; }
@@ -731,7 +731,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .proyecto img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .proyecto__velo{
   position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(65,47,38,0) 35%,rgba(65,47,38,.78) 100%);
+  background:linear-gradient(180deg,rgba(24,57,53,0) 35%,rgba(24,57,53,.78) 100%);
 }
 .proyecto__txt{ position:relative; padding:18px; color:var(--blanco); }
 .proyecto__estado{
@@ -862,11 +862,11 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
   --specs-font:13px; --specs-gap:6px; --specs-ico:14px; --specs-ico-gap:4px;
   display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
   row-gap:6px; list-style:none; margin:0 0 20px; padding:0;
-  font-size:var(--specs-font); color:rgba(237,225,210,.82);
+  font-size:var(--specs-font); color:rgba(240,233,222,.82);
 }
 .propiedad-fija__specs li{
   display:flex; align-items:center; gap:var(--specs-ico-gap); flex-shrink:0;
-  padding:0 var(--specs-gap); border-right:1px solid rgba(237,225,210,.35);
+  padding:0 var(--specs-gap); border-right:1px solid rgba(240,233,222,.35);
   line-height:1.2; white-space:nowrap;
 }
 .propiedad-fija__specs li:last-child{ border-right:0; }
@@ -903,7 +903,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .proyecto-ficha__foto img{ width:100%; height:100%; object-fit:cover; }
 .proyecto-ficha__estado{
   position:absolute; top:12px; left:12px;
-  background:rgba(65,47,38,.55); color:var(--blanco);
+  background:rgba(24,57,53,.55); color:var(--blanco);
   -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
   font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
   padding:5px 10px; border-radius:3px;
@@ -949,14 +949,14 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
   border:var(--borde); border-radius:var(--radio); font-size:14px; font-weight:500; color:var(--gris);
 }
 .paginacion a[aria-current]{ background:var(--azul); border-color:var(--azul); color:var(--blanco); }
-.paginacion a:hover:not([aria-current]){ border-color:rgba(93,37,16,.4); color:var(--azul); }
+.paginacion a:hover:not([aria-current]){ border-color:rgba(1,100,80,.4); color:var(--azul); }
 .paginacion__sig .ico,.paginacion__ant .ico{ width:16px; height:16px; }
 .paginacion__ant .ico{ transform:rotate(180deg); }
 
 /* ============================================================
    Nosotros / cifras
    ============================================================ */
-.cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14); margin-top:32px; }
+.cifras{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(24,57,53,.14); margin-top:32px; }
 .cifra{ background:var(--fondo-alt); padding:20px 16px; }
 .cifra__fila{ display:flex; align-items:center; gap:8px; }
 .cifra__ico{ display:block; width:20px; height:20px; color:var(--azul); flex:none; }
@@ -998,21 +998,22 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
    gap+background (que dependía del fondo opaco de .cifra para no
    verse como un bloque parejo). */
 #nosotros .cifras{ grid-template-columns:repeat(4, 1fr); gap:0; background:transparent; }
-#nosotros .cifra{ padding:10px 6px; text-align:center; background:transparent; border-right:1px solid rgba(65,47,38,.14); }
+#nosotros .cifra{ padding:10px 6px; text-align:center; background:transparent; border-right:1px solid rgba(24,57,53,.14); }
 #nosotros .cifra:last-child{ border-right:none; }
 #nosotros .cifra__fila{ justify-content:center; gap:5px; }
 #nosotros .cifra__ico{ width:16px; height:16px; }
 #nosotros .cifra__num{ font-size:20px; }
 #nosotros .cifra__txt{ font-size:11px; margin-top:4px; }
 
-/* Terracota sólido puntual (pedido del cliente) en el párrafo de bio,
-   las etiquetas de las cifras y el párrafo del aviso a Destacadas.
-   --azul ya vale #5D2510 (ver definición de variables). */
+/* Color sólido de acento en el párrafo de bio, las etiquetas de las
+   cifras y el párrafo del aviso a Destacadas (--azul = verde Sures). */
 #nosotros .nosotros__intro p,
 #nosotros .cifra__txt,
 .nosotros__destacadas p{ color:var(--azul); }
 
-/* Degradé marrón (--azul-900, #412F26) a arena (--arena, #EDE1D2),
+/* Degradé verde profundo (--azul-900) a dorado (--rojo), los dos
+   colores de Sures (en la base iba a arena, que sobre fondo claro se
+   perdía),
    independiente en cada elemento (cada uno pinta su propio degradé
    dentro de su propia caja): "Quiénes somos" (antetítulo), el botón
    "Conocer más" y el título "Propiedades destacadas". Los íconos y
@@ -1024,7 +1025,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 #nosotros .nosotros__intro .antetitulo,
 .nosotros__btn,
 .nosotros__destacadas h3{
-  background:linear-gradient(to right, var(--azul-900), var(--arena));
+  background:linear-gradient(to right, var(--azul-900), var(--rojo));
   -webkit-background-clip:text; background-clip:text;
   color:transparent; -webkit-text-fill-color:transparent;
 }
@@ -1158,7 +1159,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 .ficha-accion__botones{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
 
 .ficha__specs{
-  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(65,47,38,.14);
+  display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(24,57,53,.14);
   border:var(--borde); border-radius:var(--radio); overflow:hidden; margin-bottom:28px;
 }
 .ficha__spec{ background:var(--blanco); padding:14px 16px; display:flex; align-items:center; gap:10px; }
@@ -1172,7 +1173,7 @@ body.menu-abierto .nav__btn.nav__hamburguesa{ color:var(--arena); }
 
 /* modal Agendar visita */
 .modal-velo{
-  position:fixed; inset:0; z-index:150; background:rgba(65,47,38,.6);
+  position:fixed; inset:0; z-index:150; background:rgba(24,57,53,.6);
   opacity:0; pointer-events:none; transition:opacity 300ms var(--curva);
 }
 .modal-velo.abierto{ opacity:1; pointer-events:auto; }
