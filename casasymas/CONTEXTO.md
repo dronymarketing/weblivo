@@ -100,6 +100,12 @@ pasada solo se cambió:
     letra Light con reborde de 36px, y WhatsApp sin relleno sobre fotos.
     Lo único que se conservó de esas vueltas: ícono de WhatsApp blanco
     también con el nav sólido (antes quedaba azul sobre verde).
+  - Sobre ese nav, después: "GUÍA" en Light 300 y reborde de 36px de alto
+    (igual que el círculo de WhatsApp, dibujado con ::before; el botón
+    sigue midiendo 44). Aire visible IGUAL entre guía → WhatsApp → lupa
+    → hamburguesa: 16px en móvil (áreas táctiles lupa 34×44,
+    hamburguesa 38×44, WhatsApp 44×44; la hamburguesa no se movió, líneas
+    a 24px del borde) y 24px en escritorio (todas las áreas de 44).
   - Menú hamburguesa sin scroll: alturas con `clamp(…svh…)` en ítems,
     padding y pie del menú. Entra en 360×640, 393×660 y 1366×657.
   - Redes del pie con `justify-content:space-between`: la primera y la

@@ -226,20 +226,46 @@ button{ font:inherit; color:inherit; -webkit-tap-highlight-color:transparent; }
    achicar el área de toque. */
 .nav__hamburguesa{ margin-right:-14px; }
 
+/* Móvil: aire VISIBLE igual (16px) entre guía → WhatsApp → lupa →
+   hamburguesa (pedido de Santi). Los límites de cada área táctil caen a
+   mitad de cada espacio (8px de cada lado del dibujo):
+   - lupa 34×44: 8 + trazo de 18 + 8 (el trazo arranca en x=3 de su caja
+     de 24 → padding-left 5).
+   - hamburguesa 38×44: 8 + líneas de 16 + 14 que se meten en el margen,
+     igual que antes (las líneas arrancan en x=4 → padding-left 4; las
+     líneas siguen a 24px del borde de la pantalla).
+   - WhatsApp 44×44 (círculo 36 + 4 + 4) con 4px hasta la lupa.
+   - guía: 12px de margen hasta el área de WhatsApp (12 + 4 = 16).
+   Con áreas de 44 en todos, los espacios eran distintos. */
+.nav__acciones{ gap:0; }
+.nav__acciones .nav__buscar,
+.nav__acciones .nav__hamburguesa{ display:flex; align-items:center; justify-content:flex-start; }
+.nav__acciones .nav__buscar{ width:34px; padding-left:5px; }
+.nav__acciones .nav__hamburguesa{ width:38px; padding-left:4px; }
+.nav__wa{ margin-right:4px; }
+
 /* Guía para mudarse + WhatsApp (pedido de Santi: los dos visibles en
    el nav, como en casasymas.com.uy). Toman el color del estado del nav
    (currentColor): blanco sobre el hero, azul con el nav sólido.
    Alto 44px en los dos: piso táctil del estándar. En móvil la guía dice
    solo "Guía" para que entre todo a 360px; el aria-label lleva el
    nombre completo. */
+/* Letra Light (300, la más fina de la familia) y reborde de 36px de alto,
+   igual que el círculo de WhatsApp: el botón sigue midiendo 44 (área
+   táctil) y el reborde se dibuja con ::before, 4px adentro arriba y abajo. */
 .nav__guia{
+  position:relative;
   display:inline-flex; align-items:center; height:44px; padding:0 14px;
-  margin-right:2px;
-  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
-  border-radius:999px; color:var(--blanco);
-  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:500;
+  margin-right:12px;
+  color:var(--blanco);
+  font-family:"Neue Haas Grotesk Display Pro",sans-serif; font-weight:300;
   font-size:11px; letter-spacing:.14em; text-transform:uppercase; white-space:nowrap;
-  transition:border-color 420ms var(--curva), color 420ms var(--curva);
+  transition:color 420ms var(--curva);
+}
+.nav__guia::before{
+  content:""; position:absolute; inset:4px 0; pointer-events:none;
+  border:1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius:999px;
 }
 .nav__guia-largo{ display:none; }
 .nav.es-solido .nav__guia{ color:var(--azul); }

@@ -24,10 +24,15 @@
   .nav__logo,.nav__logo img{ height:34px; }
   .nav__logo--texto{ font-size:29px; line-height:34px; }
   .nav__enlaces{ display:none; }
-  .nav__guia{ margin-right:10px; }
+  /* Escritorio: el mismo criterio con 24px de aire visible y todas las
+     áreas de 44: guía → círculo (20 + 4), círculo → lupa (4 + 7 + 13),
+     lupa → "MENÚ" (13 + 7 + 4). */
+  .nav__guia{ margin-right:20px; }
   .nav__guia-corto{ display:none; }
   .nav__guia-largo{ display:inline; }
-  .nav__wa{ margin-right:6px; }
+  .nav__wa{ margin-right:7px; }
+  .nav__acciones .nav__buscar{ width:44px; padding-left:0; justify-content:center; margin-right:7px; }
+  .nav__acciones .nav__hamburguesa{ width:auto; padding:8px 4px; }
   .menu__pie{ display:flex; gap:12px; }
   .menu__pie .btn{ width:auto; min-width:240px; }
   .menu__guia{ margin-bottom:0; }
