@@ -129,6 +129,9 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   queda aparte (abajo en celular, a la derecha sobre la foto en escritorio). Antes el botón quedaba
   pegado debajo de la tarjeta.
 
+- **Vista previa al compartir (WhatsApp, redes):** `img/og-blanco.jpg`, 1200×1200, fondo blanco con el logo
+  vertical en naranja (Santi, 30/9). Si se cambia, usar otro nombre de archivo: WhatsApp guarda la anterior.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace
