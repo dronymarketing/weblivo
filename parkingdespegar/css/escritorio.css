@@ -37,7 +37,6 @@
 .nav__wa { padding: 0 22px 0 18px; font-size: 12px; }
 .nav__wa .ico-marca { width: 18px; height: 18px; }
 .menu { width: 460px; padding-inline: 48px; border-left: var(--borde); overflow-y: auto; }
-.menu-abierto .nav__wa { visibility: visible; }
 .menu__lista a { font-size: 38px; min-height: 80px; }
 
 /* ============================================================
@@ -230,3 +229,43 @@
 .valor .ico { width: 40px; height: 40px; }
 .valor__nombre { font-size: clamp(22px, 1.9vw, 30px); max-width: 12ch; }
 .rasgo .ico { width: 40px; height: 40px; }
+
+/* ============================================================
+   NAV DE ESCRITORIO — los links a la vista, en naranja; sin
+   hamburguesa ni menú (regla de livo-design, Santi 30/9)
+   ============================================================ */
+.nav__hamburguesa, .menu, .menu__velo { display: none; }
+.nav__links { display: flex; align-items: center; gap: clamp(24px, 2.6vw, 44px); margin-left: auto; margin-right: clamp(24px, 2.6vw, 44px); }
+.nav__links a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--acento);
+  transition: opacity var(--dur-micro) var(--ease);
+}
+.nav__links a:hover { opacity: .7; }
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 9px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease);
+}
+.nav__links a:hover::after, .nav__links a[aria-current]::after { transform: none; }
+/* Tablet: el logo y los links se achican con el ancho; entre 768 y 959px
+   el botón de WhatsApp queda solo con el ícono para que todo entre en una línea */
+.nav__logo svg { height: clamp(24px, 2.6vw, 34px); }
+.nav__links a { font-size: clamp(11px, 1vw, 13px); }
+.nav__links { gap: clamp(18px, 2.6vw, 44px); margin-right: clamp(16px, 2.6vw, 44px); }
+@media (max-width: 959px) {
+  .nav__wa { padding: 0; width: 44px; }
+  .nav__wa-txt { display: none; }
+}

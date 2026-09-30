@@ -225,6 +225,11 @@ Si dice configurar, andá parámetro por parámetro: modo, alto, posición del
 logo, posición y estilo de la hamburguesa, cómo se abre el menú, botón de
 WhatsApp (si va, forma y posición).
 
+**Regla fija (no se pregunta): en escritorio, nunca hamburguesa.** Desde 768px
+los links van a la vista en el nav, en línea, y la hamburguesa y el panel del
+menú no se muestran. La hamburguesa es solo para el celular. Detalle en
+`references/construccion.md` → «Nav de escritorio».
+
 ### 10 — Acción principal
 
 Qué tiene que hacer quien entra: confirmar asistencia, escribir por WhatsApp,

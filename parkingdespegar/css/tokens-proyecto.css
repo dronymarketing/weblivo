@@ -28,7 +28,7 @@
   --glass-oscuro:  rgba(5, 63, 92, .14);
   --glass-oscuro-solido: rgba(5, 63, 92, .88);
 
-  --barra-inferior: var(--fondo);
+  --barra-inferior: var(--superficie);   /* blanca, como el nav (Santi, 30/9) */
 
   /* ---------- Tipografía ---------- */
   /* IT Inktura (demo: sin tildes ni números) para títulos cortos en mayúscula;

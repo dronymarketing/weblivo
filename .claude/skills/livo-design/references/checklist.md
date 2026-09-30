@@ -6,6 +6,8 @@ Se revisa **a 375px de ancho**, una por una, antes de decir que está listo.
 
 1. ¿El nav se comporta según el modo elegido?
    - Hamburguesa: el logo y el botón no se tocan ni se cortan.
+   - Escritorio: **no hay hamburguesa**; los links están a la vista en el nav
+     y entran en una línea a 1024px.
    - Horizontal: los ítems entran en una línea sin partirse.
    - Sin nav: hay alguna forma de llegar al contacto.
 2. ¿Hay scroll horizontal en alguna sección? **No puede haber.**

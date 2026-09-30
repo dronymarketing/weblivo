@@ -29,8 +29,11 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   El nav sólido es blanco, para que no se pierda sobre las pantallas claras (Santi, 30/9).
 - **Menú en el celular (Santi, 30/9):** pantalla completa, fondo blanco y sin scroll. Con el menú
   abierto se esconde «Reservar» del nav. Debajo de los ítems: botón «Reservar lugar», mapa chico
-  (absorbe el alto que sobra) y abajo horario, teléfono, dirección e Instagram. En escritorio sigue
-  siendo el panel de 460px desde la derecha.
+  (hasta 200px) y abajo Instagram a la izquierda con «Abierto las 24 horas · 099 114 144».
+  La barra inferior de Android (y la de arriba, con el menú abierto) va en blanco.
+- **Nav de escritorio (Santi, 30/9, ahora regla de livo-design):** sin hamburguesa ni menú; los
+  cuatro links a la vista en naranja, con filete bajo la página actual. Entre 768 y 959px el botón
+  de WhatsApp queda solo con el ícono para que todo entre en una línea.
   En el inicio: transparente → vidrio sobre la escena → sólido cuando el contenido la tapa.
   En las internas arranca en blanco sobre la foto (`nav--sobre-foto`).
 - **Acción principal:** WhatsApp 099 114 144 (+598 99 114 144) con mensaje precargado.
@@ -110,4 +113,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css en `?v=6`, escritorio.css en `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=7`, escritorio.css `?v=3`, tokens-proyecto.css `?v=2`, main.js `?v=2`); subirlo en los cinco HTML cada vez que se tocan.

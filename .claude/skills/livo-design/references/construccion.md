@@ -338,6 +338,25 @@ Para anclas: `scroll-behavior: smooth` en el `html`, y nada más.
    Requiere 4 ítems como máximo y textos cortos.
 3. **Sin nav** — invitaciones y eventos. Índice al final si hace falta.
 
+El modo elegido es el del **celular**. En escritorio rige siempre lo de abajo.
+
+### Nav de escritorio — sin hamburguesa (regla, Santi 30/9/2026)
+
+Desde 768px **nunca hay hamburguesa**: los ítems del menú van a la vista en el
+nav, en una línea, entre el logo y el botón de acción (WhatsApp).
+
+- Marcado: un `<nav class="nav__links">` con los mismos links del menú, dentro
+  del header. En `movil.css` va `display: none`; en `escritorio.css` se muestra,
+  y `.nav__hamburguesa`, `.menu` y `.menu__velo` van `display: none`.
+- Ítems en mayúscula, 13px, tracking 0.1em, alineados a la derecha antes del
+  botón. Color: el acento de la marca si el cliente lo pide (en Parking Despegar,
+  naranja); si no, el color de texto del nav.
+- La página actual lleva `aria-current="page"` y un filete de 1px debajo; el
+  hover muestra el mismo filete.
+- Si los ítems no entran en una línea a 1024px, se acortan los textos. No se
+  vuelve a la hamburguesa.
+- Referencia: `parkingdespegar/` (primera web con esta regla).
+
 ### Medidas
 
 Salen de tokens. Resumen:

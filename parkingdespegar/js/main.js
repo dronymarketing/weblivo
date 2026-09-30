@@ -81,8 +81,11 @@
   function enfocables() {
     return [boton].concat(Array.prototype.slice.call(menu.querySelectorAll('a[href], button')));
   }
+  var tema = document.querySelector('meta[name="theme-color"]');
+  var temaPrevio = tema ? tema.getAttribute('content') : null;
   function abrir() {
     raiz.classList.add('menu-abierto');
+    if (tema) tema.setAttribute('content', '#ffffff');
     boton.setAttribute('aria-expanded', 'true');
     boton.setAttribute('aria-label', 'Cerrar menú');
     var primero = menu.querySelector('a');
@@ -90,6 +93,7 @@
   }
   function cerrar(devolverFoco) {
     raiz.classList.remove('menu-abierto');
+    if (tema && temaPrevio) tema.setAttribute('content', temaPrevio);
     boton.setAttribute('aria-expanded', 'false');
     boton.setAttribute('aria-label', 'Abrir menú');
     if (devolverFoco) boton.focus({ preventScroll: true });
