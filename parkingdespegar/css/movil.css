@@ -194,6 +194,18 @@
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+/* Páginas internas (Santi, 30/9): todo el nav en blanco —logo, «Reservar», su reborde y la
+   hamburguesa—. Sólido en navy para que el blanco se siga leyendo. Con el menú abierto
+   (fondo blanco) vuelve a los colores de siempre. En escritorio, también los links. */
+.nav--sobre-foto { color: var(--texto-claro); }
+.nav--sobre-foto .nav__logo,
+.nav--sobre-foto .nav__wa-txt,
+.nav--sobre-foto .nav__wa .ico-marca { color: var(--texto-claro); }
+.nav--sobre-foto .nav__wa { border-color: rgba(255, 255, 255, .7); }
+.nav--sobre-foto.es-solido { background: var(--fondo-alt); border-bottom-color: rgba(255, 255, 255, .12); }
+.menu-abierto .nav--sobre-foto { color: var(--texto); }
+.menu-abierto .nav--sobre-foto .nav__logo { color: var(--acento); }
+.menu-abierto .nav--sobre-foto.es-solido { background: transparent; border-bottom-color: transparent; }
 
 /* Logo primario del branding: naranja en todos los estados del nav */
 .nav__logo { display: flex; align-items: center; min-height: 44px; flex-shrink: 0; color: var(--acento); }
@@ -909,7 +921,7 @@
 .datos > :last-child { border-bottom: 0; }
 .datos .ico, .datos .ico-marca { color: var(--menta); }
 .datos small { display: block; font-size: 12px; color: var(--texto-claro-suave); }
-.contacto__acciones { display: flex; flex-wrap: wrap; gap: 12px; }
+.contacto__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-4); }
 .contacto-foto .btn--primario { background: var(--texto-claro); color: var(--fondo-alt); }
 .contacto-foto .btn--primario .ico-marca { color: var(--acento); }
 @media (max-height: 760px) {

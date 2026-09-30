@@ -269,3 +269,6 @@
   .nav__wa { padding: 0; width: 44px; }
   .nav__wa-txt { display: none; }
 }
+
+/* Páginas internas: los links también en blanco (sobre la foto el naranja no se lee) */
+.nav--sobre-foto .nav__links a { color: var(--texto-claro); }

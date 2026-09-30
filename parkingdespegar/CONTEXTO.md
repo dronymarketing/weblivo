@@ -121,6 +121,13 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   nav. Medido: opacidad 1 al llegar en celular y escritorio.
 - La escena 3D deja de dibujar en cuanto el contenido la tapa hasta el nav.
 
+- **Nav de las páginas internas (30/9):** logo, «Reservar», su reborde, la hamburguesa y los links de
+  escritorio en blanco; cuando se pone sólido va en navy (el blanco sobre blanco no se leería). Con el
+  menú abierto vuelve a naranja/navy sobre el menú blanco. El inicio sigue con el nav naranja.
+- **Hero de contacto.html:** el botón «Reservar lugar» va con el título y la bajada; la tarjeta de datos
+  queda aparte (abajo en celular, a la derecha sobre la foto en escritorio). Antes el botón quedaba
+  pegado debajo de la tarjeta.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace
@@ -135,4 +142,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=10`, escritorio.css `?v=5`, main.js `?v=4`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=12`, escritorio.css `?v=6`, main.js `?v=4`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.
