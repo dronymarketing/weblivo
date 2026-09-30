@@ -1,0 +1,231 @@
+/* ============================================================
+   PARKING DESPEGAR — ESCRITORIO (≥768px, cargado por el atributo media)
+   Solo lo que cambia. Escala de Rhodium: letra con clamp,
+   contenedor hasta 1520px, botones de 56px y pantallas exactas.
+   ============================================================ */
+
+:root {
+  --fs-hero:   clamp(56px, 5.6vw, 96px);
+  --fs-titulo: clamp(56px, 5.8vw, 96px);
+  --fs-paso:   clamp(52px, 4.6vw, 76px);
+  --fs-cifra:  clamp(104px, 10vw, 168px);
+
+  --fs-body:  clamp(17px, 1.25vw, 20px);
+  --fs-small: clamp(15px, 1.05vw, 17px);
+  --fs-micro: clamp(12px, .85vw, 13px);
+  --max-lectura: 560px;
+
+  --max-contenedor: 1520px;
+  --margen-lateral: clamp(40px, 4.5vw, 88px);
+  --alto-boton: 56px;
+  --radio: 24px;
+  --lado: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral)));
+}
+
+/* ---------- Tipografía y botones más grandes ---------- */
+.btn { font-size: 13px; padding: 0 30px; }
+.btn .ico, .btn .ico-marca { width: 20px; height: 20px; }
+.titulo { margin-top: var(--sp-3); }
+.bajada { font-size: clamp(18px, 1.35vw, 22px); line-height: 1.5; }
+.antetitulo { gap: 16px; }
+.antetitulo__linea { width: 48px; }
+.cue__texto { font-size: 13px; }
+.cue__circulo { width: 40px; height: 40px; }
+.cue .ico { width: 16px; height: 16px; }
+
+.nav__logo svg { height: 34px; }
+.nav__wa { padding: 0 22px 0 18px; font-size: 12px; }
+.nav__wa .ico-marca { width: 18px; height: 18px; }
+.menu { width: 460px; padding-inline: 48px; }
+.menu__lista a { font-size: 38px; min-height: 80px; }
+
+/* ============================================================
+   ESCENA Y HERO — el texto a la izquierda, la maqueta a la derecha
+   ============================================================ */
+.escena { background-image: url("../img/escena-escritorio.jpg"); background-position: 50% 50%; }
+.hero { padding: calc(var(--nav-alto) + var(--sp-5)) var(--lado) 136px; }
+.hero--inicio::before {
+  background:
+    linear-gradient(90deg, rgba(241, 246, 244, .92) 0%, rgba(241, 246, 244, .72) 28%, rgba(241, 246, 244, 0) 52%),
+    linear-gradient(0deg, rgba(241, 246, 244, .85) 0%, rgba(241, 246, 244, 0) 34%);
+}
+.hero__titulo { max-width: 10ch; line-height: .96; }
+.hero__sub { max-width: 34ch; font-size: clamp(18px, 1.4vw, 24px); line-height: 1.45; }
+.hero .antetitulo { font-size: 13px; }
+
+/* ---------- Pasos 3D: la tarjeta a la izquierda, la escena corrida a la derecha ---------- */
+.paso3d { padding: 0 var(--lado) 40px; align-items: flex-start; }
+.paso3d__tarjeta { width: min(480px, 40vw); bottom: 40px; padding: 30px 32px 34px; }
+.paso3d__titulo { margin-top: 22px; }
+.paso3d__sub { font-size: clamp(22px, 1.7vw, 28px); margin-top: 14px; }
+.paso3d__desc { font-size: clamp(17px, 1.2vw, 19px); margin-top: 8px; }
+
+/* ============================================================
+   01 · TU AUTO, CUIDADO — encabezado a la izquierda, rasgos a la derecha
+   ============================================================ */
+.incluye__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  grid-template-rows: 1fr auto;
+  column-gap: var(--sp-6);
+  row-gap: var(--sp-4);
+}
+.incluye__cuerpo .encabezado { grid-column: 1; grid-row: 1; align-self: start; }
+.incluye__cuerpo .seccion__pie { grid-column: 1; grid-row: 2; }
+.incluye__cuerpo .bajada { display: block; }
+.rasgos { grid-column: 2; grid-row: 1 / 3; grid-template-columns: repeat(3, 1fr); align-self: stretch; }
+.rasgo, .rasgo:nth-child(even) { padding: clamp(24px, 3.4vh, 44px) 28px; border-left: var(--borde); display: flex; flex-direction: column; }
+.rasgo:nth-child(3n + 1) { border-left: 0; padding-left: 0; }
+.rasgo .ico { width: 32px; height: 32px; }
+.rasgo__nombre { font-size: clamp(20px, 1.6vw, 26px); margin-top: auto; padding-top: 24px; }
+.rasgo__desc { display: block; font-size: clamp(15px, 1.1vw, 18px); max-width: 24ch; margin-top: 8px; min-height: 2.8em; }  /* dos líneas en todas: los nombres alinean */
+
+/* ============================================================
+   02 · VALET — texto a la izquierda, el video vertical a la derecha
+   ============================================================ */
+.valet-adelanto__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 1fr auto;
+  column-gap: var(--sp-7);
+}
+.valet-adelanto__cuerpo .encabezado { grid-column: 1; grid-row: 1; align-self: start; }
+.valet-adelanto__cuerpo .bajada { display: block; }
+.valet-adelanto__cuerpo .seccion__pie { grid-column: 1; grid-row: 2; }
+.valet-adelanto .video {
+  grid-column: 2; grid-row: 1 / 3;
+  flex: none;
+  height: calc(var(--vh100, 100vh) - var(--nav-alto) - 80px);
+  aspect-ratio: 3 / 5;
+  min-height: 0;
+}
+
+/* ============================================================
+   03 · OPINIONES — cifra a la izquierda, resumen y reseña a la derecha
+   ============================================================ */
+.opiniones-adelanto__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  column-gap: var(--sp-7);
+  row-gap: var(--sp-4);
+}
+.opiniones-adelanto__cuerpo .encabezado { grid-column: 1; grid-row: 1; }
+.opiniones-adelanto .nota { grid-column: 1; grid-row: 2; align-self: center; gap: 28px; }
+.opiniones-adelanto__cuerpo .seccion__pie { grid-column: 1; grid-row: 3; }
+.opiniones-adelanto .resumen { grid-column: 2; grid-row: 1 / 3; align-self: start; padding: 36px; }
+.opiniones-adelanto .resena { grid-column: 2; grid-row: 3; display: block; }
+.nota__texto { font-size: var(--fs-body); max-width: 14ch; }
+.estrellas .ico { width: 22px; height: 22px; }
+.resumen__texto { font-size: clamp(26px, 2.3vw, 38px); line-height: 1.18; margin-top: 18px; }
+.resena__texto { font-size: clamp(20px, 1.5vw, 26px); }
+
+/* ============================================================
+   04 · CONTACTO — datos a la izquierda, mapa grande a la derecha
+   ============================================================ */
+.contacto-simple__cuerpo.pantalla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  column-gap: var(--sp-7);
+  align-items: stretch;
+}
+.contacto-simple__cuerpo > div:first-child { display: flex; flex-direction: column; justify-content: center; }
+.contacto-simple .dato--horario { display: flex; }
+.contacto-simple .mapa { min-height: 0; height: 100%; }
+.dato { font-size: clamp(17px, 1.3vw, 21px); margin-top: var(--sp-3); }
+
+/* ============================================================
+   PÁGINAS INTERNAS
+   Hero partido: el texto sobre navy a la izquierda y la foto o el
+   video reales (verticales, del celular de la clienta) a la derecha,
+   sin agrandarlos más de lo que dan.
+   ============================================================ */
+.hero--pagina { background: var(--fondo-alt); }
+.hero--pagina .hero__fondo { left: auto; width: 44%; }
+.hero--pagina::before {
+  background: linear-gradient(90deg, var(--fondo-alt) 0%, var(--fondo-alt) 56%, rgba(5, 63, 92, .5) 59%, rgba(5, 63, 92, 0) 72%);
+}
+.hero--pagina .hero__titulo { font-size: clamp(80px, 8.4vw, 150px); max-width: 7ch; }
+.hero--pagina .hero__sub { max-width: 30ch; }
+.hero--pagina .cue { left: 28%; }
+.hero__pausa { right: 40px; bottom: 40px; }
+.contacto-foto { background: var(--fondo-alt); }
+.contacto-foto .hero__fondo { left: auto; width: 44%; }
+
+/* Pasos en columnas, número grande arriba */
+.pasos { flex-direction: row; justify-content: stretch; border-top: 0; }
+.paso {
+  flex: 1 1 0;
+  grid-template-columns: 1fr;
+  align-content: end;
+  gap: 18px;
+  padding: 0 28px 0 28px;
+  border-bottom: 0;
+  border-left: var(--borde);
+}
+.paso:first-child { border-left: 0; padding-left: 0; }
+.paso__num { font-size: clamp(56px, 5vw, 88px); }
+.paso__nombre { font-size: clamp(20px, 1.6vw, 26px); }
+.paso__desc { display: block; font-size: var(--fs-body); }
+.pasos__cuerpo .bajada { display: block; }
+.pasos__cuerpo .encabezado { display: grid; grid-template-columns: 1.3fr 1fr; column-gap: var(--sp-6); align-items: end; }
+.pasos__cuerpo .encabezado .antetitulo { grid-column: 1 / -1; }
+.pasos__cuerpo .encabezado .bajada { margin-top: 0; }
+
+/* Fotos: las tres a la vista, sin carrusel */
+.fotos { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); grid-auto-columns: auto; overflow: visible; margin-inline: 0; padding-inline: 0; }
+.fotos__ayuda { display: none; }
+.foto__rotulo { left: 16px; right: 16px; bottom: 16px; padding: 14px 18px; }
+
+/* Video completo: el video a la derecha */
+.video-completo__cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 1fr auto; column-gap: var(--sp-7); }
+.video-completo__cuerpo .encabezado { grid-column: 1; grid-row: 1; align-self: start; }
+.video-completo__cuerpo .seccion__pie { grid-column: 1; grid-row: 2; }
+.video-completo .video { grid-column: 2; grid-row: 1 / 3; flex: none; height: calc(var(--vh100, 100vh) - var(--nav-alto) - 80px); aspect-ratio: 9 / 16; min-height: 0; }
+
+/* Opiniones: valores en cuatro columnas, reseñas en dos */
+.valores { grid-template-columns: repeat(4, 1fr); }
+.valor, .valor:nth-child(even) { padding: 28px; border-left: var(--borde); }
+.valor:first-child { border-left: 0; padding-left: 0; }
+.valor__nombre { font-size: clamp(20px, 1.6vw, 26px); margin-top: 20px; }
+.resenas { grid-template-columns: 1fr 1fr; column-gap: var(--sp-6); }
+
+/* Contacto (página) */
+.contacto-foto__titulo { font-size: clamp(88px, 10vw, 168px); }
+.contacto-foto__cuerpo { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); column-gap: var(--sp-7); align-items: end; padding-top: calc(var(--nav-alto) + 48px); }
+.contacto-foto::before {
+  background: linear-gradient(90deg, var(--fondo-alt) 0%, var(--fondo-alt) 56%, rgba(5, 63, 92, .5) 59%, rgba(5, 63, 92, .25) 100%);
+}
+.contacto-foto .bajada { display: block; }
+.datos a, .datos p { min-height: 68px; padding: 10px 24px; font-size: clamp(17px, 1.2vw, 19px); }
+.llegar__cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); grid-template-rows: 1fr auto; column-gap: var(--sp-7); }
+.llegar__cuerpo .encabezado { grid-column: 1; grid-row: 1; }
+.llegar__cuerpo .seccion__pie { grid-column: 1; grid-row: 2; }
+.llegar__cuerpo .mapa { grid-column: 2; grid-row: 1 / 3; min-height: 0; }
+
+/* ============================================================
+   PIE — columnas con el mapa al lado, logo grande
+   ============================================================ */
+.pie { padding-top: var(--sp-7); }
+.pie__columnas { grid-template-columns: 1fr 1.4fr; column-gap: var(--sp-7); }
+.pie__contacto { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--sp-5); align-content: start; }
+.pie__contacto .pie__titulo { grid-column: 1 / -1; }
+.pie__contacto > :not(.pie__mapa):not(.pie__titulo) { grid-column: 1; }
+.pie__mapa { grid-column: 2; grid-row: 2 / 6; height: auto; min-height: 200px; margin-top: 0; }
+.pie__columnas a, .pie__dato { font-size: var(--fs-body); }
+.pie__logo { width: min(420px, 40vw); margin: var(--sp-7) auto var(--sp-5); }
+
+/* En las grillas, el botón de cada sección apoya abajo */
+.incluye__cuerpo .seccion__pie, .valet-adelanto__cuerpo .seccion__pie, .opiniones-adelanto__cuerpo .seccion__pie,
+.video-completo__cuerpo .seccion__pie, .llegar__cuerpo .seccion__pie { align-self: end; }
+
+/* ---------- Ajustes de tamaño: los títulos no se meten bajo la foto ni el mapa ---------- */
+.hero--pagina .hero__titulo { font-size: clamp(72px, 7vw, 132px); }
+.contacto-foto__titulo { font-size: clamp(72px, 7vw, 132px); }
+.llegar__cuerpo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+.llegar__cuerpo .titulo { font-size: clamp(48px, 4.4vw, 76px); }
+.resenas__cuerpo .resena__texto { font-size: clamp(24px, 2vw, 34px); line-height: 1.3; }
+.resenas__cuerpo .resena__autor { font-size: var(--fs-body); margin-top: 20px; }
+.valor .ico { width: 40px; height: 40px; }
+.valor__nombre { font-size: clamp(22px, 1.9vw, 30px); max-width: 12ch; }
+.rasgo .ico { width: 40px; height: 40px; }

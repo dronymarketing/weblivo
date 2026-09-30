@@ -1,0 +1,53 @@
+/* ============================================================
+   PARKING DESPEGAR — Paleta y tipografía del proyecto
+   Sale del PDF del branding (Livo): primaria #FF6712 · #053F5C · #FFFFFF,
+   secundaria #FFA726 · #A0EACF · #F1F6F4. Pisa a tokens.css.
+   Contrastes (WCAG): navy sobre #F1F6F4 10,5:1 · texto-suave 4,8:1 ·
+   menta sobre navy 8,1:1. El naranja sobre claro da 2,9:1: nunca en texto
+   chico, solo en filetes, íconos, números grandes y la camioneta 3D.
+   ============================================================ */
+
+:root {
+  /* ---------- Color ---------- */
+  --fondo:        #f1f6f4;   /* secundario del branding: la maqueta 3D se funde con él */
+  --fondo-alt:    #053f5c;   /* navy de marca: bandas oscuras y pie */
+  --superficie:   #ffffff;
+  --neutro:       #c9d6d4;   /* solo decorativo, nunca texto */
+  --acento:       #ff6712;   /* naranja de marca */
+  --acento-claro: #ffa726;
+  --menta:        #a0eacf;
+  --texto:        #053f5c;
+  --texto-suave:  #47728a;   /* navy al 72% sobre el fondo: 4,8:1 */
+  --texto-claro:  #ffffff;
+  --texto-claro-suave: rgba(255, 255, 255, .74);
+  --velo:         rgba(5, 63, 92, .05);
+
+  /* Vidrio sobre la escena 3D y el video (el claro de la sección, bajado) */
+  --glass-fondo:   rgba(241, 246, 244, .52);
+  --glass-solido:  rgba(241, 246, 244, .94);   /* respaldo sin backdrop-filter */
+  --glass-oscuro:  rgba(5, 63, 92, .14);
+  --glass-oscuro-solido: rgba(5, 63, 92, .88);
+
+  --barra-inferior: var(--fondo);
+
+  /* ---------- Tipografía ---------- */
+  /* IT Inktura (demo: sin tildes ni números) para títulos cortos en mayúscula;
+     Neue Haas Grotesk Display para todo lo demás */
+  --font-display: "IT Inktura", "Neue Haas Grotesk Display Pro", "Helvetica Neue", Arial, sans-serif;
+  --font-body:    "Neue Haas Grotesk Display Pro", "Helvetica Neue", Arial, sans-serif;
+
+  --fs-hero:      clamp(34px, 10vw, 42px);   /* titular del hero, en Neue */
+  --fs-titulo:    clamp(34px, 10.4vw, 42px); /* h2 en Inktura */
+  --fs-paso:      clamp(38px, 12vw, 48px);   /* nombre del paso en la escena 3D */
+  --fs-cifra:     clamp(64px, 20vw, 88px);
+
+  --radio:        20px;      /* tarjetas y paneles, como las piezas del branding */
+  --radio-chico:  12px;
+
+  /* ---------- Margen de sección ---------- */
+  /* 40px arriba y abajo en todas las pantallas y en todos los tamaños (como Rhodium) */
+  --sp-seccion:   40px;
+}
+@media (min-width: 768px) {
+  :root { --sp-seccion: 40px; }
+}
