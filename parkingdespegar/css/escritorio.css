@@ -36,7 +36,8 @@
 .nav__logo svg { height: 34px; }
 .nav__wa { padding: 0 22px 0 18px; font-size: 12px; }
 .nav__wa .ico-marca { width: 18px; height: 18px; }
-.menu { width: 460px; padding-inline: 48px; }
+.menu { width: 460px; padding-inline: 48px; border-left: var(--borde); overflow-y: auto; }
+.menu-abierto .nav__wa { visibility: visible; }
 .menu__lista a { font-size: 38px; min-height: 80px; }
 
 /* ============================================================

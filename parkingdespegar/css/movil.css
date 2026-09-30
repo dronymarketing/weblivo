@@ -238,7 +238,8 @@
 .menu-abierto .ham span:nth-child(2) { opacity: 0; }
 .menu-abierto .ham span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-/* ---------- Menú: panel desde la derecha ---------- */
+/* ---------- Menú: pantalla completa en blanco, sin scroll (Santi, 30/9) ----------
+   En escritorio vuelve a ser panel desde la derecha (escritorio.css). */
 .menu__velo {
   position: fixed;
   inset: 0;
@@ -250,22 +251,25 @@
 }
 .menu {
   position: fixed;
-  top: 0; right: 0; bottom: 0;
+  top: 0; right: 0;
   z-index: 55;
-  width: 86vw;
+  width: 100%;
+  height: 100vh;
+  height: var(--vh100, 100svh);
   display: flex;
   flex-direction: column;
-  padding: calc(var(--nav-alto) + var(--sp-4)) var(--margen-lateral) calc(var(--sp-4) + env(safe-area-inset-bottom));
-  background: var(--fondo);
+  padding: calc(var(--nav-alto) + var(--sp-3)) var(--margen-lateral) calc(var(--sp-3) + env(safe-area-inset-bottom));
+  background: var(--superficie);
   color: var(--texto);
-  border-left: var(--borde);
-  overflow-y: auto;
+  overflow: hidden;
   transform: translateX(100%);
   visibility: hidden;
   transition: transform var(--dur-cierre) var(--ease), visibility 0s linear var(--dur-cierre);
 }
 .menu-abierto .menu__velo { opacity: 1; pointer-events: auto; transition-duration: var(--dur-menu); }
 .menu-abierto .menu { transform: none; visibility: visible; transition: transform var(--dur-menu) var(--ease), visibility 0s; }
+/* Con el menú abierto, «Reservar» del nav sobra: está el botón del menú */
+.menu-abierto .nav__wa { visibility: hidden; }
 
 .menu__lista li { border-top: var(--borde); }
 .menu__lista li:last-child { border-bottom: var(--borde); }
@@ -290,16 +294,46 @@
 .menu__lista .ico { margin-left: auto; color: var(--acento); }
 .menu__lista a[aria-current] { color: var(--texto-suave); }
 
-.menu__pie { margin-top: auto; padding-top: var(--sp-5); }
-.menu__pie .btn { margin-bottom: var(--sp-3); }
-.menu__datos { font-size: var(--fs-small); color: var(--texto-suave); line-height: 1.8; }
-.menu__redes { display: flex; gap: 8px; margin-top: var(--sp-2); }
+/* Pie del menú: botón arriba, el mapa absorbe lo que sobra, datos abajo */
+.menu__pie {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: var(--sp-4);
+}
+.menu__pie .btn { align-self: flex-start; }
+.menu__mapa {
+  display: block;
+  position: relative;
+  flex: 1 1 0;
+  min-height: 90px;
+  max-height: 340px;
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+  border: var(--borde);
+}
+.menu__mapa iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; filter: grayscale(.35); }
+.menu__abajo { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.menu__datos { font-size: var(--fs-small); color: var(--texto-suave); line-height: 1.6; }
+.menu__redes { display: flex; gap: 8px; flex-shrink: 0; }
 .menu__redes a {
   width: 44px; height: 44px;
   display: grid;
   place-items: center;
   border: var(--borde);
   border-radius: var(--radio-capsula);
+}
+@media (max-height: 700px) {
+  .menu__lista a { min-height: 54px; font-size: 27px; }
+  .menu__pie { padding-top: var(--sp-3); gap: 12px; }
+}
+@media (max-height: 600px) {
+  .menu { padding-top: calc(var(--nav-alto) + 12px); }
+  .menu__lista a { min-height: 48px; font-size: 24px; }
+  .menu__pie { padding-top: var(--sp-2); gap: 10px; }
+  .menu__mapa { min-height: 70px; }
 }
 
 .js .menu [data-menu-item] {

@@ -27,6 +27,10 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 - **Nav:** como Rhodium: logo · «Reservar» (WhatsApp) · hamburguesa, panel desde la derecha.
   El logo y la palabra «Reservar» del botón del nav van en naranja (Santi, 30/9); el botón sigue con reborde fino, sin relleno.
   El nav sólido es blanco, para que no se pierda sobre las pantallas claras (Santi, 30/9).
+- **Menú en el celular (Santi, 30/9):** pantalla completa, fondo blanco y sin scroll. Con el menú
+  abierto se esconde «Reservar» del nav. Debajo de los ítems: botón «Reservar lugar», mapa chico
+  (absorbe el alto que sobra) y abajo horario, teléfono, dirección e Instagram. En escritorio sigue
+  siendo el panel de 460px desde la derecha.
   En el inicio: transparente → vidrio sobre la escena → sólido cuando el contenido la tapa.
   En las internas arranca en blanco sobre la foto (`nav--sobre-foto`).
 - **Acción principal:** WhatsApp 099 114 144 (+598 99 114 144) con mensaje precargado.
@@ -106,4 +110,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css en `?v=5`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css en `?v=6`, escritorio.css en `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
