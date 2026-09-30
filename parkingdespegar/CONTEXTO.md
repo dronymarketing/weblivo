@@ -25,6 +25,7 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   TU LUGAR TE ESPERA…) y el titular del hero, que lleva tilde, va en Neue. `fuentes.css` limita la
   Inktura con `unicode-range`: lo que no trae lo dibuja Neue.
 - **Nav:** como Rhodium: logo · «Reservar» (WhatsApp) · hamburguesa, panel desde la derecha.
+  El logo va en naranja (el primario del branding) en todos los estados (Santi, 30/9).
   En el inicio: transparente → vidrio sobre la escena → sólido cuando el contenido la tapa.
   En las internas arranca en blanco sobre la foto (`nav--sobre-foto`).
 - **Acción principal:** WhatsApp 099 114 144 (+598 99 114 144) con mensaje precargado.
@@ -104,4 +105,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1`; subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css en `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
