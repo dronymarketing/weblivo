@@ -7,8 +7,10 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 ## Decisiones de la entrevista
 
 - **Tipo:** landing de negocio con **páginas independientes y adelantos en el inicio, como Rhodium**
-  (Santi, 30/9). Menú: 01 Servicio · 02 Valet · 03 Opiniones · 04 Contacto, cada uno su archivo.
-  El inicio numera sus secciones en ese orden y cada una termina en un botón hacia su página.
+  (Santi, 30/9). Menú: 01 Inicio · 02 Servicio · 03 Valet · 04 Opiniones · 05 Contacto, cada uno su archivo.
+  Las secciones del inicio y el rótulo del hero de cada página interna llevan ese mismo número
+  (02 a 05); cada sección del inicio termina en un botón hacia su página. Adentro de cada página
+  interna, sus secciones se numeran solas desde 01.
 - **Web en 3D:** la escena cuenta el servicio mientras se scrollea (ver «Escena 3D»). Santi pidió
   algo simple: llega el cliente, deja el auto y **un vehículo del parking, en naranja para distinguirlo**,
   lo lleva al aeropuerto. Estilo de la referencia `refs/ref-3d.png`: maqueta blanca con el lugar
@@ -31,7 +33,7 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   abierto se esconde «Reservar» del nav. Debajo de los ítems: botón «Reservar lugar», mapa chico
   (130px, cede alto en pantallas bajas), Instagram y debajo, a la izquierda, el rótulo del hero (punto naranja
   y «A metros del aeropuerto · 24 h»). Un solo aire entre todo (`--menu-aire`: 24px, 18px ≤740 de alto, 12px ≤620).
-  Títulos del menú en naranja; números y flechas en navy. Numerado 01 Inicio a 05 Contacto (las secciones del inicio siguen 01 a 04).
+  Títulos del menú en naranja; números y flechas en navy. Numerado 01 Inicio a 05 Contacto.
   La barra inferior de Android va en blanco puro: el `html` tiene fondo #FFFFFF (Chrome la pinta con
   el fondo de la raíz) y la franja `body::after` también; la de arriba, con el menú abierto.
 - **Nav de escritorio (Santi, 30/9, ahora regla de livo-design):** sin hamburguesa ni menú; los
