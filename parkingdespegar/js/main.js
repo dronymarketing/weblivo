@@ -187,6 +187,60 @@
   });
 
   /* ----------------------------------------------------------
+     CONTADOR — «+600» sube desde 0 la primera vez que se ve
+  ---------------------------------------------------------- */
+  document.querySelectorAll('[data-contador]').forEach(function (el) {
+    var meta = parseInt(el.getAttribute('data-contador'), 10);
+    if (reducido || !('IntersectionObserver' in window)) return;
+    el.textContent = '0';
+    var io = new IntersectionObserver(function (en) {
+      if (!en[0].isIntersecting) return;
+      io.disconnect();
+      var t0 = performance.now(), dur = 1800;
+      (function paso(ahora) {
+        var t = Math.min(1, (ahora - t0) / dur);
+        el.textContent = Math.round(meta * (1 - Math.pow(1 - t, 3)));
+        if (t < 1) requestAnimationFrame(paso);
+      })(t0);
+    }, { threshold: 0.6 });
+    io.observe(el);
+  });
+
+  /* ----------------------------------------------------------
+     RESEÑAS QUE SE INTERCALAN — fundido cada 6 s; se pausa con el
+     dedo o el mouse encima y fuera de pantalla. Los puntos cambian
+     a mano. Con movimiento reducido no rota sola.
+  ---------------------------------------------------------- */
+  document.querySelectorAll('[data-rota]').forEach(function (caja) {
+    var items = Array.prototype.slice.call(caja.querySelectorAll('.resena'));
+    if (items.length < 2) return;
+    var actual = 0, quieto = false, visible = false;
+    var puntos = document.createElement('div');
+    puntos.className = 'rota__puntos';
+    items.forEach(function (it, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Ver reseña ' + (i + 1) + ' de ' + items.length);
+      b.addEventListener('click', function () { mostrar(i); });
+      puntos.appendChild(b);
+    });
+    caja.appendChild(puntos);
+    function mostrar(i) {
+      actual = (i + items.length) % items.length;
+      items.forEach(function (it, k) { it.classList.toggle('es-activa', k === actual); it.setAttribute('aria-hidden', k === actual ? 'false' : 'true'); });
+      Array.prototype.forEach.call(puntos.children, function (b, k) { b.classList.toggle('es-activo', k === actual); });
+    }
+    mostrar(0);
+    caja.classList.add('rota--activa');
+    caja.addEventListener('pointerenter', function () { quieto = true; });
+    caja.addEventListener('pointerleave', function () { quieto = false; });
+    caja.addEventListener('focusin', function () { quieto = true; });
+    caja.addEventListener('focusout', function () { quieto = false; });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(caja);
+    if (!reducido) setInterval(function () { if (visible && !quieto && !document.hidden) mostrar(actual + 1); }, 6000);
+  });
+
+  /* ----------------------------------------------------------
      APARICIONES (B) — escalonadas entre hermanos
   ---------------------------------------------------------- */
   var aparecen = document.querySelectorAll('[data-reveal]');
@@ -204,13 +258,25 @@
   if (scrub) {
     raiz.classList.add('reveal-scrub');
     gsap.registerPlugin(ScrollTrigger);
+    /* En las pantallas completas, todo lo de la pantalla (también el botón «Ver…»
+       de abajo) termina de aparecer justo antes de que la pantalla llegue arriba:
+       el disparador es la pantalla, no cada elemento (Santi, 30/9). */
+    var altoNav = function () { return nav ? nav.offsetHeight : 60; };
     aparecen.forEach(function (el) {
-      var i = parseInt(el.style.getPropertyValue('--i'), 10) || 0;
-      var corrimiento = Math.min(i, 4) * 4;
-      gsap.fromTo(el, { opacity: 0, y: 24 }, {
-        opacity: 1, y: 0, ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top ' + (96 - corrimiento) + '%', end: 'top ' + (72 - corrimiento) + '%', scrub: 0.6 }
-      });
+      var pan = el.closest('.pantalla');
+      var st;
+      if (pan) {
+        var orden = Array.prototype.indexOf.call(pan.querySelectorAll('[data-reveal]'), el);
+        var arranque = 92 - Math.min(orden, 6) * 5;   /* 92% … 62% de la pantalla */
+        st = { trigger: pan, start: 'top ' + arranque + '%',
+               end: function () { return 'top ' + Math.round(altoNav() + window.innerHeight * 0.08) + 'px'; },
+               scrub: 0.3, invalidateOnRefresh: true };
+      } else {
+        var i = parseInt(el.style.getPropertyValue('--i'), 10) || 0;
+        var corrimiento = Math.min(i, 4) * 4;
+        st = { trigger: el, start: 'top ' + (96 - corrimiento) + '%', end: 'top ' + (72 - corrimiento) + '%', scrub: 0.6 };
+      }
+      gsap.fromTo(el, { opacity: 0, y: 24 }, { opacity: 1, y: 0, ease: 'none', scrollTrigger: st });
     });
     /* Fotos: se acercan de 1.12 a 1 mientras cruzan la pantalla */
     document.querySelectorAll('.foto img').forEach(function (img) {

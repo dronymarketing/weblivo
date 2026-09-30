@@ -640,9 +640,46 @@
 .resena__autor { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: var(--fs-small); color: var(--texto-suave); }
 .resena__autor strong { color: var(--texto); }
 .resena .estrellas .ico { width: 14px; height: 14px; }
+
+/* Reseñas que se intercalan: apiladas en la misma celda, con fundido.
+   Sin JS se leen una debajo de la otra. */
+.rota--activa { display: grid; border-top: var(--borde); padding-top: var(--sp-3); }
+.rota--activa .resena {
+  grid-area: 1 / 1;
+  padding-top: 0;
+  border-top: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 700ms var(--ease), visibility 0s linear 700ms;
+}
+.rota--activa .resena.es-activa { opacity: 1; visibility: visible; transition: opacity 700ms var(--ease), visibility 0s; }
+.rota__puntos { grid-area: 2 / 1; display: flex; gap: 4px; margin-top: 10px; margin-left: -12px; }
+.rota__puntos button {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+}
+.rota__puntos button::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .22;
+  transition: opacity var(--dur-micro) var(--ease), background-color var(--dur-micro) var(--ease);
+}
+.rota__puntos button.es-activo::before { background: var(--acento); opacity: 1; }
 .opiniones-adelanto__cuerpo .seccion__pie { margin-top: 0; }
+@media (max-height: 860px) {
+  /* Con la reseña larga en el carrusel: menos aire y letra un punto más chica */
+  .opiniones-adelanto__cuerpo { gap: var(--sp-3); }
+  .opiniones-adelanto .resumen { padding: 16px 18px; }
+  .opiniones-adelanto .resumen__nota { display: none; }
+  .opiniones-adelanto .resumen__texto { font-size: 18px; margin-top: 8px; }
+  .opiniones-adelanto .resena__texto { font-size: 16px; line-height: 1.4; }
+  .opiniones-adelanto .rota--activa { padding-top: var(--sp-2); }
+}
 @media (max-height: 760px) {
-  .opiniones-adelanto__cuerpo .resena { display: none; }
+  .opiniones-adelanto__cuerpo .rota { display: none; }
 }
 @media (max-height: 620px) {
   .resumen__nota { display: none; }

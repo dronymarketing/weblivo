@@ -106,13 +106,28 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 - Reseñas de Da ni y Natalia Liscano, +400 reseñas y el resumen de Google: de su publicación
   «Lo que dicen nuestros clientes» (`refs/instagram-publicaciones.webp`). Textos tal cual (sin el emoji).
 
+## Cambios del 30/9 (tarde)
+
+- **Ubicación:** todos los links a Maps usan el de la clienta (https://maps.app.goo.gl/uS7X1yYPPpoTixBLA,
+  ficha «Parking techado a metros del Aeropuerto») y los mapas embebidos marcan el punto exacto
+  (-34.8468707, -56.0265147).
+- **+600 reseñas** con contador que sube de 0 a 600 la primera vez que se ve (`[data-contador]`).
+- **Reseñas que se intercalan** en el adelanto del inicio (`[data-rota]`): fundido cada 6 s, se pausa
+  con el dedo encima y fuera de pantalla, puntos para pasarlas a mano. Hoy son las dos reales que
+  tenemos. Las reseñas de Google no se pueden sacar automáticamente (no vienen en la página y
+  scrapearlas va contra sus condiciones): **PENDIENTE que la clienta mande más** (capturas o textos).
+- **Apariciones en las pantallas completas:** el disparador es la pantalla y no cada elemento; todo,
+  también el botón «Ver…» de abajo, termina de aparecer justo antes de que la pantalla llegue bajo el
+  nav. Medido: opacidad 1 al llegar en celular y escritorio.
+- La escena 3D deja de dibujar en cuanto el contenido la tapa hasta el nav.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace
   falta la licencia web (Indotype). Con la completa se pueden poner tildes en los títulos.
 - **Valet — devolución del auto:** el paso 04 dice «Coordinamos cómo te lo devolvemos». Confirmar con
   la clienta si se entrega en la terminal o en el parking.
-- Más reseñas reales de Google, si la clienta quiere sumar.
+- Más reseñas reales de Google para el carrusel (hoy rotan dos).
 - Mail de contacto (no aparece en ningún lado).
 - Precios o tarifas: no se muestran.
 
@@ -120,4 +135,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=9`, escritorio.css `?v=4`, main.js `?v=3`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=10`, escritorio.css `?v=5`, main.js `?v=4`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.

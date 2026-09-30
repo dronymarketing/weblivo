@@ -434,7 +434,9 @@ function iniciar() {
   function alScroll() {
     // Tapado por el contenido de abajo: no se dibuja
     if (tapa) {
-      visible = tapa.getBoundingClientRect().top > 0;
+      // El nav sólido ya tapa lo que queda arriba: no hace falta seguir dibujando
+      const nav = document.querySelector('.nav');
+      visible = tapa.getBoundingClientRect().top > (nav ? nav.offsetHeight : 0);
     }
     pedir();
   }
