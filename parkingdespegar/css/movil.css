@@ -205,9 +205,12 @@
   padding: 0 16px 0 14px;
   gap: 8px;
   font-size: 11px;
-  border: var(--borde);
+  font-weight: 600;
+  background: var(--acento);        /* naranja de marca, como el logo (Santi, 30/9) */
+  color: var(--texto-claro);
 }
-.nav__wa .ico-marca { width: 16px; height: 16px; color: var(--acento); }
+.nav__wa:active { background: #e85a0c; }
+.nav__wa .ico-marca { width: 16px; height: 16px; color: currentColor; }
 @media (max-width: 349px) {
   .nav__wa { padding: 0 12px 0 10px; gap: 6px; }
   .nav__wa-txt { display: none; }
