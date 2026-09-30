@@ -7,7 +7,9 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  background: var(--fondo);
+  /* Blanco puro: Chrome en Android pinta la barra de navegación de abajo con el
+     fondo de la raíz (Santi, 30/9). La página no cambia: el body tiene su fondo. */
+  background: #ffffff;
   -webkit-tap-highlight-color: transparent;
 }
 

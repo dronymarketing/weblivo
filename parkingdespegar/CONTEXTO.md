@@ -30,9 +30,10 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 - **Menú en el celular (Santi, 30/9):** pantalla completa, fondo blanco y sin scroll. Con el menú
   abierto se esconde «Reservar» del nav. Debajo de los ítems: botón «Reservar lugar», mapa chico
   (130px, cede alto en pantallas bajas), Instagram y debajo, a la izquierda, el reloj con «Abierto las
-  24 horas · 099 114 144». Un solo aire entre todo (`--menu-aire`: 24px, 18px ≤740 de alto, 12px ≤620).
+  24 horas». Un solo aire entre todo (`--menu-aire`: 24px, 18px ≤740 de alto, 12px ≤620).
   Títulos del menú en naranja; números y flechas en navy. Primer ítem «00 Inicio».
-  La barra inferior de Android (y la de arriba, con el menú abierto) va en blanco.
+  La barra inferior de Android va en blanco puro: el `html` tiene fondo #FFFFFF (Chrome la pinta con
+  el fondo de la raíz) y la franja `body::after` también; la de arriba, con el menú abierto.
 - **Nav de escritorio (Santi, 30/9, ahora regla de livo-design):** sin hamburguesa ni menú; los
   links a la vista en naranja (Inicio, Servicio, Valet, Opiniones, Contacto), con más aire entre ellos, con filete bajo la página actual. Entre 768 y 959px el botón
   de WhatsApp queda solo con el ícono para que todo entre en una línea.
@@ -115,4 +116,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=8`, escritorio.css `?v=4`, tokens-proyecto.css `?v=2`, main.js `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=8`, escritorio.css `?v=4`, tokens-proyecto.css `?v=2`, main.js `?v=2`, base.css `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
