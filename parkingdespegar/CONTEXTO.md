@@ -116,9 +116,10 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   con el dedo encima y fuera de pantalla, puntos para pasarlas a mano. Hoy son las dos reales que
   tenemos. Las reseñas de Google no se pueden sacar automáticamente (no vienen en la página y
   scrapearlas va contra sus condiciones): **PENDIENTE que la clienta mande más** (capturas o textos).
-- **Apariciones en las pantallas completas:** el disparador es la pantalla y no cada elemento; todo,
-  también el botón «Ver…» de abajo, termina de aparecer justo antes de que la pantalla llegue bajo el
-  nav. Medido: opacidad 1 al llegar en celular y escritorio.
+- **Apariciones en las pantallas completas:** cada elemento aparece mientras entra por abajo del
+  celular (ScrollTrigger: `trigger` el elemento, `start: 'top bottom'`) y termina justo cuando la
+  pantalla llega bajo el nav (`endTrigger` la pantalla). El botón «Ver…», que es lo último, se completa
+  al llegar al fondo de la pantalla y no antes (Santi, 30/9).
 - La escena 3D deja de dibujar en cuanto el contenido la tapa hasta el nav.
 
 - **Nav de las páginas internas (30/9):** logo, «Reservar», su reborde, la hamburguesa y los links de
@@ -142,4 +143,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=12`, escritorio.css `?v=6`, main.js `?v=4`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=12`, escritorio.css `?v=6`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.

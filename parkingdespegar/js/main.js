@@ -258,18 +258,16 @@
   if (scrub) {
     raiz.classList.add('reveal-scrub');
     gsap.registerPlugin(ScrollTrigger);
-    /* En las pantallas completas, todo lo de la pantalla (también el botón «Ver…»
-       de abajo) termina de aparecer justo antes de que la pantalla llegue arriba:
-       el disparador es la pantalla, no cada elemento (Santi, 30/9). */
+    /* En las pantallas completas, cada elemento aparece mientras entra por abajo del
+       celular y termina justo cuando la pantalla llega bajo el nav (Santi, 30/9):
+       el botón «Ver…», que es lo último, se completa al llegar al fondo de la pantalla. */
     var altoNav = function () { return nav ? nav.offsetHeight : 60; };
     aparecen.forEach(function (el) {
       var pan = el.closest('.pantalla');
       var st;
       if (pan) {
-        var orden = Array.prototype.indexOf.call(pan.querySelectorAll('[data-reveal]'), el);
-        var arranque = 92 - Math.min(orden, 6) * 5;   /* 92% … 62% de la pantalla */
-        st = { trigger: pan, start: 'top ' + arranque + '%',
-               end: function () { return 'top ' + Math.round(altoNav() + window.innerHeight * 0.08) + 'px'; },
+        st = { trigger: el, start: 'top bottom',
+               endTrigger: pan, end: function () { return 'top ' + altoNav() + 'px'; },
                scrub: 0.3, invalidateOnRefresh: true };
       } else {
         var i = parseInt(el.style.getPropertyValue('--i'), 10) || 0;
