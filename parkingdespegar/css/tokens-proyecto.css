@@ -28,7 +28,7 @@
   --glass-oscuro:  rgba(5, 63, 92, .14);
   --glass-oscuro-solido: rgba(5, 63, 92, .88);
 
-  --barra-inferior: var(--superficie);   /* blanca, como el nav (Santi, 30/9) */
+  --barra-inferior: var(--fondo);   /* gris del hero; js/main.js la pasa al navy en el pie */
 
   /* ---------- Tipografía ---------- */
   /* IT Inktura (demo: sin tildes ni números) para títulos cortos en mayúscula;

@@ -34,8 +34,11 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   (130px, cede alto en pantallas bajas), Instagram y debajo, a la izquierda, el rótulo del hero (punto naranja
   y «A metros del aeropuerto · 24 h»). Un solo aire entre todo (`--menu-aire`: 24px, 18px ≤740 de alto, 12px ≤620).
   Títulos del menú en naranja; números y flechas en navy. Numerado 01 Inicio a 05 Contacto.
-  La barra inferior de Android va en blanco puro: el `html` tiene fondo #FFFFFF (Chrome la pinta con
-  el fondo de la raíz) y la franja `body::after` también; la de arriba, con el menú abierto.
+  Barras del teléfono (Santi, 30/9): la de arriba (`theme-color`) y la de abajo arrancan con el color
+  del hero (#F1F6F4 en el inicio, navy en las internas) y pasan al navy #053F5C cuando el pie entra en
+  pantalla; al subir vuelven. Con el menú abierto, blancas. Lo hace `barrasSegunScroll()` en
+  `js/main.js`: cambia el meta, el fondo del `<html>` (Chrome en Android pinta la de abajo con el
+  fondo de la raíz) y `--barra-inferior`.
 - **Nav de escritorio (Santi, 30/9, ahora regla de livo-design):** sin hamburguesa ni menú; los
   links a la vista en naranja (Inicio, Servicio, Valet, Opiniones, Contacto), con más aire entre ellos, con filete bajo la página actual. Entre 768 y 959px el botón
   de WhatsApp queda solo con el ícono para que todo entre en una línea.
@@ -112,10 +115,9 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 - Más reseñas reales de Google, si la clienta quiere sumar.
 - Mail de contacto (no aparece en ningún lado).
 - Precios o tarifas: no se muestran.
-- Barras del sistema: `theme-color` fijo por página (claro en el inicio, navy en las internas).
 
 ## Cómo se generó
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=9`, escritorio.css `?v=4`, tokens-proyecto.css `?v=2`, main.js `?v=2`, base.css `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=9`, escritorio.css `?v=4`, main.js `?v=3`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.

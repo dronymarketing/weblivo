@@ -63,11 +63,35 @@
     estadoNav();
   });
 
+  /* ----------------------------------------------------------
+     BARRAS DEL TELÉFONO (Santi, 30/9) — la de arriba (theme-color)
+     y la de abajo arrancan con el color del hero (#F1F6F4 en el
+     inicio, navy en las internas) y pasan al navy cuando el pie
+     entra en pantalla. Chrome en Android pinta la de abajo con el
+     fondo de la raíz: por eso se cambia el fondo del <html>.
+     Con el menú abierto van en blanco, como el menú.
+  ---------------------------------------------------------- */
+  var tema = document.querySelector('meta[name="theme-color"]');
+  var pie = document.querySelector('.pie');
+  var COLOR_INICIO = tema ? tema.getAttribute('content') : '#f1f6f4';
+  var COLOR_PIE = '#053f5c';
+  function pintarBarras(color) {
+    if (tema) tema.setAttribute('content', color);
+    raiz.style.backgroundColor = color;
+    raiz.style.setProperty('--barra-inferior', color);
+  }
+  function barrasSegunScroll() {
+    if (raiz.classList.contains('menu-abierto')) return;
+    var enPie = pie && pie.getBoundingClientRect().top < window.innerHeight;
+    pintarBarras(enPie ? COLOR_PIE : COLOR_INICIO);
+  }
+  barrasSegunScroll();
+
   var pendiente = false;
   window.addEventListener('scroll', function () {
     if (pendiente) return;
     pendiente = true;
-    requestAnimationFrame(function () { estadoNav(); pendiente = false; });
+    requestAnimationFrame(function () { estadoNav(); barrasSegunScroll(); pendiente = false; });
   }, { passive: true });
 
   /* ----------------------------------------------------------
@@ -81,11 +105,9 @@
   function enfocables() {
     return [boton].concat(Array.prototype.slice.call(menu.querySelectorAll('a[href], button')));
   }
-  var tema = document.querySelector('meta[name="theme-color"]');
-  var temaPrevio = tema ? tema.getAttribute('content') : null;
   function abrir() {
     raiz.classList.add('menu-abierto');
-    if (tema) tema.setAttribute('content', '#ffffff');
+    pintarBarras('#ffffff');
     boton.setAttribute('aria-expanded', 'true');
     boton.setAttribute('aria-label', 'Cerrar menú');
     var primero = menu.querySelector('a');
@@ -93,7 +115,7 @@
   }
   function cerrar(devolverFoco) {
     raiz.classList.remove('menu-abierto');
-    if (tema && temaPrevio) tema.setAttribute('content', temaPrevio);
+    barrasSegunScroll();
     boton.setAttribute('aria-expanded', 'false');
     boton.setAttribute('aria-label', 'Abrir menú');
     if (devolverFoco) boton.focus({ preventScroll: true });
