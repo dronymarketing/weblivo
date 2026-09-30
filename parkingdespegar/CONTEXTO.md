@@ -29,10 +29,12 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   El nav sólido es blanco, para que no se pierda sobre las pantallas claras (Santi, 30/9).
 - **Menú en el celular (Santi, 30/9):** pantalla completa, fondo blanco y sin scroll. Con el menú
   abierto se esconde «Reservar» del nav. Debajo de los ítems: botón «Reservar lugar», mapa chico
-  (hasta 200px) y abajo Instagram a la izquierda con «Abierto las 24 horas · 099 114 144».
+  (130px, cede alto en pantallas bajas), Instagram y debajo, a la izquierda, el reloj con «Abierto las
+  24 horas · 099 114 144». Un solo aire entre todo (`--menu-aire`: 24px, 18px ≤740 de alto, 12px ≤620).
+  Títulos del menú en naranja; números y flechas en navy. Primer ítem «00 Inicio».
   La barra inferior de Android (y la de arriba, con el menú abierto) va en blanco.
 - **Nav de escritorio (Santi, 30/9, ahora regla de livo-design):** sin hamburguesa ni menú; los
-  cuatro links a la vista en naranja, con filete bajo la página actual. Entre 768 y 959px el botón
+  links a la vista en naranja (Inicio, Servicio, Valet, Opiniones, Contacto), con más aire entre ellos, con filete bajo la página actual. Entre 768 y 959px el botón
   de WhatsApp queda solo con el ícono para que todo entre en una línea.
   En el inicio: transparente → vidrio sobre la escena → sólido cuando el contenido la tapa.
   En las internas arranca en blanco sobre la foto (`nav--sobre-foto`).
@@ -113,4 +115,4 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 
 Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=7`, escritorio.css `?v=3`, tokens-proyecto.css `?v=2`, main.js `?v=2`); subirlo en los cinco HTML cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=8`, escritorio.css `?v=4`, tokens-proyecto.css `?v=2`, main.js `?v=2`); subirlo en los cinco HTML cada vez que se tocan.

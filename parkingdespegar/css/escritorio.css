@@ -264,7 +264,7 @@
    el botón de WhatsApp queda solo con el ícono para que todo entre en una línea */
 .nav__logo svg { height: clamp(24px, 2.6vw, 34px); }
 .nav__links a { font-size: clamp(11px, 1vw, 13px); }
-.nav__links { gap: clamp(18px, 2.6vw, 44px); margin-right: clamp(16px, 2.6vw, 44px); }
+.nav__links { gap: clamp(22px, 3.6vw, 64px); margin-right: clamp(20px, 3vw, 52px); }   /* más aire: el grupo crece hacia la izquierda */
 @media (max-width: 959px) {
   .nav__wa { padding: 0; width: 44px; }
   .nav__wa-txt { display: none; }

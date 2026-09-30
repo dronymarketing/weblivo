@@ -272,52 +272,55 @@
 /* Con el menú abierto, «Reservar» del nav sobra: está el botón del menú */
 .menu-abierto .nav__wa { visibility: hidden; }
 
+/* Un solo aire entre links, botón, mapa, Instagram y horario (Santi, 30/9) */
+.menu { --menu-aire: 24px; }
 .menu__lista li { border-top: var(--borde); }
 .menu__lista li:last-child { border-bottom: var(--borde); }
 .menu__lista a {
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 64px;
+  min-height: 58px;
   font-family: var(--font-display);
   font-size: 30px;
   line-height: 1;
   text-transform: uppercase;
+  color: var(--acento);            /* títulos en naranja; números y flechas en azul */
 }
 .menu__num {
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: var(--ls-micro);
-  color: var(--texto-suave);
+  color: var(--texto);
   width: 22px;
 }
-.menu__lista .ico { margin-left: auto; color: var(--acento); }
-.menu__lista a[aria-current] { color: var(--texto-suave); }
+.menu__lista .ico { margin-left: auto; color: var(--texto); }
+.menu__lista a[aria-current] { color: color-mix(in srgb, var(--acento) 55%, var(--superficie)); }
 
-/* Pie del menú: botón arriba, el mapa absorbe lo que sobra, datos abajo */
+/* Pie del menú: botón, mapa, Instagram y horario, con el mismo aire entre todos */
 .menu__pie {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-top: var(--sp-4);
+  gap: var(--menu-aire);
+  padding-top: var(--menu-aire);
 }
 .menu__pie .btn { align-self: flex-start; }
 .menu__mapa {
   display: block;
   position: relative;
-  flex: 1 1 0;
-  min-height: 80px;
-  max-height: 200px;
+  flex: 0 1 130px;                 /* chico; en pantallas bajas cede alto antes que el aire */
+  min-height: 56px;
   border-radius: var(--radio-chico);
   overflow: hidden;
   border: var(--borde);
 }
 .menu__mapa iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; filter: grayscale(.35); }
-.menu__abajo { display: flex; align-items: center; gap: 14px; }   /* Instagram a la izquierda */
-.menu__datos { font-size: var(--fs-small); color: var(--texto-suave); line-height: 1.6; }
+.menu__abajo { display: flex; flex-direction: column; align-items: flex-start; gap: var(--menu-aire); }
+.menu__datos { display: flex; align-items: center; gap: 10px; font-size: var(--fs-small); color: var(--texto-suave); line-height: 1.4; }
+.menu__datos .ico { width: 18px; height: 18px; color: var(--texto); }
 .menu__redes { display: flex; gap: 8px; flex-shrink: 0; }
 .menu__redes a {
   width: 44px; height: 44px;
@@ -326,15 +329,14 @@
   border: var(--borde);
   border-radius: var(--radio-capsula);
 }
-@media (max-height: 700px) {
-  .menu__lista a { min-height: 54px; font-size: 27px; }
-  .menu__pie { padding-top: var(--sp-3); gap: 12px; }
+@media (max-height: 740px) {
+  .menu { --menu-aire: 18px; }
+  .menu__lista a { min-height: 50px; font-size: 27px; }
 }
-@media (max-height: 600px) {
-  .menu { padding-top: calc(var(--nav-alto) + 12px); }
-  .menu__lista a { min-height: 48px; font-size: 24px; }
-  .menu__pie { padding-top: var(--sp-2); gap: 10px; }
-  .menu__mapa { min-height: 70px; }
+@media (max-height: 620px) {
+  .menu { --menu-aire: 12px; padding-top: calc(var(--nav-alto) + 8px); padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .menu__lista a { min-height: 44px; font-size: 24px; }
+  .menu__redes a { width: 40px; height: 40px; }
 }
 
 .js .menu [data-menu-item] {
