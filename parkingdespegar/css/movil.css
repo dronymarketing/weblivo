@@ -177,7 +177,7 @@
   border-bottom-color: rgba(5, 63, 92, .08);
 }
 .nav.es-solido {
-  background: var(--fondo);
+  background: var(--superficie);   /* blanco: sobre las pantallas claras (#F1F6F4) no se pierde (Santi, 30/9) */
   border-bottom-color: rgba(5, 63, 92, .1);
 }
 /* Páginas internas: el hero es foto oscura, el nav arranca en blanco */
