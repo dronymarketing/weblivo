@@ -201,6 +201,6 @@
 }
 .pie__contacto .pie__titulo { grid-column: 1 / -1; }
 .pie__contacto > :not(.pie__mapa):not(.pie__titulo) { grid-column: 1; }
-.pie__mapa { grid-column: 2; grid-row: 2 / 7; height: auto; min-height: 200px; margin-top: 0; }
+.pie__mapa { grid-column: 2; grid-row: 2 / 6; height: auto; min-height: 200px; margin-top: 0; }
 .pie__columnas a, .pie__dato { font-size: var(--fs-body); }
 .pie__logo { width: min(420px, 40vw); margin: var(--sp-7) auto var(--sp-3); }
