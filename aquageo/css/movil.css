@@ -717,6 +717,9 @@ html:not(.js) .hero__visual {
   clip-path: inset(0 0 100% 0);
 }
 .cue__blanco .cue__texto { color: rgba(255, 255, 255, .9); }
+/* Sombra suave: sobre partes claras de la foto (espuma, cielo) el blanco
+   solo no se lee. */
+.cue__blanco { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .55)); }
 .cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
 @keyframes cue {
   0%, 100% { transform: translateY(0); opacity: .75; }
