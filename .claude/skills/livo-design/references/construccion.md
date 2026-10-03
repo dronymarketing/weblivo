@@ -311,6 +311,52 @@ orden:**
 
 ---
 
+## Vista previa al compartir — tarjeta de WhatsApp (regla, Santi 3/10/2026)
+
+Va en **todas las páginas de todas las webs**, desde el primer borrador.
+Es lo que ve la clienta cuando le mandamos el link por WhatsApp: si falta,
+el link sale pelado o con una foto cualquiera recortada.
+
+**La imagen:** `img/og-blanco.jpg`, 1200×1200 (1:1), fondo blanco puro y
+el logo a color centrado, ocupando ~63% del ancho (unos 760px). JPG de
+menos de 100 KB. Se arma con Pillow a partir del logo con fondo
+transparente: nunca una captura de pantalla.
+
+```python
+from PIL import Image
+logo = Image.open('logo.png').convert('RGBA')        # logo con transparencia
+W = 760
+logo = logo.resize((W, round(W * logo.size[1] / logo.size[0])), Image.LANCZOS)
+c = Image.new('RGBA', (1200, 1200), (255, 255, 255, 255))
+c.alpha_composite(logo, ((1200 - logo.size[0]) // 2, (1200 - logo.size[1]) // 2))
+c.convert('RGB').save('img/og-blanco.jpg', quality=90, optimize=True)
+```
+
+**Las etiquetas**, en el `<head>` de CADA archivo HTML, con el título y la
+descripción de esa página. Las URL tienen que ser absolutas
+(`https://livo.com.uy/<proyecto>/...`): WhatsApp no resuelve rutas
+relativas y la tarjeta sale vacía.
+
+```html
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nombre de la marca">
+<meta property="og:title" content="Título de la página">
+<meta property="og:description" content="La misma description de la página">
+<meta property="og:url" content="https://livo.com.uy/proyecto/pagina.html">
+<meta property="og:image" content="https://livo.com.uy/proyecto/img/og-blanco.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Logo de la marca sobre fondo blanco">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://livo.com.uy/proyecto/img/og-blanco.jpg">
+```
+
+WhatsApp guarda la tarjeta en caché un buen rato. Si se cambia la imagen,
+se le sube el `?v=` en la URL de `og:image` para que la vuelva a leer.
+
+Referencias: `parkingdespegar/` (logo naranja) y `aquageo/` (logo a color).
+
 ## Scroll
 
 **Siempre nativo.** Nunca scroll virtual: Smooth Scrollbar (idiotWu),
