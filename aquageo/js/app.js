@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=17', 'img/pre-2.jpg?v=17', 'img/pre-3.jpg?v=17',
-                   'img/pre-4.jpg?v=17', 'img/marquee.jpg?v=17'];
+      var FOTOS = ['img/pre-1.jpg?v=2', 'img/pre-2.jpg?v=2', 'img/pre-3.jpg?v=2',
+                   'img/pre-4.jpg?v=2', 'img/marquee.jpg?v=2'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
