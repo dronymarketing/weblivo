@@ -72,11 +72,11 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [14, 27, 42, 61, 76, 92, 99];   // escalones de RE, con dos más
-      // pre-equipo-1 y 2 son fotos REALES de Aquageo (de su ficha de Google
-      // Maps): los equipos en el campo. Las otras son de muestra.
-      var FOTOS = ['img/pre-equipo-1.jpg?v=12', 'img/pre-1.jpg?v=12', 'img/pre-equipo-2.jpg?v=12',
-                   'img/pre-2.jpg?v=12', 'img/pre-3.jpg?v=12', 'img/pre-4.jpg?v=12',
-                   'img/marquee.jpg?v=12'];
+      // Todas REALES de Aquageo (su ficha de Google Maps): equipos y obras.
+      // La última es la del hero, que es la que viaja al hueco del marquee.
+      var FOTOS = ['img/pre-obra-1.jpg?v=13', 'img/pre-equipo-1.jpg?v=13', 'img/pre-obra-2.jpg?v=13',
+                   'img/pre-equipo-2.jpg?v=13', 'img/pre-obra-3.jpg?v=13', 'img/pre-obra-4.jpg?v=13',
+                   'img/marquee.jpg?v=13'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
