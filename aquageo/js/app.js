@@ -64,16 +64,19 @@
       // la mecánica y se acorta el paso: la entrada cierra en ~3s.
       var T = {
         imageDelay:    300,   // antes de la primera foto
-        paso:          420,   // counterTickDuration
+        paso:          300,   // counterTickDuration — 7 fotos en lo que antes duraban 5
         counterEnter:  600,
         exitRevealDelay: 400,
         bgWipe:       1200,
         morphDelay:    100,
         morph:        1100   // el viaje del centro al hueco del hero
       };
-      var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=11', 'img/pre-2.jpg?v=11', 'img/pre-3.jpg?v=11',
-                   'img/pre-4.jpg?v=11', 'img/marquee.jpg?v=11'];
+      var PASOS = [14, 27, 42, 61, 76, 92, 99];   // escalones de RE, con dos más
+      // pre-equipo-1 y 2 son fotos REALES de Aquageo (de su ficha de Google
+      // Maps): los equipos en el campo. Las otras son de muestra.
+      var FOTOS = ['img/pre-equipo-1.jpg?v=12', 'img/pre-1.jpg?v=12', 'img/pre-equipo-2.jpg?v=12',
+                   'img/pre-2.jpg?v=12', 'img/pre-3.jpg?v=12', 'img/pre-4.jpg?v=12',
+                   'img/marquee.jpg?v=12'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
