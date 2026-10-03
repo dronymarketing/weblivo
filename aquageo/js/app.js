@@ -74,9 +74,9 @@
       var PASOS = [14, 27, 42, 61, 76, 92, 99];   // escalones de RE, con dos más
       // Todas REALES de Aquageo (su ficha de Google Maps): equipos y obras.
       // La última es la del hero, que es la que viaja al hueco del marquee.
-      var FOTOS = ['img/pre-obra-1.jpg?v=15', 'img/pre-equipo-1.jpg?v=15', 'img/pre-obra-2.jpg?v=15',
-                   'img/pre-equipo-2.jpg?v=15', 'img/pre-obra-3.jpg?v=15', 'img/pre-obra-4.jpg?v=15',
-                   'img/marquee.jpg?v=15'];
+      var FOTOS = ['img/pre-obra-1.jpg?v=16', 'img/pre-equipo-1.jpg?v=16', 'img/pre-obra-2.jpg?v=16',
+                   'img/pre-equipo-2.jpg?v=16', 'img/pre-obra-3.jpg?v=16', 'img/pre-obra-4.jpg?v=16',
+                   'img/marquee.jpg?v=16'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
