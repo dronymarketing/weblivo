@@ -811,6 +811,14 @@ html:not(.js) .hero__visual {
   color: var(--cat-suave);
   font-size: var(--fs-small);
 }
+/* Al terminar de contar, número y texto pasan al azul del título
+   («Agua subterránea»). Mientras cuentan van en el azul suave del
+   párrafo. Sin JS o con movimiento reducido quedan directo en azul. */
+.sobre__texto .cifra p {
+  color: var(--cat);
+  transition: color 700ms var(--ease-re);
+}
+.js .sobre__texto .cifra:not(.contada) p { color: var(--cat-suave); }
 
 .sobre__foto { aspect-ratio: 4 / 5; }
 .sobre__foto img { width: 100%; height: 100%; object-fit: cover; }

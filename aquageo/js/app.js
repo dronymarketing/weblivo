@@ -74,9 +74,9 @@
       var PASOS = [14, 27, 42, 61, 76, 92, 99];   // escalones de RE, con dos más
       // Todas REALES de Aquageo (su ficha de Google Maps): equipos y obras.
       // La última es la del hero, que es la que viaja al hueco del marquee.
-      var FOTOS = ['img/pre-obra-1.jpg?v=17', 'img/pre-equipo-1.jpg?v=17', 'img/pre-obra-2.jpg?v=17',
-                   'img/pre-equipo-2.jpg?v=17', 'img/pre-obra-3.jpg?v=17', 'img/pre-obra-4.jpg?v=17',
-                   'img/marquee.jpg?v=17'];
+      var FOTOS = ['img/pre-obra-1.jpg?v=18', 'img/pre-equipo-1.jpg?v=18', 'img/pre-obra-2.jpg?v=18',
+                   'img/pre-equipo-2.jpg?v=18', 'img/pre-obra-3.jpg?v=18', 'img/pre-obra-4.jpg?v=18',
+                   'img/marquee.jpg?v=18'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -367,6 +367,12 @@
        movimiento reducido, se ve igual pero quieto.
        ---------------------------------------------------------- */
     var contadores = document.querySelectorAll('[data-contador]');
+    // Sin animación de conteo, las cifras quedan directo en su color final
+    if (quieto || !('IntersectionObserver' in window)) {
+      Array.prototype.forEach.call(contadores, function (el) {
+        if (el.parentNode) el.parentNode.classList.add('contada');
+      });
+    }
     if (contadores.length && !quieto && 'IntersectionObserver' in window) {
       var CUENTA_MS = 1600;
       var suave = function (x) { return 1 - Math.pow(1 - x, 4); };   // power4.out
@@ -383,6 +389,7 @@
           var valor = Math.round(destino * suave(avance));
           el.textContent = pre + valor.toLocaleString('es-UY') + suf;
           if (avance < 1) requestAnimationFrame(paso);
+          else if (el.parentNode) el.parentNode.classList.add('contada');
         }
         requestAnimationFrame(paso);
       }
