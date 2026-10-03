@@ -245,11 +245,17 @@
 /* Sin JS el ícono se queda en las tres líneas, que es un menú igual. */
 
 /* ---------- Menú: cortina desde arriba ----------
-   Lo sobrio para institucional. 550ms. */
+   Lo sobrio para institucional. 550ms.
+   Armado como el de parkingdespegar: entra entero en la pantalla, SIN
+   scroll. Arriba los links; abajo el botón de WhatsApp, un mapa chico y
+   las redes con la dirección. En pantallas bajas cede primero el mapa,
+   después el aire y por último el tamaño de los links. */
 .menu {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0;
   z-index: 99;
+  height: 100vh;
+  height: var(--vh100, 100svh);
   background: var(--texto);
   color: #FFFFFF;
   transform: translateY(-100%);
@@ -258,18 +264,10 @@
   visibility: hidden;
   display: flex;
   flex-direction: column;
-  padding: var(--nav-alto) var(--margen-lateral) var(--sp-5);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--nav-alto) + var(--sp-2)) var(--margen-lateral) calc(var(--sp-3) + env(safe-area-inset-bottom));
+  overflow: hidden;
+  --menu-aire: 24px;
 }
-/* Centrado con márgenes automáticos y no con justify-content: center.
-   Con center, si la lista no entra (celular bajo, o apaisado) el
-   desborde se reparte arriba y abajo y los primeros links quedan fuera
-   de la pantalla sin forma de llegar scrolleando. Los márgenes auto
-   centran cuando sobra lugar y se anulan cuando falta. */
-.menu > :first-child { margin-top: auto; }
-.menu > :last-child  { margin-bottom: auto; }
 /* Con el menú abierto la página de atrás no se mueve */
 html.menu-abierto, html.menu-abierto body { overflow: hidden; }
 .menu.es-abierto {
@@ -278,7 +276,9 @@ html.menu-abierto, html.menu-abierto body { overflow: hidden; }
   transition: transform var(--dur-menu) var(--ease-re), visibility 0s;
 }
 
-.menu__lista { display: flex; flex-direction: column; gap: 4px; }
+.menu__lista { display: flex; flex-direction: column; flex-shrink: 0; }
+.menu__lista li { border-top: 1px solid rgba(255, 255, 255, .16); }
+.menu__lista li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .16); }
 
 .menu__item {
   opacity: 0;
@@ -295,16 +295,16 @@ html.menu-abierto, html.menu-abierto body { overflow: hidden; }
 
 .menu__link {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
-  padding-block: 12px;
-  min-height: 44px;
+  min-height: 56px;
   font-family: var(--font-display);
-  font-size: 32px;
-  line-height: 1.15;
+  font-size: 30px;
+  line-height: 1;
   letter-spacing: -.02em;
 }
 .menu__link .n {
+  width: 22px;
   font-family: var(--font-micro);
   font-variation-settings: 'wdth' 125;
   font-size: 10px;
@@ -312,18 +312,67 @@ html.menu-abierto, html.menu-abierto body { overflow: hidden; }
   letter-spacing: .2em;
   opacity: .5;
 }
-.menu__link[aria-current='page'] { text-decoration: underline; text-underline-offset: 6px; }
+.menu__link .icon { margin-left: auto; width: 18px; height: 18px; opacity: .6; }
+.menu__link[aria-current='page'] { color: #9ED9B4; }
 
+/* Pie del menú: botón, mapa, redes y datos, con el mismo aire entre todos */
 .menu__pie {
-  margin-top: var(--sp-5);
-  padding-top: var(--sp-3);
-  border-top: 1px solid rgba(255, 255, 255, .18);
-  display: grid;
-  gap: 6px;
-  color: rgba(255, 255, 255, .72);
-  font-size: var(--fs-small);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--menu-aire);
+  padding-top: var(--menu-aire);
 }
-.menu__pie a { min-height: 44px; display: inline-flex; align-items: center; }
+.menu__pie .boton {
+  align-self: flex-start;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: var(--texto);
+}
+.menu__pie .boton:hover,
+.menu__pie .boton:focus-visible { background: transparent; color: #FFFFFF; }
+.menu__mapa {
+  display: block;
+  position: relative;
+  flex: 0 1 140px;                 /* chico; en pantallas bajas cede alto antes que el aire */
+  min-height: 56px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .2);
+}
+.menu__mapa iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+  pointer-events: none;
+  filter: grayscale(.35);
+}
+.menu__abajo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.menu__abajo .redes { margin-left: -12px; color: #FFFFFF; }
+.menu__datos {
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: right;
+  color: rgba(255, 255, 255, .72);
+}
+@media (max-height: 740px) {
+  .menu { --menu-aire: 16px; }
+  .menu__link { min-height: 50px; font-size: 27px; }
+}
+@media (max-height: 640px) {
+  .menu { --menu-aire: 12px; padding-top: calc(var(--nav-alto) + 4px); padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .menu__link { min-height: 44px; font-size: 24px; }
+  .menu__pie .boton { min-height: 46px; }
+  .menu__abajo .redes a { width: 40px; height: 40px; }
+}
 
 /* ============================================================
    HERO — blanco, tipográfico. Pantalla completa con scroll cue.
