@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=4', 'img/pre-2.jpg?v=4', 'img/pre-3.jpg?v=4',
-                   'img/pre-4.jpg?v=4', 'img/marquee.jpg?v=4'];
+      var FOTOS = ['img/pre-1.jpg?v=5', 'img/pre-2.jpg?v=5', 'img/pre-3.jpg?v=5',
+                   'img/pre-4.jpg?v=5', 'img/marquee.jpg?v=5'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -456,6 +456,48 @@
     var hueco  = document.querySelector('.hero__hueco');
     var cue    = document.querySelector('.hero .cue');
 
+    // Copia blanca del cue, encima de la azul. Se recorta al rectángulo
+    // de la foto: a medida que la foto pasa por encima, la parte tapada
+    // se ve blanca y el resto sigue azul — un traspaso de cortina, no un
+    // cambio de golpe. La azul se recorta al revés, para que no asome
+    // debajo de la blanca.
+    var cueBlanco = null, cuePiezas = [];
+    if (cue) {
+      cuePiezas = Array.prototype.slice.call(cue.children);
+      cueBlanco = document.createElement('span');
+      cueBlanco.className = 'cue__blanco';
+      cueBlanco.setAttribute('aria-hidden', 'true');
+      cueBlanco.innerHTML = cue.innerHTML;
+      cue.appendChild(cueBlanco);
+    }
+
+    function recortarCue(fx, fy, fw, fh) {
+      if (!cueBlanco) return;
+      var c = cue.getBoundingClientRect();
+      // Lo que la foto tapa del cue, en coordenadas del cue
+      var arriba = Math.max(0, fy - c.top);
+      var abajo  = Math.max(0, c.bottom - (fy + fh));
+      var izq    = Math.max(0, fx - c.left);
+      var der    = Math.max(0, c.right - (fx + fw));
+      var nada = arriba >= c.height || abajo >= c.height || izq >= c.width || der >= c.width ||
+                 arriba + abajo >= c.height || izq + der >= c.width;
+      cueBlanco.style.clipPath = nada ? 'inset(0 0 100% 0)'
+        : 'inset(' + arriba.toFixed(1) + 'px ' + der.toFixed(1) + 'px ' + abajo.toFixed(1) + 'px ' + izq.toFixed(1) + 'px)';
+      // La azul: si la foto la cruza de lado a lado, se le saca la franja
+      // tapada (arriba o abajo). Cada pieza se recorta con su propia caja.
+      var anchoCompleto = !nada && izq === 0 && der === 0;
+      var limiteSup = fy, limiteInf = fy + fh;
+      cuePiezas.forEach(function (el) {
+        if (!anchoCompleto) { el.style.clipPath = ''; return; }
+        var r = el.getBoundingClientRect();
+        var top = Math.min(r.height, Math.max(0, limiteInf - r.top));     // tapado desde arriba
+        var bot = Math.min(r.height, Math.max(0, r.bottom - limiteSup));   // tapado desde abajo
+        if (limiteSup <= r.top) el.style.clipPath = 'inset(' + top.toFixed(1) + 'px 0 0 0)';
+        else if (limiteInf >= r.bottom) el.style.clipPath = 'inset(0 0 ' + bot.toFixed(1) + 'px 0)';
+        else el.style.clipPath = '';
+      });
+    }
+
     // La caja de partida se mide UNA vez, con el hero en su posición
     // inicial. El hueco viaja con el scroll, así que leerlo en cada
     // cuadro haría interpolar contra una base que se mueve.
@@ -515,17 +557,15 @@
       // foto terminó todo su recorrido de scroll.
       raiz.style.setProperty('--cue-avance', avance.toFixed(3));
 
-      // El cue no se desvanece, así que cuando la foto lo tapa por completo
-      // tiene que pasar a blanco o queda navy sobre la imagen.
+      // El cue no se desvanece: la parte que la foto tapa pasa a blanco,
+      // como una cortina que baja con el borde de la foto.
       if (cue) {
         var hr = heroEl.getBoundingClientRect();
         var fx = hr.left + (h.x + (x1 - h.x) * t);
         var fy = hr.top  + (h.y + (y1 - h.y) * t);
         var fw = h.w + (window.innerWidth - h.w) * t;
         var fh = h.h + (alto - h.h) * t;
-        var c = cue.getBoundingClientRect();
-        heroEl.classList.toggle('foto-encima',
-          fx <= c.left && fy <= c.top && fx + fw >= c.right && fy + fh >= c.bottom);
+        recortarCue(fx, fy, fw, fh);
       }
 
       // El velo navy NO acompaña al crecimiento: la foto crece limpia, se

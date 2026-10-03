@@ -701,10 +701,22 @@ html:not(.js) .hero__visual {
   stroke-dashoffset: calc(97.39px * (1 - var(--cue-avance, 0)));
 }
 
-/* Cuando la foto ya cubre el cue entero, texto, flecha y anillo pasan a
-   blanco: navy sobre la foto no se lee. */
-.hero.foto-encima .cue { color: #FFFFFF; }
-.hero.foto-encima .cue__texto { color: rgba(255, 255, 255, .85); }
+/* Copia blanca del cue (la arma el JS), calcada encima de la azul. Se
+   recorta al rectángulo de la foto: lo que la foto tapa se ve blanco y lo
+   demás sigue azul, con el borde de la foto como cortina. */
+.cue__blanco {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: #FFFFFF;
+  pointer-events: none;
+  clip-path: inset(0 0 100% 0);
+}
+.cue__blanco .cue__texto { color: rgba(255, 255, 255, .9); }
 .cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
 @keyframes cue {
   0%, 100% { transform: translateY(0); opacity: .75; }
