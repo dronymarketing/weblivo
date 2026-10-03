@@ -72,8 +72,8 @@
         morph:        1100   // el viaje del centro al hueco del hero
       };
       var PASOS = [27, 42, 68, 92, 99];   // counterSteps de RE
-      var FOTOS = ['img/pre-1.jpg?v=2', 'img/pre-2.jpg?v=2', 'img/pre-3.jpg?v=2',
-                   'img/pre-4.jpg?v=2', 'img/marquee.jpg?v=2'];
+      var FOTOS = ['img/pre-1.jpg?v=3', 'img/pre-2.jpg?v=3', 'img/pre-3.jpg?v=3',
+                   'img/pre-4.jpg?v=3', 'img/marquee.jpg?v=3'];
 
       var capa = document.createElement('div');
       capa.className = 'preloader';
@@ -228,8 +228,15 @@
         }));
       }
 
+      // Cuánto tarda la cortina en irse: mientras sube, el header sigue
+      // como con el menú abierto (es lo último que destapa).
+      var DUR_MENU = parseFloat(getComputedStyle(raiz).getPropertyValue('--dur-menu')) || 550;
+      var tCierre = 0;
+
       function abrir() {
         abierto = true;
+        clearTimeout(tCierre);
+        raiz.classList.remove('menu-cerrando');
         menu.classList.add('es-abierto');
         raiz.classList.add('menu-abierto');
         boton.setAttribute('aria-expanded', 'true');
@@ -244,7 +251,31 @@
       function cerrar(devolverFoco) {
         abierto = false;
         menu.classList.remove('es-abierto');
+        raiz.classList.add('menu-cerrando');
         raiz.classList.remove('menu-abierto');
+        // El header vuelve a su color de golpe, sin fundido (con fundido se
+        // veía la página a través del header), y justo cuando el borde de
+        // la cortina lo termina de destapar: ni antes ni después.
+        clearTimeout(tCierre);
+        var listo = false;
+        function soltarHeader() {
+          if (listo || abierto) return;
+          listo = true;
+          clearTimeout(tCierre);
+          raiz.classList.add('header-quieto');
+          raiz.classList.remove('menu-cerrando');
+          pintarBarras();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { raiz.classList.remove('header-quieto'); });
+          });
+        }
+        (function vigilar() {
+          if (listo || abierto) return;
+          var alto = header ? header.offsetHeight : 0;
+          if (menu.getBoundingClientRect().bottom <= alto) soltarHeader();
+          else requestAnimationFrame(vigilar);
+        })();
+        tCierre = setTimeout(soltarHeader, DUR_MENU + 100);   // red por las dudas
         boton.setAttribute('aria-expanded', 'false');
         boton.setAttribute('aria-label', 'Abrir menú');
         document.body.style.overflow = '';
@@ -547,7 +578,8 @@
     }
 
     function pintarBarras() {
-      var abiertoMenu = menu && menu.classList.contains('es-abierto');
+      var abiertoMenu = raiz.classList.contains('menu-abierto') ||
+                        raiz.classList.contains('menu-cerrando');
       var navy = estilos.getPropertyValue('--texto').trim();
       // Con la cortina puesta la pantalla es navy de arriba abajo: la barra
       // del navegador la acompaña, y al terminar vuelve a seguir la página.

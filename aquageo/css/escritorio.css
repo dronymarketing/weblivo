@@ -43,10 +43,10 @@
 .nav__links a[aria-current]::after { transform: none; }
 .header.sobre-oscuro .nav__links a { color: #FFFFFF; }
 
-/* Entre 768 y 1023 no entran logo completo y seis links en una línea:
-   la bajada «Perforaciones» se guarda. */
+.header__logo .logo { height: 44px; }
+/* Entre 768 y 1023 el logo se achica para que entren los seis links */
 @media (max-width: 1023px) {
-  .header__logo span { display: none; }
+  .header__logo .logo { height: 36px; }
 }
 
 /* ---------- Hero ----------
@@ -191,13 +191,16 @@
 .frase { font-size: var(--fs-h1); }
 
 /* ---------- Pie ---------- */
-.pie__grilla {
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-4);
-  margin-top: var(--sp-5);
+.pie { padding-top: var(--sp-7); }
+.pie__columnas { grid-template-columns: 1fr 1.4fr; column-gap: var(--sp-7); }
+.pie__contacto {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-5);
+  align-content: start;
 }
-.pie__marca { font-size: 44px; }
-.pie__legal {
-  grid-template-columns: 1fr auto;
-  align-items: center;
-}
+.pie__contacto .pie__titulo { grid-column: 1 / -1; }
+.pie__contacto > :not(.pie__mapa):not(.pie__titulo) { grid-column: 1; }
+.pie__mapa { grid-column: 2; grid-row: 2 / 7; height: auto; min-height: 200px; margin-top: 0; }
+.pie__columnas a, .pie__dato { font-size: var(--fs-body); }
+.pie__logo { width: min(420px, 40vw); margin: var(--sp-7) auto var(--sp-3); }
