@@ -1,0 +1,1197 @@
+/* ============================================================
+   AQUAGEO — MÓVIL
+   Este archivo es la web en el celular. No lleva ni una media query.
+   Lo que cambia de 768px para arriba va en escritorio.css.
+   ============================================================ */
+
+/* ============================================================
+   PRELOADER — efecto A del paquete «Realevate»
+   Marco que se abre desde el centro y descubre la web.
+   El JS lo crea; si el JS no corre, no existe y la web se ve igual.
+   ============================================================ */
+/* ============================================================
+   PRELOADER — mecánica y tiempos del site-preloader de RE.
+   Las curvas de GSAP, pasadas a cubic-bezier:
+     power4.out  -> (.22, 1, .36, 1)
+     power2.inOut-> (.45, 0, .55, 1)
+     expo.out    -> (.16, 1, .3, 1)
+   ============================================================ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* El fondo se cierra hacia ARRIBA (el borde de abajo sube hasta el 100%),
+   no se abre desde el centro. */
+.preloader__fondo {
+  position: absolute;
+  inset: 0;
+  background: var(--texto);
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1200ms cubic-bezier(.73, .15, .15, .99);
+}
+.preloader.es-fuera .preloader__fondo { clip-path: inset(0% 0% 100% 0%); }
+
+/* Las fotos esperan CENTRADAS en la pantalla y al salir viajan hasta el
+   hueco que les toca en el hero. El JS mide las dos posiciones y las
+   escribe acá; el tamaño es el mismo, así que sólo se mueven. */
+.preloader__frames {
+  position: absolute;
+  z-index: 2;
+  top:  var(--pre-top,  calc(50% - var(--hero-visual-size) / 2));
+  left: var(--pre-left, calc(50% - var(--hero-visual-size) / 2));
+  width:  var(--pre-ancho, var(--hero-visual-size));
+  height: var(--pre-alto,  var(--hero-visual-size));
+  overflow: hidden;
+}
+/* El viaje al hueco del hero. Va con power2.inOut y no con power4.out:
+   entre dos posiciones conocidas, la curva de reveal gasta el 87% del
+   recorrido en los primeros 120ms y el movimiento se lee como un salto.
+   Las medidas van en top/left/width/height y no en transform porque el
+   destino es un rect medido: con transform habría que arrastrar la escala. */
+.preloader.es-fuera .preloader__frames {
+  transition: top 1100ms cubic-bezier(.45, 0, .55, 1),
+              left 1100ms cubic-bezier(.45, 0, .55, 1),
+              width 1100ms cubic-bezier(.45, 0, .55, 1),
+              height 1100ms cubic-bezier(.45, 0, .55, 1);
+}
+.preloader__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(50% 50% 50% 50%);
+  transition: clip-path 1500ms cubic-bezier(.22, 1, .36, 1);
+  will-change: clip-path;
+}
+.preloader__frame.es-visible { clip-path: inset(0% 0% 0% 0%); }
+.preloader__frame img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scale(1.5);
+  transform-origin: center center;
+  transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+.preloader__frame.es-visible img { transform: none; }
+/* ---------- Contador de rodillo ----------
+   Dos columnas con los diez dígitos apilados que se desplazan, como el
+   de RE. Un número que simplemente cambia de texto no se lee igual. */
+.preloader__contador {
+  position: absolute;
+  left: 50%;
+  bottom: max(8vh, 2rem);
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  gap: .02em;
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
+  font-size: 5.5vw;
+  line-height: 1;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+.preloader__digito {
+  position: relative;
+  width: .65em;
+  height: 1em;
+  overflow: hidden;
+}
+.preloader__digito i {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  transform: translateY(calc(var(--n, 0) * -1em));
+  transition: transform 600ms cubic-bezier(.16, 1, .3, 1);
+  will-change: transform;
+}
+.preloader__digito b {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: inherit;
+}
+
+.preloader__marca {
+  position: absolute;
+  top: max(6vh, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .6);
+}
+
+/* Al salir, el contador y la marca se van antes que el fondo */
+.preloader.es-fuera .preloader__contador,
+.preloader.es-fuera .preloader__marca {
+  opacity: 0;
+  transition: opacity 450ms cubic-bezier(.32, 0, .67, 0);
+}
+
+/* Contador de porcentaje: el detalle que hace leer la espera como
+   intencional y no como demora. */
+.preloader__n {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ============================================================
+   HEADER
+   Hamburguesa, fijo, logo izquierda, botón derecha.
+   Arranca transparente sobre el hero y toma fondo a los 80px.
+   ============================================================ */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-alto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--margen-lateral);
+  /* El nav va SIEMPRE sólido, nunca transparente: el color lo escribe el
+     JS con el de la sección que tiene debajo, y por defecto es el blanco
+     de la página. Transparente, el contenido pasaba por abajo y el logo
+     quedaba encima de otro texto. */
+  background: var(--header-fondo, var(--fondo));
+  transition: background var(--dur-seccion) var(--ease-re),
+              color var(--dur-seccion) var(--ease-re),
+              border-color var(--dur-micro) var(--ease-re);
+  border-bottom: 1px solid transparent;
+}
+.header.es-solido {
+  border-bottom-color: color-mix(in srgb, var(--cat) 12%, transparent);
+}
+
+/* Con el menú abierto el panel es navy y el header queda por encima:
+   sin esto, el logo y la hamburguesa son navy sobre navy y desaparecen. */
+.menu-abierto .header {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+.menu-abierto .header__logo,
+.menu-abierto .hamburguesa { color: #FFFFFF; }
+.menu-abierto .header__logo span { color: rgba(255, 255, 255, .6); }
+.menu-abierto .header__logo b { color: #9ED9B4; }
+
+/* Sobre un bloque de color oscuro el nav toma ese color y el logo pasa a
+   blanco. La fileta sobra: el corte ya lo marca el cambio de color. */
+.header.sobre-oscuro { border-bottom-color: transparent; }
+.header.sobre-oscuro .header__logo,
+.header.sobre-oscuro .hamburguesa { color: #FFFFFF; }
+.header.sobre-oscuro .header__logo span { color: rgba(255, 255, 255, .6); }
+.header.sobre-oscuro .header__logo b { color: #9ED9B4; }
+
+.header__logo {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  transition: color var(--dur-seccion) var(--ease-re);
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cat);
+}
+/* «GEO» en el verde del logo, como en la marca de Aquageo. Sobre fondo
+   oscuro pasa a un verde claro: el oscuro no se lee sobre azul. */
+.header__logo strong { font-weight: 600; }
+.header__logo b {
+  font-weight: 600;
+  color: var(--verde);
+  transition: color var(--dur-seccion) var(--ease-re);
+}
+.header__logo span {
+  font-weight: 400;
+  font-size: 9px;
+  letter-spacing: .2em;
+  color: var(--cat-suave);
+}
+
+/* En escritorio van a la vista, en lugar de la hamburguesa */
+.nav__links { display: none; }
+
+/* Hamburguesa: tres líneas de 1px, área táctil 44x44 */
+.hamburguesa {
+  width: 44px; height: 44px;
+  margin-right: -10px;
+  display: grid;
+  place-items: center;
+  color: var(--cat);
+  transition: color var(--dur-seccion) var(--ease-re);
+  -webkit-tap-highlight-color: transparent;
+}
+/* El trazado lo deforma js/hamburguesa.js con morphicons: acá va sólo el
+   tamaño. El stroke-width queda en 1 como el resto de las filetas. */
+.hamburguesa__ico {
+  width: 26px; height: 26px;
+  display: block;
+}
+/* Sin JS el ícono se queda en las tres líneas, que es un menú igual. */
+
+/* ---------- Menú: cortina desde arriba ----------
+   Lo sobrio para institucional. 550ms. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: var(--texto);
+  color: #FFFFFF;
+  transform: translateY(-100%);
+  transition: transform var(--dur-menu) var(--ease-re),
+              visibility 0s linear var(--dur-menu);
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--nav-alto) var(--margen-lateral) var(--sp-5);
+  overflow-y: auto;
+}
+.menu.es-abierto {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform var(--dur-menu) var(--ease-re), visibility 0s;
+}
+
+.menu__lista { display: flex; flex-direction: column; gap: 4px; }
+
+.menu__item {
+  opacity: 0;
+  transform: translateY(12px);
+}
+/* Los ítems entran DESPUÉS del panel, escalonados. Al cerrar se van
+   todos juntos con el panel: cerrar tiene que sentirse más rápido. */
+.menu.es-abierto .menu__item {
+  opacity: 1;
+  transform: none;
+  transition: opacity 400ms var(--ease-re) var(--retraso),
+              transform 400ms var(--ease-re) var(--retraso);
+}
+
+.menu__link {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-block: 12px;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+}
+.menu__link .n {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  opacity: .5;
+}
+.menu__link[aria-current='page'] { text-decoration: underline; text-underline-offset: 6px; }
+
+.menu__pie {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  display: grid;
+  gap: 6px;
+  color: rgba(255, 255, 255, .72);
+  font-size: var(--fs-small);
+}
+.menu__pie a { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* ============================================================
+   HERO — blanco, tipográfico. Pantalla completa con scroll cue.
+   svh, nunca vh ni dvh. min-height, nunca height.
+   Sin overflow:hidden: el overflow del marquee va en su contenedor.
+   ============================================================ */
+/* El stage reserva el scroll que consume el crecimiento de la foto:
+   una pantalla para el hero más el recorrido más la pausa del final. */
+.hero-stage {
+  position: relative;
+  height: calc(100svh + var(--hero-crece-recorrido) + var(--hero-crece-pausa));
+}
+.js .hero { position: sticky; top: 0; }
+
+/* El nav se compensa con padding y no con margen: así el hero arranca en
+   top 0 y las coordenadas de la foto dentro de él no cambian al pegarse. */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: var(--vh100, 100svh);   /* alto real medido: el bug de Chrome Android */
+  /* El nav se compensa con padding y no con margen: así el hero arranca en
+     top 0 y las coordenadas de la foto dentro de él no cambian al pegarse. */
+  padding-top: var(--nav-alto);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 28px;        /* el mismo pie que en losparaisos */
+  text-align: center;          /* RE centra todo el hero en móvil */
+}
+
+/* El trío central se come todo el sobrante y lo reparte entre sus partes;
+   el cue queda afuera, al fondo del hero, que es donde va en losparaisos y
+   en fabianamartinez. Con el cue adentro del reparto quedaba flotando a
+   media altura, con un hueco muerto debajo. */
+.hero__centro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+/* El bloque de texto no ocupa todo el ancho: RE lo limita a 42vw por la
+   escala, y eso es lo que hace que el titular caiga en dos líneas cortas
+   en vez de estirarse de lado a lado. */
+.hero__cuerpo {
+  display: grid;
+  gap: var(--sp-2);
+  justify-items: center;
+  width: var(--hero-content-width);
+  margin-inline: auto;
+}
+
+.hero__micro { color: var(--cat-suave); }
+
+/* El titular del hero va en SANS y en cuerpo grande, no en display serif:
+   en RE el único texto gigante del hero es el marquee. */
+.hero__lead {
+  font-family: var(--font-cuerpo);
+  font-weight: 400;
+  font-size: var(--fs-lead);
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  color: var(--cat);
+}
+
+/* Chip con reborde fino — el recurso de RE para el dato de apoyo */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  color: var(--cat);
+}
+
+/* Efecto G — el titular se arma por palabras. Cada palabra sube desde
+   abajo detrás de una máscara. Solo en el hero: en más de un lugar, cansa. */
+.palabra { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.palabra i {
+  display: inline-block;
+  font-style: inherit;
+  transform: translateY(105%);
+}
+.js [data-palabras].es-dentro .palabra i {
+  transform: none;
+  transition: transform var(--dur-re) var(--ease-re);
+  transition-delay: var(--retraso, 0ms);
+}
+
+.hero__bajada {
+  color: var(--cat-suave);
+  font-size: var(--fs-body);
+}
+
+/* En móvil va en el flujo, centrada bajo el chip: en la esquina se
+   superpone con el círculo del scroll cue. */
+.hero__firma {
+  text-align: center;
+  color: var(--cat-suave);
+  margin-top: var(--sp-2);
+}
+
+/* ---------- Marquee — efecto I ----------
+   Una palabra gigante que se repite y se desplaza, con una foto encima
+   que tapa parte del texto. Un solo marquee por sitio, y va en el hero.
+   El overflow:hidden vive acá, nunca en la sección hero. */
+/* Va a sangre: rompe el contenedor y ocupa el ancho de la ventana, como
+   el de RE. El recorte vive acá, nunca en la sección hero. */
+.marquee {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-bottom: var(--sp-4);
+  overflow: hidden;
+}
+
+/* El texto del marquee se revela desde abajo, con el origen en su base */
+.marquee__reveal {
+  transform-origin: 50% 100%;
+  overflow: hidden;
+}
+.js:not(.listo) .marquee__reveal { clip-path: inset(100% 0% 0% 0%); }
+.js.listo .marquee__reveal {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1200ms cubic-bezier(.22, 1, .36, 1) 150ms;
+}
+
+/* Los demás elementos del hero entran 0.3s después de la foto,
+   escalonados: es el otherElementsDelay de RE. */
+.js:not(.listo) .hero__cuerpo > *,
+.js:not(.listo) .hero__firma,
+.js:not(.listo) .cue > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.js.listo .hero__cuerpo > *,
+.js.listo .hero__firma,
+.js.listo .cue > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 900ms cubic-bezier(.22, 1, .36, 1) var(--retraso, 300ms),
+              transform 900ms cubic-bezier(.22, 1, .36, 1) var(--retraso, 300ms);
+}
+.js.listo .hero__cuerpo > :nth-child(2) { --retraso: 400ms; }
+.js.listo .hero__firma { --retraso: 500ms; }
+.js.listo .cue         { --retraso: 600ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js:not(.listo) .marquee__reveal,
+  .js:not(.listo) .marquee__visual { clip-path: none; }
+  .js:not(.listo) .marquee__foto { transform: none; }
+  .js:not(.listo) .hero__cuerpo > *,
+  .js:not(.listo) .hero__firma,
+  .js:not(.listo) .cue > * { opacity: 1; transform: none; }
+}
+.marquee__pista {
+  display: flex;
+  width: max-content;
+  animation: correr 26s linear infinite;
+}
+/* En RE el marquee es SANS peso 500 con el tamaño del h1 (16vw por la
+   escala), no la serif de display. Es lo que le da el aire de marca. */
+.marquee__pista span {
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
+  font-size: var(--fs-marquee);
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--cat);
+  padding-right: var(--marquee-gap);
+  white-space: nowrap;
+}
+@keyframes correr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__pista { animation: none; }
+}
+
+/* Hueco del tamaño de la foto dentro del marquee: marca dónde arranca y
+   corta la frase por detrás, aunque la foto misma viva afuera. */
+.hero__hueco {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--hero-visual-size);
+  height: var(--hero-visual-size);
+  background: var(--fondo);
+}
+
+/* La foto: una sola en toda la página. Arranca cuadrada sobre el marquee
+   y con el scroll crece hasta cubrir la pantalla.
+   Va absoluta DENTRO del hero, no fija al viewport: mientras el hero está
+   pegado se comporta igual, pero cuando el stage termina sube con él y
+   deja pasar la sección siguiente. Con fixed quedaba clavada y el
+   contenido de abajo se le superponía. */
+.hero__visual {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  will-change: width, height, top, left;
+  pointer-events: none;
+}
+.hero__visual img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+/* Velo navy que sube con el crecimiento: al arrancar la foto está limpia
+   y al ocupar la pantalla entera queda teñida del color de la marca. */
+.hero__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--texto);
+  opacity: calc(var(--hero-velo, 0) * 0.58);
+  pointer-events: none;
+}
+
+/* Sin JS no hay medidas calculadas: la foto se muestra en el flujo.
+   El :not va sobre html, no suelto: suelto matchea cualquier ancestro
+   sin la clase y la regla se aplica siempre. */
+html:not(.js) .hero__visual {
+  position: relative;
+  width: var(--hero-visual-size);
+  height: var(--hero-visual-size);
+  margin: 0 auto;
+}
+
+/* Entrada: la máscara se abre desde el centro mientras la foto
+   desescala, igual que el hero-visual de RE. */
+.js:not(.listo) .hero__visual { clip-path: inset(50% 50% 50% 50%); }
+.js:not(.listo) .hero__visual img { transform: scale(1.5); }
+.js.listo .hero__visual {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1500ms cubic-bezier(.22, 1, .36, 1);
+}
+.js.listo .hero__visual img {
+  transform: none;
+  transition: transform 1500ms cubic-bezier(.22, 1, .36, 1);
+}
+/* Con cortina, la foto del hero espera tapada mientras la de la cortina
+   viaja hasta su hueco: si se abriera antes se verían las dos. Cuando
+   aterriza, se descubre acá sin animación — ya se abrió durante la carga,
+   volver a abrirla sería descubrir el mismo plano dos veces. */
+.js.hubo-preloader .hero__visual { clip-path: inset(50% 50% 50% 50%); }
+.js.hubo-preloader .hero__visual img { transform: scale(1.5); }
+.js.hubo-preloader.foto-entregada .hero__visual {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: none;
+}
+.js.hubo-preloader.foto-entregada .hero__visual img {
+  transform: none;
+  transition: none;
+}
+
+/* Mientras la foto crece, el texto del hero se retira.
+   Va sobre los CONTENEDORES y no sobre las mismas piezas que anima la
+   entrada: puesto en la pieza, la regla de entrada (.js.listo .cue, tres
+   clases) le ganaba a ésta (.cue, una) y el cue y la firma se quedaban
+   opacos encima de la foto a pantalla completa. */
+.hero__centro {
+  opacity: var(--hero-op, 1);
+}
+
+/* ---------- Scroll cue ----------
+   Es un <a> de verdad: se puede tocar, funciona sin JS y es accesible.
+   Va también en móvil, no se esconde. */
+/* Mismo cue que losparaisos: texto arriba, círculo de 32px abajo.
+   El <a> completo pasa los 44px de área táctil. */
+/* Va en el flujo, como en losparaisos y fabianamartinez, y no absoluto:
+   cuando el contenido del hero pasaba de una pantalla, el cue quedaba por
+   debajo del borde inferior — en Android se veía el círculo cortado. */
+.cue {
+  margin-inline: auto;
+  flex-shrink: 0;
+  /* Por encima de la foto (z-index 3) y fuera del desvanecido del centro:
+     el cue se queda visible mientras el resto del hero se retira. */
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--cat);
+  transition: color var(--dur-micro) var(--ease-re);
+}
+.cue__texto {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: var(--cat-suave);
+  transition: color var(--dur-micro) var(--ease-re);
+}
+/* El borde del círculo lo dibuja el anillo, no un border: así el trazo de
+   avance se apoya exactamente encima de la pista. */
+.cue__circulo {
+  position: relative;
+  width: 32px; height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.cue__anillo {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);     /* el avance arranca arriba, a las 12 */
+  transform-origin: center;
+}
+.cue__anillo circle {
+  fill: none;
+  stroke-width: 1;
+}
+/* Los dos trazos van con currentColor: así basta con cambiarle el color al
+   cue para que el anillo entero pase a blanco sobre la foto. */
+.cue__pista { stroke: currentColor; opacity: .35; }
+/* 2·π·15.5 = 97.39: la vuelta completa en unidades del viewBox. */
+.cue__avance {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-dasharray: 97.39;
+  stroke-dashoffset: calc(97.39px * (1 - var(--cue-avance, 0)));
+}
+
+/* Cuando la foto ya cubre el cue entero, texto, flecha y anillo pasan a
+   blanco: navy sobre la foto no se lee. */
+.hero.foto-encima .cue { color: #FFFFFF; }
+.hero.foto-encima .cue__texto { color: rgba(255, 255, 255, .85); }
+.cue .icon { width: 14px; height: 14px; animation: cue 2.4s ease-in-out infinite; }
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: .75; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cue .icon { animation: none; opacity: 1; }
+}
+
+/* ============================================================
+   SECCIONES
+   ============================================================ */
+.seccion__encabezado {
+  display: grid;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.seccion__micro { color: var(--cat-suave); }
+.seccion__titulo { color: var(--cat); }
+
+/* Encabezado centrado con filete vertical arriba — el remate editorial
+   de RE para abrir una sección. */
+.seccion__encabezado--centro {
+  justify-items: center;
+  text-align: center;
+}
+.seccion__encabezado--centro::before {
+  content: '';
+  width: 1px;
+  height: 44px;
+  background: currentColor;
+  opacity: .28;
+  margin-bottom: var(--sp-1);
+}
+
+.franja { background: var(--fondo-alt); }
+
+/* ---------- Adelanto: quiénes somos ---------- */
+.sobre { display: grid; gap: var(--sp-4); }
+.sobre__texto { display: grid; gap: var(--sp-2); max-width: var(--max-lectura); }
+.sobre__texto p { color: var(--cat-suave); }
+
+/* ---------- Bloques de dato ----------
+   El patrón de category-values de RE: foto vertical en proporción
+   708/908 que no ocupa el ancho completo y alterna de lado, con el dato
+   en dos líneas y sans debajo. */
+.valores { display: grid; gap: var(--sp-6); }
+
+.valor { display: grid; gap: var(--sp-3); }
+
+.valor__foto {
+  width: 62%;
+  aspect-ratio: 708 / 908;
+  overflow: hidden;
+}
+.valor--invertido .valor__foto { margin-left: auto; }
+.valor__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.valor__dato {
+  font-family: var(--font-cuerpo);
+  font-weight: 500;
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  color: var(--cat);
+}
+.valor__texto {
+  margin-top: var(--sp-2);
+  color: var(--cat-suave);
+  max-width: var(--max-lectura);
+}
+
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.cifra__n {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--cat);
+}
+.cifra__t {
+  margin-top: 6px;
+  color: var(--cat-suave);
+  font-size: var(--fs-small);
+}
+
+.sobre__foto { aspect-ratio: 4 / 5; }
+.sobre__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Color por categoría — efecto J ----------
+   El color vive en el atributo de cada bloque, no enterrado en el JS.
+   Rellena bloques enteros: es lo que hace que el recurso se vea. */
+[data-cat='hidrogeologia'] { --relleno: var(--cat-hidrogeologia); }
+[data-cat='geofisica']     { --relleno: var(--cat-geofisica); }
+[data-cat='perforacion']   { --relleno: var(--cat-perforacion); }
+[data-cat='documentacion'] { --relleno: var(--cat-documentacion); }
+
+/* ---------- Tarjeta de categoría ----------
+   Rectángulo de color con la foto al costado, apiladas y pegadas.
+   Es el bloque de la vidriera del inicio. */
+.tarjetas-cat { display: grid; gap: 10px; }
+
+.tarjeta-cat {
+  display: grid;
+  grid-template-columns: 1fr 36%;
+  min-height: 136px;
+  background: var(--relleno);
+  color: #FFFFFF;
+}
+.tarjeta-cat__texto {
+  padding: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.tarjeta-cat__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+.tarjeta-cat__desc {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: rgba(255, 255, 255, .75);
+}
+.tarjeta-cat__foto { overflow: hidden; }
+.tarjeta-cat__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Servicio a bloque completo (página de servicios) ----------
+   La sección entera toma el color de la categoría. */
+/* Sin separación: los bloques van a sangre y cada uno con su color. Con
+   gap se colaba una franja blanca de la página entre bloque y bloque, y
+   el cambio de color se leía como un salto. */
+.servicios { display: grid; gap: 0; }
+
+.servicio--pleno {
+  background: var(--relleno);
+  color: #FFFFFF;
+  padding: var(--sp-5) var(--margen-lateral);
+  display: grid;
+  gap: var(--sp-2);
+}
+.servicio__n {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
+}
+.servicio__titulo { color: #FFFFFF; }
+.servicio__texto { color: rgba(255, 255, 255, .78); max-width: var(--max-lectura); }
+
+.servicio__lista {
+  display: grid;
+  gap: 10px;
+  margin-top: var(--sp-1);
+}
+.servicio__lista li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: rgba(255, 255, 255, .78);
+  font-size: var(--fs-small);
+}
+.servicio__lista .icon { margin-top: 3px; color: #FFFFFF; }
+
+.servicio__foto {
+  aspect-ratio: 4 / 3;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+}
+.servicio__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Proyectos ---------- */
+.proyectos { display: grid; gap: var(--sp-4); }
+
+.proyecto { display: grid; gap: var(--sp-2); }
+.proyecto__foto { aspect-ratio: 3 / 2; overflow: hidden; }
+.proyecto__foto img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-re) var(--ease-re);
+}
+.proyecto:hover .proyecto__foto img { transform: scale(1.04); }
+/* Un pie solo: el nombre de la obra y dónde está, en el mismo registro y
+   en el mismo renglón. Antes eran dos bloques enfrentados y se leían como
+   dos datos sueltos en vez de como el pie de la foto. */
+.proyecto__pie {
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+  color: var(--cat);
+  text-wrap: pretty;
+}
+.proyecto__pie span { color: var(--cat-suave); }
+.proyecto__pie span::before { content: ' — '; }
+
+/* ---------- Obras contadas una por una ----------
+   La foto no ocupa el ancho completo y alterna de lado: es la
+   composición asimétrica que usa RE en sus bloques de contenido. */
+.obras { display: grid; gap: var(--sp-6); }
+
+.obra { display: grid; gap: var(--sp-3); }
+
+.obra__foto {
+  width: 84%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+.obra:nth-child(even) .obra__foto { margin-left: auto; }
+.obra__foto img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.obra__cuerpo { display: grid; gap: 10px; }
+.obra__lugar { color: var(--cat-suave); }
+.obra__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: var(--ls-h3);
+  color: var(--cat);
+}
+.obra__texto {
+  color: var(--cat-suave);
+  max-width: var(--max-lectura);
+}
+
+/* ---------- Contacto ---------- */
+.contacto { display: grid; gap: var(--sp-4); }
+.datos { display: grid; gap: var(--sp-3); }
+.dato {
+  display: grid;
+  gap: 4px;
+  padding-top: var(--sp-2);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.dato__t {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--cat-suave);
+}
+.dato__v {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  color: var(--cat);
+}
+a.dato__v { display: inline-flex; align-items: center; min-height: 44px; }
+
+.acciones { display: grid; gap: 12px; }
+
+/* ============================================================
+   ENCABEZADO DE PÁGINA INTERNA
+   ============================================================ */
+.pagina-hero {
+  margin-top: var(--nav-alto);
+  padding-top: var(--sp-6);
+  padding-bottom: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+}
+.pagina-hero__micro { color: var(--cat-suave); }
+.pagina-hero__titulo { color: var(--cat); }
+.pagina-hero__bajada { color: var(--cat-suave); max-width: var(--max-lectura); }
+
+.pagina-hero__foto {
+  margin-top: var(--sp-2);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+.pagina-hero__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ============================================================
+   PIE
+   ============================================================ */
+.pie {
+  background: var(--texto);
+  color: rgba(255, 255, 255, .72);
+  padding-block: var(--sp-5);
+}
+.pie__marca span { color: #9ED9B4; }
+.pie__marca {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: #FFFFFF;
+}
+.pie__grilla {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+.pie__t {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+  margin-bottom: 10px;
+}
+.pie__lista { display: grid; gap: 2px; }
+.pie__lista a, .pie__lista span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+.pie__legal {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-small);
+  color: rgba(255, 255, 255, .5);
+}
+
+/* ============================================================
+   AQUAGEO — bloques que Patronux no tenía
+   ============================================================ */
+
+/* ---------- Beneficios ----------
+   Seis ventajas de la web vieja. Los emoji pasaron a íconos de Lucide:
+   un ícono, un título corto y una línea. Filete arriba, sin caja. */
+.beneficios { display: grid; gap: var(--sp-4); }
+.beneficio {
+  display: grid;
+  gap: 10px;
+  padding-top: var(--sp-2);
+  border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent);
+}
+.beneficio .icon { width: 26px; height: 26px; stroke-width: 1.25; color: var(--verde); }
+.beneficio__titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--cat);
+}
+.beneficio__texto { color: var(--cat-suave); font-size: var(--fs-small); line-height: 1.5; }
+
+/* ---------- Clientes ----------
+   Los logos tal cual vienen de la web vieja, sobre blanco y con reborde
+   fino. Contain: un logo nunca se recorta. */
+.clientes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.cliente {
+  aspect-ratio: 3 / 2;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--cat) 12%, transparent);
+}
+.cliente { min-width: 0; }
+.cliente img { width: 100%; height: 100%; min-width: 0; object-fit: contain; }
+
+/* ---------- Videos ----------
+   Los dos cortos de YouTube de Aquageo. Se muestra la portada (descargada
+   al proyecto) y el iframe se carga recién al tocar: un embed de YouTube
+   pesa más que toda la página. */
+.videos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.video { display: grid; gap: 10px; }
+.video__marco {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: var(--texto);
+}
+.video__marco img,
+.video__marco iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border: 0;
+}
+.video__play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+}
+.video__play span {
+  width: 56px; height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .7);
+  background: rgba(13, 59, 110, .55);
+  transition: transform var(--dur-micro) var(--ease-re), background var(--dur-micro) var(--ease-re);
+}
+.video__play .icon { width: 20px; height: 20px; margin-left: 3px; fill: currentColor; }
+.video__play:hover span { transform: scale(1.06); background: rgba(13, 59, 110, .8); }
+.video__pie { color: var(--cat-suave); }
+
+/* ---------- Preguntas frecuentes ----------
+   <details> nativo: abre y cierra sin JS. El + gira a × al abrir. */
+.preguntas { border-bottom: 1px solid color-mix(in srgb, var(--cat) 15%, transparent); }
+.pregunta { border-top: 1px solid color-mix(in srgb, var(--cat) 15%, transparent); }
+.pregunta summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-block: 18px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  color: var(--cat);
+  -webkit-tap-highlight-color: transparent;
+}
+.pregunta summary::-webkit-details-marker { display: none; }
+.pregunta summary .icon {
+  margin-top: 2px;
+  transition: transform var(--dur-micro) var(--ease-re);
+}
+.pregunta[open] summary .icon { transform: rotate(45deg); }
+.pregunta__respuesta {
+  display: grid;
+  gap: 10px;
+  padding-bottom: var(--sp-3);
+  max-width: 62ch;
+  color: var(--cat-suave);
+}
+
+/* ---------- Frase ---------- */
+.frase {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  letter-spacing: var(--ls-h2);
+  color: var(--cat);
+  max-width: 18ch;
+}
+.frase b { font-weight: 400; color: var(--verde); }
+
+/* ---------- Formulario de consulta ----------
+   No hay servidor: al enviar se arma el mensaje y se abre WhatsApp con
+   todo escrito. Mismos campos que el formulario de la web vieja. */
+.form { display: grid; gap: var(--sp-2); }
+.campo { display: grid; gap: 6px; }
+.campo label {
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 125;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--cat-suave);
+}
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--cat) 22%, transparent);
+  border-radius: 0;
+  background: var(--fondo);
+  color: var(--cat);
+  font: inherit;
+  font-size: 16px;              /* menos de 16 y iOS hace zoom al tocar */
+  -webkit-appearance: none;
+  appearance: none;
+}
+.campo select {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+.campo textarea { min-height: 128px; resize: vertical; }
+.campo input:focus-visible,
+.campo select:focus-visible,
+.campo textarea:focus-visible { outline: 1px solid var(--cat); outline-offset: 0; }
+.form__fila { display: grid; gap: var(--sp-2); }
+.form__nota { font-size: var(--fs-small); color: var(--cat-suave); }
+
+/* ---------- Redes ---------- */
+.redes { display: flex; gap: 4px; flex-wrap: wrap; }
+.redes a {
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+  transition: opacity var(--dur-micro) var(--ease-re);
+}
+.redes a:hover { opacity: .65; }
+.ico-marca { width: 20px; height: 20px; fill: currentColor; }
+
+/* ---------- Aviso de borrador ---------- */
+.aviso-muestra {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-small);
+  color: var(--cat-suave);
+}
+
+/* Botón dentro de un bloque de color: en blanco */
+.servicio--pleno .boton {
+  justify-self: start;
+  margin-top: var(--sp-2);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+}
+.servicio--pleno .boton:hover,
+.servicio--pleno .boton:focus-visible { background: #FFFFFF; color: var(--relleno); }

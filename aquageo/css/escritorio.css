@@ -1,0 +1,203 @@
+/* ============================================================
+   AQUAGEO — ESCRITORIO (768px para arriba)
+   Se carga por el atributo media del link: acá adentro no hace falta
+   envolver nada. Solo lo que CAMBIA respecto de móvil.
+   ============================================================ */
+
+/* ---------- Header ----------
+   En escritorio nunca hay hamburguesa (regla Livo 30/9/2026): los links
+   van a la vista en el nav, en una línea. */
+.hamburguesa, .menu { display: none; }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 40px);
+  margin-left: auto;
+}
+.nav__links a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 110;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cat);
+  transition: color var(--dur-seccion) var(--ease-re);
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 10px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease-re);
+}
+.nav__links a:hover::after,
+.nav__links a[aria-current]::after { transform: none; }
+.header.sobre-oscuro .nav__links a { color: #FFFFFF; }
+
+/* Entre 768 y 1023 no entran logo completo y seis links en una línea:
+   la bajada «Perforaciones» se guarda. */
+@media (max-width: 1023px) {
+  .header__logo span { display: none; }
+}
+
+/* ---------- Hero ----------
+   Los tamaños del marquee, la foto y el lead salen de las variables de
+   escala en tokens-proyecto.css, no de acá: no los repitas o dejan de
+   seguir el alto de la ventana. */
+.hero { padding-top: var(--sp-5); }
+
+.hero__cuerpo {
+  gap: var(--sp-3);
+  max-width: calc(var(--desktop-hero-content-max) * var(--layout-size-scale));
+}
+
+.marquee { margin-bottom: var(--sp-4); }
+.marquee__pista { animation-duration: 34s; }
+
+/* Acá sí va a la esquina, anclada al borde de la ventana y no al del
+   contenedor: si no, en pantallas anchas queda flotando a mitad de camino. */
+.hero__firma {
+  position: absolute;
+  left: calc(50% - 50vw + var(--margen-lateral));
+  bottom: 28px;
+  margin-top: 0;
+}
+
+/* La figura que crece toma su tamaño de la variable en movil.css y el
+   resto lo maneja el JS: un max-width acá le impedía llegar a la
+   pantalla completa. */
+
+/* ---------- Secciones ---------- */
+.seccion__encabezado {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.seccion__encabezado--centro { grid-template-columns: 1fr; }
+
+/* ---------- Quiénes somos ---------- */
+.sobre {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.sobre__foto { aspect-ratio: 4 / 5; }
+.cifras { grid-template-columns: repeat(2, 1fr); }
+.cifra__n { font-size: 60px; }
+
+/* ---------- Bloques de dato ----------
+   Grilla de 12 columnas con la foto y el texto en posiciones nombradas y
+   asimétricas, como la de RE: nunca a mitades. */
+.valores { gap: var(--sp-7); }
+
+.valor {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--sp-3);
+  align-items: center;
+}
+.valor__foto   { grid-column: 2 / 6;  width: 100%; }
+.valor__cuerpo { grid-column: 7 / 11; }
+
+.valor--invertido .valor__foto   { grid-column: 8 / 12; }
+.valor--invertido .valor__cuerpo { grid-column: 3 / 7; grid-row: 1; }
+
+/* ---------- Tarjetas de categoría ---------- */
+/* Con más alto, space-between separaba título y bajada media tarjeta.
+   168px mantiene la proporción que tienen en móvil. */
+.tarjeta-cat { min-height: 168px; grid-template-columns: 1fr 42%; }
+.tarjeta-cat__texto { padding: var(--sp-3); }
+.tarjeta-cat__titulo { font-size: 40px; }
+
+/* ---------- Servicios ---------- */
+/* El padding centra el contenido respetando el ancho de contenedor, sin
+   un wrapper extra: el bloque de color sigue yendo a sangre. */
+.servicio--pleno {
+  padding: var(--sp-6) max(var(--margen-lateral), calc((100% - var(--max-contenedor)) / 2));
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-5);
+  align-items: start;
+}
+.servicio__n     { grid-column: 1 / -1; }
+.servicio__foto  { grid-row: 2 / span 4; margin-top: 0; }
+
+/* ---------- Proyectos ---------- */
+.proyectos {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5) var(--sp-3);
+}
+
+/* ---------- Obras ---------- */
+.obras { gap: var(--sp-7); }
+
+.obra {
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-5);
+  align-items: center;
+}
+.obra__foto { width: 100%; }
+/* Las pares invierten el orden: la foto va a la derecha */
+.obra:nth-child(even) .obra__foto { order: 2; }
+
+/* ---------- Contacto ---------- */
+.contacto {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.acciones { grid-auto-flow: column; justify-content: start; }
+.dato__v { font-size: 26px; }
+
+/* ---------- Página interna ---------- */
+.pagina-hero {
+  padding-top: var(--sp-7);
+  padding-bottom: var(--sp-5);
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: var(--sp-5);
+}
+.pagina-hero__micro  { grid-column: 1 / -1; }
+.pagina-hero__bajada { padding-bottom: 6px; }
+.pagina-hero__foto { grid-column: 1 / -1; aspect-ratio: 21 / 9; }
+
+/* ---------- Bloques de Aquageo ---------- */
+.beneficios {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5) var(--sp-4);
+}
+.clientes { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.videos {
+  grid-template-columns: repeat(2, minmax(0, 300px));
+  gap: var(--sp-4);
+}
+.videos--centro { justify-content: center; }
+.preguntas-grilla {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.pregunta summary { font-size: 24px; }
+.form__fila { grid-template-columns: 1fr 1fr; }
+.frase { font-size: var(--fs-h1); }
+
+/* ---------- Pie ---------- */
+.pie__grilla {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
+}
+.pie__marca { font-size: 44px; }
+.pie__legal {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
