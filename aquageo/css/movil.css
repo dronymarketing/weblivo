@@ -1312,3 +1312,62 @@ a.dato__v { display: inline-flex; align-items: center; min-height: 44px; }
 .pagina-hero__foto--escritorio { display: none; }   /* foto del hero partido: solo escritorio */
 .seccion--tras-hero { padding-top: 0; }             /* pegada al encabezado de la página */
 .contacto__mapa--inicio { display: none; }   /* en el celular el inicio no lleva mapa */
+
+/* ============================================================
+   INICIO — PANTALLAS COMPLETAS EN EL CELULAR (método de fabianamartinez)
+   Cada sección del inicio lleva 40px fijos arriba y abajo. Las que
+   entran en una pantalla (.seccion--completa) miden además la ventana
+   menos el nav, y lo que sobra se reparte solo entre sus bloques
+   (justify-content: space-between), nunca como aire suelto al final.
+   min-height y no height: si en un celular muy bajo no entra, la
+   sección crece en vez de cortar contenido.
+   ============================================================ */
+#nosotros, #servicios, #beneficios, #clientes, #trabajos, #preguntas, #contacto {
+  padding-block: 40px;
+}
+.seccion--completa {
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: var(--vh100, 100svh);
+  min-height: calc(100vh - var(--nav-alto));
+  min-height: calc(100svh - var(--nav-alto));
+  min-height: calc(var(--vh100, 100svh) - var(--nav-alto));
+  display: flex;
+  flex-direction: column;
+}
+.seccion--completa > .contenedor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.seccion--completa .seccion__encabezado { margin-bottom: 0; }
+.seccion--completa .seccion__pie { margin-top: 0 !important; }
+
+/* Servicios: las cuatro tarjetas absorben la pantalla y se achican en
+   celulares bajos antes que el margen */
+#servicios .tarjetas-cat { flex: 1; grid-auto-rows: minmax(96px, 1fr); }
+#servicios .tarjeta-cat { min-height: 96px; }
+#servicios .tarjeta-cat__titulo { font-size: clamp(22px, 3.2vh, 26px); }
+
+/* Celulares bajos: se comprime el aire de adentro, nunca los 40px */
+@media (max-height: 700px) {
+  .seccion--completa .seccion__encabezado { gap: 8px; }
+  .seccion--completa .seccion__encabezado--centro::before { height: 24px; }
+  #preguntas .pregunta summary { padding-block: 12px; font-size: 19px; }
+  #contacto .datos { gap: var(--sp-2); }
+  #contacto .dato { padding-top: 10px; }
+  #contacto .dato__v { font-size: 20px; }
+  #contacto a.dato__v { min-height: 40px; }
+  #trabajos .video__pie { display: none; }
+}
+@media (max-height: 700px) {
+  #servicios .tarjetas-cat { grid-auto-rows: minmax(68px, 1fr); gap: 8px; }
+  #servicios .tarjeta-cat { min-height: 68px; }
+  #servicios .tarjeta-cat__desc { display: none; }
+  #servicios .tarjeta-cat__texto { justify-content: center; padding-block: 12px; }
+}
+/* La foto de la tarjeta no le impone su alto a la fila: la cubre */
+#servicios .tarjeta-cat__foto { position: relative; min-height: 0; }
+#servicios .tarjeta-cat__foto img { position: absolute; inset: 0; }
