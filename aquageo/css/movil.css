@@ -1371,3 +1371,6 @@ a.dato__v { display: inline-flex; align-items: center; min-height: 44px; }
 /* La foto de la tarjeta no le impone su alto a la fila: la cubre */
 #servicios .tarjeta-cat__foto { position: relative; min-height: 0; }
 #servicios .tarjeta-cat__foto img { position: absolute; inset: 0; }
+
+/* Bajada debajo del título de sección (Clientes) */
+.seccion__bajada { color: var(--cat-suave); max-width: var(--max-lectura); }

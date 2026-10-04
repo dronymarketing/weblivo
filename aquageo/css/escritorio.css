@@ -445,3 +445,8 @@ a.dato__v { min-height: 40px; }
   min-height: 0;
   aspect-ratio: auto;
 }
+
+/* Encabezado con bajada: el micro arriba, el título a la izquierda y la
+   bajada a la derecha, apoyada en la base del título */
+.seccion__encabezado:has(.seccion__bajada) .seccion__micro { grid-column: 1 / -1; }
+.seccion__encabezado:has(.seccion__bajada) .seccion__bajada { padding-bottom: 6px; }
