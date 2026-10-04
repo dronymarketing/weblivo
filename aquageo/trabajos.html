@@ -13,25 +13,25 @@
 <meta property="og:title" content="Trabajos — AquaGeo Perforaciones">
 <meta property="og:description" content="Videos de perforaciones de AquaGeo y algunos de los clientes públicos y privados que confiaron en nosotros.">
 <meta property="og:url" content="https://livo.com.uy/aquageo/trabajos.html">
-<meta property="og:image" content="https://livo.com.uy/aquageo/img/og-blanco.jpg?v=18">
+<meta property="og:image" content="https://livo.com.uy/aquageo/img/og-blanco.jpg?v=20">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="Logo de AquaGeo Perforaciones sobre fondo blanco">
 <meta property="og:locale" content="es_UY">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://livo.com.uy/aquageo/img/og-blanco.jpg?v=18">
+<meta name="twitter:image" content="https://livo.com.uy/aquageo/img/og-blanco.jpg?v=20">
 <link rel="icon" href="favicon.png" type="image/png">
 <meta name="theme-color" content="#FFFFFF">
 
 <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/playfair.woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=18">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=18">
-<link rel="stylesheet" href="css/base.css?v=18">
-<link rel="stylesheet" href="css/movil.css?v=18">
-<link rel="stylesheet" href="css/escritorio.css?v=18" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=20">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=20">
+<link rel="stylesheet" href="css/base.css?v=20">
+<link rel="stylesheet" href="css/movil.css?v=20">
+<link rel="stylesheet" href="css/escritorio.css?v=20" media="(min-width: 768px)">
 
-<script src="js/app.js?v=18"></script>
+<script src="js/app.js?v=20"></script>
 </head>
 <body>
 
@@ -65,10 +65,13 @@
 <!-- ===== HEADER — se genera igual en TODAS las páginas ===== -->
 <header class="header">
   <a class="header__logo" href="index.html" aria-label="AquaGeo Perforaciones — inicio">
-    <img class="logo logo--color" src="img/logo.webp?v=18" alt="AquaGeo Perforaciones" width="780" height="239">
-    <img class="logo logo--oscuro" src="img/logo-oscuro.webp?v=18" alt="" width="780" height="239" aria-hidden="true">
+    <img class="logo logo--color" src="img/logo.webp?v=20" alt="AquaGeo Perforaciones" width="780" height="239">
+    <img class="logo logo--oscuro" src="img/logo-oscuro.webp?v=20" alt="" width="780" height="239" aria-hidden="true">
   </a>
   <nav class="nav__links" aria-label="Páginas"><a href="index.html">Inicio</a><a href="nosotros.html">Nosotros</a><a href="servicios.html">Servicios</a><a href="trabajos.html" aria-current="page">Trabajos</a><a href="preguntas.html">Preguntas</a><a href="contacto.html">Contacto</a></nav>
+  <!-- WhatsApp en el nav, como el «Reservar» de parkingdespegar. Solo en
+       escritorio: en el celular la acción está en el menú. -->
+  <a class="boton boton--solido nav__wa" href="https://wa.me/59899826502?text=Hola%2C%20quiero%20hacer%20una%20consulta%20sobre%20perforaciones." target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg><span class="nav__wa-txt">Escribinos</span></a>
   <button class="hamburguesa" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
     <svg class="hamburguesa__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path id="hamburguesa-trazo" d="M4 6h16M4 12h16M4 18h16"/>
@@ -108,9 +111,14 @@
     <p class="micro pagina-hero__micro">04 — Trabajos</p>
     <h1 class="pagina-hero__titulo">Trabajos que inspiran</h1>
     <p class="pagina-hero__bajada">Algunas de nuestras perforaciones, en video. Hay más en nuestro canal de YouTube y en Instagram.</p>
+    <!-- FOTO REAL — de la ficha de Aquageo en Google Maps. Solo escritorio:
+         en el celular este hero va sin foto. -->
+    <figure class="pagina-hero__foto pagina-hero__foto--escritorio">
+      <img decoding="async" loading="lazy" src="img/hero-trabajos.jpg?v=20" alt="Trépano de perforación de AquaGeo visto desde abajo, contra el cielo" width="900" height="1200">
+    </figure>
   </section>
 
-  <section class="seccion" data-bg="claro" style="padding-top:0">
+  <section class="seccion seccion--tras-hero" data-bg="claro">
     <div class="contenedor">
       <div class="videos">
         <figure class="video" data-reveal>
@@ -118,7 +126,7 @@
                foto de muestra en alta: reemplazar por un cuadro bueno del
                video. El reproductor se carga recién al tocar. -->
           <div class="video__marco">
-            <img decoding="async" loading="lazy" src="img/video-1.jpg?v=18" alt="Agua saliendo de un caño verde hacia una zanja con pasto" width="720" height="1280">
+            <img decoding="async" loading="lazy" src="img/video-1.jpg?v=20" alt="Agua saliendo de un caño verde hacia una zanja con pasto" width="720" height="1280">
             <a class="video__play" href="https://www.youtube.com/shorts/0nedyKKqjmk" target="_blank" rel="noopener" data-video="0nedyKKqjmk" data-titulo="AquaGeo Perforaciones 01" aria-label="Reproducir el video 01">
               <span><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></span>
             </a>
@@ -130,7 +138,7 @@
                foto de muestra en alta: reemplazar por un cuadro bueno del
                video. El reproductor se carga recién al tocar. -->
           <div class="video__marco">
-            <img decoding="async" loading="lazy" src="img/video-2.jpg?v=18" alt="Operario levantando una barra de perforación junto al mástil de una perforadora" width="720" height="1280">
+            <img decoding="async" loading="lazy" src="img/video-2.jpg?v=20" alt="Operario levantando una barra de perforación junto al mástil de una perforadora" width="720" height="1280">
             <a class="video__play" href="https://www.youtube.com/shorts/ShwXqBjIFm8" target="_blank" rel="noopener" data-video="ShwXqBjIFm8" data-titulo="AquaGeo Perforaciones 02" aria-label="Reproducir el video 02">
               <span><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></span>
             </a>
@@ -138,7 +146,7 @@
           <figcaption class="micro video__pie">Video 02</figcaption>
         </figure>
       </div>
-      <p style="margin-top:var(--sp-4)" data-reveal><a class="link-flecha" href="https://www.youtube.com/@AquageoPerforaciones" target="_blank" rel="noopener">Ver el canal de YouTube
+      <p class="seccion__pie" style="margin-top:var(--sp-4)" data-reveal><a class="link-flecha" href="https://www.youtube.com/@AquageoPerforaciones" target="_blank" rel="noopener">Ver el canal de YouTube
         <svg class="icon" aria-hidden="true"><use href="#i-derecha"/></svg></a></p>
     </div>
   </section>
@@ -150,18 +158,18 @@
         <h2 class="seccion__titulo" data-reveal>Confían en nosotros</h2>
       </div>
       <ul class="clientes">
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-01.webp?v=18" alt="Ministerio de Ganadería, Agricultura y Pesca — Dirección General de Desarrollo Rural" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-02.webp?v=18" alt="ANEP — UTU" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-03.webp?v=18" alt="MEVIR" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-04.webp?v=18" alt="ANEP" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-05.webp?v=18" alt="Intendencia de San José" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-06.webp?v=18" alt="Instituto Nacional de Colonización" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-07.webp?v=18" alt="CND — Corporación Nacional para el Desarrollo" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-08.webp?v=18" alt="Intendencia de Tacuarembó" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-09.webp?v=18" alt="Black River Caviar" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-10.webp?v=18" alt="ALUR" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-11.webp?v=18" alt="Sociedad de Fomento Rural de Rivera" width="360" height="240"></li>
-        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-12.webp?v=18" alt="Sun Valley Minerals" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-01.webp?v=20" alt="Ministerio de Ganadería, Agricultura y Pesca — Dirección General de Desarrollo Rural" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-02.webp?v=20" alt="ANEP — UTU" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-03.webp?v=20" alt="MEVIR" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-04.webp?v=20" alt="ANEP" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-05.webp?v=20" alt="Intendencia de San José" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-06.webp?v=20" alt="Instituto Nacional de Colonización" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-07.webp?v=20" alt="CND — Corporación Nacional para el Desarrollo" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-08.webp?v=20" alt="Intendencia de Tacuarembó" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-09.webp?v=20" alt="Black River Caviar" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-10.webp?v=20" alt="ALUR" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-11.webp?v=20" alt="Sociedad de Fomento Rural de Rivera" width="360" height="240"></li>
+        <li class="cliente" data-reveal><img decoding="async" loading="lazy" src="img/clientes/cliente-12.webp?v=20" alt="Sun Valley Minerals" width="360" height="240"></li>
       </ul>
     </div>
   </section>
@@ -207,7 +215,7 @@
         </a>
       </div>
     </div>
-    <img class="pie__logo" src="img/logo-oscuro.webp?v=18" alt="AquaGeo Perforaciones" width="780" height="239" loading="lazy" decoding="async">
+    <img class="pie__logo" src="img/logo-oscuro.webp?v=20" alt="AquaGeo Perforaciones" width="780" height="239" loading="lazy" decoding="async">
     <div class="pie__redes">
       <div class="redes">
           <a href="https://www.instagram.com/aquageoperforaciones/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ico-marca" aria-hidden="true"><use href="#i-instagram"/></svg></a>
@@ -224,6 +232,6 @@
 </footer>
 <!-- ===== /PIE ===== -->
 
-<script type="module" src="js/hamburguesa.js?v=18"></script>
+<script type="module" src="js/hamburguesa.js?v=20"></script>
 </body>
 </html>

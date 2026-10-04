@@ -1306,3 +1306,9 @@ a.dato__v { display: inline-flex; align-items: center; min-height: 44px; }
   pointer-events: none;      /* el toque abre Google Maps, no arrastra el mapa */
   filter: grayscale(.3);
 }
+
+/* ---------- Ganchos de escritorio que en el celular no se ven ---------- */
+.nav__wa { display: none; }                         /* WhatsApp del nav: solo escritorio */
+.pagina-hero__foto--escritorio { display: none; }   /* foto del hero partido: solo escritorio */
+.seccion--tras-hero { padding-top: 0; }             /* pegada al encabezado de la página */
+.contacto__mapa--inicio { display: none; }   /* en el celular el inicio no lleva mapa */
