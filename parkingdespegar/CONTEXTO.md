@@ -231,5 +231,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=14`, escritorio.css `?v=4`, app.js `?v=15`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=15`, escritorio.css `?v=4`, app.js `?v=16`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

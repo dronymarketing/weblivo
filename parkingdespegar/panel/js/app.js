@@ -166,7 +166,7 @@
       (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Se cobran al entrar: conviene avisarles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
         kpi('car', 'Autos totales en el Parking', dentro.length + '<span class="de-total">/' + d.lugares.length + '</span>',
-          porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo salen') +
+          porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver las salidas') +
         kpi('circle-parking', 'Lugares disponibles', '<span class="kpi__num">' + (libresT + libresA) + '</span><span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(libresT, libresA, capT, capA), 'libre', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Traslados pendientes', trasPend.length,
@@ -235,7 +235,7 @@
   }
 
   /* ---------- RESERVAS ---------- */
-  var FILTROS = [['proximas', 'Próximas'], ['hoy', 'Llegan hoy'], ['predio', 'En el parking'], ['pago', 'Sin pagar'], ['finalizadas', 'Finalizadas'], ['canceladas', 'Canceladas'], ['todas', 'Todas']];
+  var FILTROS = [['proximas', 'Próximas'], ['hoy', 'Entradas hoy'], ['predio', 'En el parking'], ['pago', 'Sin pagar'], ['finalizadas', 'Finalizadas'], ['canceladas', 'Canceladas'], ['todas', 'Todas']];
   V.reservas = function (q) {
     var f = q.f || 'proximas', busca = (q.b || '').toLowerCase(), ahora = Date.now();
     var lista = D().reservas.filter(function (r) {
@@ -628,16 +628,16 @@
       var n = ls.filter(function (l) { return ocup[l.id]; }).length;
       var porLlegar = hoyLlegan.filter(function (r) { return r.lugarTipo === tipo; }).length;
       return '<section class="bloque"><header class="bloque__cabeza"><h2>' + titulo + ' <span class="cuenta">' + (ls.length - n) + ' libres de ' + ls.length + '</span></h2>' +
-        (porLlegar ? '<span class="estado estado--alerta">' + ico('plane-takeoff') + porLlegar + ' llegan hoy</span>' : '') + '</header>' +
+        (porLlegar ? '<span class="tag tag--llega">' + ico('car-front') + porLlegar + (porLlegar === 1 ? ' entrada' : ' entradas') + ' hoy</span>' : '') + '</header>' +
         '<div class="mapa-lugares">' + ls.map(function (l) {
           var r = ocup[l.id];
           if (!r) return '<div class="cajon cajon--libre"><strong>' + l.id + '</strong><small>Libre</small></div>';
           var dias = Math.max(1, Math.ceil((Date.now() - new Date(r.checkin)) / PD.DIA));
           var sale = mismoDia(r.salida, Date.now());
-          return '<button type="button" class="cajon cajon--ocupado' + (sale ? ' cajon--sale' : '') + '" data-abrir-reserva="' + r.id + '"><strong>' + l.id + '</strong><span>' + esc(r.vehiculo.matricula) + '</span><small>' + (sale ? 'Sale hoy ' + hora(r.salida) : dias + (dias === 1 ? ' día' : ' días')) + '</small></button>';
+          return '<button type="button" class="cajon cajon--ocupado' + (sale ? ' cajon--sale' : '') + '" data-abrir-reserva="' + r.id + '"><strong>' + l.id + '</strong><span>' + esc(r.vehiculo.matricula) + '</span><small>' + (sale ? 'Salida ' + hora(r.salida) : dias + (dias === 1 ? ' día' : ' días')) + '</small></button>';
         }).join('') + '</div></section>';
     }
-    return '<div class="leyenda"><span><i class="cajon-mini cajon--libre"></i>Libre</span><span><i class="cajon-mini cajon--ocupado"></i>Ocupado</span><span><i class="cajon-mini cajon--sale"></i>Sale hoy</span></div>' +
+    return '<div class="leyenda"><span><i class="cajon-mini cajon--libre"></i>Libre</span><span><i class="cajon-mini cajon--ocupado"></i>Ocupado</span><span><i class="cajon-mini cajon--sale"></i>Salida hoy</span></div>' +
       zona('techado', 'Zona A · Techado') + zona('aire', 'Zona B · Predio');
   };
 

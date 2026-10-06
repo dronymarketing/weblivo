@@ -515,8 +515,9 @@ li.mini__fila[data-abrir-reserva], li.mini__fila[data-elegir-llegada], li.mini__
 .cajon--libre { border: 1px dashed rgba(5, 63, 92, .3); background: var(--fondo); color: var(--texto-suave); }
 .cajon--ocupado { background: var(--texto); color: #fff; cursor: pointer; }
 .cajon--ocupado small { color: var(--menta); }
-.cajon--sale { background: #fff1e8; color: var(--texto); border-color: var(--acento); }
-.cajon--sale small { color: #9a3a05; }
+/* Salida hoy: el ámbar de Salida */
+.cajon--sale { background: #ffa726; color: var(--texto); border-color: #ffa726; }
+.cajon--sale small { color: var(--texto); font-weight: 500; }
 .cajon-mini.cajon--ocupado { cursor: default; }
 button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
 
@@ -585,6 +586,6 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
   .bloque, .kpi { break-inside: avoid; border: 1px solid #ccd; }
   .kpi--destacado { background: #fff; color: var(--texto); }
 }
-.cajon-mini.cajon--sale { border: 1px solid var(--acento); }
+.cajon-mini.cajon--sale { border: 0; }
 [data-panel-llegada], [data-panel-retiro] { scroll-margin-top: calc(var(--superior) + 12px); }
 .bloque > .vacio--grande + .ventana__acciones { justify-content: center; }
