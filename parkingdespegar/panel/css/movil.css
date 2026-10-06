@@ -29,6 +29,7 @@
 [data-sector="autos"]    { --s: #2a7fb0; --s-fondo: #e2f0f8; --s-texto: #1a5e85; --s-claro: #7cc0e6; }
 [data-sector="reservas"] { --s: #4fa9d2; --s-fondo: #e4f4fb; --s-texto: #1d6a8e; --s-claro: #b3e1f5; }
 [data-sector="plata"]    { --s: #ff6712; --s-fondo: #fff0e6; --s-texto: #b4470a; --s-claro: #ff9a5c; }
+[data-sector="libre"]    { --s: #1f9d63; --s-fondo: #e3f6ee; --s-texto: #17784b; --s-claro: #8fe0b8; }
 [data-sector="ajustes"]  { --s: #ffa726; --s-fondo: #fff5e3; --s-texto: #8a5300; --s-claro: #ffc970; }
 
 /* ---------- Botones ---------- */
@@ -246,6 +247,7 @@
 .por-tipo { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; color: var(--texto); font-variant-numeric: tabular-nums; }
 .por-tipo__ico { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--s-fondo); color: var(--s); }
 .por-tipo__ico .ico { width: 15px; height: 15px; }
+[data-sector="libre"] .kpi__valor { color: var(--s-texto); }
 .kpi__de { font-size: 16px; font-weight: 400; letter-spacing: 0; color: var(--texto-suave); }
 .kpi__ver { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 500; color: var(--s-texto); }
 .kpi__ver .ico { width: 15px; height: 15px; color: var(--s); }

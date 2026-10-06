@@ -165,10 +165,10 @@
       '</div>' +
       (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Conviene escribirles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
-        kpi('car-front', 'Autos totales en el Parking', dentro.length,
+        kpi('car', 'Autos totales en el Parking', dentro.length,
           porTipo(dTech, dentro.length - dTech), 'autos', '#/retiros', 'Ver cuándo se van') +
-        kpi('square-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="kpi__de"> de ' + d.lugares.length + '</span>',
-          porTipo(libresT, libresA), 'autos', '#/lugares', 'Ver el mapa') +
+        kpi('circle-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="kpi__de"> de ' + d.lugares.length + '</span>',
+          porTipo(libresT, libresA), 'libre', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Viajes de la camioneta', trasPend.length,
           trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
             : tras.length ? 'No queda ninguno: se hicieron los ' + tras.length + ' de hoy' : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
@@ -183,8 +183,8 @@
   };
   /* Techado y aire libre: ícono + número (el texto queda para lectores de pantalla y al pasar el mouse) */
   function porTipo(techado, aire) {
-    return '<span class="por-tipo" title="Techado"><span class="por-tipo__ico">' + ico('warehouse') + '</span>' + techado + '<span class="solo-lectores"> techado</span></span>' +
-      '<span class="por-tipo" title="Aire libre"><span class="por-tipo__ico">' + ico('sun') + '</span>' + aire + '<span class="solo-lectores"> al aire libre</span></span>';
+    return '<span class="por-tipo" title="Techado"><span class="por-tipo__ico">' + ico('house') + '</span>' + techado + '<span class="solo-lectores"> techado</span></span>' +
+      '<span class="por-tipo" title="Aire libre"><span class="por-tipo__ico">' + ico('cloud-sun') + '</span>' + aire + '<span class="solo-lectores"> al aire libre</span></span>';
   }
   function atajo(href, sector, i, titulo, sub) {
     var dentro = '<span class="atajo__ico">' + ico(i) + '</span><span class="atajo__texto"><strong>' + titulo + '</strong><small>' + sub + '</small></span>' + ico('chevron-right', 'ico atajo__flecha');
