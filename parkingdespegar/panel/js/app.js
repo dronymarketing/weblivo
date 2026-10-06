@@ -165,10 +165,10 @@
       '</div>' +
       (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Conviene escribirles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
-        kpi('square-parking', 'Autos guardados ahora', dentro.length,
-          dTech + ' bajo techo y ' + (dentro.length - dTech) + ' al aire libre', 'autos', '#/retiros', 'Ver cuándo se van') +
-        kpi('warehouse', 'Lugares disponibles', libresT + libresA,
-          'De ' + d.lugares.length + ' lugares quedan ' + libresT + ' bajo techo y ' + libresA + ' al aire libre', 'autos', '#/lugares', 'Ver el mapa') +
+        kpi('car-front', 'Autos totales en el Parking', dentro.length,
+          porTipo(dTech, dentro.length - dTech), 'autos', '#/retiros', 'Ver cuándo se van') +
+        kpi('square-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="kpi__de"> de ' + d.lugares.length + '</span>',
+          porTipo(libresT, libresA), 'autos', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Viajes de la camioneta', trasPend.length,
           trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
             : tras.length ? 'No queda ninguno: se hicieron los ' + tras.length + ' de hoy' : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
@@ -181,6 +181,11 @@
         bloque('Próximos viajes de la camioneta', trasPend.length, listaTraslados(trasPend.slice(0, 4), true), '#/traslados', 'autos') +
       '</div>';
   };
+  /* Techado y aire libre: ícono + número (el texto queda para lectores de pantalla y al pasar el mouse) */
+  function porTipo(techado, aire) {
+    return '<span class="por-tipo" title="Techado"><span class="por-tipo__ico">' + ico('warehouse') + '</span>' + techado + '<span class="solo-lectores"> techado</span></span>' +
+      '<span class="por-tipo" title="Aire libre"><span class="por-tipo__ico">' + ico('sun') + '</span>' + aire + '<span class="solo-lectores"> al aire libre</span></span>';
+  }
   function atajo(href, sector, i, titulo, sub) {
     var dentro = '<span class="atajo__ico">' + ico(i) + '</span><span class="atajo__texto"><strong>' + titulo + '</strong><small>' + sub + '</small></span>' + ico('chevron-right', 'ico atajo__flecha');
     return href ? '<a class="atajo" data-sector="' + sector + '" href="' + href + '">' + dentro + '</a>'
@@ -204,7 +209,7 @@
   /* opc: true = número principal (fondo navy) · 'autos', 'plata'… = color de ese sector */
   function kpi(i, rotulo, valor, sub, opc, link, linkTxt) {
     var attrs = 'class="kpi' + (opc === true ? ' kpi--destacado' : '') + (link ? ' kpi--link' : '') + '"' + (typeof opc === 'string' ? ' data-sector="' + opc + '"' : '');
-    var dentro = '<span class="kpi__ico">' + ico(i) + '</span><p class="kpi__rotulo">' + rotulo + '</p><p class="kpi__valor">' + valor + '</p><p class="kpi__sub">' + sub + '</p>' +
+    var dentro = '<span class="kpi__ico">' + ico(i) + '</span><p class="kpi__rotulo">' + rotulo + '</p><p class="kpi__valor">' + valor + '</p><div class="kpi__sub">' + sub + '</div>' +
       (link ? '<span class="kpi__ver">' + linkTxt + ico('arrow-right') + '</span>' : '');
     return link ? '<a ' + attrs + ' href="' + link + '">' + dentro + '</a>' : '<div ' + attrs + '>' + dentro + '</div>';
   }
