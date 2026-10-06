@@ -80,6 +80,26 @@ Referencias: `refs/ref-inicio-app.jpg` (Santi eligió la versión nueva, la de l
   Inicio · Comunicadores · Shows · Clips · Contratar, íconos Lucide. En escritorio, los links arriba.
 - Cuerpo en Neue Haas Grotesk Display Pro (reutilizada de fabianamartinez, como Rhodium).
 
+## Movimiento: como la app (Santi, 6/10: «lo más similar, la idea es sentir eso»)
+
+Ningún paquete del catálogo: se imita cómo se mueve la app, con scroll nativo y sin librerías de scroll.
+- **Entrada:** la primera vez de la sesión, pantalla negra con el tigre que se dibuja con brillo
+  naranja, aparece TIGRETIGRE y todo se acerca y se funde (en el espíritu de la intro de la N, sin
+  copiarla). Dura ~1,5 s, se saltea con un toque, no va con movimiento reducido. Sin sonido.
+- **Hero:** rota cada ~7 s. La foto se funde con un acercamiento lento, el texto sale y entra
+  escalonado, el tinte del fondo cambia con el comunicador y la barrita de abajo se llena.
+  Se pasa con el dedo; se pausa fuera de pantalla o con la pestaña oculta.
+- **Barra de arriba:** al bajar se esconde, al subir vuelve, con fondo negro desenfocado una vez que
+  hay contenido debajo. Las cápsulas quedan pegadas.
+- **Pósters:** en el celular, un toque abre la ficha como hoja desde abajo (fondo oscurecido).
+  En escritorio, con el mouse encima ~300 ms, el póster crece y muestra botones, etiquetas y datos.
+- **Filas:** deslizan con el dedo y se acomodan solas (scroll-snap). En escritorio, flechas a los costados
+  e indicador de página arriba a la derecha.
+- **Entre páginas:** fundido con View Transitions (Chrome y Safari nuevos; el resto, navegación normal).
+- **Clips:** al terminar uno, «Siguiente clip en 5» con cuenta regresiva en círculo.
+- **Detalles:** botones que se hunden al tocarlos, ícono lleno en la pestaña activa, rectángulos oscuros
+  mientras cargan las fotos. Sin apariciones al scroll: la app no las tiene.
+
 ## Entrevista
 
 - Tipo: sitio con páginas separadas y adelantos en el inicio (como Rhodium).
