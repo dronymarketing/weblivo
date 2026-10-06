@@ -34,8 +34,19 @@ episodio 12. También hacen un Open Mic los martes en el mismo lugar.
 #291107 11.5% · #D3AC8C 10.4% (T4E12) — #020003 34.5% · #50332F 13.7% · #AC968B 11.2% · #2D0C0C 9.6% (T4E7).
 Vivos (S y V > 0.55): naranja #CB6230 (VIEJA CHELA) · ámbar #E19945 (pastilla de fecha) · rojo #A52823 (Reservá gratis).
 
-Propuesta (pendiente de confirmar): fondo #0D0705 · superficie #1C120D · naranja #E8702F (6,5:1) ·
-ámbar #F0A548 · texto #F3E9E1 · texto suave #B5A194.
+Primera propuesta (fondo #0D0705 · naranja #E8702F · ámbar #F0A548): Santi la descartó, pidió una paleta
+**profesional, que no parezca de plástico ni de IA genérica**. Ahí se sacó el ámbar (dos acentos hacen
+golosina) y se armaron tres en OKLCH: una escala de neutros con el mismo matiz cálido, texto crema (nunca
+blanco puro) y un solo naranja en poca superficie (botón principal, antetítulo, barras de avance).
+Maquetas en `refs/paletas/` (pendiente de elegir):
+
+| | Fondo | Superficie | Sup. 2 | Hondo | Naranja | Suave | Texto |
+|---|---|---|---|---|---|---|---|
+| 1 Brasa | #120D0A | #1E1814 | #2D241F | #77391F | #DC723A (6,0:1) | #B0A198 | #F1E7E1 |
+| 2 Tabaco | #160F0A | #231A12 | #33271E | #693923 | #C87549 (5,5:1) | #B4A093 | #F2E3D8 |
+| 3 Grafito | #0D0C0B | #191715 | #262322 | #843312 | #ED6D2D (6,4:1) | #A4A19E | #F1EEEB |
+
+Texto sobre los botones naranjas: el color de fondo (5,5–6,4:1). El blanco no pasa.
 
 ## Entrevista
 
