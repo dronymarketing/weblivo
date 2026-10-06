@@ -65,6 +65,9 @@ Se revisa **a 375px de ancho**, una por una, antes de decir que está listo.
 
 30. ¿Los links de WhatsApp abren con el mensaje precargado correcto?
 31. ¿El Instagram, la ubicación y el teléfono son los reales?
+32. ¿Cada página tiene las etiquetas `og:` con URL absoluta y existe
+    `img/og-blanco.jpg` (1200×1200, blanco, logo al medio)? Mandá el link
+    por WhatsApp y mirá la tarjeta antes de entregar.
 
 ---
 

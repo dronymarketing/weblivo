@@ -1,0 +1,452 @@
+/* ============================================================
+   AQUAGEO — ESCRITORIO (768px para arriba)
+   Se carga por el atributo media del link: acá adentro no hace falta
+   envolver nada. Solo lo que CAMBIA respecto de móvil.
+   ============================================================ */
+
+/* ---------- Header ----------
+   En escritorio nunca hay hamburguesa (regla Livo 30/9/2026): los links
+   van a la vista en el nav, en una línea. */
+.hamburguesa, .menu { display: none; }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 40px);
+  margin-left: auto;
+}
+.nav__links a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 110;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cat);
+  transition: color var(--dur-seccion) var(--ease-re);
+}
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 10px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease-re);
+}
+.nav__links a:hover::after,
+.nav__links a[aria-current]::after { transform: none; }
+.header.sobre-oscuro .nav__links a { color: #FFFFFF; }
+
+.header__logo .logo { height: 44px; }
+/* Entre 768 y 1023 el logo se achica para que entren los seis links */
+@media (max-width: 1023px) {
+  .header__logo .logo { height: 36px; }
+}
+
+/* ---------- Hero ----------
+   Los tamaños del marquee, la foto y el lead salen de las variables de
+   escala en tokens-proyecto.css, no de acá: no los repitas o dejan de
+   seguir el alto de la ventana. */
+.hero { padding-top: var(--sp-5); }
+
+.hero__cuerpo {
+  gap: var(--sp-3);
+  max-width: calc(var(--desktop-hero-content-max) * var(--layout-size-scale));
+}
+
+.marquee { margin-bottom: var(--sp-4); }
+.marquee__pista { animation-duration: 34s; }
+
+/* Acá sí va a la esquina, anclada al borde de la ventana y no al del
+   contenedor: si no, en pantallas anchas queda flotando a mitad de camino. */
+.hero__firma {
+  position: absolute;
+  left: calc(50% - 50vw + var(--margen-lateral));
+  bottom: 28px;
+  margin-top: 0;
+}
+
+/* La figura que crece toma su tamaño de la variable en movil.css y el
+   resto lo maneja el JS: un max-width acá le impedía llegar a la
+   pantalla completa. */
+
+/* ---------- Secciones ---------- */
+.seccion__encabezado {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.seccion__encabezado--centro { grid-template-columns: 1fr; }
+
+/* ---------- Quiénes somos ---------- */
+.sobre {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.sobre__foto { aspect-ratio: 4 / 5; }
+.cifras { grid-template-columns: repeat(2, 1fr); }
+.cifra__n { font-size: 60px; }
+
+/* ---------- Bloques de dato ----------
+   Grilla de 12 columnas con la foto y el texto en posiciones nombradas y
+   asimétricas, como la de RE: nunca a mitades. */
+.valores { gap: var(--sp-7); }
+
+.valor {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--sp-3);
+  align-items: center;
+}
+.valor__foto   { grid-column: 2 / 6;  width: 100%; }
+.valor__cuerpo { grid-column: 7 / 11; }
+
+.valor--invertido .valor__foto   { grid-column: 8 / 12; }
+.valor--invertido .valor__cuerpo { grid-column: 3 / 7; grid-row: 1; }
+
+/* ---------- Tarjetas de categoría ---------- */
+/* Con más alto, space-between separaba título y bajada media tarjeta.
+   168px mantiene la proporción que tienen en móvil. */
+.tarjeta-cat { min-height: 168px; grid-template-columns: 1fr 42%; }
+.tarjeta-cat__texto { padding: var(--sp-3); }
+.tarjeta-cat__titulo { font-size: 40px; }
+
+/* ---------- Servicios ---------- */
+/* El padding centra el contenido respetando el ancho de contenedor, sin
+   un wrapper extra: el bloque de color sigue yendo a sangre. */
+.servicio--pleno {
+  padding: var(--sp-6) max(var(--margen-lateral), calc((100% - var(--max-contenedor)) / 2));
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-5);
+  align-items: start;
+}
+.servicio__n     { grid-column: 1 / -1; }
+.servicio__foto  { grid-row: 2 / span 4; margin-top: 0; }
+
+/* ---------- Proyectos ---------- */
+.proyectos {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5) var(--sp-3);
+}
+
+/* ---------- Obras ---------- */
+.obras { gap: var(--sp-7); }
+
+.obra {
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-5);
+  align-items: center;
+}
+.obra__foto { width: 100%; }
+/* Las pares invierten el orden: la foto va a la derecha */
+.obra:nth-child(even) .obra__foto { order: 2; }
+
+/* ---------- Contacto ---------- */
+.contacto {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.acciones { grid-auto-flow: column; justify-content: start; }
+.dato__v { font-size: 26px; }
+
+/* ---------- Página interna ---------- */
+.pagina-hero {
+  padding-top: var(--sp-7);
+  padding-bottom: var(--sp-5);
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: var(--sp-5);
+}
+.pagina-hero__micro  { grid-column: 1 / -1; }
+.pagina-hero__bajada { padding-bottom: 6px; }
+.pagina-hero__foto { grid-column: 1 / -1; aspect-ratio: 21 / 9; }
+
+/* ---------- Bloques de Aquageo ---------- */
+.beneficios {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5) var(--sp-4);
+}
+.clientes { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.videos {
+  grid-template-columns: repeat(2, minmax(0, 300px));
+  gap: var(--sp-4);
+}
+.videos--centro { justify-content: center; }
+.preguntas-grilla {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--sp-6);
+  align-items: start;
+}
+.pregunta summary { font-size: 24px; }
+.form__fila { grid-template-columns: 1fr 1fr; }
+.frase { font-size: var(--fs-h1); }
+
+/* ---------- Pie ---------- */
+.pie { padding-top: var(--sp-7); }
+.pie__columnas { grid-template-columns: 1fr 1.4fr; column-gap: var(--sp-7); }
+.pie__contacto {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--sp-5);
+  align-content: start;
+}
+.pie__contacto .pie__titulo { grid-column: 1 / -1; }
+.pie__contacto > :not(.pie__mapa):not(.pie__titulo) { grid-column: 1; }
+.pie__mapa { grid-column: 2; grid-row: 2 / 6; height: auto; min-height: 200px; margin-top: 0; }
+.pie__columnas a, .pie__dato { font-size: var(--fs-body); }
+.pie__logo { width: min(420px, 40vw); margin: var(--sp-7) auto var(--sp-3); }
+
+/* ============================================================
+   REGLAS DE ARMADO DE PARKINGDESPEGAR (Santi, 3/10/2026)
+   Solo la estructura, no el diseño: contenedor hasta 1520px con margen
+   que crece con la ventana, nav con los links y WhatsApp a la vista, y
+   cada sección a pantalla completa (metodología de Rhodium): mide lo
+   que queda de la ventana bajo el nav, con 40px fijos arriba y abajo.
+   Lo que sobra lo absorbe la foto, el video o el mapa; en pantallas
+   bajas se comprime el aire y se esconden bajadas, nunca el margen.
+   ============================================================ */
+:root {
+  --max-contenedor: 1520px;
+  --margen-lateral: clamp(40px, 4.5vw, 88px);
+  --max-lectura: 560px;
+  --alto-boton: 56px;
+  /* Borde del contenido en cualquier ancho: el margen, o lo que deja
+     el contenedor centrado en pantallas muy anchas */
+  --lado: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral)));
+  --pantalla: calc(var(--vh100, 100svh) - var(--nav-alto));
+}
+
+/* ---------- Nav: logo · links · WhatsApp ---------- */
+.header { padding-inline: var(--lado); }
+.nav__links {
+  gap: clamp(18px, 2.6vw, 52px);
+  margin-right: clamp(20px, 2.6vw, 44px);   /* el grupo crece hacia la izquierda */
+}
+.nav__wa {
+  display: inline-flex;
+  min-height: 44px;
+  padding: 0 22px 0 18px;
+  gap: 10px;
+  font-family: var(--font-micro);
+  font-variation-settings: 'wdth' 110;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background var(--dur-seccion) var(--ease-re),
+              color var(--dur-seccion) var(--ease-re),
+              border-color var(--dur-seccion) var(--ease-re);
+}
+.nav__wa .ico-marca { width: 18px; height: 18px; }
+/* Sobre un bloque de color el botón se invierte: blanco con letra del color */
+.header.sobre-oscuro .nav__wa {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: var(--header-fondo, var(--texto));
+}
+/* Hasta 1180px no entran logo, seis links y el botón con texto en una
+   línea: el botón queda solo con el ícono (en parkingdespegar, hasta 959) */
+@media (max-width: 1180px) {
+  .nav__wa { padding: 0; width: 44px; justify-content: center; }
+  .nav__wa-txt { display: none; }
+}
+
+/* ---------- Pantalla completa ---------- */
+.seccion,
+.servicio--pleno {
+  min-height: var(--pantalla);
+  padding-block: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.seccion > .contenedor { width: 100%; }
+.servicio--pleno {
+  display: grid;
+  align-content: center;
+  padding-inline: var(--lado);
+}
+
+/* El botón «Ver…» de cada sección apoya abajo, no flota a media pantalla */
+.seccion__pie { margin-top: var(--sp-4) !important; }
+
+/* ---------- Encabezado de página interna: hero partido ----------
+   Como las internas de parkingdespegar: el texto a la izquierda y una
+   foto real vertical a la derecha, al 44% y a la altura de la ventana. */
+.pagina-hero {
+  max-width: none;
+  margin: 0;
+  padding: var(--nav-alto) 0 0 var(--lado);
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: var(--vh100, 100svh);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44%;
+  grid-template-rows: 1fr auto auto auto 1fr;
+  column-gap: var(--sp-6);
+  row-gap: var(--sp-3);
+  align-items: start;
+}
+.pagina-hero__micro  { grid-column: 1; grid-row: 2; }
+.pagina-hero__titulo { grid-column: 1; grid-row: 3; }
+.pagina-hero__bajada { grid-column: 1; grid-row: 4; padding-bottom: 0; }
+.pagina-hero__foto,
+.pagina-hero__foto--escritorio {
+  display: block;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: stretch;
+  margin: 0;
+  aspect-ratio: auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.pagina-hero__foto picture { display: contents; }
+.pagina-hero__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Inicio y Nosotros: texto a la izquierda, foto a la derecha ---------- */
+#nosotros .contenedor,
+.sobre-pantalla .contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  column-gap: var(--sp-7);
+}
+#nosotros .seccion__encabezado { grid-column: 1; grid-row: 1; grid-template-columns: 1fr; }
+#nosotros .sobre,
+.sobre-pantalla .sobre { display: contents; }
+#nosotros .sobre__texto,
+.sobre-pantalla .sobre__texto { grid-column: 1; grid-row: 2; max-width: 640px; }
+#nosotros .sobre__foto,
+.sobre-pantalla .sobre__foto {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  height: calc(var(--pantalla) - 80px);
+  max-height: 860px;
+  width: auto;
+  aspect-ratio: 4 / 5;
+}
+.sobre-pantalla .sobre__foto { aspect-ratio: 1 / 1; }
+.cifras { gap: var(--sp-2) var(--sp-3); }
+.cifra__n { font-size: clamp(44px, 4vw, 60px); }
+@media (max-height: 860px) {
+  #nosotros .sobre__texto p:nth-of-type(2) { display: none; }
+}
+@media (max-height: 760px) {
+  .cifra__n { font-size: 40px; }
+  .cifra__t { margin-top: 2px; }
+}
+
+/* ---------- Inicio: servicios en dos por dos ---------- */
+.tarjetas-cat { grid-template-columns: 1fr 1fr; gap: 12px; }
+.tarjeta-cat { min-height: clamp(150px, 22vh, 220px); }
+.tarjeta-cat__titulo { font-size: clamp(30px, 2.6vw, 40px); }
+
+/* ---------- Beneficios: tres por dos ---------- */
+.beneficios { gap: var(--sp-4) var(--sp-5); }
+
+/* ---------- Videos: encabezado a la izquierda, los dos cortos a la derecha
+   a la altura de la pantalla (como el video de parkingdespegar) ---------- */
+#trabajos .contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 1fr auto;
+  column-gap: var(--sp-7);
+}
+#trabajos .seccion__encabezado { grid-column: 1; grid-row: 1; grid-template-columns: 1fr; align-self: start; }
+#trabajos .seccion__pie        { grid-column: 1; grid-row: 2; align-self: end; }
+#trabajos .videos              { grid-column: 2; grid-row: 1 / 3; }
+.videos { display: flex; gap: var(--sp-3); }
+.video__marco {
+  height: calc(var(--pantalla) - 80px - 40px);   /* menos el pie de cada video */
+  max-height: 720px;
+  width: auto;
+  aspect-ratio: 9 / 16;
+}
+.seccion--tras-hero .videos { justify-content: flex-start; }
+
+/* ---------- Nosotros: los cuatro datos en columnas, en una pantalla ---------- */
+.valores { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-4); }
+.valor, .valor--invertido { display: flex; flex-direction: column; gap: var(--sp-2); }
+.valor__foto, .valor--invertido .valor__foto { width: 100%; margin: 0; max-height: calc(var(--pantalla) - 360px); }
+.valor__dato { font-size: clamp(22px, 2vw, 30px); }
+.valor__texto { margin-top: 8px; font-size: var(--fs-small); }
+
+/* ---------- Contacto: el mapa absorbe lo que sobra ---------- */
+.contacto__mapa {
+  aspect-ratio: auto;
+  height: clamp(160px, calc(var(--pantalla) - 80px - 470px), 380px);
+}
+
+/* ---------- Ajustes para que cada pantalla entre exacta ---------- */
+/* Contacto: la columna de datos es la alta; los datos se compactan y el
+   mapa toma lo que queda */
+.seccion--tras-hero .datos { gap: var(--sp-2); }
+.seccion--tras-hero .dato { padding-top: 12px; }
+.seccion--tras-hero .dato__v { font-size: clamp(20px, 1.6vw, 24px); }
+a.dato__v { min-height: 40px; }
+.contacto__mapa { height: clamp(140px, calc(var(--pantalla) - 80px - 520px), 360px); }
+
+/* Trabajos (página): debajo de los videos va el link, se le descuenta */
+.seccion--tras-hero .video__marco { height: calc(var(--pantalla) - 80px - 40px - 80px); }
+
+@media (max-height: 820px) {
+  .tarjeta-cat { min-height: 128px; }
+  .tarjeta-cat__texto { padding: var(--sp-2); }
+  #servicios .seccion__encabezado { margin-bottom: var(--sp-3); }
+  .seccion__encabezado--centro::before { height: 28px; }
+  .pregunta summary { padding-block: 12px; }
+  .seccion__pie { margin-top: var(--sp-3) !important; }
+}
+
+/* Nosotros (página): sin encabezado, el texto se centra a la altura de la foto */
+.sobre-pantalla .sobre__texto { grid-row: 1 / 3; align-self: center; align-content: center; }
+
+/* Cierres «Hablemos de tu pozo»: título y botones juntos, uno debajo del
+   otro. Partidos en dos columnas quedaban en las puntas de la pantalla. */
+.seccion:has(> .contenedor > .acciones:last-child) .seccion__encabezado {
+  grid-template-columns: 1fr;
+  margin-bottom: var(--sp-4);
+}
+.seccion:has(> .contenedor > .acciones:last-child) .seccion__titulo { font-size: var(--fs-h1); }
+
+/* Trabajos (página): los dos videos centrados en la pantalla */
+.seccion--tras-hero .videos { justify-content: center; }
+.seccion--tras-hero .seccion__pie { text-align: center; }
+
+/* Inicio · contacto: encabezado, datos y botones a la izquierda; el mapa
+   grande a la derecha absorbe la pantalla (como parkingdespegar) */
+#contacto .contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  grid-template-rows: auto 1fr;
+  column-gap: var(--sp-7);
+  align-self: stretch;
+  flex: 1;
+}
+#contacto .seccion__encabezado { grid-column: 1; grid-row: 1; grid-template-columns: 1fr; margin-bottom: var(--sp-3); }
+#contacto .contacto { grid-column: 1; grid-row: 2; grid-template-columns: 1fr; align-content: center; }
+.contacto__mapa--inicio {
+  display: block;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  margin: 0;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+/* Encabezado con bajada: el micro arriba, el título a la izquierda y la
+   bajada a la derecha, apoyada en la base del título */
+.seccion__encabezado:has(.seccion__bajada) .seccion__micro { grid-column: 1 / -1; }
+.seccion__encabezado:has(.seccion__bajada) .seccion__bajada { padding-bottom: 6px; }

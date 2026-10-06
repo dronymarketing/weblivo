@@ -284,6 +284,14 @@ Ver `ajustarSpecsDestacadas` en `sures/js/main.js`.
 **Hero a pantalla completa con scroll cue** en todas las webs.
 `min-height` con `svh`, nunca `height`, nunca `dvh`.
 
+**Vista previa al compartir (tarjeta de WhatsApp) en TODAS las páginas**
+(regla, Santi 3/10/2026). Cada web nueva sale con su tarjeta desde el
+primer borrador, sin que haya que pedirla: imagen 1:1 de 1200×1200, fondo
+blanco y el logo de la marca al medio (como `parkingdespegar/img/og-blanco.jpg`),
+y las etiquetas `og:` en el `<head>` de cada archivo HTML, con URL absoluta
+a livo.com.uy. Receta en `references/construccion.md` → «Vista previa al
+compartir».
+
 **Textos de borrador con límites duros.** Ver `contenido.md`.
 El borrador es para que la clienta VEA, no para que lea.
 

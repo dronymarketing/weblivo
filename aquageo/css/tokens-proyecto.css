@@ -1,0 +1,191 @@
+/* ============================================================
+   AQUAGEO PERFORACIONES — tokens del proyecto
+   Clonado de patronux (estética RE: editorial, tipográfica, casi sin
+   color) y repintado con los colores del logo de Aquageo: el azul de la
+   gota manda y el verde de «GEO» queda de acento.
+   Pisa a tokens.css.
+
+   Las tipografías de RE son comerciales. Acá van los reemplazos libres:
+   Roslindale Display -> Playfair Display
+   Google Sans        -> Inter
+   Monument Extended  -> Archivo (eje wdth expandido)
+   ============================================================ */
+
+/* Registradas como color para que el cambio de categoría se interpole
+   en vez de saltar. Si el navegador no soporta @property, cambia de golpe. */
+@property --cat {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0D3B6E;
+}
+@property --cat-suave {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #4B6A8C;
+}
+
+:root {
+  transition: --cat 600ms var(--ease-re), --cat-suave 600ms var(--ease-re);
+
+  /* ---------- Paleta ----------
+     Azul profundo sacado del azul de la gota del logo, oscurecido hasta
+     que el texto lea cómodo. El verde es el de «GEO». */
+  --fondo:       #FFFFFF;
+  --fondo-alt:   #F1F5F9;   /* franja neutra, apenas fría */
+  --texto:       #0D3B6E;   /* azul: dominante y texto. 11.24:1 sobre blanco */
+  --texto-suave: #4B6A8C;   /* secundario. 5.62:1 sobre blanco */
+  --acento:      #0D3B6E;
+  --verde:       #23744A;   /* el verde del logo, oscurecido. 5.72:1 */
+  --neutro:      #4B6A8C;
+  --velo:        rgba(13, 59, 110, .06);
+
+  /* Color de la categoría activa. El JS lo pisa por sección (efecto J). */
+  --cat:       var(--texto);
+  --cat-suave: var(--texto-suave);
+
+  /* ---------- Color por área de servicio — efecto J ----------
+     Cada área tiñe BLOQUES ENTEROS: la tarjeta es un rectángulo de color
+     sólido con la foto al costado. Cada una necesita su par: el relleno y
+     el tono apagado para el texto secundario sobre blanco.
+     Verificados: el color pasa de 8:1 con blanco encima y el suave pasa
+     4.5:1 sobre blanco y sobre la franja. */
+  --cat-hidrogeologia:         #0F4C8A;   /*  8.67:1 — azul agua */
+  --cat-hidrogeologia-suave:   #46709E;   /*  5.16:1 */
+  --cat-geofisica:             #0B5560;   /*  8.46:1 — petróleo */
+  --cat-geofisica-suave:       #44767D;   /*  5.08:1 */
+  --cat-perforacion:           #1C5A38;   /*  8.17:1 — verde GEO */
+  --cat-perforacion-suave:     #48775A;   /*  5.17:1 */
+  --cat-documentacion:         #26384B;   /* 12.00:1 — pizarra */
+  --cat-documentacion-suave:   #5D6E80;   /*  5.24:1 */
+
+  /* ---------- Tipografía ---------- */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-cuerpo:  'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-micro:   'Archivo', var(--font-cuerpo);
+
+  /* ---------- Sistema de escala de RE, con sus valores medidos ----------
+     Todo en vw con un multiplicador por dispositivo. La escala además se
+     reduce cuando la ventana es más baja que la línea de base, que es lo
+     que hace que su hero entre siempre en una pantalla.
+     Los tamaños de texto llevan piso de 16px: el 1.2vw de RE, con el
+     multiplicador móvil, daría ~10px a 375px de ancho. */
+  --desktop-size-scale: 1;
+  --tablet-size-scale:  1.54;
+  --mobile-size-scale:  2.25;
+  --responsive-size-scale: var(--mobile-size-scale);   /* móvil primero */
+  --layout-size-scale: var(--responsive-size-scale);
+  --compact-height-baseline: 950px;
+
+  --desktop-h1-size:   16vw;
+  --desktop-h2-size:   5.2vw;
+  --desktop-h3-size:   3.646vw;
+  --desktop-h5-size:   1.736vw;
+  --desktop-text-size: 1.2vw;
+  --desktop-grid-gap:  2.601vw;
+  --desktop-hero-visual-size:   20vw;   /* la foto del marquee es cuadrada */
+  --desktop-hero-content-width: 42vw;
+  --desktop-hero-content-max:   35vw;
+
+  /* El 16vw es SOLO del marquee. Los títulos de página bajan un escalón
+     en la jerarquía de RE (su h2) y los de sección otro más (su h3). */
+  --fs-marquee: calc(var(--desktop-h1-size) * var(--layout-size-scale));
+  --fs-h1:      clamp(34px, calc(var(--desktop-h2-size) * var(--layout-size-scale)), 88px);
+  --fs-h2:      clamp(28px, calc(var(--desktop-h3-size) * var(--layout-size-scale)), 60px);
+  --fs-h3:      clamp(22px, calc(2.4vw * var(--layout-size-scale)), 32px);
+  --fs-lead:    max(17px, calc(var(--desktop-h5-size) * var(--layout-size-scale)));
+  --fs-body:    max(16px, calc(var(--desktop-text-size) * var(--layout-size-scale)));
+  --fs-small:   14px;
+  --fs-micro:   11px;
+
+  --marquee-gap:       calc(var(--desktop-grid-gap) * var(--layout-size-scale));
+  --hero-visual-size:  calc(var(--desktop-hero-visual-size) * var(--layout-size-scale));
+  --hero-content-width: min(
+      calc(var(--desktop-hero-content-width) * var(--layout-size-scale)),
+      calc(100% - var(--margen-lateral) * 2));
+
+  /* Interlineados por debajo de 1 en los títulos: la firma editorial de RE */
+  --lh-h1: 1;
+  --lh-h2: .94;
+  --lh-h3: 1.05;
+
+  /* El tracking se cierra a medida que el texto crece */
+  --ls-h1:    -.03em;
+  --ls-h2:    -.03em;
+  --ls-h3:    -.02em;
+  --ls-body:  -.01em;
+  --ls-micro:  .18em;
+
+  /* ---------- Medidas ----------
+     RE no declara ancho de contenedor, de lectura ni padding de sección:
+     todo escala con la ventana y en monitor ancho las líneas no tienen tope.
+     Se completa con el estándar. */
+  --max-contenedor: 1200px;
+  --max-lectura:     460px;
+  --margen-lateral:   24px;   /* el 4.5vw de RE da 17px a 375px: muy poco */
+
+  --radio-recto: 0;           /* RE usa botones rectos. Rubro perforación: recto */
+  --alto-boton:  52px;        /* RE usa 41px, por debajo del piso táctil de 44 */
+
+  /* ---------- Movimiento — paquete «Realevate» ----------
+     Curva propia: arranca más rápido y frena más seco que la nuestra.
+     Se siente decidido, no suave. */
+  --ease-re:   cubic-bezier(.7, .6, 0, 1);
+  --dur-re:    800ms;
+  --dur-micro: 300ms;
+  --dur-menu:  550ms;
+  --dur-cierre: 350ms;
+  /* El nav cambia de color al mismo ritmo que la sección que tiñe la
+     página: los 600ms del transition de --cat, más arriba. */
+  --dur-seccion: 600ms;
+  --stagger:   90ms;
+
+  /* Hero que crece — efecto K, parámetros medidos en RE.
+     RE recorre 110svh. En móvil se baja a 70: el recorrido se paga con
+     pulgar, y el efecto se lee igual. */
+  --hero-crece-recorrido:  70svh;
+  --hero-crece-pausa:       5svh;
+  --hero-crece-escala:         2;
+
+  /* ---------- Rebordes — firma Livo ----------
+     currentColor a 15%, no un gris fijo: se adapta al fondo de cada sección.
+     El reborde reemplaza a la sombra. */
+  --borde: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+
+  /* ---------- Barras del sistema ---------- */
+  --barra-inferior: var(--fondo);
+}
+
+/* Tablet y escritorio. El bloque vive acá y no en escritorio.css porque
+   son variables, no diseño: escritorio.css sigue guardando solo lo que
+   cambia de layout. */
+@media (min-width: 768px) {
+  :root {
+    --responsive-size-scale: var(--tablet-size-scale);
+    --margen-lateral: 40px;
+    --hero-crece-recorrido: 110svh;   /* el valor de RE: con mouse no cuesta */
+  }
+}
+
+@media (min-width: 1025px) {
+  :root { --responsive-size-scale: var(--desktop-size-scale); }
+}
+
+/* De tablet para arriba la escala se achica con la ventana baja. Es lo
+   que mantiene el hero de RE dentro de una pantalla en portátiles. */
+@media (min-width: 768px) {
+  :root {
+    --compact-vw-as-svh: min(1, calc(100svh / var(--compact-height-baseline)));
+    --layout-size-scale: calc(var(--responsive-size-scale) * var(--compact-vw-as-svh));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-re:     1ms;
+    --dur-menu:   1ms;
+    --dur-cierre: 1ms;
+    --dur-micro:  1ms;
+    --dur-seccion: 1ms;
+    --stagger:    0ms;
+  }
+}
