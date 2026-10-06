@@ -14,7 +14,7 @@
   background: linear-gradient(rgba(0, 0, 0, .75), rgba(0, 0, 0, .35) 55%, transparent);
   transition: opacity .3s ease;
 }
-.nav--solido { background: #000; }
+.nav--solido { background: rgba(8, 8, 8, .62); }
 .nav--solido::before { opacity: 0; }
 .nav__marca { margin-right: 0; }
 .nav__tigre { width: 38px; height: 34px; }
@@ -47,19 +47,19 @@
 /* ============================================================
    Hero: a todo lo ancho, como el inicio de la app en la tele
    ============================================================ */
-.hero { min-height: 100vh; min-height: 100svh; padding: 0; display: block; }
+.hero, .hero--inicio { min-height: 100vh; min-height: 100svh; padding: 0; display: block; }
 .hero > .capsulas { display: none; }
 .hero__tinte {
   -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, .6) 50%, transparent 100%);
           mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, .6) 50%, transparent 100%);
 }
-.hero__tarjeta {
-  position: absolute; inset: 0; min-height: 0;
+.hero__tarjeta, .hero--inicio .hero__tarjeta {
+  position: absolute; inset: 0; min-height: 0; aspect-ratio: auto; max-height: none;
   margin: 0; border: 0; border-radius: 0; background: transparent;
   container-type: normal;
 }
-.slide__foto {
-  left: auto; right: clamp(0px, 6vw, 120px);
+.slide__foto, .hero--inicio .slide__foto {
+  left: auto; right: clamp(0px, 6vw, 120px); transform-origin: 50% 15%;
   width: min(58vw, 980px);
   object-position: 50% 12%;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%), linear-gradient(0deg, transparent 0%, #000 30%);
@@ -77,7 +77,7 @@
   width: min(560px, 44vw); padding: 0; text-align: left;
 }
 .slide__nombre { font-size: clamp(96px, 10vw, 168px); margin: 10px 0 14px; }
-.slide__desc { font-size: 19px; max-width: 40ch; margin: 0 0 14px; }
+.slide__desc, .hero--inicio .slide__desc { display: block; font-size: 19px; max-width: 40ch; margin: 0 0 14px; }
 .hero .etiquetas { justify-content: flex-start; font-size: 16px; }
 .slide__botones { display: flex; gap: 12px; margin-top: 22px; }
 
@@ -85,7 +85,7 @@
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
   display: block; height: 0;
 }
-.hero__puntos { position: absolute; right: var(--margen-lateral); bottom: 21vh; padding: 0; }
+.hero__puntos, .hero--inicio .hero__puntos { position: absolute; right: var(--margen-lateral); bottom: 21vh; padding: 0; }
 .punto { width: 30px; }
 .punto.is-activa { width: 54px; }
 .cue { position: absolute; left: 50%; bottom: 22px; translate: -50% 0; }
@@ -94,6 +94,9 @@
    Filas: pósters más grandes, flechas y póster que crece
    ============================================================ */
 .filas { position: relative; z-index: 4; padding-top: 4px; }
+/* En el inicio (sin flecha de bajar) la primera fila se monta sobre el hero, como la app en la tele */
+.hero--inicio + .filas { margin-top: -13vh; }
+.elenco { padding-top: 36px; }
 .fila { padding-top: 34px; }
 .fila__cabeza { margin-bottom: 0; }
 .fila__ver:hover { color: #fff; }
@@ -230,6 +233,7 @@
   padding: 48px var(--margen-lateral) 40px;
 }
 .pie__marca { grid-area: marca; justify-self: start; }
+.pie__marca img { width: 170px; }
 .pie__bio { grid-area: bio; max-width: 42ch; }
 .pie__columnas { grid-area: columnas; grid-template-columns: repeat(2, 200px); margin-top: 0; }
 .pie__legal { grid-area: legal; }
@@ -277,5 +281,5 @@
 .siguiente { left: auto; width: 440px; right: var(--margen-lateral); bottom: 56px; }
 
 /* Entrada un poco más grande */
-.intro__tigre { width: 150px; height: 134px; }
-.intro__wordmark { font-size: 64px; }
+.intro__tigre { width: 170px; }
+.intro__palabra { width: 300px; }

@@ -78,9 +78,9 @@
     });
   }
 
-  function posterHTML(c) {
+  function posterHTML(c, insignia) {
     return '<li><button class="poster" type="button" data-ficha="' + c.id + '" aria-label="' + esc(c.nombre) + ': ver ficha">' +
-      foto(c.foto, '') + tigre('poster__tigre') +
+      foto(c.foto, '') + tigre('poster__tigre') + (insignia ? '<span class="insignia">' + insignia + '</span>' : '') +
       '<span class="poster__nombre">' + esc(c.nombre) + '</span>' +
       '<span class="poster__extra"><span class="poster__iconos">' + ico('play', 'ico ico--lleno') + ico('plus') + '</span>' +
       '<span class="etiquetas">' + spans(c.etiquetas.slice(0, 3)) + '</span></span>' +
@@ -121,7 +121,7 @@
      ============================================================ */
   var render = {
     comunicadores: function (el) {
-      el.innerHTML = TT.comunicadores.map(posterHTML).join('');
+      el.innerHTML = TT.comunicadores.map(function (c) { return posterHTML(c); }).join('');
     },
     shows: function (el) {
       el.innerHTML = TT.shows.map(tarjetaShowHTML).join('');
@@ -161,8 +161,16 @@
           '<a class="boton boton--gris boton--chico" href="shows.html#' + s.id + '">Ver show</a></div></div></article>';
       }).join('');
     },
+    elenco: function (el) {
+      var s = showPorId[el.getAttribute('data-show')];
+      el.innerHTML = s.elenco.map(function (e) {
+        var c = porId[e.id];
+        var nuevo = TT.clips.some(function (cl) { return cl.de === c.id && cl.nuevo; });
+        return posterHTML(c, nuevo ? 'Nuevo<br>clip' : '');
+      }).join('');
+    },
     grilla: function (el) {
-      el.innerHTML = TT.comunicadores.map(posterHTML).join('');
+      el.innerHTML = TT.comunicadores.map(function (c) { return posterHTML(c); }).join('');
     },
     filtro: function (el) {
       el.innerHTML = '<button class="capsula" type="button" data-filtrar="" aria-pressed="true">Todos</button>' +
@@ -279,13 +287,14 @@
     if (!cont) return null;
     var seccion = cont.closest('.hero');
     var puntos = $('[data-hero-puntos]');
-    var gente = TT.hero.map(function (id) { return porId[id]; });
+    var inicio = cont.getAttribute('data-hero') === 'inicio';
+    var gente = (inicio ? TT.heroInicio : TT.heroComunicadores).map(function (id) { return porId[id]; });
     var DUR = 7000;
 
     cont.innerHTML = gente.map(function (c, i) {
       var tieneClips = clipsDe(c.id).length > 0;
       return '<article class="slide' + (i === 0 ? ' is-activa' : '') + '" aria-roledescription="diapositiva" aria-label="' + (i + 1) + ' de ' + gente.length + ': ' + esc(c.nombre) + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
-        '<img class="slide__foto" src="' + c.foto + '" alt="' + esc(c.nombre) + '" decoding="async"' + (i ? '' : ' fetchpriority="high"') + '>' +
+        '<img class="slide__foto" src="' + ((inicio && c.fotoMural) || c.foto) + '" alt="' + esc(c.nombre) + '" decoding="async"' + (i ? '' : ' fetchpriority="high"') + '>' +
         '<div class="slide__texto"><p class="slide__tipo">' + tigre() + 'Comunicador</p>' +
         '<h2 class="slide__nombre">' + esc(c.nombre) + '</h2>' +
         '<p class="slide__desc">' + esc(c.descripcion) + '</p>' +
@@ -686,6 +695,8 @@
     var et = params.get('etiqueta');
     if (et && TT.etiquetas.indexOf(et) > -1) {
       filtrar(et);
+      var elenco = doc.getElementById('elenco');
+      if (elenco) elenco.scrollIntoView();
       var activa = $('[data-filtrar="' + et + '"]', filtro);
       if (activa) activa.scrollIntoView({ inline: 'center', block: 'nearest' });
     }

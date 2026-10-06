@@ -21,10 +21,10 @@ window.TT = {
      «descripcion»: hechos de los flyers. «etiquetas»: «Stand up» y «Conducción» son reales;
      el resto es MUESTRA. «tinte»: el color de la foto, para el fondo del hero. */
   comunicadores: [
-    { id: 'gabo9d', nombre: 'Gabo9d', foto: 'img/comunicadores/gabo9d.jpg', tinte: '#3a2418',
+    { id: 'gabo9d', nombre: 'Gabo9d', foto: 'img/comunicadores/gabo9d.jpg', fotoMural: 'img/comunicadores/gabo9d-mural.jpg', tinte: '#3a2418',
       etiquetas: ['Stand up', 'Conducción', 'Cumpleaños', 'Eventos privados'],
       descripcion: 'Presenta Stand Up Vieja Chela los miércoles y el Open Mic de los martes.' },
-    { id: 'lucho-diaz', nombre: 'Lucho Díaz', foto: 'img/comunicadores/lucho-diaz.jpg', tinte: '#2f2220',
+    { id: 'lucho-diaz', nombre: 'Lucho Díaz', foto: 'img/comunicadores/lucho-diaz.jpg', fotoMural: 'img/comunicadores/lucho-diaz-mural.jpg', tinte: '#2f2220',
       etiquetas: ['Stand up', 'Humor negro', 'Despedidas'],
       descripcion: 'Abrió el episodio 6 y vuelve el miércoles 7/10 en el episodio 12.' },
     { id: 'augusto-dangelo', nombre: 'Augusto D’Angelo', foto: 'img/comunicadores/augusto-dangelo.jpg', tinte: '#3b2414',
@@ -53,8 +53,11 @@ window.TT = {
       descripcion: 'Estuvo en el episodio 11 de Stand Up Vieja Chela, el 30 de septiembre.' }
   ],
 
-  /* Los que rotan en el hero del inicio, en este orden */
-  hero: ['gabo9d', 'lucho-diaz', 'augusto-dangelo', 'willy', 'mati-morales', 'andres-bazzano'],
+  /* Los que rotan en cada hero, en este orden.
+     Inicio: las fotos con el mural de Vieja Chela de fondo (fotoMural si hay), como la maqueta que eligió Santi.
+     Comunicadores: las de estudio, con fondo negro. */
+  heroInicio: ['gabo9d', 'maxi-montanari', 'lucho-diaz', 'augusto-dangelo', 'andres-bazzano'],
+  heroComunicadores: ['gabo9d', 'lucho-diaz', 'willy', 'mati-morales', 'pablo-oyhenart', 'ponetepillo'],
 
   /* Shows: cada uno es como una serie. «funciones» son los episodios. */
   shows: [

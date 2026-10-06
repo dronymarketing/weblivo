@@ -28,23 +28,38 @@ Web: https://livo.com.uy/tigretigre/
   la paleta no llega a 4,5:1, así que los botones llevan **#D63E04** (4,6:1). Los naranjas vivos van en
   el tigre, la marca, los puntos de las etiquetas, las barritas y las insignias «Nuevo» / «Hoy».
   Botón claro («Ver clips») en crema #F2F0E4 con texto negro.
-- **Marca:** el tigre del logo del cliente, vectorizado de su foto de perfil (`img/tigre.svg`, potrace),
-  con degradé #F28705 → #F25C05 → #F24405, y **TIGRETIGRE** en **Bebas Neue** (Google Fonts, OFL, en
-  `fonts/`): condensada como la de Netflix, sin la curva de su logo. Cuerpo en Neue Haas Grotesk
+- **Logo del cliente** (lo pasó Santi el 6/10, `refs/logo-cliente.jpg`): vectorizado con potrace, fiel al
+  original (contorno), en el degradé #F28705 → #F25C05 → #F24405. Archivos: `img/logo.svg` (completo:
+  tigre + TigreTigre + PRODUCCIONES), `img/tigre.svg` (cabeza; también en el sprite como `#tigre`),
+  `img/logo-texto.svg` (palabra + lema, para la entrada) y `img/logo-palabra.svg` (solo la palabra).
+  Va en la entrada, el pie, la tarjeta de WhatsApp (`og-blanco.jpg?v=2`), el favicon y el ícono.
+- **Barra de arriba:** tigre + **TIGRETIGRE** en **Bebas Neue** (Google Fonts, OFL, en `fonts/`),
+  condensada como la de Netflix (pedido de Santi), sin la curva de su logo. PENDIENTE: Santi elige si
+  queda así o con la letra de su logo (`refs/maquetas/nav-opciones.png`). Cuerpo en Neue Haas Grotesk
   Display Pro (de fabianamartinez, como Rhodium).
 - **Navegación:** en el celular, **barra de pestañas abajo** como la app (pedido de Santi, en lugar de
   la hamburguesa): Inicio · Comunicadores · Shows · Clips · Contratar. En escritorio, los links arriba
   (regla de Livo). La barra de arriba **nunca se esconde** (regla de Livo): toma fondo negro al bajar.
-- **Sin vidrio (glass):** barras negras sólidas. El registro es «Otro» y no se preguntó todavía.
+- **Vidrio en las barras** (Santi eligió la opción 1): la de arriba al bajar y la de abajo siempre.
+  `rgba(8, 8, 8, .62–.66)` + `blur(20px) saturate(160%)` y filete de 1px blanco al 14 %. Más opaco que el
+  8–14 % del estándar porque son barras de navegación sobre contenido que se mueve: los textos tienen que
+  leerse. Sin `backdrop-filter`, negras sólidas (`@supports`).
 - **Acción principal:** «Contratar» = formulario corto que termina en WhatsApp (Santi eligió la opción 2).
 
 ## Páginas
 
-- `index.html` — hero que rota (6 comunicadores: `TT.hero`), filas de **Comunicadores** y **Clips
-  nuevos**, **Próximas funciones** (como «Próximamente» de la app: fecha grande, foto, «Hoy» / «Mañana»
+- `index.html` — **como la maqueta que eligió Santi** (`refs/ref-inicio-v2.jpg`): tarjeta corta (3:3,95)
+  que rota con las fotos del mural de Vieja Chela (`TT.heroInicio`, `fotoMural`), sin descripción, solo
+  etiquetas; debajo asoma la fila **Stand Up Vieja Chela** (el elenco, con «Nuevo clip» en los que tienen
+  un clip nuevo). **Excepción pedida por Santi** a «hero a pantalla completa con flecha»: en el celular la
+  primera fila asoma en lugar de la flecha. En escritorio el hero sí ocupa toda la pantalla y la fila se
+  monta encima (como la app en la tele). Después: **Clips nuevos**, **Próximas funciones** (como «Próximamente» de la app: fecha grande, foto, «Hoy» / «Mañana»
   calculado con la fecha real, elenco y botones) y **¿Qué estás buscando?** (mosaicos de color por
   etiqueta que llevan a comunicadores filtrados). Cada fila tiene su «Ver todos».
-- `comunicadores.html` — grilla de pósters con filtro por etiqueta (`?etiqueta=…`); `?c=id` abre la ficha.
+- `comunicadores.html` — **abre con el hero a pantalla completa que rota** (`refs/ref-comunicadores.jpg`:
+  el que antes estaba en el inicio), con descripción y fotos de estudio (`TT.heroComunicadores`). La cápsula
+  «Comunicadores» va marcada y baja a `#elenco`. Debajo, **Todos los comunicadores**: grilla con filtro por
+  etiqueta (`?etiqueta=…` filtra y baja a la grilla); `?c=id` abre la ficha.
 - `shows.html` — cada show como la ficha de una serie: portada, tipo «Show en Vieja Chela», título,
   «Entrada gratis · 2026 · Temporada 4 · Miércoles 22 h», «Reservá gratis» / «Anotate» (WhatsApp),
   «Ver clips», descripción, lugar con «Cómo llegar», **Personajes** (fotos redondas que abren la ficha) y
@@ -77,7 +92,7 @@ Web: https://livo.com.uy/tigretigre/
 ## Datos (`js/datos.js` → `window.TT`)
 
 Todo se arma desde ahí: para sumar un comunicador, un show, una función o un clip se agrega una entrada.
-- **Comunicadores (10)** con foto de los flyers: Gabo9d, Lucho Díaz, Augusto D’Angelo, Willy, Mati Morales,
+- **Comunicadores (10)** con foto de los flyers (Gabo9d y Lucho Díaz tienen además `fotoMural`, del flyer del E12): Gabo9d, Lucho Díaz, Augusto D’Angelo, Willy, Mati Morales,
   Andrés Bazzano, Maxi Montanari, Pablo Oyhenart, Ponetepillo y Chivi. Descripciones = hechos de los
   flyers (quién abrió o cerró qué episodio). **Etiquetas:** «Stand up» y «Conducción» son reales; el resto
   (humor negro, adultos mayores, cumpleaños, despedidas, eventos privados) es **MUESTRA**.
@@ -117,13 +132,14 @@ regresiva (pasa solo al siguiente), rotación del hero y la entrada (solo la pri
 - **Especialidades reales** de cada comunicador y una línea de descripción de cada uno.
 - **Fotos de cada comunicador** en buena resolución (vertical, fondo oscuro, parecidas entre sí).
 - **Los clips reales** (videos verticales de 1–2 min): dónde están (Reels, archivos) y quién los sube.
-- **Logo en vector** (el tigre se vectorizó de la foto de perfil). Hay otro tigre en el pie de los flyers.
+- **Archivo original del logo** (si lo tienen): el vector salió de una captura de 940px.
+- **Barra de arriba:** ¿letra tipo Netflix (como está) o la de su logo? (`refs/maquetas/nav-opciones.png`).
 - Funciones que faltan (E2, E3, E4, E8, E9, E10) y el tercero del E11 («Diego Ma…», cortado en la captura).
-- ¿Vidrio en las barras (como la app) o se quedan sólidas?
 
 ## Cómo se generó
 
 Los cinco HTML repiten sprite, entrada, header, pie, barra de abajo y capas idénticos (el ítem de la
 página actual lleva `aria-current="page"`). Si cambia alguno, cambiarlo en los cinco. Íconos: Lucide
 (interfaz) y Simple Icons (Instagram y WhatsApp), en sprite inline.
-Caché: todos los CSS y JS en `?v=1`; subirlo en los cinco HTML cada vez que se tocan.
+Caché: `movil.css`, `escritorio.css`, `datos.js` y `main.js` en `?v=2`; el resto en `?v=1`. Subirlo en los
+cinco HTML cada vez que se tocan.
