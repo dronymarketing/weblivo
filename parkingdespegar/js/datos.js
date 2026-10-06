@@ -11,7 +11,7 @@
 (function () {
   'use strict';
 
-  var CLAVE = 'pd-datos-v3';
+  var CLAVE = 'pd-datos-v4';
   var DIA = 86400000;
 
   /* ---------- Lugares del predio (muestra: confirmar cantidades con la clienta) ---------- */
@@ -115,6 +115,29 @@
       }
       reservas.push(res);
     }
+    // Traslados de las próximas horas, para que la pantalla de Traslados tenga qué mostrar
+    var hora0 = Math.ceil(ahora / 900000) * 900000;
+    [[1, 'confirmada'], [2.5, 'confirmada'], [4, 'confirmada'], [0.75, 'en_predio'], [2, 'en_predio'], [5, 'en_predio']].forEach(function (x, i) {
+      var llega = x[1] === 'confirmada';
+      var ent = llega ? hora0 + x[0] * 3600000 : hora0 - (3 + i) * DIA;
+      var sal = llega ? ent + (4 + i) * DIA : hora0 + x[0] * 3600000 - 25 * 60000;
+      var tipoX = i % 2 ? 'aire' : 'techado';
+      var rx = {
+        id: uid(), codigo: 'PD-' + (2100 + (++n)), creada: iso(ent - 5 * DIA), origen: i % 3 ? 'web' : 'whatsapp',
+        cliente: { nombre: NOMBRES[(i * 7) % NOMBRES.length], telefono: '09' + (i + 1) + ' ' + (300 + i * 37) + ' ' + (200 + i * 53), email: '' },
+        vehiculo: { matricula: 'S' + LETRAS[i + 2] + LETRAS[i + 5] + ' ' + (2300 + i * 411), modelo: AUTOS[(i * 3) % AUTOS.length], color: COLORES[i % COLORES.length] },
+        lugarTipo: tipoX, servicio: 'traslado', pasajeros: 1 + (i % 4),
+        entrada: iso(ent), salida: iso(sal),
+        vuelo: { ida: VUELOS[i % VUELOS.length], vuelta: VUELOS[(i + 4) % VUELOS.length] },
+        lugar: null, checkin: llega ? null : iso(ent + 600000), checkout: null,
+        traslado: { ida: llega ? 'pendiente' : 'hecho', vuelta: 'pendiente' }, notas: '', estado: x[1],
+        pago: { estado: 'pendiente', monto: 0, medio: null, ref: null, fecha: null }
+      };
+      rx.total = precio(rx, t).total;
+      if (!llega || i === 0) rx.pago = { estado: 'pagado', monto: rx.total, medio: i === 0 ? 'online' : 'efectivo', ref: null, fecha: llega ? rx.creada : rx.checkin };
+      reservas.push(rx);
+    });
+
     // Evitar dos autos en el mismo lugar: reasignar los que están en el predio
     var usados = {};
     reservas.filter(function (x) { return x.estado === 'en_predio'; }).forEach(function (x) {

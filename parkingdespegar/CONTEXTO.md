@@ -204,6 +204,14 @@ auto» / «Vuelve»); en la ficha, debajo, «Entró el…» / «Salió el…» c
 también dice **Entrada** / **Salida** en el paso de fechas y en el resumen (Santi, 6/10). Las frases que
 cuentan el servicio («Dejás el auto y te llevamos…») siguen igual.
 
+**Traslados (Santi, 6/10):** antes «Camioneta». Solo dice a quién llevar y a quién ir a buscar, en dos
+listas con los colores de Entrada y Salida: **Llevar al aeropuerto** (menta; sale ~15 min después de la
+entrada, se lo deja en Partidas) y **Buscar en el aeropuerto** (ámbar; ~25 min después del aterrizaje, en
+Arribos). Cada viaje: hora, nombre, pasajeros, vuelo, si ya dejó el auto, matrícula y lugar, teléfono,
+botones Llamar y WhatsApp (con mensaje armado) y un botón grande por paso (Salimos → Ya lo dejé / Voy a
+buscarlo → Ya está en el parking), con «Deshacer». Arriba, el traslado en curso o el próximo. La muestra
+genera traslados en las próximas horas para que la pantalla tenga contenido.
+
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
 webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
@@ -223,5 +231,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=6`, reservar.js `?v=4`; en `panel/`: movil.css `?v=13`, escritorio.css `?v=3`, app.js `?v=13`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=14`, escritorio.css `?v=4`, app.js `?v=15`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

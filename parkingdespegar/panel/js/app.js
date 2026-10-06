@@ -1,7 +1,7 @@
 /* ============================================================
    PARKING DESPEGAR — Gestión
    Sistema propio para la operación del parking: reservas, llegadas,
-   retiros con cobro, traslados de la camioneta, lugares, caja,
+   retiros con cobro, traslados al aeropuerto, lugares, caja,
    clientes, reportes, tarifas, usuarios y respaldos.
    Lee y escribe en ../js/datos.js; con una base real, todo el equipo
    ve lo mismo en vivo desde cualquier dispositivo.
@@ -49,8 +49,8 @@
     { id: 'retiros', sector: 'autos', color: 'salida', nombre: 'Salida', ico: 'car-front', roles: ['admin', 'personal'],
       desc: 'Cuando vuelve un cliente: buscás su auto, entregás las llaves y el lugar queda libre. No se cobra: ya pagó al entrar.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'en_predio' && mismoDia(r.salida, Date.now()); }).length; } },
-    { id: 'traslados', sector: 'autos', nombre: 'Camioneta', ico: 'bus', roles: ['admin', 'personal', 'chofer'],
-      desc: 'Los viajes del día: llevar clientes a la terminal y buscarlos cuando aterrizan.',
+    { id: 'traslados', sector: 'autos', nombre: 'Traslados', ico: 'bus', roles: ['admin', 'personal', 'chofer'],
+      desc: 'A quién hay que llevar al aeropuerto y a quién ir a buscar. Tocá el botón de cada viaje cuando salís y cuando terminás.',
       cuenta: function () { return trasladosDe(Date.now()).filter(function (t) { return t.estado !== 'hecho'; }).length; } },
     { id: 'lugares', sector: 'autos', nombre: 'Lugares', ico: 'square-parking', roles: ['admin', 'personal'],
       desc: 'El mapa del parking: qué lugares están ocupados, cuáles libres y cuáles se liberan hoy.' },
@@ -169,16 +169,17 @@
           porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo salen') +
         kpi('circle-parking', 'Lugares disponibles', '<span class="kpi__num">' + (libresT + libresA) + '</span><span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(libresT, libresA, capT, capA), 'libre', '#/lugares', 'Ver el mapa') +
-        kpi('bus', 'Viajes de la camioneta', trasPend.length,
-          trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
-            : tras.length ? (tras.length === 1 ? 'No queda ninguno: ya se hizo el de hoy' : 'No queda ninguno: ya se hicieron los ' + tras.length + ' de hoy') : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
+        kpi('bus', 'Traslados pendientes', trasPend.length,
+          trasPend.length ? '<span class="por-tipo"><span class="por-tipo__nombre">Llevar</span><strong>' + trasPend.filter(function (t) { return t.tipo === 'ida'; }).length + '</strong></span>' +
+            '<span class="por-tipo"><span class="por-tipo__nombre">Buscar</span><strong>' + trasPend.filter(function (t) { return t.tipo === 'vuelta'; }).length + '</strong></span>'
+            : tras.length ? 'No queda ninguno: ya se hicieron los de hoy' : 'Hoy no hay traslados', 'autos', '#/traslados', 'Ver los traslados') +
         kpi('banknote', 'Cobrado en el turno', plata(cobrado),
           d.caja.turnoActual ? 'Desde las ' + hora(d.caja.turnoActual.apertura) + ' · ' + plata(online) + ' se pagó online' : 'La caja está cerrada', 'plata', '#/caja', 'Ver la caja') +
       '</div>' +
       bloque('Agenda de hoy', agenda.length, listaAgenda(agenda), null, 'hoy') +
       '<div class="columnas">' +
         bloque('Cómo está el parking', null, ocupacion('Techado', dTech, capT) + ocupacion('Predio', dentro.length - dTech, capA), '#/lugares', 'autos') +
-        bloque('Próximos viajes de la camioneta', trasPend.length, listaTraslados(trasPend.slice(0, 4), true), '#/traslados', 'autos') +
+        bloque('Próximos traslados', trasPend.length, listaTraslados(trasPend.slice(0, 4)), '#/traslados', 'autos') +
       '</div>';
   };
   /* Techado y predio (aire libre): «Techado 12/24» — el total va en el azul apagado */
@@ -545,30 +546,75 @@
   }
 
   /* ---------- TRASLADOS ---------- */
+  /* Dos listas con el mismo color que Entrada y Salida:
+     Llevar al aeropuerto (menta) — sale ~15 min después de que el cliente deja el auto.
+     Buscar en el aeropuerto (ámbar) — ~25 min después del aterrizaje, en Arribos. */
   V.traslados = function (q) {
     q = q || {};
     var dia = q.d === 'manana' ? Date.now() + PD.DIA : Date.now();
     var lista = trasladosDe(dia);
-    var idas = lista.filter(function (t) { return t.tipo === 'ida'; }), vueltas = lista.filter(function (t) { return t.tipo === 'vuelta'; });
-    return '<div class="herramientas"><div class="chips"><a class="chip' + (q.d !== 'manana' ? ' es-activo' : '') + '" href="#/traslados">Hoy</a><a class="chip' + (q.d === 'manana' ? ' es-activo' : '') + '" href="#/traslados?d=manana">Mañana</a></div>' +
-      '<p class="ayuda">La camioneta sale ~15 min después de cada llegada y busca a los que vuelven ~25 min después del aterrizaje.</p></div>' +
+    var llevar = lista.filter(function (t) { return t.tipo === 'ida'; }), buscar = lista.filter(function (t) { return t.tipo === 'vuelta'; });
+    var pend = function (l) { return l.filter(function (t) { return t.estado !== 'hecho'; }); };
+    /* Primero el que está en curso; si no hay, el próximo pendiente */
+    var proximo = lista.filter(function (t) { return t.estado === 'en_camino'; })[0] || pend(lista).filter(function (t) { return t.hora >= Date.now() - 30 * 60000; })[0];
+    return '<div class="herramientas"><div class="chips"><a class="chip' + (q.d !== 'manana' ? ' es-activo' : '') + '" href="#/traslados">Hoy</a><a class="chip' + (q.d === 'manana' ? ' es-activo' : '') + '" href="#/traslados?d=manana">Mañana</a></div></div>' +
+      (proximo ? '<div class="proximo" data-sector="' + (proximo.tipo === 'ida' ? 'entrada' : 'salida') + '"><p class="proximo__rotulo">' + (proximo.estado === 'en_camino' ? 'En curso' : 'Próximo traslado') + '</p>' +
+        '<p class="proximo__texto"><strong>' + hora(proximo.hora) + '</strong> · ' + (proximo.tipo === 'ida' ? 'Llevar a ' : 'Buscar a ') + esc(proximo.r.cliente.nombre) +
+        ' · ' + proximo.r.pasajeros + (proximo.r.pasajeros === 1 ? ' pasajero' : ' pasajeros') + (proximo.tipo === 'vuelta' && proximo.r.vuelo.vuelta ? ' · vuelo ' + esc(proximo.r.vuelo.vuelta) : '') + '</p></div>' : '') +
       '<div class="columnas">' +
-        bloque(ico('plane-takeoff') + 'Al aeropuerto', idas.length, listaTraslados(idas)) +
-        bloque(ico('plane-landing') + 'De vuelta al parking', vueltas.length, listaTraslados(vueltas)) +
+        bloque(ico('plane-takeoff') + 'Llevar al aeropuerto', pend(llevar).length + ' de ' + llevar.length, listaViajes(llevar), null, 'entrada') +
+        bloque(ico('plane-landing') + 'Buscar en el aeropuerto', pend(buscar).length + ' de ' + buscar.length, listaViajes(buscar), null, 'salida') +
       '</div>';
   };
   var PASOS_TRASLADO = { pendiente: 'en_camino', en_camino: 'hecho', hecho: 'pendiente' };
   var TXT_TRASLADO = { pendiente: 'Pendiente', en_camino: 'En camino', hecho: 'Hecho' };
-  function listaTraslados(lista, corto) {
-    if (!lista.length) return '<p class="vacio">Sin traslados.</p>';
+  var BOTON_TRASLADO = {
+    ida: { pendiente: 'Salimos al aeropuerto', en_camino: 'Ya lo dejé en la terminal' },
+    vuelta: { pendiente: 'Voy a buscarlo', en_camino: 'Ya está en el parking' }
+  };
+  function telefono(r) { return r.cliente.telefono.replace(/\D/g, '').replace(/^0/, ''); }
+  /* Cada viaje con lo que el chofer necesita: hora, quién, cuántos, vuelo, dónde, auto y cómo contactarlo */
+  function listaViajes(lista) {
+    if (!lista.length) return '<p class="vacio">No hay traslados.</p>';
+    return '<ul class="viajes">' + lista.map(function (t) {
+      var r = t.r, ida = t.tipo === 'ida';
+      var mensaje = ida ? 'Hola ' + r.cliente.nombre.split(' ')[0] + ', soy el chofer de Parking Despegar. En un momento salimos hacia la terminal.'
+        : 'Hola ' + r.cliente.nombre.split(' ')[0] + ', soy el chofer de Parking Despegar. Te espero en Arribos' + (r.vuelo.vuelta ? ' cuando aterrice el vuelo ' + r.vuelo.vuelta : '') + '.';
+      var datos = ida ? [
+          [r.estado === 'confirmada' ? 'clock' : 'circle-check', r.estado === 'confirmada' ? 'Llega al parking a las ' + hora(r.entrada) : 'Ya dejó el auto' + (r.lugar ? ' en ' + r.lugar : '')],
+          ['plane-takeoff', r.vuelo.ida ? 'Vuelo ' + esc(r.vuelo.ida) : 'Sin número de vuelo'],
+          ['map-pin', 'Dejarlo en Partidas'],
+          ['phone', esc(r.cliente.telefono)]
+        ] : [
+          ['plane-landing', (r.vuelo.vuelta ? 'Vuelo ' + esc(r.vuelo.vuelta) + ' · ' : '') + 'aterriza ' + hora(r.salida)],
+          ['map-pin', 'Esperarlo en Arribos'],
+          ['car-front', esc(r.vehiculo.matricula) + (r.lugar ? ' · lugar ' + r.lugar : '') + ' · tenerlo a mano'],
+          ['phone', esc(r.cliente.telefono)]
+        ];
+      return '<li class="viaje viaje--' + t.estado + '">' +
+        '<div class="viaje__hora"><strong>' + hora(t.hora) + '</strong><small>' + (ida ? 'sale del parking' : 'salir a buscarlo') + '</small></div>' +
+        '<div class="viaje__cuerpo">' +
+          '<p class="viaje__nombre"><strong>' + esc(r.cliente.nombre) + '</strong><span class="viaje__pax">' + ico('users') + r.pasajeros + (r.pasajeros === 1 ? ' pasajero' : ' pasajeros') + '</span></p>' +
+          '<ul class="viaje__datos">' + datos.map(function (x) { return '<li>' + ico(x[0]) + '<span>' + x[1] + '</span></li>'; }).join('') + '</ul>' +
+          '<div class="viaje__contacto"><a class="btn btn--chico btn--linea" href="tel:+598' + telefono(r) + '">' + ico('phone') + 'Llamar</a>' +
+            '<a class="btn btn--chico btn--linea" href="https://wa.me/598' + telefono(r) + '?text=' + encodeURIComponent(mensaje) + '" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a></div>' +
+        '</div>' +
+        '<div class="viaje__accion">' + (t.estado === 'hecho'
+          ? '<span class="estado estado--bien">' + ico('circle-check') + 'Hecho</span><button type="button" class="enlace-chico" data-traslado="' + r.id + '|' + t.tipo + '">Deshacer</button>'
+          : (t.estado === 'en_camino' ? '<span class="estado estado--info">' + ico('bus') + 'En camino</span>' : '') +
+            '<button type="button" class="btn btn--primario" data-traslado="' + r.id + '|' + t.tipo + '">' + ico('check') + BOTON_TRASLADO[t.tipo][t.estado] + '</button>') +
+        '</div></li>';
+    }).join('') + '</ul>';
+  }
+  /* Versión corta para Hoy */
+  function listaTraslados(lista) {
+    if (!lista.length) return '<p class="vacio">No hay traslados pendientes.</p>';
     return '<ul class="mini">' + lista.map(function (t) {
-      var r = t.r;
-      return '<li class="mini__fila traslado traslado--' + t.estado + '"><span class="mini__hora">' + hora(t.hora) + '</span>' +
-        '<span class="mini__texto"><strong>' + esc(r.cliente.nombre) + '</strong> · ' + r.pasajeros + ' pas.' +
-        '<small>' + (t.tipo === 'ida' ? 'Sale del parking' : 'Buscar en la terminal') + (t.tipo === 'vuelta' && r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '') + ' · ' + esc(r.vehiculo.matricula) + '</small></span>' +
-        (corto ? '<span class="mini__accion"><span class="estado estado--' + (t.estado === 'en_camino' ? 'info' : 'alerta') + '">' + TXT_TRASLADO[t.estado] + '</span></span>' :
-        '<span class="mini__accion"><button type="button" class="btn btn--chico ' + (t.estado === 'hecho' ? 'btn--linea' : 'btn--primario') + '" data-traslado="' + r.id + '|' + t.tipo + '">' +
-          (t.estado === 'pendiente' ? 'Salir' : t.estado === 'en_camino' ? 'Llegamos' : ico('check') + 'Hecho') + '</button></span>') + '</li>';
+      var r = t.r, ida = t.tipo === 'ida';
+      return '<li class="mini__fila"><span class="mini__hora">' + hora(t.hora) + '</span>' +
+        '<span class="mini__texto"><span class="tag tag--' + (ida ? 'llega' : 'sale') + '">' + ico(ida ? 'plane-takeoff' : 'plane-landing') + (ida ? 'Llevar' : 'Buscar') + '</span>' +
+        '<strong>' + esc(r.cliente.nombre) + '</strong> · ' + r.pasajeros + ' pas.' + (!ida && r.vuelo.vuelta ? '<small>Vuelo ' + esc(r.vuelo.vuelta) + ' · aterriza ' + hora(r.salida) + '</small>' : '') + '</span>' +
+        (t.estado === 'en_camino' ? '<span class="mini__accion"><span class="estado estado--info">' + ico('bus') + 'En camino</span></span>' : '') + '</li>';
     }).join('') + '</ul>';
   }
 
@@ -864,7 +910,7 @@
       var partes = el.getAttribute('data-traslado').split('|');
       var rr = D().reservas.filter(function (x) { return x.id === partes[0]; })[0];
       rr.traslado[partes[1]] = PASOS_TRASLADO[rr.traslado[partes[1]]];
-      PD.guardar(nombreUsuario(), 'Traslado ' + (partes[1] === 'ida' ? 'al aeropuerto' : 'de vuelta') + ' de ' + rr.codigo + ': ' + TXT_TRASLADO[rr.traslado[partes[1]]]);
+      PD.guardar(nombreUsuario(), (partes[1] === 'ida' ? 'Llevar al aeropuerto' : 'Buscar en el aeropuerto') + ' a ' + rr.cliente.nombre + ' (' + rr.codigo + '): ' + TXT_TRASLADO[rr.traslado[partes[1]]]);
       return pintar();
     }
     if ((el = t.closest('[data-buscar-cliente]'))) { location.hash = '#/reservas?f=todas&b=' + encodeURIComponent(el.getAttribute('data-buscar-cliente')); return; }

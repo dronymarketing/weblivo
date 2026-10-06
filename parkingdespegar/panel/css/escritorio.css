@@ -77,6 +77,9 @@
 .ventana__acciones .btn, .formulario .ventana__acciones .btn[type="submit"] { flex: 0 0 auto; }
 .ficha > div { grid-template-columns: 150px 1fr; gap: 16px; }
 
+.viaje { grid-template-columns: 70px 1fr; }
+.viaje__accion { grid-column: 2; }
+.viaje__accion .btn { flex: 0 0 auto; }
 .mapa-lugares { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
 .grafico__area { height: 240px; }
 
