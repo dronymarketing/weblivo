@@ -48,6 +48,13 @@ Maquetas en `refs/paletas/` (pendiente de elegir):
 
 Texto sobre los botones naranjas: el color de fondo (5,5–6,4:1). El blanco no pasa.
 
+**Santi eligió otra: «Clownfish»** (`refs/paleta-clownfish.jpg`, de Pinterest): #F2F0E4 · #F28705 ·
+#F25C05 · #F24405 · #000000. Maqueta en `refs/paletas/4-clownfish.png`. Roles propuestos (a confirmar):
+fondo #000000 · superficie #111110 y #1D1D1B (crema al 7 y 12 % sobre negro) · texto #F2F0E4 (18,4:1) ·
+texto suave #A09E96 (7,8:1) · naranja principal #F25C05 (6,3:1: botón, antetítulos, barras) · naranja
+claro #F28705 (8,2:1: etiquetas «Nuevo», fechas) · naranja hondo #F24405 (5,6:1: botón presionado).
+Sobre los naranjas, texto negro: el crema da 2,2–3,3:1 y no pasa.
+
 ## Entrevista
 
 - Tipo: sitio con páginas separadas y adelantos en el inicio (como Rhodium).
