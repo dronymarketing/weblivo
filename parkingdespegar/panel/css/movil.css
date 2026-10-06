@@ -115,7 +115,7 @@
 .lateral-abierto .lateral__velo { opacity: 1; pointer-events: auto; }
 .lateral-abierto, .ventana-abierta { overflow: hidden; }
 
-.lateral__logo { display: block; padding: 4px 10px 22px; color: var(--acento); }
+.lateral__logo { display: block; padding: 4px 10px 22px; color: #fff; }
 .lateral__logo svg { width: 170px; height: auto; fill: currentColor; display: block; }
 .lateral__nav { display: grid; gap: 2px; }
 .lateral__grupo {
