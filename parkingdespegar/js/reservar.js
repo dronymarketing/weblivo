@@ -48,7 +48,7 @@
   }
 
   /* ---------- Resumen en vivo ---------- */
-  function etiquetaTipo(t) { return t === 'techado' ? 'Techado' : 'Al aire libre'; }
+  function etiquetaTipo(t) { return t === 'techado' ? 'Techado' : 'Predio'; }
   function etiquetaServicio(s) { return s === 'valet' ? 'Valet Parking' : 'Con traslado'; }
   function fechaLarga(d) {
     return d.toLocaleDateString('es-UY', { weekday: 'short', day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });

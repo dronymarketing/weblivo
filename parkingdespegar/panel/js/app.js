@@ -32,10 +32,10 @@
 
   var ROLES = { admin: 'Dueña · administración', personal: 'Personal de turno', chofer: 'Chofer' };
   /* Cinco sectores, cada uno con su color (variantes del azul y del naranja de marca):
-     Hoy (navy) · Autos en el predio (azul) · Reservas (celeste) · Plata (naranja) · Ajustes (ámbar) */
+     Hoy (navy) · Autos en el parking (azul) · Reservas (celeste) · Plata (naranja) · Ajustes (ámbar) */
   var SECTORES = [
     { id: 'hoy', nombre: 'Hoy' },
-    { id: 'autos', nombre: 'Autos en el predio' },
+    { id: 'autos', nombre: 'Autos en el parking' },
     { id: 'reservas', nombre: 'Reservas' },
     { id: 'plata', nombre: 'Plata' },
     { id: 'ajustes', nombre: 'Ajustes' }
@@ -53,7 +53,7 @@
       desc: 'Los viajes del día: llevar clientes a la terminal y buscarlos cuando aterrizan.',
       cuenta: function () { return trasladosDe(Date.now()).filter(function (t) { return t.estado !== 'hecho'; }).length; } },
     { id: 'lugares', sector: 'autos', nombre: 'Lugares', ico: 'square-parking', roles: ['admin', 'personal'],
-      desc: 'El mapa del predio: qué lugares están ocupados, cuáles libres y cuáles se liberan hoy.' },
+      desc: 'El mapa del parking: qué lugares están ocupados, cuáles libres y cuáles se liberan hoy.' },
     { id: 'reservas', sector: 'reservas', nombre: 'Reservas', ico: 'calendar-check', roles: ['admin', 'personal'],
       desc: 'Todas las reservas: de la web, de WhatsApp o del mostrador. Tocá una para ver el detalle.' },
     { id: 'clientes', sector: 'reservas', nombre: 'Clientes', ico: 'users', roles: ['admin', 'personal'],
@@ -74,7 +74,7 @@
   /* ---------- Estados ---------- */
   var ESTADOS = {
     confirmada: { txt: 'Confirmada', cls: 'info', ico: 'calendar-check' },
-    en_predio: { txt: 'En el predio', cls: 'bien', ico: 'square-parking' },
+    en_predio: { txt: 'En el parking', cls: 'bien', ico: 'square-parking' },
     finalizada: { txt: 'Finalizada', cls: 'neutro', ico: 'circle-check' },
     cancelada: { txt: 'Cancelada', cls: 'neutro', ico: 'x' }
   };
@@ -85,7 +85,7 @@
     if (r.pago.estado === 'parcial') return '<span class="estado estado--alerta">' + ico('triangle-alert') + 'Seña ' + plata(r.pago.monto) + '</span>';
     return '<span class="estado estado--error">' + ico('circle-x') + 'No pagado</span>';
   }
-  var TIPO = { techado: 'Techado', aire: 'Aire libre' };
+  var TIPO = { techado: 'Techado', aire: 'Predio' };
   var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador' };
   var MEDIOS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta (POS)', transferencia: 'Transferencia', online: 'Online', egreso: 'Egreso' };
 
@@ -177,7 +177,7 @@
       '</div>' +
       bloque('Agenda de hoy', agenda.length, listaAgenda(agenda), null, 'hoy') +
       '<div class="columnas">' +
-        bloque('Cómo está el predio', null, ocupacion('Techado', dTech, capT) + ocupacion('Aire libre', dentro.length - dTech, capA), '#/lugares', 'autos') +
+        bloque('Cómo está el parking', null, ocupacion('Techado', dTech, capT) + ocupacion('Predio', dentro.length - dTech, capA), '#/lugares', 'autos') +
         bloque('Próximos viajes de la camioneta', trasPend.length, listaTraslados(trasPend.slice(0, 4), true), '#/traslados', 'autos') +
       '</div>';
   };
@@ -234,7 +234,7 @@
   }
 
   /* ---------- RESERVAS ---------- */
-  var FILTROS = [['proximas', 'Próximas'], ['hoy', 'Llegan hoy'], ['predio', 'En el predio'], ['pago', 'Sin pagar'], ['finalizadas', 'Finalizadas'], ['canceladas', 'Canceladas'], ['todas', 'Todas']];
+  var FILTROS = [['proximas', 'Próximas'], ['hoy', 'Llegan hoy'], ['predio', 'En el parking'], ['pago', 'Sin pagar'], ['finalizadas', 'Finalizadas'], ['canceladas', 'Canceladas'], ['todas', 'Todas']];
   V.reservas = function (q) {
     var f = q.f || 'proximas', busca = (q.b || '').toLowerCase(), ahora = Date.now();
     var lista = D().reservas.filter(function (r) {
@@ -307,7 +307,7 @@
     var caja = abrirVentana(
       '<h2 class="ventana__titulo">Nueva reserva</h2><form class="formulario" data-form-nueva novalidate>' +
       '<div class="formulario__fila"><label class="campo"><span>Origen</span><select name="origen"><option value="whatsapp">WhatsApp</option><option value="mostrador">Mostrador</option><option value="web">Teléfono / otra</option></select></label>' +
-      '<label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado · ' + plata(t.techado) + '/día</option><option value="aire">Aire libre · ' + plata(t.aire) + '/día</option></select></label></div>' +
+      '<label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado · ' + plata(t.techado) + '/día</option><option value="aire">Predio · ' + plata(t.aire) + '/día</option></select></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(man.setHours(6, 0, 0, 0)) + '" required></label>' +
       '<label class="campo"><span>Vuelve (aterrizaje)</span><input type="datetime-local" name="salida" value="' + local(new Date(man.getTime() + 7 * PD.DIA).setHours(18, 0, 0, 0)) + '" required></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Matrícula</span><input name="matricula" required></label><label class="campo"><span>Marca y modelo</span><input name="modelo"></label></div>' +
@@ -413,7 +413,7 @@
     var elegida = q.c ? D().reservas.filter(function (r) { return r.codigo === q.c && r.estado === 'en_predio'; })[0] : null;
     var ficha = '<section class="bloque bloque--ficha" data-panel-retiro>' + (elegida ? panelRetiro(elegida) : '<p class="vacio vacio--grande">' + ico('receipt') + 'Elegí un auto para calcular el cobro y registrar el retiro.</p>') + '</section>';
     return '<div class="columnas columnas--llegada">' + (elegida ? ficha : '') +
-      '<section class="bloque"><header class="bloque__cabeza"><h2>Autos en el predio <span class="cuenta">' + dentro.length + '</span></h2></header>' +
+      '<section class="bloque"><header class="bloque__cabeza"><h2>Autos en el parking <span class="cuenta">' + dentro.length + '</span></h2></header>' +
         '<label class="buscador">' + ico('scan-line') + '<input type="search" placeholder="Código o matrícula" value="' + esc(q.b || '') + '" data-buscar="retiros"></label>' +
         '<ul class="mini">' + (dentro.length ? dentro.slice(0, 40).map(function (r) {
           var hoy = mismoDia(r.salida, Date.now());
@@ -432,7 +432,7 @@
     var pagado = r.pago.monto || 0, saldo = Math.max(0, total - pagado);
     var t = D().tarifas;
     return '<header class="bloque__cabeza"><h2>Retiro · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.lugar + '</span></header>' +
-      '<div class="total-grande"><p>' + (saldo > 0 ? 'A cobrar' : 'Nada para cobrar') + '</p><strong>' + plata(saldo) + '</strong><small>' + real.dias + (real.dias === 1 ? ' día' : ' días') + ' en el predio</small></div>' +
+      '<div class="total-grande"><p>' + (saldo > 0 ? 'A cobrar' : 'Nada para cobrar') + '</p><strong>' + plata(saldo) + '</strong><small>' + real.dias + (real.dias === 1 ? ' día' : ' días') + ' en el parking</small></div>' +
       '<dl class="ficha">' + fila('Ingreso', fechaHora(r.checkin)) + fila('Retiro', fechaHora(ahora)) +
         fila('Cálculo', real.dias + ' × ' + plata(r.lugarTipo === 'techado' ? t.techado : t.aire) + (real.extra ? ' + valet ' + plata(real.extra) : '') + ' = ' + plata(real.total) + (total > real.total ? '<small>Se mantiene lo reservado: ' + plata(r.total) + '</small>' : '')) +
         fila('Ya pagado', plata(pagado) + (r.pago.medio ? ' (' + MEDIOS[r.pago.medio] + ')' : '')) + (r.notas ? fila('Notas', esc(r.notas)) : '') + '</dl>' +
@@ -505,7 +505,7 @@
         }).join('') + '</div></section>';
     }
     return '<div class="leyenda"><span><i class="cajon-mini cajon--libre"></i>Libre</span><span><i class="cajon-mini cajon--ocupado"></i>Ocupado</span><span><i class="cajon-mini cajon--sale"></i>Sale hoy</span></div>' +
-      zona('techado', 'Zona A · Techado') + zona('aire', 'Zona B · Aire libre');
+      zona('techado', 'Zona A · Techado') + zona('aire', 'Zona B · Predio');
   };
 
   /* ---------- CAJA ---------- */
@@ -589,7 +589,7 @@
       bloque('Recaudado por día', null, graficoDias(porDia)) +
       '<div class="columnas">' +
         bloque('Por medio de pago', null, barrasH(Object.keys(medios).map(function (k) { return [MEDIOS[k], medios[k]]; }), true)) +
-        bloque('Por tipo de lugar', null, barrasH([['Techado', tipos.techado], ['Aire libre', tipos.aire]], true)) +
+        bloque('Por tipo de lugar', null, barrasH([['Techado', tipos.techado], ['Predio', tipos.aire]], true)) +
       '</div>' +
       bloque('Cómo reservan', null, barrasH([['Web', origenes.web], ['WhatsApp', origenes.whatsapp], ['Mostrador', origenes.mostrador]], false));
   };
@@ -640,12 +640,12 @@
     return '<div class="columnas">' +
       bloque('Tarifas vigentes', null, '<p class="aviso-tabla">' + ico('info') + 'Los cambios se aplican en la web al instante.</p>' +
         '<form class="formulario" data-form-tarifas>' +
-        '<div class="formulario__fila"><label class="campo"><span>Techado, por día</span><input name="techado" type="number" min="0" value="' + t.techado + '"></label><label class="campo"><span>Aire libre, por día</span><input name="aire" type="number" min="0" value="' + t.aire + '"></label></div>' +
+        '<div class="formulario__fila"><label class="campo"><span>Techado, por día</span><input name="techado" type="number" min="0" value="' + t.techado + '"></label><label class="campo"><span>Predio, por día</span><input name="aire" type="number" min="0" value="' + t.aire + '"></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Valet Parking, por servicio</span><input name="valet" type="number" min="0" value="' + t.valet + '"></label><label class="campo"><span>Tolerancia antes de cobrar otro día (horas)</span><input name="graciaHoras" type="number" min="0" max="12" value="' + t.graciaHoras + '"></label></div>' +
         '<label class="campo campo--corto"><span>Mínimo de días</span><input name="minimoDias" type="number" min="1" max="7" value="' + t.minimoDias + '"></label>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar tarifas</button></div></form>') +
       bloque('Calculadora de cobro', null, '<form class="formulario" data-form-simulador>' +
-        '<div class="formulario__fila"><label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado</option><option value="aire">Aire libre</option></select></label><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet</option></select></label></div>' +
+        '<div class="formulario__fila"><label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado</option><option value="aire">Predio</option></select></label><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet</option></select></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Retira</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
         '</form><div class="total-grande" data-simulado></div>') +
     '</div>';
@@ -834,7 +834,7 @@
     if (f.matches('[data-form-tarifas]')) {
       e.preventDefault(); var t = D().tarifas;
       ['techado', 'aire', 'valet', 'graciaHoras', 'minimoDias'].forEach(function (k) { t[k] = Math.max(0, +f[k].value || 0); });
-      PD.guardar(nombreUsuario(), 'Cambió las tarifas: techado ' + plata(t.techado) + ', aire libre ' + plata(t.aire) + ', valet ' + plata(t.valet));
+      PD.guardar(nombreUsuario(), 'Cambió las tarifas: techado ' + plata(t.techado) + ', predio ' + plata(t.aire) + ', valet ' + plata(t.valet));
       avisar('Tarifas guardadas: ya se aplican en la web'); simular();
     }
   });

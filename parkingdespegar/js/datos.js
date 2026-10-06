@@ -17,7 +17,7 @@
   /* ---------- Lugares del predio (muestra: confirmar cantidades con la clienta) ---------- */
   var LUGARES = [];
   for (var i = 1; i <= 24; i++) LUGARES.push({ id: 'A-' + (i < 10 ? '0' : '') + i, tipo: 'techado', zona: 'A · Techado' });
-  for (var j = 1; j <= 36; j++) LUGARES.push({ id: 'B-' + (j < 10 ? '0' : '') + j, tipo: 'aire', zona: 'B · Aire libre' });
+  for (var j = 1; j <= 36; j++) LUGARES.push({ id: 'B-' + (j < 10 ? '0' : '') + j, tipo: 'aire', zona: 'B · Predio' });
 
   var TARIFAS_MUESTRA = {
     techado: 490,      // por día, en pesos uruguayos — DE MUESTRA

@@ -175,8 +175,10 @@ Nueva reserva) y una sola agenda del día con llegadas y salidas por hora. Color
 (`[data-sector=…]`: `--s`, `--s-fondo`, `--s-texto`, `--s-claro`).
 «Lugares disponibles» va en verde (`[data-sector="libre"]`). **Azul apagado** = `#47728a`
 (`--azul-apagado`, el mismo que `--texto-suave`): para totales y datos secundarios, por ejemplo
-el stock en «19/60», «41/60» y «Techado 12/24 · Predio 7/36» (Santi, 6/10). En esas tarjetas
-el aire libre se llama «Predio» y va con texto, sin íconos.
+el stock en «19/60», «41/60» y «Techado 12/24 · Predio 7/36» (Santi, 6/10). Esas tarjetas van con
+texto, sin íconos.
+**«Predio» = lugar al aire libre, en todos lados** (web, reserva y panel). Para hablar del lugar
+entero se dice «parking» (estado «En el parking», sector «Autos en el parking») para no confundir.
 
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
@@ -197,5 +199,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=3`, reservar.js `?v=2`; en `panel/`: movil.css `?v=10`, escritorio.css `?v=2`, app.js `?v=9`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=4`, reservar.js `?v=3`; en `panel/`: movil.css `?v=10`, escritorio.css `?v=2`, app.js `?v=10`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.
