@@ -212,6 +212,8 @@ botones Llamar y WhatsApp (con mensaje armado) y un botón grande por paso (Sali
 buscarlo → Ya está en el parking), con «Deshacer». Arriba, el traslado en curso o el próximo. La muestra
 genera traslados en las próximas horas para que la pantalla tenga contenido.
 
+**Fechas en el panel:** «06/10 | 16:30 Hrs.» (Santi, 6/10).
+
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
 webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
@@ -231,5 +233,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=15`, escritorio.css `?v=4`, app.js `?v=16`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=15`, escritorio.css `?v=4`, app.js `?v=17`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

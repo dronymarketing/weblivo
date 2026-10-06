@@ -16,8 +16,10 @@
   var plata = function (n) { return '$\u00a0' + Math.round(n || 0).toLocaleString('es-UY'); };
   var ico = function (n, c) { return '<svg class="' + (c || 'ico') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; };
   var hora = function (d) { return new Date(d).toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); };
-  var fechaCorta = function (d) { return new Date(d).toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit' }); };
-  var fechaHora = function (d) { return d ? fechaCorta(d) + ' ' + hora(d) : '—'; };
+  var dosCifras = function (n) { return (n < 10 ? '0' : '') + n; };
+  var fechaCorta = function (d) { d = new Date(d); return dosCifras(d.getDate()) + '/' + dosCifras(d.getMonth() + 1); };
+  /* «06/10 | 16:30 Hrs.» */
+  var fechaHora = function (d) { return d ? fechaCorta(d) + ' | ' + hora(d) + ' Hrs.' : '—'; };
   var diaLargo = function (d) { return new Date(d).toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'long' }); };
   var inicioDia = function (d) { var x = new Date(d || Date.now()); x.setHours(0, 0, 0, 0); return x.getTime(); };
   var mismoDia = function (a, b) { return inicioDia(a) === inicioDia(b); };
