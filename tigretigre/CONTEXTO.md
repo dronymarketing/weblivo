@@ -100,6 +100,12 @@ Ningún paquete del catálogo: se imita cómo se mueve la app, con scroll nativo
 - **Detalles:** botones que se hunden al tocarlos, ícono lleno en la pestaña activa, rectángulos oscuros
   mientras cargan las fotos. Sin apariciones al scroll: la app no las tiene.
 
+## Acción principal (Santi, 6/10)
+
+«Contratar» abre un **formulario corto que termina en WhatsApp**: tipo de evento en cápsulas
+(cumpleaños, despedida, empresa…), fecha y cantidad de personas, con el comunicador ya elegido si se
+entró desde su ficha. Arma el mensaje y abre WhatsApp. **Número: PENDIENTE (Santi lo pasa después).**
+
 ## Entrevista
 
 - Tipo: sitio con páginas separadas y adelantos en el inicio (como Rhodium).
