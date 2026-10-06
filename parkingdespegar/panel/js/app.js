@@ -44,7 +44,7 @@
     { id: 'panel', sector: 'hoy', nombre: 'Hoy', ico: 'sun', roles: ['admin', 'personal'],
       desc: 'Lo que pasa hoy en el parking, de un vistazo.' },
     { id: 'llegada', sector: 'autos', color: 'entrada', nombre: 'Entrada', ico: 'car-front', roles: ['admin', 'personal'],
-      desc: 'Cuando llega un cliente: buscás su reserva, cobrás si no pagó online, le das un lugar e imprimís el comprobante.',
+      desc: 'Cuando llega un cliente: buscás su reserva, cobrás lo que falte, emitís la factura y le das un lugar. Si pagó por transferencia antes, se registra acá.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'confirmada' && mismoDia(r.entrada, Date.now()); }).length; } },
     { id: 'retiros', sector: 'autos', color: 'salida', nombre: 'Salida', ico: 'car-front', roles: ['admin', 'personal'],
       desc: 'Cuando vuelve un cliente: buscás su auto, entregás las llaves y el lugar queda libre. No se cobra: ya pagó al entrar.',
@@ -63,7 +63,7 @@
     { id: 'reportes', sector: 'plata', nombre: 'Reportes', ico: 'chart-column', roles: ['admin'],
       desc: 'Cuánto se recaudó, cómo pagan los clientes y por dónde reservan.' },
     { id: 'tarifas', sector: 'plata', nombre: 'Precios', ico: 'calculator', roles: ['admin'],
-      desc: 'Lo que se cobra por día. Si lo cambiás acá, cambia también en la web.' },
+      desc: 'Lo que se cobra por día y los datos que salen en la factura. Si cambiás un precio acá, cambia también en la web.' },
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
     { id: 'sistema', sector: 'ajustes', nombre: 'Respaldos', ico: 'settings', roles: ['admin'],
@@ -82,7 +82,7 @@
   function badgePago(r) {
     if (r.estado === 'cancelada') return '<span class="estado estado--neutro">—</span>';
     if (r.pago.estado === 'pagado') return '<span class="estado estado--bien">' + ico('circle-check') + 'Pagado' + (r.pago.medio === 'online' ? ' online' : '') + '</span>';
-    if (r.pago.estado === 'parcial') return '<span class="estado estado--alerta">' + ico('triangle-alert') + 'Seña ' + plata(r.pago.monto) + '</span>';
+    if (r.pago.estado === 'parcial') return '<span class="estado estado--alerta">' + ico('triangle-alert') + 'Falta ' + plata(r.total - r.pago.monto) + '</span>';
     return '<span class="estado estado--error">' + ico('circle-x') + 'No pagado</span>';
   }
   var TIPO = { techado: 'Techado', aire: 'Predio' };
@@ -167,7 +167,7 @@
       '<div class="kpis">' +
         kpi('car', 'Autos totales en el Parking', dentro.length + '<span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo salen') +
-        kpi('circle-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="de-total">/' + d.lugares.length + '</span>',
+        kpi('circle-parking', 'Lugares disponibles', '<span class="kpi__num">' + (libresT + libresA) + '</span><span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(libresT, libresA, capT, capA), 'libre', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Viajes de la camioneta', trasPend.length,
           trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
@@ -282,6 +282,7 @@
     var acciones = '';
     if (r.estado === 'confirmada' && puede('llegada')) acciones += '<a class="btn btn--primario" href="#/llegada?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar entrada</a>';
     if (r.estado === 'en_predio' && puede('retiros')) acciones += '<a class="btn btn--primario" href="#/retiros?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar salida</a>';
+    if (r.factura) acciones += '<button class="btn btn--linea" type="button" data-ver-factura="' + r.factura + '">' + ico('file-text') + 'Ver factura</button>';
     acciones += '<a class="btn btn--linea" href="' + wa + '" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>';
     if (r.estado === 'confirmada' && puede('reservas')) acciones += '<button class="btn btn--linea btn--peligro" type="button" data-cancelar="' + r.id + '">' + ico('x') + 'Cancelar reserva</button>';
     abrirVentana(
@@ -357,34 +358,94 @@
         '<span class="mini__accion">' + badgePago(r) + '</span></li>';
     }).join('');
   }
-  /* El pago es siempre al entrar: si no pagó online, se cobra acá antes de darle el lugar */
+  /* El pago es siempre al entrar. Si pagó por transferencia antes de llegar, se registra acá
+     («¿Ya pagó por transferencia?») y al llegar solo se cobra lo que falte. Al registrar la entrada se emite la factura. */
   function panelLlegada(r) {
     var libres = PD.lugaresLibres(r.lugarTipo);
     var saldo = Math.max(0, r.total - (r.pago.monto || 0));
+    var E = D().empresa;
+    var pagado = r.pago.monto > 0 ? '<p class="ok">' + ico('circle-check') + '<span>' + (saldo > 0 ? 'Ya pagó ' : 'Pagó ') + plata(r.pago.monto) + ' ' + medioTexto(r) +
+      (saldo > 0 ? '. Falta cobrar <strong>' + plata(saldo) + '</strong>.' : '. No hay nada que cobrar.') + '</span></p>' : '';
     return '<header class="bloque__cabeza"><h2>Entrada · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.codigo + '</span></header>' +
       '<dl class="ficha">' + fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono)) + fila('Auto', esc(r.vehiculo.modelo) + ' ' + esc(r.vehiculo.color)) +
-        fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') + '</dl>' +
+        fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') +
+        fila('Total de la reserva', plata(r.total) + ' · ' + PD.precio(r).dias + ' días') + '</dl>' +
+      pagado +
+      (saldo > 0 ? '<details class="transferencia"><summary>' + ico('landmark') + '<span><strong>¿Ya pagó por transferencia?</strong><small>Registralo antes de que llegue: queda listo para la entrada.</small></span></summary>' +
+        '<div class="transferencia__cuerpo"><div class="formulario__fila"><label class="campo"><span>Monto transferido</span><input name="montoTransf" type="number" min="1" value="' + saldo + '" data-monto-transf></label>' +
+        '<label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off" data-ref-transf></label></div>' +
+        '<button type="button" class="btn btn--linea" data-guardar-transferencia="' + r.id + '">' + ico('check') + 'Guardar transferencia</button></div></details>' : '') +
       '<form class="formulario" data-form-llegada data-id="' + r.id + '" data-saldo="' + saldo + '">' +
-        (saldo > 0 ? '<div class="total-grande"><p>A cobrar ahora</p><strong>' + plata(saldo) + '</strong><small>' + PD.precio(r).dias + ' días reservados · se paga al entrar</small></div>' +
+        (saldo > 0 ? '<div class="total-grande"><p>A cobrar ahora</p><strong>' + plata(saldo) + '</strong><small>Se paga al entrar</small></div>' +
           '<div class="formulario__fila"><label class="campo"><span>Medio de pago</span><select name="medio" required><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta (POS)</option><option value="transferencia">Transferencia</option></select></label>' +
           '<label class="campo"><span>Recibido <em>(efectivo)</em></span><input name="recibido" type="number" min="0" placeholder="' + saldo + '" data-recibido></label></div>' +
-          '<p class="vuelto" data-vuelto hidden></p>'
-          : '<p class="ok">' + ico('circle-check') + 'Pagada' + (r.pago.medio === 'online' ? ' online' : '') + '. No hay nada que cobrar.</p>') +
+          '<p class="vuelto" data-vuelto hidden></p>' : '') +
+        '<fieldset class="factura-campos"><legend>' + ico('file-text') + 'Factura</legend>' +
+          '<div class="eleccion"><label><input type="radio" name="tipoFactura" value="eticket" checked><span>e-Ticket<small>Consumidor final</small></span></label>' +
+          '<label><input type="radio" name="tipoFactura" value="efactura"><span>e-Factura<small>Empresa, con RUT</small></span></label></div>' +
+          '<div class="formulario__fila" data-campos-rut hidden><label class="campo"><span>RUT del cliente</span><input name="rut" inputmode="numeric" maxlength="12" placeholder="12 dígitos"></label>' +
+          '<label class="campo"><span>Razón social</span><input name="razon"></label></div>' +
+          (E.rut ? '' : '<p class="ayuda">Falta cargar el RUT del parking en Precios → Datos para la factura.</p>') +
+        '</fieldset>' +
         '<label class="campo"><span>Lugar (' + TIPO[r.lugarTipo] + ' · ' + libres.length + ' libres)</span><select name="lugar">' + libres.map(function (l, i) { return '<option' + (i === 0 ? ' selected' : '') + '>' + l.id + '</option>'; }).join('') + '</select></label>' +
         '<label class="campo"><span>Notas del auto <em>(rayones, objetos, llaves)</em></span><input name="notas" placeholder="Opcional"></label>' +
-        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + (saldo > 0 ? 'Cobrar ' + plata(saldo) + ' y registrar entrada' : 'Registrar entrada e imprimir') + '</button></div>' +
+        '<p class="campo-error" data-error-llegada hidden></p>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + (saldo > 0 ? 'Cobrar ' + plata(saldo) + ', facturar y registrar entrada' : 'Facturar y registrar entrada') + '</button></div>' +
       '</form>';
+  }
+  /* «por transferencia el 06/10 · op. 1234» o «online» */
+  function medioTexto(r) {
+    var ps = r.pagos && r.pagos.length ? r.pagos : [{ medio: r.pago.medio, fecha: r.pago.fecha, ref: r.pago.ref }];
+    return ps.map(function (x) {
+      return (x.medio === 'online' ? 'online' : x.medio === 'transferencia' ? 'por transferencia' : x.medio === 'tarjeta' ? 'con tarjeta' : 'en efectivo') +
+        (x.fecha ? ' el ' + fechaCorta(x.fecha) : '') + (x.ref && x.medio === 'transferencia' ? ' · op. ' + esc(x.ref) : '');
+    }).join(' y ');
   }
   function registrarLlegada(id, f) {
     var d = D(), r = d.reservas.filter(function (x) { return x.id === id; })[0];
+    var err = $('[data-error-llegada]');
     if (!r || !f.lugar.value) { avisar('No quedan lugares libres de ese tipo', 'alerta'); return; }
+    var tipo = f.tipoFactura.value, rut = f.rut.value.replace(/\D/g, ''), razon = f.razon.value.trim();
+    if (tipo === 'efactura' && (rut.length !== 12 || !razon)) { err.textContent = 'Para la e-Factura completá el RUT (12 dígitos) y la razón social.'; err.hidden = false; return; }
     var saldo = +f.getAttribute('data-saldo');
     if (saldo > 0) PD.registrarPago(r, saldo, f.medio.value, nombreUsuario());
     r.estado = 'en_predio'; r.lugar = f.lugar.value; r.checkin = new Date().toISOString(); r.notas = f.notas.value.trim();
     PD.guardar(nombreUsuario(), 'Entrada de ' + r.codigo + ' (' + r.vehiculo.matricula + ') al lugar ' + r.lugar);
-    avisar('Entrada registrada: ' + r.vehiculo.matricula + ' en ' + r.lugar);
-    ticket(r, 'entrada');
+    var fac = PD.emitirFactura(r, { tipo: tipo, rut: rut, razon: razon }, nombreUsuario());
+    avisar('Entrada registrada y ' + (fac.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + ' A-' + PD.pad4(fac.numero) + ' emitido');
+    ticket(r, 'entrada', fac);
     location.hash = '#/llegada';
+  }
+  function guardarTransferencia(id, boton) {
+    var r = D().reservas.filter(function (x) { return x.id === id; })[0];
+    var caja = boton.closest('.transferencia');
+    var monto = +$('[data-monto-transf]', caja).value, ref = $('[data-ref-transf]', caja).value.trim();
+    if (!(monto > 0)) { avisar('Escribí cuánto transfirió', 'alerta'); return; }
+    PD.registrarPago(r, monto, 'transferencia', nombreUsuario(), ref || null);
+    avisar('Transferencia de ' + plata(monto) + ' registrada en ' + r.codigo);
+    pintar();
+  }
+
+  /* Factura: e-Ticket o e-Factura. Los importes incluyen IVA. */
+  function verFactura(f) {
+    var E = D().empresa;
+    var neto = Math.round(f.total / (1 + f.iva / 100)), iva = f.total - neto;
+    var r = D().reservas.filter(function (x) { return x.id === f.reservaId; })[0];
+    var caja = abrirVentana(
+      '<div class="factura">' +
+        '<header class="factura__cabeza"><svg class="factura__logo" viewBox="0 0 954.77 130.0" aria-hidden="true"><use href="#logo-h"/></svg>' +
+          '<div class="factura__id"><p class="factura__tipo">' + (f.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + '</p><p>Serie ' + f.serie + ' · Nº ' + PD.pad4(f.numero) + '</p><p>' + fechaHora(f.fecha) + '</p></div></header>' +
+        '<div class="factura__partes"><div><p class="factura__rotulo">Emisor</p><p><strong>' + esc(E.razon) + '</strong></p><p>RUT ' + (E.rut ? esc(E.rut) : '—') + '</p><p>' + esc(E.direccion) + '</p></div>' +
+          '<div><p class="factura__rotulo">Cliente</p>' + (f.tipo === 'efactura' ? '<p><strong>' + esc(f.cliente.razon) + '</strong></p><p>RUT ' + esc(f.cliente.rut) + '</p>' : '<p><strong>' + esc(f.cliente.nombre) + '</strong></p><p>Consumidor final</p>') + '</div></div>' +
+        '<table class="factura__detalle"><thead><tr><th>Detalle</th><th class="num">Importe</th></tr></thead><tbody>' +
+          f.lineas.map(function (l) { return '<tr><td>' + esc(l.concepto) + '</td><td class="num">' + plata(l.monto) + '</td></tr>'; }).join('') + '</tbody></table>' +
+        '<dl class="factura__totales"><div><dt>Subtotal sin IVA</dt><dd>' + plata(neto) + '</dd></div><div><dt>IVA ' + f.iva + '%</dt><dd>' + plata(iva) + '</dd></div><div class="factura__total"><dt>Total</dt><dd>' + plata(f.total) + '</dd></div></dl>' +
+        '<p class="factura__pie">Reserva ' + f.codigo + (r ? ' · ' + esc(r.vehiculo.matricula) + ' · pagado ' + medioTexto(r) : '') + '</p>' +
+      '</div>' +
+      '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-imprimir>' + ico('printer') + 'Imprimir factura</button>' +
+        (r && r.estado === 'en_predio' ? '<button class="btn btn--linea" type="button" data-ver-ticket="' + r.id + '">' + ico('receipt') + 'Comprobante del auto</button>' : '') +
+        '<button class="btn btn--linea" type="button" data-cerrar-ventana>Listo</button></div>', 'ancha');
+    $('[data-imprimir]', caja).addEventListener('click', function () { window.print(); });
   }
   function sinReserva() {
     formReserva();
@@ -393,7 +454,8 @@
   }
 
   /* Comprobante imprimible con código de barras */
-  function ticket(r, tipo) {
+  function ticket(r, tipo, fac) {
+    fac = fac || (r.factura && D().facturas.filter(function (x) { return x.id === r.factura; })[0]);
     var p = PD.precio(r);
     var caja = abrirVentana(
       '<div class="ticket" id="ticket"><svg class="ticket__logo" viewBox="0 0 822.78 263.63" aria-hidden="true"><use href="#logo-v"/></svg>' +
@@ -405,7 +467,9 @@
         fila('Pagado', plata(r.pago.monto) + (r.pago.medio ? ' · ' + MEDIOS[r.pago.medio] : '')) + '</dl>' +
       '<svg class="ticket__barras" data-barras></svg>' +
       '<p class="ticket__pie">Presentá este comprobante para retirar el auto.<br>Atendió: ' + esc(nombreUsuario()) + '</p></div>' +
-      '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-imprimir>' + ico('printer') + 'Imprimir</button><button class="btn btn--linea" type="button" data-cerrar-ventana>Listo</button></div>', 'ticket');
+      '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-imprimir>' + ico('printer') + 'Imprimir</button>' +
+        (fac ? '<button class="btn btn--linea" type="button" data-ver-factura="' + fac.id + '">' + ico('file-text') + 'Ver factura</button>' : '') +
+        '<button class="btn btn--linea" type="button" data-cerrar-ventana>Listo</button></div>', 'ticket');
     try { JsBarcode($('[data-barras]', caja), r.codigo.replace('-', ''), { format: 'CODE128', height: 56, displayValue: true, fontSize: 14, margin: 0, lineColor: '#053f5c' }); } catch (e) { /* sin librería: queda el código en texto */ }
     $('[data-imprimir]', caja).addEventListener('click', function () { window.print(); });
   }
@@ -649,7 +713,12 @@
         '<div class="formulario__fila"><label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado</option><option value="aire">Predio</option></select></label><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet</option></select></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Retira</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
         '</form><div class="total-grande" data-simulado></div>') +
-    '</div>';
+    '</div>' +
+      bloque('Datos para la factura', null, (D().empresa.rut ? '' : '<p class="aviso-tabla">' + ico('info') + 'Cargá el RUT del parking: sale en cada e-Ticket y e-Factura.</p>') +
+        '<form class="formulario" data-form-empresa>' +
+        '<div class="formulario__fila"><label class="campo"><span>Razón social</span><input name="razon" value="' + esc(D().empresa.razon) + '"></label><label class="campo"><span>RUT del parking</span><input name="rut" inputmode="numeric" maxlength="12" value="' + esc(D().empresa.rut) + '"></label></div>' +
+        '<div class="formulario__fila"><label class="campo"><span>Dirección</span><input name="direccion" value="' + esc(D().empresa.direccion) + '"></label><label class="campo"><span>IVA (%)</span><input name="iva" type="number" min="0" max="30" value="' + D().empresa.iva + '"></label></div>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar datos</button></div></form>');
   };
   function simular() {
     var f = $('[data-form-simulador]'); if (!f) return;
@@ -760,6 +829,9 @@
     if ((el = t.closest('[data-elegir-llegada]'))) { location.hash = '#/llegada?c=' + el.getAttribute('data-elegir-llegada'); return; }
     if ((el = t.closest('[data-elegir-retiro]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-elegir-retiro'); return; }
     if (t.closest('[data-nueva-reserva]')) return formReserva();
+    if ((el = t.closest('[data-guardar-transferencia]'))) return guardarTransferencia(el.getAttribute('data-guardar-transferencia'), el);
+    if ((el = t.closest('[data-ver-factura]'))) { var fc = D().facturas.filter(function (x) { return x.id === el.getAttribute('data-ver-factura'); })[0]; if (fc) verFactura(fc); return; }
+    if ((el = t.closest('[data-ver-ticket]'))) { var rt = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-ver-ticket'); })[0]; if (rt) ticket(rt, 'entrada'); return; }
     if (t.closest('[data-sin-reserva]')) return sinReserva();
     if ((el = t.closest('[data-cancelar]'))) {
       var r = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-cancelar'); })[0];
@@ -823,6 +895,7 @@
     if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); }
   });
   document.addEventListener('change', function (e) {
+    if (e.target.matches('[name="tipoFactura"]')) { var cr = $('[data-campos-rut]'); if (cr) cr.hidden = e.target.value !== 'efactura'; }
     if (e.target.matches('[data-restaurar]')) {
       var f = e.target.files[0]; if (!f) return;
       f.text().then(function (txt) { try { PD.importar(txt); avisar('Respaldo restaurado'); pintar(); } catch (err) { avisar('Ese archivo no es un respaldo válido', 'alerta'); } });
@@ -832,6 +905,11 @@
     var f = e.target;
     if (f.matches('[data-form-llegada]')) { e.preventDefault(); return registrarLlegada(f.getAttribute('data-id'), f); }
     if (f.matches('[data-form-retiro]')) { e.preventDefault(); return registrarRetiro(f.getAttribute('data-id'), f); }
+    if (f.matches('[data-form-empresa]')) {
+      e.preventDefault(); var em = D().empresa;
+      em.razon = f.razon.value.trim() || em.razon; em.rut = f.rut.value.replace(/\D/g, ''); em.direccion = f.direccion.value.trim(); em.iva = Math.max(0, +f.iva.value || 0);
+      PD.guardar(nombreUsuario(), 'Cambió los datos para la factura'); avisar('Datos para la factura guardados'); return pintar();
+    }
     if (f.matches('[data-form-tarifas]')) {
       e.preventDefault(); var t = D().tarifas;
       ['techado', 'aire', 'valet', 'graciaHoras', 'minimoDias'].forEach(function (k) { t[k] = Math.max(0, +f[k].value || 0); });

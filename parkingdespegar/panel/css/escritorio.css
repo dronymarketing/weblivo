@@ -74,7 +74,7 @@
 .ventana__caja--ancha { max-width: 680px; }
 .ventana__caja--ticket { max-width: 400px; }
 .ventana__cerrar { top: 14px; right: 14px; }
-.ventana__acciones .btn { flex: 0 0 auto; }
+.ventana__acciones .btn, .formulario .ventana__acciones .btn[type="submit"] { flex: 0 0 auto; }
 .ficha > div { grid-template-columns: 150px 1fr; gap: 16px; }
 
 .mapa-lugares { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }

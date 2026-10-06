@@ -184,8 +184,20 @@ entero se dice «parking» (estado «En el parking», sector «Autos en el parki
 **Entrada** (cobro obligatorio, con vuelto) antes de que se le asigne el lugar. **Salida** no cobra: solo
 entrega llaves y libera el lugar; si se quedó más días de lo reservado aparece la diferencia, y cobrarla
 es opcional. Entrada y Salida usan el mismo ícono de auto: Entrada en menta, Salida en ámbar.
-**Paleta del panel = la del branding:** Hoy navy · Autos en el parking menta · Reservas azul apagado ·
-Plata naranja · Ajustes neutro (#C9D6D4) · Salida ámbar. Lugares disponibles usa la menta.
+**Paleta del panel = solo la del branding (PDF):** #053F5C · #FF6712 · #FFFFFF · #FFA726 · #A0EACF ·
+#F1F6F4, más el azul apagado #47728A. Hoy navy · Autos en el parking y Entrada menta · Salida ámbar ·
+Reservas azul apagado · Plata naranja · Ajustes gris. Los íconos van en chips llenos del color del sector
+(ícono navy sobre menta y ámbar, blanco sobre navy, naranja y azul apagado); la menta y el ámbar no se
+usan como texto sobre blanco. «Lugares disponibles»: el número va sobre la menta. Los estados (pagado,
+no pagado, falta) mantienen verde, rojo y ámbar de sistema, siempre con ícono y texto.
+
+**Transferencia anticipada y factura (Santi, 6/10):** en Entrada, «¿Ya pagó por transferencia?» guarda
+monto y nº de operación antes de que llegue el cliente (pago parcial o total; queda en la caja como
+transferencia). Al registrar la entrada se cobra lo que falte y se **emite la factura**: e-Ticket
+(consumidor final) o e-Factura (RUT de 12 dígitos y razón social). Numeración serie A correlativa, IVA
+incluido (22 %, editable). Los datos del emisor (razón social, **RUT del parking: falta**, dirección) se
+cargan en Precios → Datos para la factura. Para que sea legal hay que conectarla a un proveedor de
+facturación electrónica habilitado por DGI (agrega CAE, QR y envío a DGI).
 
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
@@ -206,5 +218,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=5`, reservar.js `?v=3`; en `panel/`: movil.css `?v=11`, escritorio.css `?v=2`, app.js `?v=11`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=6`, reservar.js `?v=3`; en `panel/`: movil.css `?v=12`, escritorio.css `?v=3`, app.js `?v=12`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

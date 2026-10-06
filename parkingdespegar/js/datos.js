@@ -31,6 +31,7 @@
   /* ---------- Utilidades ---------- */
   function semilla(n) { return function () { n = (n * 16807) % 2147483647; return n / 2147483647; }; }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function pad4(n) { return ('000' + n).slice(-4); }
   function iso(d) { return new Date(d).toISOString(); }
   function uid() { return Math.random().toString(36).slice(2, 10); }
 
@@ -138,6 +139,9 @@
       lugares: LUGARES,
       reservas: reservas,
       caja: { turnoActual: { id: uid(), apertura: iso(apertura), base: 3000, usuario: 'Personal de turno', movimientos: movimientos }, cerrados: [] },
+      /* Datos del emisor para las facturas: razón social y RUT los carga la dueña en Precios */
+      empresa: { razon: 'Parking Despegar', rut: '', direccion: 'Av. Wilson Ferreira Aldunate 5536, Paso de Carrasco', iva: 22 },
+      facturas: [],
       usuarios: [
         { id: 'u1', nombre: 'Dueña del parking', usuario: 'admin', clave: 'despegar', rol: 'admin', activo: true },
         { id: 'u2', nombre: 'Personal de turno', usuario: 'personal', clave: 'despegar', rol: 'personal', activo: true },
@@ -153,6 +157,8 @@
     if (cache) return cache;
     try { cache = JSON.parse(localStorage.getItem(CLAVE)); } catch (e) { cache = null; }
     if (!cache || cache.version !== 1) { cache = muestra(); escribir(); }
+    if (!cache.empresa) cache.empresa = { razon: 'Parking Despegar', rut: '', direccion: 'Av. Wilson Ferreira Aldunate 5536, Paso de Carrasco', iva: 22 };
+    if (!cache.facturas) cache.facturas = [];
     return cache;
   }
   function escribir() {
@@ -189,6 +195,7 @@
     lugaresLibres: lugaresLibres,
     uid: uid,
     pad: pad,
+    pad4: pad4,
     nuevoCodigo: function () {
       var max = 2100;
       leer().reservas.forEach(function (r) { var n = parseInt(String(r.codigo).replace(/\D/g, ''), 10); if (n > max) max = n; });
@@ -212,10 +219,31 @@
     registrarPago: function (r, monto, medio, usuario, ref) {
       var d = leer();
       var pagado = (r.pago && r.pago.monto ? r.pago.monto : 0) + monto;
-      r.pago = { estado: pagado >= r.total ? 'pagado' : 'parcial', monto: pagado, medio: medio, ref: ref || null, fecha: iso(Date.now()) };
+      r.pago = { estado: pagado >= r.total ? 'pagado' : 'parcial', monto: pagado, medio: medio, ref: ref || (r.pago && r.pago.ref) || null, fecha: iso(Date.now()) };
+      r.pagos = (r.pagos || []).concat([{ monto: monto, medio: medio, ref: ref || null, fecha: iso(Date.now()), usuario: usuario || 'web' }]);
       if (d.caja.turnoActual) d.caja.turnoActual.movimientos.unshift({ id: uid(), hora: iso(Date.now()), concepto: 'Reserva ' + r.codigo + ' · ' + r.vehiculo.matricula, medio: medio, monto: monto, usuario: usuario || 'web' });
       auditar(usuario || 'web', 'Pago de ' + r.codigo + ': $ ' + monto + ' (' + medio + ')');
       escribir();
+    },
+    /* Emite la factura de una reserva pagada: e-Ticket (consumidor final) o e-Factura (con RUT).
+       En producción se manda al proveedor de facturación electrónica habilitado por DGI. */
+    emitirFactura: function (r, datos, usuario) {
+      var d = leer();
+      var ult = d.facturas.reduce(function (m, f) { return Math.max(m, f.numero); }, 0);
+      var p = precio(r, d.tarifas);
+      var f = {
+        id: uid(), serie: 'A', numero: ult + 1, tipo: datos.tipo === 'efactura' ? 'efactura' : 'eticket', fecha: iso(Date.now()),
+        reservaId: r.id, codigo: r.codigo,
+        cliente: datos.tipo === 'efactura' ? { razon: datos.razon, rut: datos.rut } : { nombre: r.cliente.nombre },
+        lineas: [{ concepto: 'Estacionamiento ' + (r.lugarTipo === 'techado' ? 'techado' : 'en predio') + ' · ' + p.dias + (p.dias === 1 ? ' día' : ' días'), monto: p.base }]
+          .concat(p.extra ? [{ concepto: 'Valet Parking', monto: p.extra }] : [])
+          .concat(r.total > p.total ? [{ concepto: 'Días adicionales', monto: r.total - p.total }] : []),
+        total: r.pago.monto, iva: d.empresa.iva, medio: r.pago.medio, usuario: usuario
+      };
+      d.facturas.push(f); r.factura = f.id;
+      auditar(usuario, 'Emitió ' + (f.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + ' A-' + pad4(f.numero) + ' de ' + r.codigo);
+      escribir();
+      return f;
     },
     restablecer: function () { cache = muestra(); escribir(); },
     exportar: function () { return JSON.stringify(leer(), null, 2); },
