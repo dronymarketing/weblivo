@@ -18,7 +18,7 @@
 .nav--solido::before { opacity: 0; }
 .nav__marca { margin-right: 0; }
 .nav__tigre { width: 38px; height: 34px; }
-.nav__wordmark { font-size: 36px; }
+.nav__palabra { height: 32px; }
 .nav__links { display: flex; align-items: center; gap: clamp(16px, 2vw, 28px); margin-right: auto; }
 .nav__links a {
   position: relative; display: flex; align-items: center; min-height: 44px;

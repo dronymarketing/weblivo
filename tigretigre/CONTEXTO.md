@@ -33,10 +33,10 @@ Web: https://livo.com.uy/tigretigre/
   tigre + TigreTigre + PRODUCCIONES), `img/tigre.svg` (cabeza; también en el sprite como `#tigre`),
   `img/logo-texto.svg` (palabra + lema, para la entrada) y `img/logo-palabra.svg` (solo la palabra).
   Va en la entrada, el pie, la tarjeta de WhatsApp (`og-blanco.jpg?v=2`), el favicon y el ícono.
-- **Barra de arriba:** tigre + **TIGRETIGRE** en **Bebas Neue** (Google Fonts, OFL, en `fonts/`),
-  condensada como la de Netflix (pedido de Santi), sin la curva de su logo. PENDIENTE: Santi elige si
-  queda así o con la letra de su logo (`refs/maquetas/nav-opciones.png`). Cuerpo en Neue Haas Grotesk
-  Display Pro (de fabianamartinez, como Rhodium).
+- **Barra de arriba:** tigre + **la palabra de su logo** (`img/logo-palabra.svg`, 27px de alto en el
+  celular y 32px en escritorio). Santi la eligió el 6/10 frente a TIGRETIGRE en letra tipo Netflix
+  (`refs/maquetas/nav-opciones.png`). **Bebas Neue** (Google Fonts, OFL, en `fonts/`) queda para nombres y
+  títulos. Cuerpo en Neue Haas Grotesk Display Pro (de fabianamartinez, como Rhodium).
 - **Navegación:** en el celular, **barra de pestañas abajo** como la app (pedido de Santi, en lugar de
   la hamburguesa): Inicio · Comunicadores · Shows · Clips · Contratar. En escritorio, los links arriba
   (regla de Livo). La barra de arriba **nunca se esconde** (regla de Livo): toma fondo negro al bajar.
@@ -133,7 +133,6 @@ regresiva (pasa solo al siguiente), rotación del hero y la entrada (solo la pri
 - **Fotos de cada comunicador** en buena resolución (vertical, fondo oscuro, parecidas entre sí).
 - **Los clips reales** (videos verticales de 1–2 min): dónde están (Reels, archivos) y quién los sube.
 - **Archivo original del logo** (si lo tienen): el vector salió de una captura de 940px.
-- **Barra de arriba:** ¿letra tipo Netflix (como está) o la de su logo? (`refs/maquetas/nav-opciones.png`).
 - Funciones que faltan (E2, E3, E4, E8, E9, E10) y el tercero del E11 («Diego Ma…», cortado en la captura).
 
 ## Cómo se generó
@@ -141,5 +140,5 @@ regresiva (pasa solo al siguiente), rotación del hero y la entrada (solo la pri
 Los cinco HTML repiten sprite, entrada, header, pie, barra de abajo y capas idénticos (el ítem de la
 página actual lleva `aria-current="page"`). Si cambia alguno, cambiarlo en los cinco. Íconos: Lucide
 (interfaz) y Simple Icons (Instagram y WhatsApp), en sprite inline.
-Caché: `movil.css`, `escritorio.css`, `datos.js` y `main.js` en `?v=2`; el resto en `?v=1`. Subirlo en los
+Caché: `movil.css` y `escritorio.css` en `?v=3`, `datos.js` y `main.js` en `?v=2`, el resto en `?v=1`. Subirlo en los
 cinco HTML cada vez que se tocan.
