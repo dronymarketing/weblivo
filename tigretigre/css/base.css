@@ -1,0 +1,86 @@
+/* ============================================================
+   TIGRETIGRE — Base: reset, tipografía, íconos y transiciones entre páginas
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--fondo);
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Barra inferior del sistema */
+body::after {
+  content: '';
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--barra-inferior);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input, select, textarea { font: inherit; color: inherit; }
+ul, ol { list-style: none; }
+strong { font-weight: 500; }
+
+[id] { scroll-margin-top: calc(var(--nav-alto) + 16px); }
+
+:focus-visible { outline: 2px solid var(--naranja-claro); outline-offset: 3px; border-radius: 4px; }
+
+.solo-lectores {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Íconos: Lucide (trazo) ---------- */
+.ico {
+  width: 24px; height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ico--lleno { fill: currentColor; stroke: none; }
+/* Simple Icons (Instagram, WhatsApp): son de relleno */
+.ico-marca { width: 22px; height: 22px; fill: currentColor; flex-shrink: 0; }
+
+/* El tigre del logo (img/tigre.svg), con el degradé de la marca */
+.tigre { fill: url(#degrade-tigre); flex-shrink: 0; }
+
+/* ---------- Entre páginas: fundido (View Transitions, Chrome y Safari nuevos) ---------- */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: 220ms ease both salir; }
+::view-transition-new(root) { animation: 320ms var(--curva) both entrar; }
+@keyframes salir  { to   { opacity: 0; } }
+@keyframes entrar { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  .con-intro .intro { display: none; }
+  .slide__foto, .slide.is-activa .slide__foto { transform: none; transition: none; }
+  .js .slide__texto > * { transition: none; }
+  .cue .ico { animation: none; }
+  .ficha__hoja, .ficha__velo { transition: none; }
+  .busqueda, .player, .siguiente { animation: none; }
+}

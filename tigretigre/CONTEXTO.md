@@ -3,112 +3,127 @@
 Productora de shows y eventos en Montevideo. Instagram: @tigretigreproducciones.
 Mail: TigreTigreproducciones@gmail.com. Su show fijo es **Stand Up Vieja Chela** (miércoles 22 h en
 Vieja Chela Comedia & Cerveza, Alejo Rosell y Rius 1700), que comunican como una serie: temporada 4,
-episodio 12. También hacen un Open Mic los martes en el mismo lugar.
+episodio 12. También hacen un **Open Mic** los martes 21:30 en el mismo lugar.
+Web: https://livo.com.uy/tigretigre/
 
-## Pedido del cliente (Santi, 6/10)
+## Pedido (Santi, 6/10)
 
-- Colores de las referencias: **dark con naranja**.
-- Temática **estilo app de streaming (tipo Netflix)**, sin copiarla: nunca su logo, la N, el nombre,
-  su tipografía ni su rojo.
-- Estructura como **Rhodium** (páginas separadas, el inicio con un adelanto de cada una y botón a su
-  página) y lo aprendido en **Parking Despegar**.
-- **Hero como el inicio de la app:** rotan los comunicadores, cada uno con foto, nombre, descripción
-  y etiqueta de lo que hace.
-- **Comunicadores especializados** en áreas de la comunicación en vivo: humor negro, humor para
-  adultos mayores, cumpleaños, despedidas de soltero, stand up, etc.
-- **Lupa arriba (buscador)** que filtra por las etiquetas de los comunicadores.
-- **Shows entre comunicadores:** cada show es como una serie («nombre del show en tal lugar») y abajo
-  se muestran sus personajes (el elenco), como la ficha de una serie.
-- En vez de temporadas y episodios, **chistes cortos (clips de 1–2 min)** que se van subiendo.
+- **Dark con naranja** y temática **de app de streaming (tipo Netflix)**, sin copiarla: nunca su logo,
+  la N, el nombre, su tipografía ni su rojo.
+- Estructura como **Rhodium** (páginas separadas, el inicio con un adelanto de cada una) y lo
+  aprendido en **Parking Despegar**.
+- **Hero como el inicio de la app:** rotan los comunicadores con foto, nombre, descripción y etiqueta.
+- **Comunicadores especializados** (humor negro, adultos mayores, cumpleaños, despedidas, stand up…).
+- **Lupa arriba** que busca por las etiquetas.
+- **Shows como series:** «nombre del show en tal lugar», con sus **personajes** (elenco) debajo, y en vez
+  de temporadas y episodios, **clips cortos** que se van subiendo.
+- «Es un borrador: hacé con lo que tengas a mano» (Santi, 6/10).
 
-## Referencias (`refs/`)
+## Decisiones
 
-- `instagram-perfil.jpg` — perfil de Instagram (bio, mail, grilla de flyers).
-- `flyer-t4e12.jpg` — Stand Up Vieja Chela T4 E12 (Maxi Montanari, Gabo9d, Lucho Díaz).
-- `flyer-t4e7.jpg` — Stand Up Vieja Chela T4 E7 (Pablo Oyhenart, Gabo9d, Ponetepillo).
-- `ref-app-streaming.jpg` — capturas de la app de Netflix: solo como referencia de estructura.
+- **Paleta «Clownfish»** (elegida por Santi de Pinterest, `refs/paleta-clownfish.jpg`): #000000 ·
+  #F2F0E4 · #F28705 · #F25C05 · #F24405. Antes se descartaron dos propuestas (la primera «de plástico»;
+  tres en OKLCH, maquetas en `refs/paletas/`). Roles en `css/tokens-proyecto.css`.
+- **Texto en blanco, como Netflix** (Santi), también sobre los botones. El blanco sobre los naranjas de
+  la paleta no llega a 4,5:1, así que los botones llevan **#D63E04** (4,6:1). Los naranjas vivos van en
+  el tigre, la marca, los puntos de las etiquetas, las barritas y las insignias «Nuevo» / «Hoy».
+  Botón claro («Ver clips») en crema #F2F0E4 con texto negro.
+- **Marca:** el tigre del logo del cliente, vectorizado de su foto de perfil (`img/tigre.svg`, potrace),
+  con degradé #F28705 → #F25C05 → #F24405, y **TIGRETIGRE** en **Bebas Neue** (Google Fonts, OFL, en
+  `fonts/`): condensada como la de Netflix, sin la curva de su logo. Cuerpo en Neue Haas Grotesk
+  Display Pro (de fabianamartinez, como Rhodium).
+- **Navegación:** en el celular, **barra de pestañas abajo** como la app (pedido de Santi, en lugar de
+  la hamburguesa): Inicio · Comunicadores · Shows · Clips · Contratar. En escritorio, los links arriba
+  (regla de Livo). La barra de arriba **nunca se esconde** (regla de Livo): toma fondo negro al bajar.
+- **Sin vidrio (glass):** barras negras sólidas. El registro es «Otro» y no se preguntó todavía.
+- **Acción principal:** «Contratar» = formulario corto que termina en WhatsApp (Santi eligió la opción 2).
 
-## Paleta (cuantizada de los dos flyers, sin la interfaz del teléfono)
+## Páginas
 
-Área: #010000 20.7% · #A36241 14.1% · #432B1B 13.0% · #0D0705 11.8% · #833721 11.6% ·
-#291107 11.5% · #D3AC8C 10.4% (T4E12) — #020003 34.5% · #50332F 13.7% · #AC968B 11.2% · #2D0C0C 9.6% (T4E7).
-Vivos (S y V > 0.55): naranja #CB6230 (VIEJA CHELA) · ámbar #E19945 (pastilla de fecha) · rojo #A52823 (Reservá gratis).
+- `index.html` — hero que rota (6 comunicadores: `TT.hero`), filas de **Comunicadores** y **Clips
+  nuevos**, **Próximas funciones** (como «Próximamente» de la app: fecha grande, foto, «Hoy» / «Mañana»
+  calculado con la fecha real, elenco y botones) y **¿Qué estás buscando?** (mosaicos de color por
+  etiqueta que llevan a comunicadores filtrados). Cada fila tiene su «Ver todos».
+- `comunicadores.html` — grilla de pósters con filtro por etiqueta (`?etiqueta=…`); `?c=id` abre la ficha.
+- `shows.html` — cada show como la ficha de una serie: portada, tipo «Show en Vieja Chela», título,
+  «Entrada gratis · 2026 · Temporada 4 · Miércoles 22 h», «Reservá gratis» / «Anotate» (WhatsApp),
+  «Ver clips», descripción, lugar con «Cómo llegar», **Personajes** (fotos redondas que abren la ficha) y
+  pestañas **Clips · Funciones** (la barra naranja arriba de la activa, como la app). El Open Mic suma
+  «Anotados este martes» (los 6 del flyer).
+- `clips.html` — en el celular, **un clip por pantalla** como los clips cortos de la app (deslizar, botón
+  de play, Contratar · Compartir · Ficha a la derecha); en escritorio, grilla de verticales.
+- `contratar.html` — 4 pasos: tipo de evento (cápsulas) · **«¿Quién te hace reír?»** (como elegir perfil
+  en la app, con «Que me recomienden») · fecha y personas · lugar y nombre → «Pedir por WhatsApp».
+  `?c=id` preselecciona al comunicador; `?e=Cumpleaños`, el evento.
+- En todas: **búsqueda** (lupa: texto + etiquetas), **ficha** (hoja desde abajo en el celular, ventana al
+  centro en escritorio, se cierra deslizando hacia abajo) y **reproductor** (barra de avance y, al
+  terminar, «Siguiente clip en 5» con anillo de cuenta regresiva, «Ver ahora» y «Cancelar»).
 
-Primera propuesta (fondo #0D0705 · naranja #E8702F · ámbar #F0A548): Santi la descartó, pidió una paleta
-**profesional, que no parezca de plástico ni de IA genérica**. Ahí se sacó el ámbar (dos acentos hacen
-golosina) y se armaron tres en OKLCH: una escala de neutros con el mismo matiz cálido, texto crema (nunca
-blanco puro) y un solo naranja en poca superficie (botón principal, antetítulo, barras de avance).
-Maquetas en `refs/paletas/` (pendiente de elegir):
+## Movimiento: como la app (Santi: «lo más similar, la idea es sentir eso»)
 
-| | Fondo | Superficie | Sup. 2 | Hondo | Naranja | Suave | Texto |
-|---|---|---|---|---|---|---|---|
-| 1 Brasa | #120D0A | #1E1814 | #2D241F | #77391F | #DC723A (6,0:1) | #B0A198 | #F1E7E1 |
-| 2 Tabaco | #160F0A | #231A12 | #33271E | #693923 | #C87549 (5,5:1) | #B4A093 | #F2E3D8 |
-| 3 Grafito | #0D0C0B | #191715 | #262322 | #843312 | #ED6D2D (6,4:1) | #A4A19E | #F1EEEB |
+- **Entrada:** la primera vez de la sesión (`sessionStorage` `tt-intro`, la pone el `<head>`): negro, el
+  tigre aparece de abajo hacia arriba con brillo naranja, TIGRETIGRE se abre, y todo se acerca y se funde.
+  ~1,9 s, solo CSS (si el JS falla, igual termina). Un toque la saltea. No va con movimiento reducido.
+- **Hero:** cada 7 s; foto que se funde con acercamiento lento, texto escalonado, el tinte del fondo y la
+  barra del teléfono (`theme-color`) toman el color de cada comunicador (`tinte` en los datos), barritas
+  que se llenan. Se pasa con el dedo o tocando una barrita. Se frena fuera de pantalla, con la pestaña
+  oculta, con una capa abierta, con el mouse encima o con el foco del teclado. Con movimiento reducido no
+  rota sola.
+- **Pósters:** se hunden al tocarlos; en escritorio crecen con el mouse encima (con demora) y muestran
+  íconos y etiquetas. Flechas a los costados de cada fila en escritorio.
+- **Entre páginas:** fundido con View Transitions (Chrome y Safari nuevos).
+- Fotos con rectángulo oscuro hasta que cargan y fundido al llegar. Sin apariciones al scroll.
 
-Texto sobre los botones naranjas: el color de fondo (5,5–6,4:1). El blanco no pasa.
+## Datos (`js/datos.js` → `window.TT`)
 
-**Santi eligió otra: «Clownfish»** (`refs/paleta-clownfish.jpg`, de Pinterest): #F2F0E4 · #F28705 ·
-#F25C05 · #F24405 · #000000. Maqueta en `refs/paletas/4-clownfish.png`. Roles propuestos (a confirmar):
-fondo #000000 · superficie #111110 y #1D1D1B (crema al 7 y 12 % sobre negro) · texto #F2F0E4 (18,4:1) ·
-texto suave #A09E96 (7,8:1) · naranja principal #F25C05 (6,3:1: botón, antetítulos, barras) · naranja
-claro #F28705 (8,2:1: etiquetas «Nuevo», fechas) · naranja hondo #F24405 (5,6:1: botón presionado).
-Sobre los naranjas, texto negro: el crema da 2,2–3,3:1 y no pasa.
+Todo se arma desde ahí: para sumar un comunicador, un show, una función o un clip se agrega una entrada.
+- **Comunicadores (10)** con foto de los flyers: Gabo9d, Lucho Díaz, Augusto D’Angelo, Willy, Mati Morales,
+  Andrés Bazzano, Maxi Montanari, Pablo Oyhenart, Ponetepillo y Chivi. Descripciones = hechos de los
+  flyers (quién abrió o cerró qué episodio). **Etiquetas:** «Stand up» y «Conducción» son reales; el resto
+  (humor negro, adultos mayores, cumpleaños, despedidas, eventos privados) es **MUESTRA**.
+  Ojo: a Willy no se le pone «Humor negro» (se le sacó) y los mosaicos de etiquetas no llevan fotos, para
+  no asociar a nadie con una etiqueta de muestra.
+- **Funciones de la T4:** E1 (3/6), E5 (15/7), E6 (22/7), E7 (5/8, «La noche de la risa»), 2/9 (sin número),
+  E11 (30/9) y E12 (7/10, foto propia `img/shows/t4e12.jpg`). Los roles (apertura, presentador, cierre) solo
+  donde el flyer los dice.
+- **Clips (9):** los tres de la T4 E1 con su nombre y arte del flyer («Me falta un dáctil», «Soy indeciso»,
+  «¿Se tomaron el G?»); el resto con la foto del comunicador y un título descriptivo («Apertura del
+  episodio 6»…). **Todos reproducen `img/clips/muestra.mp4`** (micrófono, 12 s, hecho con ffmpeg de la foto
+  de banco; `muestra.webm` para navegadores sin H.264).
 
-**Ajustes de Santi sobre la Clownfish (6/10):**
-- **Texto en blanco, como Netflix**, también sobre los botones naranjas. El blanco sobre #F25C05 da 3,3:1
-  y sobre #F24405 3,75:1, así que los botones llevan un tono propio, **#D63E04** (blanco a 4,6:1).
-  Los naranjas vivos quedan para el tigre, la marca, los puntos de las etiquetas y la barra que rota.
-- El botón claro («Ver clips») va en crema #F2F0E4 con texto negro.
-- Fondo con tinte: arriba toma el color de la foto del comunicador del hero (#2A1A10 con Gabo9d) y baja
-  a negro, como la app nueva. Cambia con cada comunicador.
+## Fotos
 
-## Inicio como la app (maqueta `refs/maquetas/inicio-v1.png`)
+- Comunicadores: recortes de los flyers del cliente (`refs/`), en `img/comunicadores/<id>.jpg`. Son de
+  capturas de pantalla: en escritorio se ven blandas. Las de Maxi, Pablo, Ponetepillo y Chivi son las más
+  chicas.
+- `img/shows/stand-up-vieja-chela.jpg` y `t4e12.jpg`: bandas de los flyers. `vieja-chela-logo.jpg`: logo del
+  bar (de los flyers, sin usar todavía).
+- `img/shows/open-mic.jpg`: **foto de banco** (Unsplash, micrófono, sin personas).
+- `img/og-blanco.jpg`: tarjeta de WhatsApp (tigre + TIGRETIGRE + PRODUCCIONES en blanco). `img/icono-180.png`.
+- Sin avisos de «muestra» en pantalla (como pidió Santi en Rhodium y Parking): están en el código.
 
-Referencias: `refs/ref-inicio-app.jpg` (Santi eligió la versión nueva, la de la derecha) y
-`refs/ref-ficha-app.jpg` (ficha de una serie).
-- Arriba a la izquierda, **el tigre del logo del cliente** vectorizado de su foto de perfil
-  (`img/tigre.svg`, potrace) con degradé #F28705 → #F25C05 → #F24405, y al lado **TIGRETIGRE** en
-  Bebas Neue (Google Fonts, OFL, local en `fonts/`) con el mismo degradé: condensada como la de
-  Netflix, pero sin la curva de su logo. A la derecha, la lupa.
-- Debajo, cápsulas: Comunicadores · Shows · Etiquetas ⌄.
-- Tarjeta del hero con reborde fino: tigre chico + «COMUNICADOR» espaciado (como «N SERIE»), nombre
-  en Bebas, etiquetas separadas por puntos naranjas, «Ver clips» y «Contratar». Debajo, la barra que
-  marca la rotación.
-- Fila de pósters con el tigre chico arriba a la izquierda y «Nuevo clip» en #F28705 con texto negro.
-- **Barra de navegación abajo en el celular** (pedido de Santi, en lugar de la hamburguesa):
-  Inicio · Comunicadores · Shows · Clips · Contratar, íconos Lucide. En escritorio, los links arriba.
-- Cuerpo en Neue Haas Grotesk Display Pro (reutilizada de fabianamartinez, como Rhodium).
+## Verificado
 
-## Movimiento: como la app (Santi, 6/10: «lo más similar, la idea es sentir eso»)
+Playwright en 320×568, 360×640, 375×812, 390×844, 412×915, 1024×768, 1440×900 y 1920×1080: sin scroll
+horizontal ni errores de consola. Probados: ficha, búsqueda con etiqueta, reproductor con la cuenta
+regresiva (pasa solo al siguiente), rotación del hero y la entrada (solo la primera carga).
 
-Ningún paquete del catálogo: se imita cómo se mueve la app, con scroll nativo y sin librerías de scroll.
-- **Entrada:** la primera vez de la sesión, pantalla negra con el tigre que se dibuja con brillo
-  naranja, aparece TIGRETIGRE y todo se acerca y se funde (en el espíritu de la intro de la N, sin
-  copiarla). Dura ~1,5 s, se saltea con un toque, no va con movimiento reducido. Sin sonido.
-- **Hero:** rota cada ~7 s. La foto se funde con un acercamiento lento, el texto sale y entra
-  escalonado, el tinte del fondo cambia con el comunicador y la barrita de abajo se llena.
-  Se pasa con el dedo; se pausa fuera de pantalla o con la pestaña oculta.
-- **Barra de arriba:** al bajar se esconde, al subir vuelve, con fondo negro desenfocado una vez que
-  hay contenido debajo. Las cápsulas quedan pegadas.
-- **Pósters:** en el celular, un toque abre la ficha como hoja desde abajo (fondo oscurecido).
-  En escritorio, con el mouse encima ~300 ms, el póster crece y muestra botones, etiquetas y datos.
-- **Filas:** deslizan con el dedo y se acomodan solas (scroll-snap). En escritorio, flechas a los costados
-  e indicador de página arriba a la derecha.
-- **Entre páginas:** fundido con View Transitions (Chrome y Safari nuevos; el resto, navegación normal).
-- **Clips:** al terminar uno, «Siguiente clip en 5» con cuenta regresiva en círculo.
-- **Detalles:** botones que se hunden al tocarlos, ícono lleno en la pestaña activa, rectángulos oscuros
-  mientras cargan las fotos. Sin apariciones al scroll: la app no las tiene.
+## PENDIENTE
 
-## Acción principal (Santi, 6/10)
+- **WhatsApp de la productora** (`TT.whatsapp` en `js/datos.js`). Mientras esté vacío, los botones abren
+  WhatsApp para elegir contacto, con el mensaje armado.
+- **Por dónde se reserva** Stand Up Vieja Chela (los flyers dicen «Reservá gratis» sin canal): hoy va al
+  mismo WhatsApp.
+- **Especialidades reales** de cada comunicador y una línea de descripción de cada uno.
+- **Fotos de cada comunicador** en buena resolución (vertical, fondo oscuro, parecidas entre sí).
+- **Los clips reales** (videos verticales de 1–2 min): dónde están (Reels, archivos) y quién los sube.
+- **Logo en vector** (el tigre se vectorizó de la foto de perfil). Hay otro tigre en el pie de los flyers.
+- Funciones que faltan (E2, E3, E4, E8, E9, E10) y el tercero del E11 («Diego Ma…», cortado en la captura).
+- ¿Vidrio en las barras (como la app) o se quedan sólidas?
 
-«Contratar» abre un **formulario corto que termina en WhatsApp**: tipo de evento en cápsulas
-(cumpleaños, despedida, empresa…), fecha y cantidad de personas, con el comunicador ya elegido si se
-entró desde su ficha. Arma el mensaje y abre WhatsApp. **Número: PENDIENTE (Santi lo pasa después).**
+## Cómo se generó
 
-## Entrevista
-
-- Tipo: sitio con páginas separadas y adelantos en el inicio (como Rhodium).
-- Rubro: productora de comunicadores y shows de humor.
-- Estética: de cero, con las referencias.
-- Color: de las referencias — **en curso**.
+Los cinco HTML repiten sprite, entrada, header, pie, barra de abajo y capas idénticos (el ítem de la
+página actual lleva `aria-current="page"`). Si cambia alguno, cambiarlo en los cinco. Íconos: Lucide
+(interfaz) y Simple Icons (Instagram y WhatsApp), en sprite inline.
+Caché: todos los CSS y JS en `?v=1`; subirlo en los cinco HTML cada vez que se tocan.
