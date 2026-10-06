@@ -102,9 +102,9 @@
     error(n, '');
     if (n === 1) {
       var b = borrador();
-      if (!b.entrada || !b.salida) return error(1, 'Completá el día y la hora de ida y de vuelta.'), false;
-      if (b.entrada < new Date(Date.now() - 3600000)) return error(1, 'La fecha de ida ya pasó.'), false;
-      if (b.salida <= b.entrada) return error(1, 'La vuelta tiene que ser después de la ida.'), false;
+      if (!b.entrada || !b.salida) return error(1, 'Completá el día y la hora de entrada y de salida.'), false;
+      if (b.entrada < new Date(Date.now() - 3600000)) return error(1, 'La fecha de entrada ya pasó.'), false;
+      if (b.salida <= b.entrada) return error(1, 'La salida tiene que ser después de la entrada.'), false;
     }
     if (n === 2) {
       if (!$('input[name="lugarTipo"]:checked')) return error(2, 'No quedan lugares en esas fechas. Probá con otras.'), false;
@@ -150,8 +150,8 @@
     };
     var p = PD.precio({ entrada: b.entrada, salida: b.salida, lugarTipo: datos.lugarTipo, servicio: datos.servicio });
     var filas = [
-      ['Dejás el auto', fechaLarga(b.entrada)],
-      ['Volvés', fechaLarga(b.salida)],
+      ['Entrada', fechaLarga(b.entrada)],
+      ['Salida', fechaLarga(b.salida)],
       ['Lugar', etiquetaTipo(datos.lugarTipo) + ' · ' + etiquetaServicio(datos.servicio)],
       ['Auto', datos.vehiculo.matricula + ' · ' + datos.vehiculo.modelo + (datos.vehiculo.color ? ' · ' + datos.vehiculo.color : '')],
       ['A nombre de', datos.cliente.nombre + ' · ' + datos.cliente.telefono],
