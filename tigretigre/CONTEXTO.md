@@ -55,6 +55,31 @@ texto suave #A09E96 (7,8:1) · naranja principal #F25C05 (6,3:1: botón, antetí
 claro #F28705 (8,2:1: etiquetas «Nuevo», fechas) · naranja hondo #F24405 (5,6:1: botón presionado).
 Sobre los naranjas, texto negro: el crema da 2,2–3,3:1 y no pasa.
 
+**Ajustes de Santi sobre la Clownfish (6/10):**
+- **Texto en blanco, como Netflix**, también sobre los botones naranjas. El blanco sobre #F25C05 da 3,3:1
+  y sobre #F24405 3,75:1, así que los botones llevan un tono propio, **#D63E04** (blanco a 4,6:1).
+  Los naranjas vivos quedan para el tigre, la marca, los puntos de las etiquetas y la barra que rota.
+- El botón claro («Ver clips») va en crema #F2F0E4 con texto negro.
+- Fondo con tinte: arriba toma el color de la foto del comunicador del hero (#2A1A10 con Gabo9d) y baja
+  a negro, como la app nueva. Cambia con cada comunicador.
+
+## Inicio como la app (maqueta `refs/maquetas/inicio-v1.png`)
+
+Referencias: `refs/ref-inicio-app.jpg` (Santi eligió la versión nueva, la de la derecha) y
+`refs/ref-ficha-app.jpg` (ficha de una serie).
+- Arriba a la izquierda, **el tigre del logo del cliente** vectorizado de su foto de perfil
+  (`img/tigre.svg`, potrace) con degradé #F28705 → #F25C05 → #F24405, y al lado **TIGRETIGRE** en
+  Bebas Neue (Google Fonts, OFL, local en `fonts/`) con el mismo degradé: condensada como la de
+  Netflix, pero sin la curva de su logo. A la derecha, la lupa.
+- Debajo, cápsulas: Comunicadores · Shows · Etiquetas ⌄.
+- Tarjeta del hero con reborde fino: tigre chico + «COMUNICADOR» espaciado (como «N SERIE»), nombre
+  en Bebas, etiquetas separadas por puntos naranjas, «Ver clips» y «Contratar». Debajo, la barra que
+  marca la rotación.
+- Fila de pósters con el tigre chico arriba a la izquierda y «Nuevo clip» en #F28705 con texto negro.
+- **Barra de navegación abajo en el celular** (pedido de Santi, en lugar de la hamburguesa):
+  Inicio · Comunicadores · Shows · Clips · Contratar, íconos Lucide. En escritorio, los links arriba.
+- Cuerpo en Neue Haas Grotesk Display Pro (reutilizada de fabianamartinez, como Rhodium).
+
 ## Entrevista
 
 - Tipo: sitio con páginas separadas y adelantos en el inicio (como Rhodium).
