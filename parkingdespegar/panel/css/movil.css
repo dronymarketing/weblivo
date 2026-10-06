@@ -9,6 +9,7 @@
   --superior: 64px;
   --bien: #1d7a55;      --bien-fondo: #e3f6ee;
   --alerta: #9a3a05;    --alerta-fondo: #fff1e8;
+  --error: #b42318;     --error-fondo: #fdeceb;
   --info: #053f5c;      --info-fondo: #e4eef3;
   --neutro-txt: #47728a; --neutro-fondo: #eef2f2;
   background: var(--fondo);
@@ -222,6 +223,7 @@
 .estado .ico { width: 14px; height: 14px; stroke-width: 2; }
 .estado--bien { background: var(--bien-fondo); color: var(--bien); }
 .estado--alerta { background: var(--alerta-fondo); color: var(--alerta); }
+.estado--error { background: var(--error-fondo); color: var(--error); }
 .estado--info { background: var(--info-fondo); color: var(--info); }
 .estado--neutro { background: var(--neutro-fondo); color: var(--neutro-txt); }
 p.estado { width: fit-content; }

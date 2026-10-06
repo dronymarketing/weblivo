@@ -61,7 +61,7 @@
     if (r.estado === 'cancelada') return '<span class="estado estado--neutro">—</span>';
     if (r.pago.estado === 'pagado') return '<span class="estado estado--bien">' + ico('circle-check') + 'Pagado' + (r.pago.medio === 'online' ? ' online' : '') + '</span>';
     if (r.pago.estado === 'parcial') return '<span class="estado estado--alerta">' + ico('triangle-alert') + 'Seña ' + plata(r.pago.monto) + '</span>';
-    return '<span class="estado estado--alerta">' + ico('triangle-alert') + 'A cobrar</span>';
+    return '<span class="estado estado--error">' + ico('circle-x') + 'No pagado</span>';
   }
   var TIPO = { techado: 'Techado', aire: 'Aire libre' };
   var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador' };
