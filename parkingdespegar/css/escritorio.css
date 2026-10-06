@@ -35,7 +35,7 @@
 
 .nav__logo svg { height: 34px; }
 .nav__wa { padding: 0 22px 0 18px; font-size: 12px; }
-.nav__wa .ico-marca { width: 18px; height: 18px; }
+.nav__wa .ico-marca, .nav__wa .ico { width: 18px; height: 18px; }
 .menu { width: 460px; padding-inline: 48px; border-left: var(--borde); overflow-y: auto; }
 .menu__lista a { font-size: 38px; min-height: 80px; }
 
@@ -272,3 +272,38 @@
 
 /* Páginas internas: los links también en blanco (sobre la foto el naranja no se lee) */
 .nav--sobre-foto .nav__links a { color: var(--texto-claro); }
+
+/* ============================================================
+   RESERVA ONLINE — formulario a la izquierda, resumen fijo a la derecha
+   ============================================================ */
+.hero--reserva { padding-top: calc(var(--nav-alto) + 64px); padding-bottom: 56px; }
+.hero--reserva .hero__titulo { font-size: clamp(72px, 7vw, 120px); max-width: none; }
+.reserva { padding-bottom: var(--sp-7); }
+.reserva__cuerpo { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); column-gap: var(--sp-7); align-items: start; }
+.pasos-reserva, .reserva__form, .confirmacion { grid-column: 1; }
+.pasos-reserva li { font-size: 13px; }
+.paso-reserva__titulo { font-size: 34px; }
+.campo-fila { grid-template-columns: 1fr 1fr; }
+.opciones { grid-template-columns: 1fr 1fr; }
+.reserva__resumen {
+  position: sticky;
+  top: calc(var(--nav-alto) + 32px);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 28px;
+  border-radius: var(--radio);
+  border: var(--borde);
+  background: var(--superficie);
+}
+.reserva__total { grid-row: auto; font-size: 48px; }
+.reserva__total small { display: block; margin: 6px 0 0; }
+.reserva__lineas { display: grid; gap: 8px; padding-top: 12px; border-top: var(--borde); font-size: var(--fs-small); }
+.reserva__lineas li { display: flex; justify-content: space-between; gap: 12px; }
+.reserva__muestra { grid-row: auto; grid-column: auto; max-width: none; text-align: left; }
+.detalle div { grid-template-columns: 160px 1fr; }
+.pasarela { place-items: center; }
+.pasarela__caja { border-radius: var(--radio); padding: 32px; }
+.pagina--reserva .pie { padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom)); }

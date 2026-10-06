@@ -35,6 +35,9 @@ body::after {
   pointer-events: none;
 }
 
+/* «hidden» siempre gana, aunque el elemento tenga display: grid o flex */
+[hidden] { display: none !important; }
+
 img, video { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }

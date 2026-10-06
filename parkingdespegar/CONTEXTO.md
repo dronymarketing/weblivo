@@ -132,6 +132,40 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
 - **Vista previa al compartir (WhatsApp, redes):** `img/og-blanco.jpg`, 1200×1200, fondo blanco con el logo
   vertical en naranja (Santi, 30/9). Si se cambia, usar otro nombre de archivo: WhatsApp guarda la anterior.
 
+## Reserva online y gestión (6/10)
+
+Pedido de la clienta: que el cliente reserve y pague desde la web, y un dashboard para ella y el
+personal. Santi mandó de referencia un video de ParkSoft (software comercial colombiano): **no se
+copió** (producto y marca de terceros); se hizo un sistema propio con la lógica de un parking de
+aeropuerto y la estética del branding. Alcance elegido: **borrador funcional** con datos de muestra,
+pasarela de pago **simulada** y **tarifas de muestra** editables.
+
+- `js/datos.js` — capa de datos `window.PD` (reservas, lugares A-01…A-24 techado y B-01…B-36 aire
+  libre, caja, usuarios, auditoría). Hoy vive en `localStorage` (`pd-datos-v1`) y se sincroniza entre
+  pestañas con el evento `storage`: si en una pestaña se reserva desde la web, el dashboard abierto en
+  otra avisa al instante. Todas las pantallas usan solo esa API, así que pasar a producción es
+  cambiar ese archivo por una base real.
+- `reservar.html` + `js/reservar.js` — 4 pasos (fechas y vuelo · lugar y servicio · auto y datos ·
+  resumen y pago), precio y lugares libres en vivo, pasarela de prueba (no pide datos de tarjeta),
+  confirmación con código `PD-xxxx` y envío por WhatsApp. El nav «Reservar», el botón del menú y el
+  del hero del inicio llevan acá; los demás botones de WhatsApp siguen como estaban.
+- `panel/` — gestión (`noindex`). Usuarios de prueba `admin` / `personal` / `chofer`, contraseña
+  `despegar`. Secciones: Panel del día, Reservas (filtros, búsqueda, detalle, nueva reserva por
+  WhatsApp o mostrador), Registrar llegada (buscador apto para lector de código, lugar sugerido,
+  cobro opcional, comprobante con código de barras Code128 vía `panel/lib/JsBarcode`, MIT), Retiros y
+  cobro (días reales, vuelto, libera el lugar), Traslados (camioneta: salida +15 min de la llegada,
+  búsqueda +25 min del aterrizaje), Lugares (mapa por zona), Caja (base, movimientos, egresos,
+  cierre con conteo: cuadra / sobra / falta; lo online va aparte), Clientes; y solo para la dueña:
+  Reportes (recaudado por día, por medio, por tipo de lugar, por origen; CSV e impresión), Tarifas
+  (con simulador; se aplican en la web al instante), Usuarios y Sistema (respaldo JSON, restaurar,
+  volver a la muestra, registro de cambios). El chofer solo ve Traslados.
+- Estilos propios en `panel/css/movil.css` y `panel/css/escritorio.css` (≥ 1024px: lateral fijo y
+  tablas; en celular las tablas pasan a tarjetas y el lateral es un cajón).
+
+**Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
+cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
+webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace
@@ -140,10 +174,12 @@ frente al aeropuerto viejo). Branding hecho por Livo (`refs/branding.jpg`). Inst
   la clienta si se entrega en la terminal o en el parking.
 - Más reseñas reales de Google para el carrusel (hoy rotan dos).
 - Mail de contacto (no aparece en ningún lado).
-- Precios o tarifas: no se muestran.
+- **Tarifas reales** (hoy de muestra: techado $ 490/día, aire libre $ 390/día, valet $ 450).
+- **Backend real y pasarela de pago:** cuentas a nombre de la clienta (ver «Reserva online y gestión»).
 
 ## Cómo se generó
 
-Las cinco páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
-`aria-current="page"`). Si cambia el header o el pie, cambiarlo en los cinco archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=12`, escritorio.css `?v=6`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=3`, tokens-proyecto.css `?v=3`); subirlo en los cinco HTML cada vez que se tocan.
+Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
+`aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=2`, reservar.js `?v=1`; en `panel/`: css y app.js `?v=1`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+`reservar.html` se armó tomando cabeza y pie de `contacto.html`.

@@ -1,0 +1,78 @@
+/* ============================================================
+   PARKING DESPEGAR — Gestión · escritorio (≥ 1024px)
+   Lateral fijo a la izquierda, tablas reales, ventanas centradas.
+   ============================================================ */
+
+.lateral { width: var(--lateral); transform: none; transition: none; padding-top: 24px; }
+.lateral__velo, .superior__menu { display: none; }
+.principal { margin-left: var(--lateral); }
+
+.superior { padding: 0 24px 0 32px; gap: 16px; }
+.superior__titulo { font-size: 22px; }
+.superior__hora { display: block; font-size: 13px; color: var(--texto-suave); }
+.superior__usuario { gap: 10px; padding-left: 16px; border-left: 1px solid rgba(5, 63, 92, .12); }
+.superior__nombre { display: grid; line-height: 1.2; }
+.superior__nombre strong { font-size: 14px; }
+.superior__nombre small { font-size: 12px; }
+
+.vista { gap: 24px; padding: 28px 32px 48px; max-width: 1440px; }
+
+.kpis { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.kpi { padding: 18px; }
+.kpi__valor { font-size: 30px; }
+
+.columnas { grid-template-columns: 1fr 1fr; gap: 24px; }
+.columnas--llegada { grid-template-columns: minmax(340px, 5fr) 7fr; align-items: start; }
+.columnas--llegada > .bloque:last-child { position: sticky; top: calc(var(--superior) + 24px); }
+.columnas--caja { grid-template-columns: 2fr 1fr; align-items: start; }
+.bloque { padding: 22px 24px; }
+
+.mini__fila { grid-template-columns: 58px 1fr auto; }
+.mini__accion { grid-column: auto; justify-self: end; }
+.mini__fila[data-abrir-reserva]:hover, .mini__fila[data-elegir-llegada]:hover, .mini__fila[data-elegir-retiro]:hover {
+  background: var(--fondo); margin: 0 -10px; padding-left: 10px; padding-right: 10px; border-radius: var(--radio-chico);
+}
+
+.herramientas { gap: 12px; }
+.chips { width: auto; margin: 0; padding: 0; flex-wrap: wrap; overflow: visible; }
+.herramientas .btn { flex: 0 0 auto; }
+.buscador { max-width: 420px; }
+
+/* Tablas reales */
+.tabla-caja { overflow-x: auto; border-radius: var(--radio); background: var(--superficie); }
+.bloque .tabla-caja { border-radius: 0; }
+.tabla thead { display: table-header-group; }
+.tabla tbody { display: table-row-group; }
+.tabla tr, .bloque .tabla tr { display: table-row; padding: 0; border-radius: 0; background: none; border-top: 0; }
+.tabla th {
+  padding: 14px 16px; text-align: left; white-space: nowrap;
+  font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--texto-suave);
+  border-bottom: 1px solid rgba(5, 63, 92, .12);
+}
+.tabla td { padding: 12px 16px; vertical-align: top; border-bottom: 1px solid rgba(5, 63, 92, .07); }
+.tabla tbody tr:last-child td { border-bottom: 0; }
+.tabla td[data-et]::before { display: none; }
+.tabla td:empty { display: table-cell; }
+.tabla .num, .tabla th.num { text-align: right; }
+.tabla tr[data-abrir-reserva]:hover td, .tabla tr[data-buscar-cliente]:hover td { background: var(--fondo); }
+.bloque .tabla th:first-child, .bloque .tabla td:first-child { padding-left: 0; }
+.bloque .tabla th:last-child, .bloque .tabla td:last-child { padding-right: 0; }
+.tabla--compacta td { padding-top: 9px; padding-bottom: 9px; }
+
+.formulario__fila { grid-template-columns: 1fr 1fr; }
+
+/* Ventana centrada */
+.ventana { align-items: center; justify-items: center; padding: 32px; }
+.ventana__caja { max-width: 520px; max-height: 88vh; padding: 32px; border-radius: var(--radio); }
+.ventana__caja--ancha { max-width: 680px; }
+.ventana__caja--ticket { max-width: 400px; }
+.ventana__cerrar { top: 14px; right: 14px; }
+.ventana__acciones .btn { flex: 0 0 auto; }
+.ficha > div { grid-template-columns: 150px 1fr; gap: 16px; }
+
+.mapa-lugares { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.grafico__area { height: 240px; }
+
+.avisos { left: auto; right: 24px; bottom: 24px; width: 380px; }
+
+.ingreso__caja { padding: 40px 36px; }
