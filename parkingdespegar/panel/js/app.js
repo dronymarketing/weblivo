@@ -258,14 +258,14 @@
   };
   function tablaReservas(lista) {
     if (!lista.length) return '<p class="vacio">No hay reservas con ese filtro.</p>';
-    return '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Código</th><th>Cliente</th><th>Matrícula</th><th>Deja</th><th>Vuelve</th><th>Lugar</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody>' +
+    return '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Código</th><th>Cliente</th><th>Matrícula</th><th>Entrada</th><th>Salida</th><th>Lugar</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody>' +
       lista.map(function (r) {
         return '<tr data-abrir-reserva="' + r.id + '" tabindex="0">' +
           '<td data-et="Código"><strong>' + r.codigo + '</strong><small>' + ORIGEN[r.origen] + '</small></td>' +
           '<td data-et="Cliente">' + esc(r.cliente.nombre) + '<small>' + esc(r.cliente.telefono) + '</small></td>' +
           '<td data-et="Matrícula"><span class="matricula">' + esc(r.vehiculo.matricula) + '</span></td>' +
-          '<td data-et="Deja">' + fechaHora(r.entrada) + '</td>' +
-          '<td data-et="Vuelve">' + fechaHora(r.salida) + '</td>' +
+          '<td data-et="Entrada">' + fechaHora(r.entrada) + '</td>' +
+          '<td data-et="Salida">' + fechaHora(r.salida) + '</td>' +
           '<td data-et="Lugar">' + TIPO[r.lugarTipo] + (r.lugar ? ' · <strong>' + r.lugar + '</strong>' : '') + '<small>' + (r.servicio === 'valet' ? 'Valet' : 'Con traslado') + '</small></td>' +
           '<td data-et="Total" class="num">' + plata(r.total) + '</td>' +
           '<td data-et="Pago">' + badgePago(r) + '</td>' +
@@ -292,11 +292,10 @@
       '<dl class="ficha">' +
         fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono) + (r.cliente.email ? ' · ' + esc(r.cliente.email) : '')) +
         fila('Auto', esc(r.vehiculo.modelo) + (r.vehiculo.color ? ' · ' + esc(r.vehiculo.color) : '')) +
-        fila('Deja el auto', fechaHora(r.entrada) + (r.vuelo.ida ? ' · vuelo ' + esc(r.vuelo.ida) : '')) +
-        fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) +
-        fila('Lugar', TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ' · se asigna al llegar') + ' · ' + (r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado (' + r.pasajeros + ' pasajeros)')) +
-        fila('Entrada / salida', fechaHora(r.checkin) + ' → ' + fechaHora(r.checkout)) +
-        fila('Importe', plata(r.total) + ' · ' + p.dias + ' días · pagado ' + plata(r.pago.monto) + (r.pago.medio ? ' (' + MEDIOS[r.pago.medio] + ')' : '') + (r.pago.ref ? '<small>Ref. ' + esc(r.pago.ref) + '</small>' : '')) +
+        fila('Entrada', fechaHora(r.entrada) + (r.vuelo.ida ? ' · vuelo ' + esc(r.vuelo.ida) : '') + (r.checkin ? '<small>Entró el ' + fechaHora(r.checkin) + '</small>' : '')) +
+        fila('Salida', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '') + (r.checkout ? '<small>Salió el ' + fechaHora(r.checkout) + '</small>' : '')) +
+        fila('Lugar', TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ' · se asigna en la entrada') + ' · ' + (r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado (' + r.pasajeros + ' pasajeros)')) +
+        fila('Importe', plata(r.total) + ' · ' + p.dias + ' días' + (r.pago.monto > 0 ? '<small>Pagó ' + plata(r.pago.monto) + ' ' + medioTexto(r) + (r.pago.monto < r.total ? ' · falta ' + plata(r.total - r.pago.monto) : '') + '</small>' : '<small>Todavía no pagó</small>')) +
       '</dl><div class="ventana__acciones">' + acciones + '</div>', 'ancha');
   }
   function fila(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
@@ -309,26 +308,49 @@
       '<h2 class="ventana__titulo">Nueva reserva</h2><form class="formulario" data-form-nueva novalidate>' +
       '<div class="formulario__fila"><label class="campo"><span>Origen</span><select name="origen"><option value="whatsapp">WhatsApp</option><option value="mostrador">Mostrador</option><option value="web">Teléfono / otra</option></select></label>' +
       '<label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado · ' + plata(t.techado) + '/día</option><option value="aire">Predio · ' + plata(t.aire) + '/día</option></select></label></div>' +
-      '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(man.setHours(6, 0, 0, 0)) + '" required></label>' +
-      '<label class="campo"><span>Vuelve (aterrizaje)</span><input type="datetime-local" name="salida" value="' + local(new Date(man.getTime() + 7 * PD.DIA).setHours(18, 0, 0, 0)) + '" required></label></div>' +
+      '<div class="formulario__fila"><label class="campo"><span>Entrada</span><input type="datetime-local" name="entrada" value="' + local(man.setHours(6, 0, 0, 0)) + '" required></label>' +
+      '<label class="campo"><span>Salida</span><input type="datetime-local" name="salida" value="' + local(new Date(man.getTime() + 7 * PD.DIA).setHours(18, 0, 0, 0)) + '" required></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Matrícula</span><input name="matricula" required></label><label class="campo"><span>Marca y modelo</span><input name="modelo"></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Nombre</span><input name="nombre" required></label><label class="campo"><span>Teléfono</span><input name="telefono" type="tel" required></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet (+' + plata(t.valet) + ')</option></select></label><label class="campo"><span>Pasajeros</span><input name="pasajeros" type="number" min="1" max="8" value="2"></label></div>' +
+      '<p class="total-linea">Total <strong data-total-nueva></strong><small data-dias-nueva></small></p>' +
+      '<fieldset class="factura-campos"><legend>' + ico('landmark') + 'Pago</legend>' +
+        '<div class="eleccion"><label><input type="radio" name="pagoNueva" value="no" checked><span>Todavía no pagó<small>Paga al entrar</small></span></label>' +
+        '<label><input type="radio" name="pagoNueva" value="transferencia"><span>Ya pagó por transferencia<small>Queda listo para la entrada</small></span></label></div>' +
+        '<div class="formulario__fila" data-campos-transf hidden><label class="campo"><span>Monto transferido</span><input name="montoTransf" type="number" min="1" data-monto-nueva></label>' +
+        '<label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off"></label></div>' +
+      '</fieldset>' +
       '<p class="campo-error" data-error-nueva hidden></p>' +
       '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar reserva</button></div></form>', 'ancha');
+    var fn = $('[data-form-nueva]', caja), montoTocado = false;
+    function totalNueva() {
+      var p = PD.precio({ entrada: fn.entrada.value, salida: fn.salida.value, lugarTipo: fn.lugarTipo.value, servicio: fn.servicio.value });
+      $('[data-total-nueva]', caja).textContent = plata(p.total);
+      $('[data-dias-nueva]', caja).textContent = p.dias + (p.dias === 1 ? ' día' : ' días');
+      if (!montoTocado) fn.montoTransf.value = p.total;
+    }
+    fn.addEventListener('input', function (e) { if (e.target === fn.montoTransf) montoTocado = true; totalNueva(); });
+    fn.addEventListener('change', function (e) {
+      if (e.target.name === 'pagoNueva') $('[data-campos-transf]', caja).hidden = e.target.value !== 'transferencia';
+      totalNueva();
+    });
+    totalNueva();
     $('[data-form-nueva]', caja).addEventListener('submit', function (e) {
       e.preventDefault();
       var f = e.target, err = $('[data-error-nueva]', caja);
       var ent = new Date(f.entrada.value), sal = new Date(f.salida.value);
       if (!f.matricula.value.trim() || !f.nombre.value.trim() || !f.telefono.value.trim()) { err.textContent = 'Completá matrícula, nombre y teléfono.'; err.hidden = false; return; }
-      if (!(sal > ent)) { err.textContent = 'La vuelta tiene que ser después de la ida.'; err.hidden = false; return; }
+      if (!(sal > ent)) { err.textContent = 'La salida tiene que ser después de la entrada.'; err.hidden = false; return; }
+      if (f.pagoNueva.value === 'transferencia' && !(+f.montoTransf.value > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
       var r = PD.crearReserva({
         origen: f.origen.value, lugarTipo: f.lugarTipo.value, servicio: f.servicio.value, pasajeros: +f.pasajeros.value || 1,
         entrada: ent.toISOString(), salida: sal.toISOString(), vuelo: { ida: '', vuelta: '' },
         cliente: { nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), email: '' },
         vehiculo: { matricula: f.matricula.value.trim().toUpperCase(), modelo: f.modelo.value.trim(), color: '' }
       }, nombreUsuario());
-      cerrarVentana(); avisar('Reserva ' + r.codigo + ' guardada'); pintar();
+      var transf = f.pagoNueva.value === 'transferencia' ? Math.min(+f.montoTransf.value || 0, r.total) : 0;
+      if (transf > 0) PD.registrarPago(r, transf, 'transferencia', nombreUsuario(), f.refTransf.value.trim() || null);
+      cerrarVentana(); avisar('Reserva ' + r.codigo + ' guardada' + (transf > 0 ? ' con ' + plata(transf) + ' por transferencia' : '')); pintar();
     });
   }
   function local(ms) { var d = new Date(ms); return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()) + 'T' + PD.pad(d.getHours()) + ':' + PD.pad(d.getMinutes()); }
@@ -368,7 +390,7 @@
       (saldo > 0 ? '. Falta cobrar <strong>' + plata(saldo) + '</strong>.' : '. No hay nada que cobrar.') + '</span></p>' : '';
     return '<header class="bloque__cabeza"><h2>Entrada · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.codigo + '</span></header>' +
       '<dl class="ficha">' + fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono)) + fila('Auto', esc(r.vehiculo.modelo) + ' ' + esc(r.vehiculo.color)) +
-        fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') +
+        fila('Salida', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') +
         fila('Total de la reserva', plata(r.total) + ' · ' + PD.precio(r).dias + ' días') + '</dl>' +
       pagado +
       (saldo > 0 ? '<details class="transferencia"><summary>' + ico('landmark') + '<span><strong>¿Ya pagó por transferencia?</strong><small>Registralo antes de que llegue: queda listo para la entrada.</small></span></summary>' +
@@ -463,7 +485,7 @@
       '<p class="ticket__tipo">' + (tipo === 'salida' ? 'Comprobante de salida' : 'Comprobante de entrada') + '</p>' +
       '<p class="ticket__matricula">' + esc(r.vehiculo.matricula) + '</p>' +
       '<dl>' + fila('Reserva', r.codigo) + fila('Lugar', r.lugar + ' · ' + TIPO[r.lugarTipo]) + fila('Entrada', fechaHora(r.checkin)) +
-        (tipo === 'salida' ? fila('Salida', fechaHora(r.checkout)) : fila('Vuelve', fechaHora(r.salida)) + fila('Estadía', p.dias + ' días')) +
+        (tipo === 'salida' ? fila('Salida', fechaHora(r.checkout)) : fila('Salida prevista', fechaHora(r.salida)) + fila('Estadía', p.dias + ' días')) +
         fila('Pagado', plata(r.pago.monto) + (r.pago.medio ? ' · ' + MEDIOS[r.pago.medio] : '')) + '</dl>' +
       '<svg class="ticket__barras" data-barras></svg>' +
       '<p class="ticket__pie">Presentá este comprobante para retirar el auto.<br>Atendió: ' + esc(nombreUsuario()) + '</p></div>' +
@@ -685,7 +707,7 @@
   }
   function exportarCSV(per) {
     var R = rango(per);
-    var filas = [['Código', 'Origen', 'Cliente', 'Teléfono', 'Matrícula', 'Modelo', 'Lugar', 'Tipo', 'Servicio', 'Deja', 'Vuelve', 'Días', 'Total', 'Pagado', 'Medio', 'Estado']];
+    var filas = [['Código', 'Origen', 'Cliente', 'Teléfono', 'Matrícula', 'Modelo', 'Lugar', 'Tipo', 'Servicio', 'Entrada', 'Salida', 'Días', 'Total', 'Pagado', 'Medio', 'Estado']];
     D().reservas.filter(function (r) { return new Date(r.entrada) >= R[0] && new Date(r.entrada) < R[1]; }).forEach(function (r) {
       filas.push([r.codigo, ORIGEN[r.origen], r.cliente.nombre, r.cliente.telefono, r.vehiculo.matricula, r.vehiculo.modelo, r.lugar || '', TIPO[r.lugarTipo], r.servicio, fechaHora(r.entrada), fechaHora(r.salida), PD.dias(r.entrada, r.salida), r.total, r.pago.monto, r.pago.medio ? MEDIOS[r.pago.medio] : '', ESTADOS[r.estado].txt]);
     });
@@ -711,7 +733,7 @@
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar tarifas</button></div></form>') +
       bloque('Calculadora de cobro', null, '<form class="formulario" data-form-simulador>' +
         '<div class="formulario__fila"><label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado</option><option value="aire">Predio</option></select></label><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet</option></select></label></div>' +
-        '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Retira</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
+        '<div class="formulario__fila"><label class="campo"><span>Entrada</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Salida</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
         '</form><div class="total-grande" data-simulado></div>') +
     '</div>' +
       bloque('Datos para la factura', null, (D().empresa.rut ? '' : '<p class="aviso-tabla">' + ico('info') + 'Cargá el RUT del parking: sale en cada e-Ticket y e-Factura.</p>') +

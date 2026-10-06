@@ -198,6 +198,10 @@ transferencia). Al registrar la entrada se cobra lo que falte y se **emite la fa
 incluido (22 %, editable). Los datos del emisor (razón social, **RUT del parking: falta**, dirección) se
 cargan en Precios → Datos para la factura. Para que sea legal hay que conectarla a un proveedor de
 facturación electrónica habilitado por DGI (agrega CAE, QR y envío a DGI).
+La misma opción está en **Nueva reserva** (Pago: «Todavía no pagó» / «Ya pagó por transferencia», con
+el total calculado en vivo). En todo el panel las fechas se llaman **Entrada** y **Salida** (no «Deja el
+auto» / «Vuelve»); en la ficha, debajo, «Entró el…» / «Salió el…» con la hora real. La web de reserva
+mantiene «Dejás el auto» / «Volvés», que le habla al cliente.
 
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
@@ -218,5 +222,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=6`, reservar.js `?v=3`; en `panel/`: movil.css `?v=12`, escritorio.css `?v=3`, app.js `?v=12`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=6`, reservar.js `?v=3`; en `panel/`: movil.css `?v=13`, escritorio.css `?v=3`, app.js `?v=13`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.
