@@ -166,6 +166,14 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
 las notas internas de la reserva y del panel; la clave de `localStorage` pasó a `pd-datos-v2`.
 Ojo: la pasarela sigue siendo simulada aunque ya no lo diga — no compartir `reservar.html` con clientes reales.
 
+**Rediseño para que se entienda (Santi, 6/10):** el panel se ordena en cinco sectores, cada uno con su
+color (variantes del azul y el naranja de marca): **Hoy** (navy), **Autos en el predio** (azul: Entra un
+auto, Sale un auto, Camioneta, Lugares), **Reservas** (celeste: Reservas, Clientes), **Plata** (naranja:
+Caja, Reportes, Precios) y **Ajustes** (ámbar: Equipo, Respaldos). Cada pantalla abre con sector, título
+grande y una línea que dice para qué sirve. «Hoy» arranca con tres atajos (Entra un auto, Sale un auto,
+Nueva reserva) y una sola agenda del día con llegadas y salidas por hora. Colores en `panel/css/movil.css`
+(`[data-sector=…]`: `--s`, `--s-fondo`, `--s-texto`, `--s-claro`).
+
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
 webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
@@ -185,5 +193,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=3`, reservar.js `?v=2`; en `panel/`: movil.css `?v=4`, app.js `?v=3`, escritorio.css `?v=1`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=3`, reservar.js `?v=2`; en `panel/`: movil.css `?v=5`, escritorio.css `?v=2`, app.js `?v=4`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.
