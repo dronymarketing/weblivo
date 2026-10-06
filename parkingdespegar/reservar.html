@@ -160,7 +160,6 @@
     <p class="antetitulo"><span class="punto-vivo" aria-hidden="true"></span>Reserva online · 24 h</p>
     <h1 class="hero__titulo">Reserva online</h1>
     <p class="hero__sub">Elegí fechas, lugar y servicio. Pagás online y te confirmamos por WhatsApp.</p>
-    <p class="aviso-muestra"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg>Borrador: tarifas y pago de prueba. No se cobra nada.</p>
   </section>
 
   <div class="sobre-hero">
@@ -260,7 +259,6 @@
           <p class="reserva__resumen-rotulo">Tu reserva</p>
           <p class="reserva__total"><span data-total>$ —</span><small data-dias></small></p>
           <ul class="reserva__lineas" data-lineas></ul>
-          <p class="reserva__muestra">Tarifas de muestra</p>
         </aside>
 
         <!-- Confirmación -->
@@ -274,7 +272,6 @@
             <a class="btn btn--primario" data-wa-confirmacion href="#" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>Enviar por WhatsApp</a>
             <a class="btn btn--linea" href="index.html">Volver al inicio<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
           </div>
-          <p class="confirmacion__demo">Borrador: la reserva quedó guardada en este navegador. Abrí el <a href="panel/">dashboard de prueba</a> para verla.</p>
         </div>
 
       </div>
@@ -286,7 +283,7 @@
      (la tarjeta se carga en su página, nunca en la web del parking). Ver js/datos.js ============ -->
 <div class="pasarela" data-pasarela hidden role="dialog" aria-modal="true" aria-labelledby="pasarela-titulo">
   <div class="pasarela__caja">
-    <p class="pasarela__marca"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Pasarela de pago · modo de prueba</p>
+    <p class="pasarela__marca"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Pago seguro</p>
     <p class="pasarela__titulo" id="pasarela-titulo">Parking Despegar</p>
     <p class="pasarela__monto" data-pasarela-monto>$ 0</p>
     <fieldset class="pasarela__medios">
@@ -296,10 +293,9 @@
       <label><input type="radio" name="medio" value="Billetera digital"><svg class="ico" aria-hidden="true"><use href="#i-wallet"/></svg>Billetera digital</label>
       <label><input type="radio" name="medio" value="Redes de cobranza"><svg class="ico" aria-hidden="true"><use href="#i-banknote"/></svg>Redes de cobranza</label>
     </fieldset>
-    <p class="pasarela__nota">Prueba: no se piden datos de tarjeta ni se cobra nada.</p>
     <div class="pasarela__botones">
       <button type="button" class="btn btn--linea" data-pasarela-cancelar>Cancelar</button>
-      <button type="button" class="btn btn--primario" data-pasarela-confirmar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Confirmar pago de prueba</button>
+      <button type="button" class="btn btn--primario" data-pasarela-confirmar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Confirmar pago</button>
     </div>
   </div>
 </div>
@@ -338,8 +334,8 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/datos.js?v=2"></script>
-<script src="js/reservar.js?v=1"></script>
+<script src="js/datos.js?v=3"></script>
+<script src="js/reservar.js?v=2"></script>
 <script src="js/main.js?v=5"></script>
 </body>
 </html>

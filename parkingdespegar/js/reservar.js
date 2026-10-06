@@ -1,5 +1,5 @@
 /* ============================================================
-   PARKING DESPEGAR — Reserva online (BORRADOR)
+   PARKING DESPEGAR — Reserva online
    Cuatro pasos: fechas · lugar y servicio · datos · pago.
    El precio se calcula en vivo con las tarifas del dashboard
    (js/datos.js). El pago es SIMULADO: en producción se abre la
@@ -208,9 +208,9 @@
         vuelo: { ida: form.vueloIda.value.trim().toUpperCase(), vuelta: form.vueloVuelta.value.trim().toUpperCase() }
       }, 'web');
       var medio = (form.ownerDocument.querySelector('input[name="medio"]:checked') || {}).value || 'online';
-      PD.registrarPago(r, r.total, 'online', 'web', 'PRUEBA-' + PD.uid().toUpperCase().slice(0, 6) + ' · ' + medio);
+      PD.registrarPago(r, r.total, 'online', 'web', 'WEB-' + PD.uid().toUpperCase().slice(0, 6) + ' · ' + medio);
       btn.disabled = false;
-      btn.lastChild.textContent = 'Confirmar pago de prueba';
+      btn.lastChild.textContent = 'Confirmar pago';
       cerrarPasarela();
       confirmar(r);
     }, 1400);

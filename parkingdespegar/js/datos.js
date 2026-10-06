@@ -1,5 +1,5 @@
 /* ============================================================
-   PARKING DESPEGAR — Datos del negocio (BORRADOR)
+   PARKING DESPEGAR — Datos del negocio
    Una sola fuente para la web (reservar.html) y el dashboard (panel/).
    Hoy guarda todo en el navegador (localStorage) con datos DE MUESTRA:
    sirve para mostrar el sistema funcionando, no para operar.
@@ -11,7 +11,7 @@
 (function () {
   'use strict';
 
-  var CLAVE = 'pd-datos-v1';
+  var CLAVE = 'pd-datos-v2';
   var DIA = 86400000;
 
   /* ---------- Lugares del predio (muestra: confirmar cantidades con la clienta) ---------- */
@@ -93,7 +93,7 @@
       var p = precio(res, t);
       res.total = p.total;
       var pagaOnline = origen === 'web' && r() < 0.85;
-      if (pagaOnline) res.pago = { estado: 'pagado', monto: p.total, medio: 'online', ref: 'PRUEBA-' + uid().toUpperCase().slice(0, 6), fecha: res.creada };
+      if (pagaOnline) res.pago = { estado: 'pagado', monto: p.total, medio: 'online', ref: 'WEB-' + uid().toUpperCase().slice(0, 6), fecha: res.creada };
       if (r() < 0.04 && entrada > ahora) { res.estado = 'cancelada'; }
       else if (salida < ahora - 2 * 3600000) {
         res.estado = 'finalizada'; res.checkin = iso(entrada + 600000); res.checkout = iso(salida + 40 * 60000);
@@ -142,7 +142,7 @@
         { id: 'u2', nombre: 'Personal de turno', usuario: 'personal', clave: 'despegar', rol: 'personal', activo: true },
         { id: 'u3', nombre: 'Chofer de la camioneta', usuario: 'chofer', clave: 'despegar', rol: 'chofer', activo: true }
       ],
-      auditoria: [{ fecha: iso(ahora), usuario: 'sistema', accion: 'Se cargaron los datos de muestra' }]
+      auditoria: [{ fecha: iso(ahora), usuario: 'sistema', accion: 'Inicio del sistema' }]
     };
   }
 

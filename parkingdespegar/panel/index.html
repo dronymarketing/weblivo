@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="../css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="../css/fuentes.css?v=1">
 <link rel="stylesheet" href="../css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=1">
+<link rel="stylesheet" href="css/movil.css?v=2">
 <link rel="stylesheet" href="css/escritorio.css?v=1" media="(min-width: 1024px)">
 </head>
 <body class="tablero">
@@ -87,9 +87,7 @@
 </defs></svg>
 
 <!-- ============================================================
-     GESTIÓN — BORRADOR CON DATOS DE MUESTRA
-     Sistema propio de Livo para Parking Despegar. Los datos viven en
-     ../js/datos.js (hoy en este navegador; en producción, base real).
+     GESTIÓN — Parking Despegar. Los datos viven en ../js/datos.js.
      ============================================================ -->
 
 <!-- Ingreso -->
@@ -103,7 +101,7 @@
     <p class="campo-error" data-error-ingreso hidden></p>
     <button class="btn btn--primario" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-log-in"/></svg>Ingresar</button>
     <div class="ingreso__demo">
-      <p><strong>Borrador · usuarios de prueba</strong> (contraseña <code>despegar</code>)</p>
+      <p><strong>Acceso rápido</strong></p>
       <div class="ingreso__demo-botones">
         <button type="button" class="chip" data-demo="admin">Dueña</button>
         <button type="button" class="chip" data-demo="personal">Personal</button>
@@ -120,7 +118,6 @@
     <nav class="lateral__nav" data-nav aria-label="Secciones"></nav>
     <div class="lateral__pie">
       <a class="lateral__web" href="../index.html" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-external-link"/></svg>Ver la web</a>
-      <p>Borrador de Livo · datos de muestra</p>
     </div>
   </aside>
   <div class="lateral__velo" data-cerrar-lateral></div>
@@ -129,7 +126,6 @@
     <header class="superior">
       <button class="superior__menu" type="button" data-abrir-lateral aria-label="Abrir menú"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></button>
       <h1 class="superior__titulo" data-titulo>Panel</h1>
-      <span class="pildora pildora--muestra" title="Los datos son de ejemplo y quedan guardados en este navegador">Datos de muestra</span>
       <span class="superior__hora" data-reloj></span>
       <div class="superior__usuario">
         <span class="avatar" data-avatar>DP</span>
@@ -150,7 +146,7 @@
 <div class="avisos" data-avisos aria-live="polite"></div>
 
 <script src="lib/JsBarcode.code128.min.js"></script>
-<script src="../js/datos.js?v=2"></script>
-<script src="js/app.js?v=1"></script>
+<script src="../js/datos.js?v=3"></script>
+<script src="js/app.js?v=2"></script>
 </body>
 </html>

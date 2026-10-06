@@ -162,6 +162,10 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
 - Estilos propios en `panel/css/movil.css` y `panel/css/escritorio.css` (≥ 1024px: lateral fijo y
   tablas; en celular las tablas pasan a tarjetas y el lateral es un cajón).
 
+**Sin avisos de borrador en pantalla (Santi, 6/10):** se sacaron «Borrador», «de muestra», «de prueba» y
+las notas internas de la reserva y del panel; la clave de `localStorage` pasó a `pd-datos-v2`.
+Ojo: la pasarela sigue siendo simulada aunque ya no lo diga — no compartir `reservar.html` con clientes reales.
+
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
 webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
@@ -181,5 +185,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=2`, reservar.js `?v=1`; en `panel/`: css y app.js `?v=1`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=3`, reservar.js `?v=2`; en `panel/`: movil.css y app.js `?v=2`, escritorio.css `?v=1`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

@@ -1,11 +1,10 @@
 /* ============================================================
-   PARKING DESPEGAR — Gestión (BORRADOR)
+   PARKING DESPEGAR — Gestión
    Sistema propio para la operación del parking: reservas, llegadas,
    retiros con cobro, traslados de la camioneta, lugares, caja,
    clientes, reportes, tarifas, usuarios y respaldos.
-   Lee y escribe en ../js/datos.js. Hoy los datos son de muestra
-   y viven en este navegador; con una base real, todo el equipo ve
-   lo mismo en vivo desde cualquier dispositivo.
+   Lee y escribe en ../js/datos.js; con una base real, todo el equipo
+   ve lo mismo en vivo desde cualquier dispositivo.
    ============================================================ */
 (function () {
   'use strict';
@@ -524,7 +523,7 @@
     return '<div class="herramientas"><div class="chips">' + PERIODOS.map(function (x) { return '<a class="chip' + (x[0] === per ? ' es-activo' : '') + '" href="#/reportes?p=' + x[0] + '">' + x[1] + '</a>'; }).join('') + '</div>' +
         '<button class="btn btn--linea" type="button" data-exportar="' + per + '">' + ico('file-spreadsheet') + 'Exportar a Excel (CSV)</button>' +
         '<button class="btn btn--linea" type="button" data-imprimir-pagina>' + ico('printer') + 'Imprimir</button></div>' +
-      '<p class="ayuda">Del ' + new Date(R[0]).toLocaleDateString('es-UY') + ' al ' + new Date(R[1] - 1).toLocaleDateString('es-UY') + ' · datos de muestra</p>' +
+      '<p class="ayuda">Del ' + new Date(R[0]).toLocaleDateString('es-UY') + ' al ' + new Date(R[1] - 1).toLocaleDateString('es-UY') + '</p>' +
       '<div class="kpis">' + kpi('circle-dollar-sign', 'Recaudado', plata(total), pagadas.length + ' cobros', true) + kpi('calendar-check', 'Reservas', hechas.length, 'que llegaron en el período') +
         kpi('timer', 'Estadía promedio', estadia.toFixed(1).replace('.', ',') + ' días', 'por reserva') + kpi('receipt', 'Ticket promedio', plata(pagadas.length ? total / pagadas.length : 0), 'por reserva cobrada') + '</div>' +
       bloque('Recaudado por día', null, graficoDias(porDia)) +
@@ -579,13 +578,13 @@
   V.tarifas = function () {
     var t = D().tarifas;
     return '<div class="columnas">' +
-      bloque('Tarifas vigentes', null, '<p class="aviso-tabla">' + ico('info') + 'Precios de muestra: cargá los reales. Se aplican en la web al instante.</p>' +
+      bloque('Tarifas vigentes', null, '<p class="aviso-tabla">' + ico('info') + 'Los cambios se aplican en la web al instante.</p>' +
         '<form class="formulario" data-form-tarifas>' +
         '<div class="formulario__fila"><label class="campo"><span>Techado, por día</span><input name="techado" type="number" min="0" value="' + t.techado + '"></label><label class="campo"><span>Aire libre, por día</span><input name="aire" type="number" min="0" value="' + t.aire + '"></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Valet Parking, por servicio</span><input name="valet" type="number" min="0" value="' + t.valet + '"></label><label class="campo"><span>Tolerancia antes de cobrar otro día (horas)</span><input name="graciaHoras" type="number" min="0" max="12" value="' + t.graciaHoras + '"></label></div>' +
         '<label class="campo campo--corto"><span>Mínimo de días</span><input name="minimoDias" type="number" min="1" max="7" value="' + t.minimoDias + '"></label>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar tarifas</button></div></form>') +
-      bloque('Simulador de cobro', null, '<form class="formulario" data-form-simulador>' +
+      bloque('Calculadora de cobro', null, '<form class="formulario" data-form-simulador>' +
         '<div class="formulario__fila"><label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado</option><option value="aire">Aire libre</option></select></label><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet</option></select></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Deja el auto</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Retira</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
         '</form><div class="total-grande" data-simulado></div>') +
@@ -614,14 +613,10 @@
   /* ---------- SISTEMA ---------- */
   V.sistema = function () {
     var d = D();
-    return '<div class="columnas">' +
-      bloque('Conexión', null, '<p class="estado estado--alerta">' + ico('triangle-alert') + 'Modo borrador: datos de muestra en este navegador</p>' +
-        '<p class="texto">Para operar de verdad, este sistema se conecta a una base de datos en la nube (cada cambio se ve al instante en todos los dispositivos del equipo) y a la pasarela de pago, que confirma sola las reservas pagadas en la web.</p>') +
-      bloque('Respaldos', null, '<p class="texto">Descargá una copia de todo (reservas, caja, tarifas y usuarios) o restaurá una anterior.</p>' +
+    return bloque('Respaldos', null, '<p class="texto">Descargá una copia de todo (reservas, caja, tarifas y usuarios) o restaurá una anterior.</p>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-respaldar>' + ico('download') + 'Descargar respaldo</button>' +
         '<label class="btn btn--linea">' + ico('upload') + 'Restaurar<input type="file" accept="application/json" data-restaurar hidden></label>' +
-        '<button class="btn btn--linea btn--peligro" type="button" data-restablecer>' + ico('rotate-ccw') + 'Volver a los datos de muestra</button></div>') +
-      '</div>' +
+        '<button class="btn btn--linea btn--peligro" type="button" data-restablecer>' + ico('rotate-ccw') + 'Reiniciar datos</button></div>') +
       bloque('Registro de cambios', d.auditoria.length, '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Fecha</th><th>Usuario</th><th>Qué pasó</th></tr></thead><tbody>' +
         d.auditoria.slice(0, 60).map(function (a) { return '<tr><td data-et="Fecha">' + fechaHora(a.fecha) + '</td><td data-et="Usuario">' + esc(a.usuario) + '</td><td data-et="Qué pasó">' + esc(a.accion) + '</td></tr>'; }).join('') + '</tbody></table></div>');
   };
@@ -743,7 +738,7 @@
     }
     if ((el = t.closest('[data-alternar-usuario]'))) { var u = D().usuarios.filter(function (x) { return x.id === el.getAttribute('data-alternar-usuario'); })[0]; u.activo = !u.activo; PD.guardar(nombreUsuario(), (u.activo ? 'Activó' : 'Desactivó') + ' a ' + u.usuario); return pintar(); }
     if (t.closest('[data-respaldar]')) { descargar('respaldo-parking-despegar-' + new Date().toISOString().slice(0, 10) + '.json', PD.exportar(), 'application/json'); PD.guardar(nombreUsuario(), 'Descargó un respaldo'); return; }
-    if (t.closest('[data-restablecer]')) { if (confirm('¿Borrar todo y volver a los datos de muestra?')) { PD.restablecer(); avisar('Datos de muestra restablecidos', 'info'); pintar(); } return; }
+    if (t.closest('[data-restablecer]')) { if (confirm('¿Borrar todo y reiniciar los datos?')) { PD.restablecer(); avisar('Datos reiniciados', 'info'); pintar(); } return; }
   });
   document.addEventListener('keydown', function (e) {
     var el = e.target.closest && e.target.closest('tr[data-abrir-reserva], tr[data-buscar-cliente]');
