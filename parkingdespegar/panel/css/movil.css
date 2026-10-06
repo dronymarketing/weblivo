@@ -10,7 +10,7 @@
   --bien: #1d7a55;      --bien-fondo: #e3f6ee;
   --alerta: #9a3a05;    --alerta-fondo: #fff1e8;
   --error: #b42318;     --error-fondo: #fdeceb;
-  --s: #053f5c; --s-fondo: #e4edf1; --s-texto: #053f5c; --s-claro: #a0eacf;
+  --s: #053f5c; --s-ico: #053f5c; --s-fondo: #e4edf1; --s-texto: #053f5c; --s-claro: #ffffff;
   --azul-apagado: #47728a;   /* el azul de marca bajado: totales, «de», datos secundarios */
   --info: #053f5c;      --info-fondo: #e4eef3;
   --neutro-txt: #47728a; --neutro-fondo: #eef2f2;
@@ -23,15 +23,19 @@
 .tablero small { display: block; font-size: 13px; color: var(--texto-suave); line-height: 1.35; }
 .tablero code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
 
-/* ---------- Sectores: cada uno con su variante de azul o de naranja ----------
-   --s: color del sector (íconos, filetes) · --s-fondo: tinte claro · --s-texto: texto sobre el tinte
-   --s-claro: versión para el lateral navy. Todas las combinaciones de texto pasan 4,5:1. */
-[data-sector="hoy"]      { --s: #053f5c; --s-fondo: #e4edf1; --s-texto: #053f5c; --s-claro: #a0eacf; }
-[data-sector="autos"]    { --s: #2a7fb0; --s-fondo: #e2f0f8; --s-texto: #1a5e85; --s-claro: #7cc0e6; }
-[data-sector="reservas"] { --s: #4fa9d2; --s-fondo: #e4f4fb; --s-texto: #1d6a8e; --s-claro: #b3e1f5; }
-[data-sector="plata"]    { --s: #ff6712; --s-fondo: #fff0e6; --s-texto: #b4470a; --s-claro: #ff9a5c; }
-[data-sector="libre"]    { --s: #1f9d63; --s-fondo: #e3f6ee; --s-texto: #17784b; --s-claro: #8fe0b8; }
-[data-sector="ajustes"]  { --s: #ffa726; --s-fondo: #fff5e3; --s-texto: #8a5300; --s-claro: #ffc970; }
+/* ---------- Sectores con la paleta del branding ----------
+   Navy #053F5C · naranja #FF6712 · ámbar #FFA726 · menta #A0EACF · neutro #C9D6D4 · azul apagado #47728A.
+   --s: color de marca (filetes, bordes) · --s-ico: el mismo, bajado para íconos y barras (3:1)
+   --s-fondo: tinte claro · --s-texto: texto sobre blanco o el tinte (4,5:1) · --s-claro: sobre el lateral navy.
+   Entrada (menta) y Salida (ámbar) usan el mismo ícono de auto: las distingue el color. */
+[data-sector="hoy"]      { --s: #053f5c; --s-ico: #053f5c; --s-fondo: #e4edf1; --s-texto: #053f5c; --s-claro: #ffffff; }  /* navy */
+[data-sector="autos"],
+[data-sector="entrada"],
+[data-sector="libre"]    { --s: #a0eacf; --s-ico: #2b9a73; --s-fondo: #e3f8ef; --s-texto: #17694c; --s-claro: #a0eacf; }  /* menta */
+[data-sector="salida"]   { --s: #ffa726; --s-ico: #c67600; --s-fondo: #fff2dc; --s-texto: #8a5300; --s-claro: #ffa726; }  /* ámbar */
+[data-sector="reservas"] { --s: #47728a; --s-ico: #47728a; --s-fondo: #e7eef2; --s-texto: #3d6378; --s-claro: #a9c4d2; }  /* azul apagado */
+[data-sector="plata"]    { --s: #ff6712; --s-ico: #e85a0c; --s-fondo: #fff0e6; --s-texto: #b4470a; --s-claro: #ff8a45; }  /* naranja */
+[data-sector="ajustes"]  { --s: #c9d6d4; --s-ico: #6f8a96; --s-fondo: #eef2f2; --s-texto: #47728a; --s-claro: #c9d6d4; }  /* neutro */
 
 /* ---------- Botones ---------- */
 .btn {
@@ -69,7 +73,7 @@
 
 .enlace { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; }
 .enlace { color: var(--s-texto); }
-.enlace .ico { width: 16px; height: 16px; color: var(--s); }
+.enlace .ico { width: 16px; height: 16px; color: var(--s-ico); }
 
 /* ---------- Campos ---------- */
 .campo { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
@@ -195,7 +199,7 @@
 }
 .cabecera__sector::before { content: ''; width: 10px; height: 10px; border-radius: 3px; background: var(--s); }
 .cabecera__titulo { display: flex; align-items: center; gap: 12px; font-size: 28px; font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
-.cabecera__ico { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--s-fondo); color: var(--s); flex-shrink: 0; }
+.cabecera__ico { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--s-fondo); color: var(--s-ico); flex-shrink: 0; }
 .cabecera__ico .ico { width: 22px; height: 22px; }
 .cabecera__desc { font-size: 15px; color: var(--texto-suave); max-width: 60ch; }
 
@@ -208,11 +212,11 @@
   transition: border-color var(--dur-micro) var(--ease);
 }
 .atajo:hover { border-color: var(--s); }
-.atajo__ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--s-fondo); color: var(--s); flex-shrink: 0; }
+.atajo__ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--s-fondo); color: var(--s-ico); flex-shrink: 0; }
 .atajo__ico .ico { width: 24px; height: 24px; }
 .atajo__texto { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .atajo__texto strong { font-size: 18px; line-height: 1.2; }
-.atajo__flecha { color: var(--s); }
+.atajo__flecha { color: var(--s-ico); }
 
 /* ---------- Agenda de hoy: llegadas y salidas en una sola lista, por hora ---------- */
 .agenda { display: grid; }
@@ -229,9 +233,10 @@
   padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
 }
 .tag .ico { width: 13px; height: 13px; stroke-width: 2; }
-.tag--llega { background: #e2f0f8; color: #1a5e85; }
-.tag--sale { background: #053f5c; color: #fff; }
-.tag--sale .ico { color: #a0eacf; }
+.tag--llega { background: #e3f8ef; color: #17694c; }
+.tag--llega .ico { color: #2b9a73; }
+.tag--sale { background: #fff2dc; color: #8a5300; }
+.tag--sale .ico { color: #c67600; }
 
 /* ---------- KPI ---------- */
 .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -252,8 +257,8 @@
 .de-total { font-weight: 400; letter-spacing: 0; color: var(--azul-apagado); }
 .kpi__valor .de-total { font-size: 22px; margin-left: 1px; }
 .kpi__ver { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 500; color: var(--s-texto); }
-.kpi__ver .ico { width: 15px; height: 15px; color: var(--s); }
-.kpi__ico { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--s-fondo); color: var(--s); }
+.kpi__ver .ico { width: 15px; height: 15px; color: var(--s-ico); }
+.kpi__ico { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--s-fondo); color: var(--s-ico); }
 .kpi__ico .ico { width: 17px; height: 17px; }
 .kpi__rotulo { font-size: 14px; font-weight: 500; color: var(--texto); padding-right: 34px; line-height: 1.3; }
 .kpi__valor { font-size: 30px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; margin-top: 6px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
@@ -270,14 +275,14 @@
 .bloque__cabeza { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .bloque__cabeza h2 { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 500; letter-spacing: -.01em; line-height: 1.25; }
 .bloque__cabeza h2::before { content: ''; width: 4px; height: 20px; border-radius: 2px; background: var(--s); flex-shrink: 0; }
-.bloque__cabeza h2 .ico { color: var(--s); }
+.bloque__cabeza h2 .ico { color: var(--s-ico); }
 .cuenta {
   display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px;
   border-radius: 12px; background: var(--fondo); font-size: 13px; font-weight: 500; color: var(--texto-suave);
 }
 .vacio { padding: 18px 0; color: var(--texto-suave); font-size: 14px; }
 .vacio--grande { display: grid; justify-items: center; gap: 10px; padding: 40px 12px; text-align: center; }
-.vacio--grande .ico { width: 32px; height: 32px; color: var(--s); }
+.vacio--grande .ico { width: 32px; height: 32px; color: var(--s-ico); }
 .mas, .resultado { font-size: 13px; color: var(--texto-suave); }
 .ayuda { font-size: 13px; color: var(--texto-suave); }
 .texto { font-size: 14px; max-width: 60ch; }
@@ -331,7 +336,7 @@ li.mini__fila[data-abrir-reserva], li.mini__fila[data-elegir-llegada], li.mini__
 .medidor + .medidor { margin-top: 8px; }
 .medidor__rotulo { display: flex; justify-content: space-between; font-size: 14px; }
 .medidor__barra { height: 10px; border-radius: 5px; background: var(--fondo); overflow: hidden; }
-.medidor__barra span { display: block; height: 100%; border-radius: 5px; background: var(--s); }
+.medidor__barra span { display: block; height: 100%; border-radius: 5px; background: var(--s-ico); }
 .medidor__pct { font-size: 13px; color: var(--texto-suave); }
 
 /* ---------- Herramientas (filtros, buscador, acciones) ---------- */

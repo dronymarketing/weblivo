@@ -180,6 +180,13 @@ texto, sin íconos.
 **«Predio» = lugar al aire libre, en todos lados** (web, reserva y panel). Para hablar del lugar
 entero se dice «parking» (estado «En el parking», sector «Autos en el parking») para no confundir.
 
+**Cómo cobra el parking (Santi, 6/10): se paga siempre al inicio.** El que no pagó online paga en
+**Entrada** (cobro obligatorio, con vuelto) antes de que se le asigne el lugar. **Salida** no cobra: solo
+entrega llaves y libera el lugar; si se quedó más días de lo reservado aparece la diferencia, y cobrarla
+es opcional. Entrada y Salida usan el mismo ícono de auto: Entrada en menta, Salida en ámbar.
+**Paleta del panel = la del branding:** Hoy navy · Autos en el parking menta · Reservas azul apagado ·
+Plata naranja · Ajustes neutro (#C9D6D4) · Salida ámbar. Lugares disponibles usa la menta.
+
 **Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
 cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
 webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
@@ -199,5 +206,5 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=4`, reservar.js `?v=3`; en `panel/`: movil.css `?v=10`, escritorio.css `?v=2`, app.js `?v=10`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=5`, reservar.js `?v=3`; en `panel/`: movil.css `?v=11`, escritorio.css `?v=2`, app.js `?v=11`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

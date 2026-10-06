@@ -43,11 +43,11 @@
   var SECCIONES = [
     { id: 'panel', sector: 'hoy', nombre: 'Hoy', ico: 'sun', roles: ['admin', 'personal'],
       desc: 'Lo que pasa hoy en el parking, de un vistazo.' },
-    { id: 'llegada', sector: 'autos', nombre: 'Entra un auto', ico: 'log-in', roles: ['admin', 'personal'],
-      desc: 'Cuando llega un cliente: buscás su reserva, le das un lugar e imprimís el comprobante.',
+    { id: 'llegada', sector: 'autos', color: 'entrada', nombre: 'Entrada', ico: 'car-front', roles: ['admin', 'personal'],
+      desc: 'Cuando llega un cliente: buscás su reserva, cobrás si no pagó online, le das un lugar e imprimís el comprobante.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'confirmada' && mismoDia(r.entrada, Date.now()); }).length; } },
-    { id: 'retiros', sector: 'autos', nombre: 'Sale un auto', ico: 'log-out', roles: ['admin', 'personal'],
-      desc: 'Cuando vuelve un cliente: cobrás lo que falta, entregás las llaves y el lugar queda libre.',
+    { id: 'retiros', sector: 'autos', color: 'salida', nombre: 'Salida', ico: 'car-front', roles: ['admin', 'personal'],
+      desc: 'Cuando vuelve un cliente: buscás su auto, entregás las llaves y el lugar queda libre. No se cobra: ya pagó al entrar.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'en_predio' && mismoDia(r.salida, Date.now()); }).length; } },
     { id: 'traslados', sector: 'autos', nombre: 'Camioneta', ico: 'bus', roles: ['admin', 'personal', 'chofer'],
       desc: 'Los viajes del día: llevar clientes a la terminal y buscarlos cuando aterrizan.',
@@ -159,19 +159,19 @@
       .sort(function (a, b) { return new Date(a.hora) - new Date(b.hora); });
 
     return '<div class="atajos">' +
-        atajo('#/llegada', 'autos', 'log-in', 'Entra un auto', porLlegar ? porLlegar + (porLlegar === 1 ? ' llega' : ' llegan') + ' todavía hoy' : 'No hay más llegadas hoy') +
-        atajo('#/retiros', 'autos', 'log-out', 'Sale un auto', porSalir ? porSalir + (porSalir === 1 ? ' se va' : ' se van') + ' todavía hoy' : 'Nadie más se va hoy') +
+        atajo('#/llegada', 'entrada', 'car-front', 'Entrada', porLlegar ? (porLlegar === 1 ? 'Falta 1 entrada hoy' : 'Faltan ' + porLlegar + ' entradas hoy') : 'No hay más entradas hoy') +
+        atajo('#/retiros', 'salida', 'car-front', 'Salida', porSalir ? (porSalir === 1 ? 'Falta 1 salida hoy' : 'Faltan ' + porSalir + ' salidas hoy') : 'No hay más salidas hoy') +
         atajo(null, 'reservas', 'plus', 'Nueva reserva', 'Por WhatsApp o en el mostrador') +
       '</div>' +
-      (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Conviene escribirles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
+      (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Se cobran al entrar: conviene avisarles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
         kpi('car', 'Autos totales en el Parking', dentro.length + '<span class="de-total">/' + d.lugares.length + '</span>',
-          porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo se van') +
+          porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo salen') +
         kpi('circle-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(libresT, libresA, capT, capA), 'libre', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Viajes de la camioneta', trasPend.length,
           trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
-            : tras.length ? 'No queda ninguno: se hicieron los ' + tras.length + ' de hoy' : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
+            : tras.length ? (tras.length === 1 ? 'No queda ninguno: ya se hizo el de hoy' : 'No queda ninguno: ya se hicieron los ' + tras.length + ' de hoy') : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
         kpi('banknote', 'Cobrado en el turno', plata(cobrado),
           d.caja.turnoActual ? 'Desde las ' + hora(d.caja.turnoActual.apertura) + ' · ' + plata(online) + ' se pagó online' : 'La caja está cerrada', 'plata', '#/caja', 'Ver la caja') +
       '</div>' +
@@ -193,15 +193,15 @@
       : '<button type="button" class="atajo" data-sector="' + sector + '" data-nueva-reserva>' + dentro + '</button>';
   }
   function listaAgenda(lista) {
-    if (!lista.length) return '<p class="vacio">Hoy no llega ni se va nadie.</p>';
+    if (!lista.length) return '<p class="vacio">Hoy no hay entradas ni salidas.</p>';
     return '<ul class="agenda">' + lista.map(function (x) {
       var r = x.r, llega = x.tipo === 'llega', accion;
       if (llega) accion = r.estado === 'confirmada' ? '<a class="btn btn--chico btn--primario" href="#/llegada?c=' + r.codigo + '">Registrar entrada</a>' : '<span class="estado estado--bien">' + ico('circle-check') + 'Ya entró</span>';
-      else accion = r.estado === 'en_predio' ? '<a class="btn btn--chico btn--primario" href="#/retiros?c=' + r.codigo + '">Cobrar y entregar</a>' : '<span class="estado estado--neutro">' + ico('circle-check') + 'Ya se fue</span>';
-      var debe = r.estado !== 'finalizada' && r.pago.estado !== 'pagado';
+      else accion = r.estado === 'en_predio' ? '<a class="btn btn--chico btn--primario" href="#/retiros?c=' + r.codigo + '">Registrar salida</a>' : '<span class="estado estado--neutro">' + ico('circle-check') + 'Ya se fue</span>';
+      var debe = llega && r.estado === 'confirmada' && r.pago.estado !== 'pagado';
       return '<li class="agenda__fila" data-abrir-reserva="' + r.id + '">' +
         '<span class="agenda__hora">' + hora(x.hora) + '</span>' +
-        '<span class="agenda__texto"><span class="tag tag--' + x.tipo + '">' + ico(llega ? 'log-in' : 'log-out') + (llega ? 'Llega' : 'Se va') + '</span>' +
+        '<span class="agenda__texto"><span class="tag tag--' + x.tipo + '">' + ico('car-front') + (llega ? 'Entrada' : 'Salida') + '</span>' +
           '<strong>' + esc(r.vehiculo.matricula) + '</strong> · ' + esc(r.cliente.nombre) +
           '<small>' + TIPO[r.lugarTipo] + (r.lugar ? ' · lugar ' + r.lugar : '') + (!llega && r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '') + '</small></span>' +
         '<span class="agenda__accion">' + (debe ? badgePago(r) : '') + accion + '</span></li>';
@@ -280,8 +280,8 @@
     var p = PD.precio(r);
     var wa = 'https://wa.me/598' + r.cliente.telefono.replace(/\D/g, '').replace(/^0/, '') + '?text=' + encodeURIComponent('Hola ' + r.cliente.nombre.split(' ')[0] + ', te escribimos de Parking Despegar por tu reserva ' + r.codigo + ' del ' + new Date(r.entrada).toLocaleDateString('es-UY') + '. Te esperamos en Av. Wilson Ferreira Aldunate 5536, frente al aeropuerto viejo: https://maps.app.goo.gl/uS7X1yYPPpoTixBLA');
     var acciones = '';
-    if (r.estado === 'confirmada' && puede('llegada')) acciones += '<a class="btn btn--primario" href="#/llegada?c=' + r.codigo + '" data-cerrar-ventana>' + ico('log-in') + 'Registrar llegada</a>';
-    if (r.estado === 'en_predio' && puede('retiros')) acciones += '<a class="btn btn--primario" href="#/retiros?c=' + r.codigo + '" data-cerrar-ventana>' + ico('receipt') + 'Retiro y cobro</a>';
+    if (r.estado === 'confirmada' && puede('llegada')) acciones += '<a class="btn btn--primario" href="#/llegada?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar entrada</a>';
+    if (r.estado === 'en_predio' && puede('retiros')) acciones += '<a class="btn btn--primario" href="#/retiros?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar salida</a>';
     acciones += '<a class="btn btn--linea" href="' + wa + '" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>';
     if (r.estado === 'confirmada' && puede('reservas')) acciones += '<button class="btn btn--linea btn--peligro" type="button" data-cancelar="' + r.id + '">' + ico('x') + 'Cancelar reserva</button>';
     abrirVentana(
@@ -294,7 +294,7 @@
         fila('Deja el auto', fechaHora(r.entrada) + (r.vuelo.ida ? ' · vuelo ' + esc(r.vuelo.ida) : '')) +
         fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) +
         fila('Lugar', TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ' · se asigna al llegar') + ' · ' + (r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado (' + r.pasajeros + ' pasajeros)')) +
-        fila('Ingreso / retiro', fechaHora(r.checkin) + ' → ' + fechaHora(r.checkout)) +
+        fila('Entrada / salida', fechaHora(r.checkin) + ' → ' + fechaHora(r.checkout)) +
         fila('Importe', plata(r.total) + ' · ' + p.dias + ' días · pagado ' + plata(r.pago.monto) + (r.pago.medio ? ' (' + MEDIOS[r.pago.medio] + ')' : '') + (r.pago.ref ? '<small>Ref. ' + esc(r.pago.ref) + '</small>' : '')) +
       '</dl><div class="ventana__acciones">' + acciones + '</div>', 'ancha');
   }
@@ -337,14 +337,14 @@
     var ahora = Date.now();
     var pendientes = D().reservas.filter(function (r) { return r.estado === 'confirmada' && new Date(r.entrada) - ahora < 1.5 * PD.DIA; }).sort(porFecha('entrada'));
     var elegida = q.c ? D().reservas.filter(function (r) { return r.codigo === q.c && r.estado === 'confirmada'; })[0] : null;
-    var ficha = '<section class="bloque bloque--ficha" data-panel-llegada>' + (elegida ? panelLlegada(elegida) : '<p class="vacio vacio--grande">' + ico('log-in') + 'Elegí una reserva para registrar la llegada.</p>') + '</section>';
+    var ficha = '<section class="bloque bloque--ficha" data-panel-llegada>' + (elegida ? panelLlegada(elegida) : '<p class="vacio vacio--grande">' + ico('log-in') + 'Elegí una reserva para registrar la entrada.</p>') + '</section>';
     /* Con una reserva elegida, en celular la ficha va primero (en escritorio queda a la derecha) */
     return '<div class="columnas columnas--llegada">' + (elegida ? ficha : '') +
       '<section class="bloque"><header class="bloque__cabeza"><h2>Buscar la reserva</h2></header>' +
         '<label class="buscador buscador--grande">' + ico('scan-line') + '<input type="search" placeholder="Código o matrícula" data-buscar-llegada autofocus></label>' +
         '<p class="ayuda">Escaneá el código del comprobante o escribí parte de la matrícula.</p>' +
         '<ul class="mini" data-lista-llegada>' + listaLlegada(pendientes) + '</ul>' +
-        '<button class="btn btn--linea" type="button" data-sin-reserva>' + ico('plus') + 'Llega sin reserva</button>' +
+        '<button class="btn btn--linea" type="button" data-sin-reserva>' + ico('plus') + 'Entra sin reserva</button>' +
       '</section>' +
       (elegida ? '' : ficha) +
     '</div>';
@@ -357,28 +357,33 @@
         '<span class="mini__accion">' + badgePago(r) + '</span></li>';
     }).join('');
   }
+  /* El pago es siempre al entrar: si no pagó online, se cobra acá antes de darle el lugar */
   function panelLlegada(r) {
     var libres = PD.lugaresLibres(r.lugarTipo);
-    var saldo = r.total - (r.pago.monto || 0);
-    return '<header class="bloque__cabeza"><h2>' + r.codigo + ' · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2></header>' +
+    var saldo = Math.max(0, r.total - (r.pago.monto || 0));
+    return '<header class="bloque__cabeza"><h2>Entrada · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.codigo + '</span></header>' +
       '<dl class="ficha">' + fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono)) + fila('Auto', esc(r.vehiculo.modelo) + ' ' + esc(r.vehiculo.color)) +
         fila('Vuelve', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') + '</dl>' +
-      '<form class="formulario" data-form-llegada data-id="' + r.id + '">' +
+      '<form class="formulario" data-form-llegada data-id="' + r.id + '" data-saldo="' + saldo + '">' +
+        (saldo > 0 ? '<div class="total-grande"><p>A cobrar ahora</p><strong>' + plata(saldo) + '</strong><small>' + PD.precio(r).dias + ' días reservados · se paga al entrar</small></div>' +
+          '<div class="formulario__fila"><label class="campo"><span>Medio de pago</span><select name="medio" required><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta (POS)</option><option value="transferencia">Transferencia</option></select></label>' +
+          '<label class="campo"><span>Recibido <em>(efectivo)</em></span><input name="recibido" type="number" min="0" placeholder="' + saldo + '" data-recibido></label></div>' +
+          '<p class="vuelto" data-vuelto hidden></p>'
+          : '<p class="ok">' + ico('circle-check') + 'Pagada' + (r.pago.medio === 'online' ? ' online' : '') + '. No hay nada que cobrar.</p>') +
         '<label class="campo"><span>Lugar (' + TIPO[r.lugarTipo] + ' · ' + libres.length + ' libres)</span><select name="lugar">' + libres.map(function (l, i) { return '<option' + (i === 0 ? ' selected' : '') + '>' + l.id + '</option>'; }).join('') + '</select></label>' +
-        (saldo > 0 ? '<div class="cobro-breve"><p>' + ico('triangle-alert') + 'Tiene <strong>' + plata(saldo) + '</strong> sin pagar. Podés cobrarlo ahora o al retirar.</p>' +
-          '<div class="formulario__fila"><label class="campo"><span>Cobrar ahora</span><select name="medio"><option value="">Al retirar</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta (POS)</option><option value="transferencia">Transferencia</option></select></label>' +
-          '<label class="campo"><span>Monto</span><input name="monto" type="number" min="0" value="' + saldo + '"></label></div></div>' : '<p class="ok">' + ico('circle-check') + 'Pagada ' + (r.pago.medio === 'online' ? 'online' : '') + '. No hay nada que cobrar.</p>') +
         '<label class="campo"><span>Notas del auto <em>(rayones, objetos, llaves)</em></span><input name="notas" placeholder="Opcional"></label>' +
-        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Registrar llegada e imprimir</button></div>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + (saldo > 0 ? 'Cobrar ' + plata(saldo) + ' y registrar entrada' : 'Registrar entrada e imprimir') + '</button></div>' +
       '</form>';
   }
   function registrarLlegada(id, f) {
     var d = D(), r = d.reservas.filter(function (x) { return x.id === id; })[0];
     if (!r || !f.lugar.value) { avisar('No quedan lugares libres de ese tipo', 'alerta'); return; }
+    var saldo = +f.getAttribute('data-saldo');
+    if (saldo > 0) PD.registrarPago(r, saldo, f.medio.value, nombreUsuario());
     r.estado = 'en_predio'; r.lugar = f.lugar.value; r.checkin = new Date().toISOString(); r.notas = f.notas.value.trim();
-    if (f.medio && f.medio.value && +f.monto.value > 0) PD.registrarPago(r, +f.monto.value, f.medio.value, nombreUsuario());
-    PD.guardar(nombreUsuario(), 'Llegada de ' + r.codigo + ' (' + r.vehiculo.matricula + ') al lugar ' + r.lugar);
-    ticket(r, 'llegada');
+    PD.guardar(nombreUsuario(), 'Entrada de ' + r.codigo + ' (' + r.vehiculo.matricula + ') al lugar ' + r.lugar);
+    avisar('Entrada registrada: ' + r.vehiculo.matricula + ' en ' + r.lugar);
+    ticket(r, 'entrada');
     location.hash = '#/llegada';
   }
   function sinReserva() {
@@ -393,11 +398,11 @@
     var caja = abrirVentana(
       '<div class="ticket" id="ticket"><svg class="ticket__logo" viewBox="0 0 822.78 263.63" aria-hidden="true"><use href="#logo-v"/></svg>' +
       '<p class="ticket__dir">Av. Wilson Ferreira Aldunate 5536 · Paso de Carrasco<br>WhatsApp 099 114 144 · abierto 24 h</p>' +
-      '<p class="ticket__tipo">' + (tipo === 'retiro' ? 'Comprobante de retiro' : 'Comprobante de ingreso') + '</p>' +
+      '<p class="ticket__tipo">' + (tipo === 'salida' ? 'Comprobante de salida' : 'Comprobante de entrada') + '</p>' +
       '<p class="ticket__matricula">' + esc(r.vehiculo.matricula) + '</p>' +
-      '<dl>' + fila('Reserva', r.codigo) + fila('Lugar', r.lugar + ' · ' + TIPO[r.lugarTipo]) + fila('Ingreso', fechaHora(r.checkin)) +
-        (tipo === 'retiro' ? fila('Retiro', fechaHora(r.checkout)) + fila('Total', plata(r.total)) : fila('Vuelve', fechaHora(r.salida)) + fila('Estimado', plata(p.total) + ' · ' + p.dias + ' días')) +
-        fila('Pago', r.pago.estado === 'pagado' ? 'Pagado' : 'Saldo ' + plata(r.total - r.pago.monto)) + '</dl>' +
+      '<dl>' + fila('Reserva', r.codigo) + fila('Lugar', r.lugar + ' · ' + TIPO[r.lugarTipo]) + fila('Entrada', fechaHora(r.checkin)) +
+        (tipo === 'salida' ? fila('Salida', fechaHora(r.checkout)) : fila('Vuelve', fechaHora(r.salida)) + fila('Estadía', p.dias + ' días')) +
+        fila('Pagado', plata(r.pago.monto) + (r.pago.medio ? ' · ' + MEDIOS[r.pago.medio] : '')) + '</dl>' +
       '<svg class="ticket__barras" data-barras></svg>' +
       '<p class="ticket__pie">Presentá este comprobante para retirar el auto.<br>Atendió: ' + esc(nombreUsuario()) + '</p></div>' +
       '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-imprimir>' + ico('printer') + 'Imprimir</button><button class="btn btn--linea" type="button" data-cerrar-ventana>Listo</button></div>', 'ticket');
@@ -411,7 +416,7 @@
     var busca = (q.b || '').toLowerCase();
     if (busca) dentro = dentro.filter(function (r) { return (r.codigo + r.vehiculo.matricula + r.cliente.nombre).toLowerCase().indexOf(busca) >= 0; });
     var elegida = q.c ? D().reservas.filter(function (r) { return r.codigo === q.c && r.estado === 'en_predio'; })[0] : null;
-    var ficha = '<section class="bloque bloque--ficha" data-panel-retiro>' + (elegida ? panelRetiro(elegida) : '<p class="vacio vacio--grande">' + ico('receipt') + 'Elegí un auto para calcular el cobro y registrar el retiro.</p>') + '</section>';
+    var ficha = '<section class="bloque bloque--ficha" data-panel-retiro>' + (elegida ? panelRetiro(elegida) : '<p class="vacio vacio--grande">' + ico('receipt') + 'Elegí un auto para registrar la salida.</p>') + '</section>';
     return '<div class="columnas columnas--llegada">' + (elegida ? ficha : '') +
       '<section class="bloque"><header class="bloque__cabeza"><h2>Autos en el parking <span class="cuenta">' + dentro.length + '</span></h2></header>' +
         '<label class="buscador">' + ico('scan-line') + '<input type="search" placeholder="Código o matrícula" value="' + esc(q.b || '') + '" data-buscar="retiros"></label>' +
@@ -419,41 +424,37 @@
           var hoy = mismoDia(r.salida, Date.now());
           return '<li class="mini__fila' + (elegida && elegida.id === r.id ? ' es-elegida' : '') + '" data-elegir-retiro="' + r.codigo + '"><span class="mini__hora' + (hoy ? ' es-hoy' : '') + '">' + (hoy ? hora(r.salida) : fechaCorta(r.salida)) + '<small>' + (hoy ? 'hoy' : hora(r.salida)) + '</small></span>' +
             '<span class="mini__texto"><strong>' + esc(r.vehiculo.matricula) + '</strong> · ' + esc(r.cliente.nombre) + '<small>' + r.lugar + ' · ' + TIPO[r.lugarTipo] + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '') + '</small></span>' +
-            '<span class="mini__accion">' + badgePago(r) + '</span></li>';
+            '</li>';
         }).join('') : '<li class="vacio">No hay autos con ese dato.</li>') + '</ul>' +
       '</section>' +
       (elegida ? '' : ficha) +
     '</div>';
   };
+  /* La salida no tiene cobro (se pagó al entrar). Solo si se quedó más días de lo reservado aparece la diferencia, opcional. */
   function panelRetiro(r) {
     var ahora = new Date();
     var real = PD.precio({ entrada: r.checkin || r.entrada, salida: ahora, lugarTipo: r.lugarTipo, servicio: r.servicio });
-    var total = Math.max(r.total, real.total);
-    var pagado = r.pago.monto || 0, saldo = Math.max(0, total - pagado);
-    var t = D().tarifas;
-    return '<header class="bloque__cabeza"><h2>Retiro · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.lugar + '</span></header>' +
-      '<div class="total-grande"><p>' + (saldo > 0 ? 'A cobrar' : 'Nada para cobrar') + '</p><strong>' + plata(saldo) + '</strong><small>' + real.dias + (real.dias === 1 ? ' día' : ' días') + ' en el parking</small></div>' +
-      '<dl class="ficha">' + fila('Ingreso', fechaHora(r.checkin)) + fila('Retiro', fechaHora(ahora)) +
-        fila('Cálculo', real.dias + ' × ' + plata(r.lugarTipo === 'techado' ? t.techado : t.aire) + (real.extra ? ' + valet ' + plata(real.extra) : '') + ' = ' + plata(real.total) + (total > real.total ? '<small>Se mantiene lo reservado: ' + plata(r.total) + '</small>' : '')) +
-        fila('Ya pagado', plata(pagado) + (r.pago.medio ? ' (' + MEDIOS[r.pago.medio] + ')' : '')) + (r.notas ? fila('Notas', esc(r.notas)) : '') + '</dl>' +
-      '<form class="formulario" data-form-retiro data-id="' + r.id + '" data-total="' + total + '" data-saldo="' + saldo + '">' +
-        (saldo > 0 ? '<div class="formulario__fila"><label class="campo"><span>Medio de pago</span><select name="medio"><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta (POS)</option><option value="transferencia">Transferencia</option></select></label>' +
-          '<label class="campo"><span>Recibido <em>(efectivo)</em></span><input name="recibido" type="number" min="0" placeholder="' + saldo + '" data-recibido></label></div>' +
-          '<p class="vuelto" data-vuelto hidden></p>' : '') +
+    var dif = Math.max(0, real.total - r.total);
+    return '<header class="bloque__cabeza"><h2>Salida · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">Lugar ' + r.lugar + '</span></header>' +
+      '<p class="ok">' + ico('circle-check') + 'Pagó ' + plata(r.pago.monto) + (r.pago.medio ? ' (' + MEDIOS[r.pago.medio] + ')' : '') + ' al entrar. No hay nada que cobrar.</p>' +
+      '<dl class="ficha">' + fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono)) + fila('Entrada', fechaHora(r.checkin)) + fila('Salida', fechaHora(ahora) + ' · ' + real.dias + (real.dias === 1 ? ' día' : ' días')) +
+        (r.notas ? fila('Notas de la entrada', esc(r.notas)) : '') + '</dl>' +
+      '<form class="formulario" data-form-retiro data-id="' + r.id + '" data-dif="' + dif + '">' +
+        (dif > 0 ? '<div class="cobro-breve"><p>' + ico('triangle-alert') + '<span>Se quedó más de lo reservado: <strong>' + plata(dif) + '</strong> de diferencia.</span></p>' +
+          '<label class="campo"><span>¿Cobrar la diferencia?</span><select name="medio"><option value="">No cobrar</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta (POS)</option><option value="transferencia">Transferencia</option></select></label></div>' : '') +
         '<label class="check"><input type="checkbox" name="llaves" required> Entregué las llaves y el cliente revisó el auto</label>' +
-        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + (saldo > 0 ? 'Cobrar ' + plata(saldo) + ' y liberar lugar' : 'Registrar retiro y liberar lugar') + '</button></div>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Registrar salida y liberar lugar</button></div>' +
       '</form>';
   }
   function registrarRetiro(id, f) {
     var d = D(), r = d.reservas.filter(function (x) { return x.id === id; })[0];
     if (!f.llaves.checked) { avisar('Confirmá la entrega de llaves', 'alerta'); return; }
-    var total = +f.getAttribute('data-total'), saldo = +f.getAttribute('data-saldo');
-    r.total = total;
-    if (saldo > 0) PD.registrarPago(r, saldo, f.medio.value, nombreUsuario());
+    var dif = +f.getAttribute('data-dif');
+    if (dif > 0 && f.medio && f.medio.value) { r.total += dif; PD.registrarPago(r, dif, f.medio.value, nombreUsuario()); }
     r.estado = 'finalizada'; r.checkout = new Date().toISOString(); r.traslado.vuelta = 'hecho';
-    PD.guardar(nombreUsuario(), 'Retiro de ' + r.codigo + ' (' + r.vehiculo.matricula + '), libera ' + r.lugar);
-    avisar('Retiro registrado: ' + r.lugar + ' quedó libre');
-    ticket(r, 'retiro');
+    PD.guardar(nombreUsuario(), 'Salida de ' + r.codigo + ' (' + r.vehiculo.matricula + '), libera ' + r.lugar);
+    avisar('Salida registrada: ' + r.lugar + ' quedó libre');
+    ticket(r, 'salida');
     location.hash = '#/retiros';
   }
 
@@ -697,7 +698,7 @@
       return '<div class="lateral__sector" data-sector="' + sec.id + '">' + (sec.id !== 'hoy' ? '<p class="lateral__grupo">' + sec.nombre + '</p>' : '') +
         items.map(function (s) {
           var n = s.cuenta ? s.cuenta() : 0;
-          return '<a class="lateral__link' + (s.id === actual ? ' es-activo' : '') + '" href="#/' + s.id + '"' + (s.id === actual ? ' aria-current="page"' : '') + '>' + ico(s.ico) + '<span>' + s.nombre + '</span>' + (n ? '<span class="lateral__cuenta">' + n + '</span>' : '') + '</a>';
+          return '<a class="lateral__link' + (s.id === actual ? ' es-activo' : '') + '" href="#/' + s.id + '"' + (s.color ? ' data-sector="' + s.color + '"' : '') + (s.id === actual ? ' aria-current="page"' : '') + '>' + ico(s.ico) + '<span>' + s.nombre + '</span>' + (n ? '<span class="lateral__cuenta">' + n + '</span>' : '') + '</a>';
         }).join('') + '</div>';
     }).join('');
   }
@@ -722,7 +723,7 @@
     var r = ruta();
     if (!puede(r.id)) { location.hash = '#/' + (usuario.rol === 'chofer' ? 'traslados' : 'panel'); return; }
     var sec = SECCIONES.filter(function (s) { return s.id === r.id; })[0];
-    $('.principal').setAttribute('data-sector', sec.sector);
+    $('.principal').setAttribute('data-sector', sec.color || sec.sector);
     document.title = sec.nombre + ' — Gestión · Parking Despegar';
     $('[data-usuario-nombre]').textContent = usuario.nombre;
     $('[data-usuario-rol]').textContent = ROLES[usuario.rol];

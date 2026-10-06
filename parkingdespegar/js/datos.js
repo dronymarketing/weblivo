@@ -11,7 +11,7 @@
 (function () {
   'use strict';
 
-  var CLAVE = 'pd-datos-v2';
+  var CLAVE = 'pd-datos-v3';
   var DIA = 86400000;
 
   /* ---------- Lugares del predio (muestra: confirmar cantidades con la clienta) ---------- */
@@ -106,9 +106,10 @@
         var libre = LUGARES.filter(function (l) { return l.tipo === tipo && !ocupados[l.id + (res.estado === 'en_predio' ? '' : '-' + k)]; })[Math.floor(r() * 6)];
         res.lugar = libre ? libre.id : (tipo === 'techado' ? 'A-01' : 'B-01');
         if (res.estado === 'en_predio') ocupados[res.lugar] = true;
-        if (res.pago.estado !== 'pagado' && res.estado === 'finalizada') {
+        // Se paga siempre al entrar: el que no pagó online, pagó en el mostrador al dejar el auto
+        if (res.pago.estado !== 'pagado') {
           var medio = ['efectivo', 'tarjeta', 'transferencia', 'efectivo'][Math.floor(r() * 4)];
-          res.pago = { estado: 'pagado', monto: p.total, medio: medio, ref: null, fecha: res.checkout };
+          res.pago = { estado: 'pagado', monto: p.total, medio: medio, ref: null, fecha: res.checkin };
         }
       }
       reservas.push(res);
