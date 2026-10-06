@@ -13,7 +13,7 @@
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var D = function () { return PD.datos(); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-  var plata = function (n) { return '$ ' + Math.round(n || 0).toLocaleString('es-UY'); };
+  var plata = function (n) { return '$\u00a0' + Math.round(n || 0).toLocaleString('es-UY'); };
   var ico = function (n, c) { return '<svg class="' + (c || 'ico') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; };
   var hora = function (d) { return new Date(d).toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); };
   var fechaCorta = function (d) { return new Date(d).toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit' }); };
@@ -151,6 +151,8 @@
     var porSalir = vuelven.filter(function (r) { return r.estado === 'en_predio'; }).length;
     var cobrado = d.caja.turnoActual ? d.caja.turnoActual.movimientos.filter(function (m) { return m.monto > 0; }).reduce(function (s, m) { return s + m.monto; }, 0) : 0;
     var tras = trasladosDe(ahora), trasPend = tras.filter(function (t) { return t.estado !== 'hecho'; });
+    var libresT = capT - dTech, libresA = capA - (dentro.length - dTech);
+    var online = d.caja.turnoActual ? d.caja.turnoActual.movimientos.filter(function (m) { return m.medio === 'online'; }).reduce(function (s, m) { return s + m.monto; }, 0) : 0;
     var sinPago = d.reservas.filter(function (r) { return r.estado === 'confirmada' && r.pago.estado !== 'pagado' && new Date(r.entrada) - ahora < 2 * PD.DIA && new Date(r.entrada) > ahora - PD.DIA; }).length;
     var agenda = llegan.map(function (r) { return { r: r, tipo: 'llega', hora: r.entrada }; })
       .concat(vuelven.map(function (r) { return { r: r, tipo: 'sale', hora: r.salida }; }))
@@ -163,10 +165,15 @@
       '</div>' +
       (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Conviene escribirles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
-        kpi('square-parking', 'Autos en el predio', dentro.length, dTech + ' techado · ' + (dentro.length - dTech) + ' aire libre', 'autos') +
-        kpi('warehouse', 'Lugares libres', d.lugares.length - dentro.length, 'de ' + d.lugares.length + ' en total', 'autos') +
-        kpi('bus', 'Viajes de camioneta', trasPend.length, 'pendientes hoy', 'autos') +
-        kpi('banknote', 'Cobrado en el turno', plata(cobrado), 'con los pagos online', 'plata') +
+        kpi('square-parking', 'Autos guardados ahora', dentro.length,
+          dTech + ' bajo techo y ' + (dentro.length - dTech) + ' al aire libre', 'autos', '#/retiros', 'Ver cuándo se van') +
+        kpi('warehouse', 'Lugares disponibles', libresT + libresA,
+          'De ' + d.lugares.length + ' lugares quedan ' + libresT + ' bajo techo y ' + libresA + ' al aire libre', 'autos', '#/lugares', 'Ver el mapa') +
+        kpi('bus', 'Viajes de la camioneta', trasPend.length,
+          trasPend.length ? 'por hacer hoy' + (tras.length - trasPend.length ? ' · ya se hicieron ' + (tras.length - trasPend.length) : '')
+            : tras.length ? 'No queda ninguno: se hicieron los ' + tras.length + ' de hoy' : 'Hoy no hay viajes', 'autos', '#/traslados', 'Ver los viajes') +
+        kpi('banknote', 'Cobrado en el turno', plata(cobrado),
+          d.caja.turnoActual ? 'Desde las ' + hora(d.caja.turnoActual.apertura) + ' · ' + plata(online) + ' se pagó online' : 'La caja está cerrada', 'plata', '#/caja', 'Ver la caja') +
       '</div>' +
       bloque('Agenda de hoy', agenda.length, listaAgenda(agenda), null, 'hoy') +
       '<div class="columnas">' +
@@ -195,8 +202,11 @@
     }).join('') + '</ul>';
   }
   /* opc: true = número principal (fondo navy) · 'autos', 'plata'… = color de ese sector */
-  function kpi(i, rotulo, valor, sub, opc) {
-    return '<div class="kpi' + (opc === true ? ' kpi--destacado' : '') + '"' + (typeof opc === 'string' ? ' data-sector="' + opc + '"' : '') + '><span class="kpi__ico">' + ico(i) + '</span><p class="kpi__rotulo">' + rotulo + '</p><p class="kpi__valor">' + valor + '</p><p class="kpi__sub">' + sub + '</p></div>';
+  function kpi(i, rotulo, valor, sub, opc, link, linkTxt) {
+    var attrs = 'class="kpi' + (opc === true ? ' kpi--destacado' : '') + (link ? ' kpi--link' : '') + '"' + (typeof opc === 'string' ? ' data-sector="' + opc + '"' : '');
+    var dentro = '<span class="kpi__ico">' + ico(i) + '</span><p class="kpi__rotulo">' + rotulo + '</p><p class="kpi__valor">' + valor + '</p><p class="kpi__sub">' + sub + '</p>' +
+      (link ? '<span class="kpi__ver">' + linkTxt + ico('arrow-right') + '</span>' : '');
+    return link ? '<a ' + attrs + ' href="' + link + '">' + dentro + '</a>' : '<div ' + attrs + '>' + dentro + '</div>';
   }
   function bloque(titulo, cuenta, cuerpo, link, sector) {
     return '<section class="bloque"' + (sector ? ' data-sector="' + sector + '"' : '') + '><header class="bloque__cabeza"><h2>' + titulo + (cuenta != null ? ' <span class="cuenta">' + cuenta + '</span>' : '') + '</h2>' +
