@@ -165,8 +165,8 @@
       '</div>' +
       (sinPago ? '<a class="alerta" href="#/reservas?f=pago">' + ico('circle-x') + '<span><strong>' + sinPago + ' reserva' + (sinPago > 1 ? 's' : '') + ' sin pagar</strong> llega' + (sinPago > 1 ? 'n' : '') + ' en las próximas 48 h. Conviene escribirles por WhatsApp.</span>' + ico('chevron-right') + '</a>' : '') +
       '<div class="kpis">' +
-        kpi('car', 'Autos totales en el Parking', dentro.length,
-          porTipo(dTech, dentro.length - dTech), 'autos', '#/retiros', 'Ver cuándo se van') +
+        kpi('car', 'Autos totales en el Parking', dentro.length + '<span class="de-total">/' + d.lugares.length + '</span>',
+          porTipo(dTech, dentro.length - dTech, capT, capA), 'autos', '#/retiros', 'Ver cuándo se van') +
         kpi('circle-parking', 'Lugares disponibles', (libresT + libresA) + '<span class="de-total">/' + d.lugares.length + '</span>',
           porTipo(libresT, libresA, capT, capA), 'libre', '#/lugares', 'Ver el mapa') +
         kpi('bus', 'Viajes de la camioneta', trasPend.length,
@@ -181,12 +181,11 @@
         bloque('Próximos viajes de la camioneta', trasPend.length, listaTraslados(trasPend.slice(0, 4), true), '#/traslados', 'autos') +
       '</div>';
   };
-  /* Techado y aire libre: ícono + número (el texto queda para lectores de pantalla y al pasar el mouse) */
-  /* Con capacidad (capT, capA) se muestra «libres/total»: el total va en el azul apagado */
+  /* Techado y predio (aire libre): «Techado 12/24» — el total va en el azul apagado */
   function porTipo(techado, aire, capT, capA) {
-    var de = function (n) { return n != null ? '<span class="de-total">/' + n + '</span>' : ''; };
-    return '<span class="por-tipo" title="Techado"><span class="por-tipo__ico">' + ico('house') + '</span><span>' + techado + de(capT) + '</span><span class="solo-lectores"> techado</span></span>' +
-      '<span class="por-tipo" title="Aire libre"><span class="por-tipo__ico">' + ico('cloud-sun') + '</span><span>' + aire + de(capA) + '</span><span class="solo-lectores"> al aire libre</span></span>';
+    var de = function (n) { return '<span class="de-total">/' + n + '</span>'; };
+    return '<span class="por-tipo"><span class="por-tipo__nombre">Techado</span><strong>' + techado + de(capT) + '</strong></span>' +
+      '<span class="por-tipo"><span class="por-tipo__nombre">Predio</span><strong>' + aire + de(capA) + '</strong></span>';
   }
   function atajo(href, sector, i, titulo, sub) {
     var dentro = '<span class="atajo__ico">' + ico(i) + '</span><span class="atajo__texto"><strong>' + titulo + '</strong><small>' + sub + '</small></span>' + ico('chevron-right', 'ico atajo__flecha');
