@@ -32,7 +32,7 @@ Web: https://livo.com.uy/tigretigre/
   original (contorno), en el degradé #F28705 → #F25C05 → #F24405. Archivos: `img/logo.svg` (completo:
   tigre + TigreTigre + PRODUCCIONES), `img/tigre.svg` (cabeza; también en el sprite como `#tigre`),
   `img/logo-texto.svg` (palabra + lema, para la entrada) y `img/logo-palabra.svg` (solo la palabra).
-  Va en la entrada, el pie, la tarjeta de WhatsApp (`og-blanco.jpg?v=2`), el favicon y el ícono.
+  Va en la entrada, el pie, la tarjeta de WhatsApp, el favicon y el ícono.
 - **Barra de arriba:** tigre + **la palabra de su logo** (`img/logo-palabra.svg`, 27px de alto en el
   celular y 32px en escritorio). Santi la eligió el 6/10 frente a TIGRETIGRE en letra tipo Netflix
   (`refs/maquetas/nav-opciones.png`). **Bebas Neue** (Google Fonts, OFL, en `fonts/`) queda para nombres y
@@ -118,7 +118,9 @@ Todo se arma desde ahí: para sumar un comunicador, un show, una función o un c
 - `img/shows/stand-up-vieja-chela.jpg` y `t4e12.jpg`: bandas de los flyers. `vieja-chela-logo.jpg`: logo del
   bar (de los flyers, sin usar todavía).
 - `img/shows/open-mic.jpg`: **foto de banco** (Unsplash, micrófono, sin personas).
-- `img/og-blanco.jpg`: tarjeta de WhatsApp (tigre + TIGRETIGRE + PRODUCCIONES en blanco). `img/icono-180.png`.
+- `img/og-negro.jpg`: tarjeta de WhatsApp, 1200×1200, el logo naranja sobre **fondo negro** (Santi, 7/10:
+  excepción al fondo blanco del estándar). Si se cambia, usar otro nombre de archivo: WhatsApp guarda la
+  anterior (por eso dejó de llamarse `og-blanco.jpg`). `img/icono-180.png`.
 - Sin avisos de «muestra» en pantalla (como pidió Santi en Rhodium y Parking): están en el código.
 
 ## Verificado
