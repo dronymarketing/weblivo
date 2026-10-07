@@ -544,7 +544,7 @@
    y los derechos en una línea chica, centrada */
 .pie__marca { display: block; width: fit-content; margin: 64px auto 48px; }
 .pie__marca img { width: 170px; height: auto; }
-.pie__legal { text-align: center; font-size: 12px; color: var(--texto-suave); }
+.pie__legal { text-align: center; font-size: 12px; color: rgba(255, 255, 255, .74); }   /* el mismo blanco al 74 % de Parking Despegar */
 
 
 /* ============================================================

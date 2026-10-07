@@ -48,7 +48,7 @@ Web: https://livo.com.uy/tigretigre/
 - **Pie como el de Parking Despegar** (Santi, 7/10: «la posición del logo y la letra de derechos
   reservados»): bio y columnas (Páginas · Contacto) arriba; debajo, el logo completo centrado (170px de
   ancho, 64px arriba y 48 abajo; en escritorio 220px, 96 y 48) y al final solo «© 2026 TigreTigre
-  Producciones», centrado, 12px, gris suave. En el celular deja libre la barra de pestañas.
+  Producciones», centrado, 12px, en blanco al 74 % (igual que Parking Despegar). En el celular deja libre la barra de pestañas.
 
 ## Páginas
 
@@ -144,5 +144,5 @@ regresiva (pasa solo al siguiente), rotación del hero y la entrada (solo la pri
 Los cinco HTML repiten sprite, entrada, header, pie, barra de abajo y capas idénticos (el ítem de la
 página actual lleva `aria-current="page"`). Si cambia alguno, cambiarlo en los cinco. Íconos: Lucide
 (interfaz) y Simple Icons (Instagram y WhatsApp), en sprite inline.
-Caché: `movil.css` y `escritorio.css` en `?v=4`, `datos.js` y `main.js` en `?v=2`, el resto en `?v=1`. Subirlo en los
+Caché: `movil.css` en `?v=5`, `escritorio.css` en `?v=4`, `datos.js` y `main.js` en `?v=2`, el resto en `?v=1`. Subirlo en los
 cinco HTML cada vez que se tocan.
