@@ -229,14 +229,14 @@
 /* ---------- Pie ---------- */
 .pie {
   display: grid; grid-template-columns: 1fr auto; column-gap: 60px; align-items: start;
-  grid-template-areas: "marca columnas" "bio columnas" "legal columnas";
-  padding: 48px var(--margen-lateral) 40px;
+  padding: 72px var(--margen-lateral) 32px;
 }
-.pie__marca { grid-area: marca; justify-self: start; }
-.pie__marca img { width: 170px; }
-.pie__bio { grid-area: bio; max-width: 42ch; }
-.pie__columnas { grid-area: columnas; grid-template-columns: repeat(2, 200px); margin-top: 0; }
-.pie__legal { grid-area: legal; }
+.pie__bio { max-width: 42ch; }
+.pie__columnas { grid-template-columns: repeat(2, 200px); margin-top: 0; }
+/* Logo y derechos a todo el ancho, centrados (como Parking Despegar en escritorio) */
+.pie__marca, .pie__legal { grid-column: 1 / -1; }
+.pie__marca { justify-self: center; margin: 96px auto 48px; }
+.pie__marca img { width: 220px; }
 .pie__columnas a:hover { color: #fff; }
 
 /* ============================================================
