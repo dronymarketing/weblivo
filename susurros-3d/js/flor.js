@@ -17,8 +17,8 @@ const AJUSTES = {
   contraste: num('contraste', 1.25),
   relieve: num('relieve', 0.12),    // relieve de las venas (en Blender son sutiles)
   expo: num('expo', 0.95),
-  reflejo: num('reflejo', 1),      // brillo de las luces que reflejan las facetas de la roca
-  disp: num('disp', 2),          // dispersión del cristal (en Blender: IOR 1.665 / 1.7 / 1.735)
+  reflejo: num('reflejo', 4),      // brillo de las luces que reflejan las facetas de la roca
+  disp: num('disp', 4),          // dispersión del cristal (en Blender: IOR 1.665 / 1.7 / 1.735)
   sombras: num('sombras', 1),    // sombras suaves entre pétalos (oclusión horneada)
   calidad: P.get('calidad'),     // forzar 'alta' | 'media' | 'baja'
 };
@@ -193,10 +193,10 @@ function actualizarEstudio() {
 // faceta: la normal de la cara elige un tono lila (de oscuro a claro) y si muestra los pétalos.
 {
   const u = {
-    uOsc: { value: new THREE.Color(P.get('rocaOsc') ? '#' + P.get('rocaOsc') : '#5a4fb0') },
-    uCla: { value: new THREE.Color(P.get('rocaCla') ? '#' + P.get('rocaCla') : '#d4cbf7') },
-    uInterno: { value: num('interno', 0.75) },
-    uLado: { value: num('lado', 0.8) },
+    uOsc: { value: new THREE.Color(P.get('rocaOsc') ? '#' + P.get('rocaOsc') : '#6f68bd') },
+    uCla: { value: new THREE.Color(P.get('rocaCla') ? '#' + P.get('rocaCla') : '#dcd6f8') },
+    uInterno: { value: num('interno', 0.9) },
+    uLado: { value: num('lado', 0.85) },
   };
   cristal.material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
@@ -368,9 +368,17 @@ const placas = (datos.placas || []).map((pl) => {
   // Vidrio esmerilado claro. Sin transmisión real: es más barato y así no refracta los paneles negros
   // del estudio (que solo tiene que ver la roca).
   const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(0.93, 0.92, 0.98), roughness: 0.25, metalness: 0, transparent: true, opacity: num('placas', 0.3),
-    clearcoat: 1, clearcoatRoughness: 0.05, specularIntensity: 1, envMapIntensity: 1.2, depthWrite: false,
+    color: new THREE.Color(0.85, 0.84, 0.93), roughness: 0.25, metalness: 0, transparent: true, opacity: num('placas', 0.3),
+    clearcoat: 1, clearcoatRoughness: 0.05, specularIntensity: 1, envMapIntensity: num('placasBrillo', 2), depthWrite: false,
   }));
+  // como el vidrio real: de frente casi transparente, de canto (y en los bordes) más visible
+  const uP = { uCara: { value: num('placasCara', 0.06) }, uCanto: { value: num('placasCanto', 0.4) } };
+  m.material.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uP);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uCara, uCanto;')
+      .replace('#include <opaque_fragment>', `diffuseColor.a = mix(uCara, uCanto, pow(1. - abs(dot(normalize(normal), normalize(vViewPosition))), 3.));
+      #include <opaque_fragment>`);
+  };
   m.matrixAutoUpdate = true; scene.add(m);
   return { malla: m, frames: pl.frames };
 });
