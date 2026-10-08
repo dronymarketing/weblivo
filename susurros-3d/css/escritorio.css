@@ -1,0 +1,14 @@
+/* Escritorio (≥768px) */
+.hero-marca { top: 40px; }
+.hero-nombre { font-size: 34px; }
+.hero-sub { font-size: 16px; }
+.card { left: 50%; right: auto; width: 420px; margin-left: -210px; }
+.card h2 { font-size: 24px; }
+.siguiente { padding: 140px 40px; }
+.siguiente h2 { font-size: 32px; }
+/* con lugar a los costados, las cards se alternan a izquierda y derecha de la flor */
+@media (min-width: 1100px) {
+  .card { top: 34%; bottom: auto; width: 340px; margin-left: 0; }
+  .card:not(.card-der) { left: 6vw; }
+  .card.card-der { left: auto; right: 6vw; }
+}
