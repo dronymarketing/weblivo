@@ -8,7 +8,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const P = new URLSearchParams(location.search);
 const num = (k, d) => (P.has(k) ? parseFloat(P.get(k)) : d);
-const V = '?v=7';   // versión de los archivos pesados (subirla cuando cambian)
+const V = '?v=8';   // versión de los archivos pesados (subirla cuando cambian)
 const AJUSTES = {
   luz: num('luz', 0.775),            // multiplicador de las luces del estudio
   env: num('env', 0.9),          // intensidad del HDRI
@@ -40,7 +40,32 @@ try {
   canvas.hidden = true; poster.hidden = false;
   throw e;
 }
-renderer.toneMapping = THREE.AgXToneMapping;   // el mismo manejo de color que el render de Blender
+// El mismo manejo de color que el render de Blender: AgX con el look «Punchy» (potencia 1.35 y saturación
+// 1.4 sobre la curva de AgX, como el OCIO de Blender). three trae AgX sin looks: se agrega como tone mapping propio.
+THREE.ShaderChunk.tonemapping_pars_fragment = THREE.ShaderChunk.tonemapping_pars_fragment.replace(
+  'vec3 CustomToneMapping( vec3 color ) { return color; }',
+  `vec3 CustomToneMapping( vec3 color ) {
+    const mat3 AgXInsetMatrix = mat3( vec3( 0.856627153315983, 0.137318972929847, 0.11189821299995 ), vec3( 0.0951212405381588, 0.761241990602591, 0.0767994186031903 ), vec3( 0.0482516061458583, 0.101439036467562, 0.811302368396859 ) );
+    const mat3 AgXOutsetMatrix = mat3( vec3( 1.1271005818144368, - 0.1413297634984383, - 0.14132976349843826 ), vec3( - 0.11060664309660323, 1.157823702216272, - 0.11060664309660294 ), vec3( - 0.016493938717834573, - 0.016493938717834257, 1.2519364065950405 ) );
+    const float AgxMinEv = - 12.47393; const float AgxMaxEv = 4.026069;
+    color *= toneMappingExposure;
+    color = LINEAR_SRGB_TO_LINEAR_REC2020 * color;
+    color = AgXInsetMatrix * color;
+    color = max( color, 1e-10 ); color = log2( color );
+    color = ( color - AgxMinEv ) / ( AgxMaxEv - AgxMinEv );
+    color = clamp( color, 0.0, 1.0 );
+    color = agxDefaultContrastApprox( color );
+    // look Punchy
+    color = pow( max( color, vec3( 0.0 ) ), vec3( ${num('punchPot', 1.35).toFixed(3)} ) );
+    float lumaP = dot( color, vec3( 0.2126, 0.7152, 0.0722 ) );
+    color = lumaP + ${num('punchSat', 1.4).toFixed(3)} * ( color - lumaP );
+    color = AgXOutsetMatrix * color;
+    color = pow( max( vec3( 0.0 ), color ), vec3( 2.2 ) );
+    color = LINEAR_REC2020_TO_LINEAR_SRGB * color;
+    return clamp( color, 0.0, 1.0 );
+  }`);
+// medido contra los renders, el AgX sin look queda más cerca (ΔE 8.6 contra 9.2): el Punchy queda como opción (?punch)
+renderer.toneMapping = P.has('punch') ? THREE.CustomToneMapping : THREE.AgXToneMapping;
 renderer.toneMappingExposure = AJUSTES.expo;
 
 const scene = new THREE.Scene();
@@ -378,7 +403,7 @@ datos.petals.forEach((info, k) => {
   const pivotes = info.pivot.map((p) => new THREE.Vector3(...p));
   const puntas = info.tip.map((p) => new THREE.Vector3(...p));
   petalos.push({ nombre: info.name, nodo, malla, u, origen, pivotes, puntas,
-    ang: 0, vel: 0, giro: 0, velGiro: 0, pivote: new THREE.Vector3(), eje: new THREE.Vector3(), radial: new THREE.Vector3() });
+    k: petalos.length, ang: 0, vel: 0, meta: 0, puntaActual: new THREE.Vector3(), pivote: new THREE.Vector3(), eje: new THREE.Vector3(), radial: new THREE.Vector3() });
 });
 const mallas = petalos.map((p) => p.malla);
 
@@ -439,84 +464,115 @@ function aplicarCuadro(f) {
   let k = 0; while (k < N - 2 && s[k + 1] <= f) k++;
   const t = Math.min(1, Math.max(0, (f - s[k]) / (s[k + 1] - s[k])));
   uAOComun.uAOm.value = Math.min(AO_S - 1, (k + t) / AO_PASO);
+  muestraK = k; muestraT = t;
   for (const p of petalos) {
     const inf = p.malla.morphTargetInfluences; inf.fill(0); inf[k] = 1 - t; inf[k + 1] = t;
     p.pivote.lerpVectors(p.pivotes[k], p.pivotes[k + 1], t);
-    p.radial.lerpVectors(p.puntas[k], p.puntas[k + 1], t).sub(p.pivote); p.radial.y = 0; p.radial.normalize();
+    p.puntaActual.lerpVectors(p.puntas[k], p.puntas[k + 1], t);
+    p.radial.copy(p.puntaActual).sub(p.pivote); p.radial.y = 0; p.radial.normalize();
     p.eje.crossVectors(UP, p.radial).normalize();
   }
   moverPlacas(f);
   actualizarEstudio();
 }
 
-// --- Tocar los pétalos: resorte amortiguado -----------------------------------------------------
+// --- Tocar los pétalos ---------------------------------------------------------------------------
+// Se agarra UN pétalo y sigue al dedo (o al mouse): si lo subís sube, si lo bajás baja. Al soltarlo vuelve a
+// su lugar como una hoja: cae, rebota apenas y se queda. Si al moverse toca a otro pétalo, lo empuja en vez de
+// atravesarlo (tabla precalculada en herramientas/limites.mjs: cuánto se puede mover cada pétalo en cada
+// momento de la apertura antes de tocar a otro, y cuánto tiene que ceder el que toca).
+// Si el dedo empieza fuera de los pétalos, la página hace scroll normal.
+const LIMS = await fetch('assets/limites.json' + V).then((r) => r.json()).catch(() => null);
 const ray = new THREE.Raycaster();
-const puntero = new THREE.Vector2(-9, -9);
-let ultimoX = 0, ultimoY = 0, ultimoT = 0, ultimoTocado = null;
-function alMover(ev) {
+const puntero = new THREE.Vector2();
+let agarrado = null, ultX = 0, ultY = 0;
+function petaloEn(cx, cy) {
   const r = canvas.getBoundingClientRect();
-  puntero.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
-  const ahora = performance.now(), dt = Math.max(8, ahora - ultimoT);
-  const vel = Math.min(3, Math.hypot(ev.clientX - ultimoX, ev.clientY - ultimoY) / dt);   // px/ms
-  const dx = ev.clientX - ultimoX;
-  ultimoX = ev.clientX; ultimoY = ev.clientY; ultimoT = ahora;
+  puntero.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(puntero, camera);
   const hit = ray.intersectObjects(mallas, false)[0];
-  const p = hit ? petalos.find((q) => q.malla === hit.object) : null;
-  if (p && (p !== ultimoTocado || vel > 0.4)) empujar(p, 0.55 + vel * 0.6, dx);
-  ultimoTocado = p;
-  canvas.style.cursor = p ? 'pointer' : '';
+  return hit ? petalos.find((q) => q.malla === hit.object) : null;
 }
-function empujar(p, fuerza, dx) {
-  p.vel += 3.4 * fuerza;                        // hacia afuera (se abre y vuelve)
-  p.velGiro += Math.sign(dx || 1) * 0.6 * fuerza; // se tuerce apenas en el sentido del gesto
-  // Para que no se atraviesen: los pétalos que están por fuera en la misma zona se mueven casi igual
-  // (como un bloque); los de adentro y los de los costados, menos.
-  for (const q of petalos) {
-    if (q === p) continue;
-    const dAz = Math.abs(Math.atan2(Math.sin(q.az - p.az), Math.cos(q.az - p.az)));
-    const cerca = Math.exp(-((dAz / 0.7) ** 2));
-    q.vel += 3.4 * fuerza * cerca * (q.afuera >= p.afuera - 0.02 ? 0.9 : 0.35);
-  }
+// punta del pétalo en pantalla (px) si estuviera girado un ángulo th
+const vPunta = new THREE.Vector3(), qPunta = new THREE.Quaternion();
+function puntaEnPantalla(p, th) {
+  vPunta.copy(p.puntaActual).sub(p.pivote).applyQuaternion(qPunta.setFromAxisAngle(p.eje, th)).add(p.pivote).project(camera);
+  return [(vPunta.x * 0.5 + 0.5) * canvas.clientWidth, (-vPunta.y * 0.5 + 0.5) * canvas.clientHeight];
 }
-canvas.addEventListener('pointermove', alMover);
-canvas.addEventListener('pointerdown', (ev) => { alMover(ev); });
-canvas.addEventListener('pointerleave', () => { ultimoTocado = null; canvas.style.cursor = ''; });
+canvas.addEventListener('pointerdown', (ev) => {
+  const p = petaloEn(ev.clientX, ev.clientY);
+  if (!p) return;
+  agarrado = p; p.meta = p.ang; ultX = ev.clientX; ultY = ev.clientY;
+  canvas.setPointerCapture(ev.pointerId);
+});
+// en el celular: si el dedo empieza sobre un pétalo, ese gesto no hace scroll
+canvas.addEventListener('touchstart', (ev) => { if (agarrado) ev.preventDefault(); }, { passive: false });
+canvas.addEventListener('pointermove', (ev) => {
+  if (!agarrado) { if (ev.pointerType === 'mouse') canvas.style.cursor = petaloEn(ev.clientX, ev.clientY) ? 'grab' : ''; return; }
+  // cuánto tiene que girar el pétalo para que su punta acompañe al dedo (sobre la dirección en que puede moverse)
+  const p = agarrado, a = puntaEnPantalla(p, p.meta), b = puntaEnPantalla(p, p.meta + 0.02);
+  const dx = (b[0] - a[0]) / 0.02, dy = (b[1] - a[1]) / 0.02, d2 = dx * dx + dy * dy;
+  if (d2 > 1) p.meta = Math.max(-MAXAGARRE, Math.min(MAXAGARRE, p.meta + ((ev.clientX - ultX) * dx + (ev.clientY - ultY) * dy) / d2));
+  ultX = ev.clientX; ultY = ev.clientY;
+  canvas.style.cursor = 'grabbing';
+});
+const soltar = () => { if (agarrado) { agarrado = null; canvas.style.cursor = ''; } };
+for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture', 'touchend', 'touchcancel']) canvas.addEventListener(ev, soltar);
+addEventListener('pointerup', soltar); addEventListener('blur', soltar);
+// (para pruebas) empuje programático
+function empujar(p, fuerza) { p.vel += 3 * fuerza; }
 
-const K = 34, C = 3.6, LIM = 0.35;   // rigidez, amortiguación (sub-crítica → rebota), ángulo máximo
+// --- Física de hoja: resorte con amortiguación (rebota apenas) + contacto entre pétalos ------------------
+const K = 22, C = 2.6, MAXANG = 0.6, MAXAGARRE = 0.45;
+let muestraK = 0, muestraT = 0;
+function limiteDe(k, dir) {      // dir 0 = hacia abajo (−), 1 = hacia arriba (+)
+  if (!LIMS) return dir ? MAXANG : -MAXANG;
+  const a = LIMS.lim[muestraK][k][dir], b = LIMS.lim[Math.min(muestraK + 1, LIMS.lim.length - 1)][k][dir];
+  return a + (b - a) * muestraT;
+}
 const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3();
 function fisica(dt) {
   for (const p of petalos) {
-    p.vel += (-K * p.ang - C * p.vel) * dt; p.ang += p.vel * dt;
-    p.velGiro += (-K * p.giro - C * p.velGiro) * dt; p.giro += p.velGiro * dt;
-    p.ang = Math.max(-LIM * 0.4, Math.min(LIM, p.ang)); p.giro = Math.max(-LIM * 0.5, Math.min(LIM * 0.5, p.giro));
+    if (p === agarrado) {
+      // sigue al dedo con una pizca de suavidad (la hoja tiene peso)
+      const prev = p.ang; p.ang += (p.meta - p.ang) * Math.min(1, dt * 18); p.vel = (p.ang - prev) / Math.max(dt, 1e-3);
+    } else {
+      p.vel += (-K * p.ang - C * p.vel) * dt; p.ang += p.vel * dt;
+    }
+    p.ang = Math.max(-MAXANG, Math.min(MAXANG, p.ang));
+  }
+  // contacto: si el pétalo que movés pasa su límite libre, empuja a los que toca directamente (nada más).
+  if (LIMS) {
+    const empujados = new Set();
+    let frente = agarrado ? [agarrado] : [];       // solo el pétalo que movés empuja; al soltar, todos vuelven libres
+    for (let nivel = 0; nivel < 1 && frente.length; nivel++) {
+      const siguiente = [];
+      for (const p of frente) {
+        const dir = p.ang >= 0 ? 1 : 0, lim = limiteDe(p.k, dir), exceso = p.ang - lim;
+        if ((dir && exceso <= 0) || (!dir && exceso >= 0)) continue;
+        for (const [j, r] of LIMS.contactos[muestraK][p.k][dir]) {
+          const q = petalos[j]; if (q === agarrado || q === p || empujados.has(q)) continue;
+          const req = Math.max(-1, Math.min(1, r)) * exceso * 0.85;
+          if (req > 0 && q.ang < req) { q.ang = Math.min(MAXANG, req); q.vel = Math.max(q.vel, 0); empujados.add(q); siguiente.push(q); }
+          else if (req < 0 && q.ang > req) { q.ang = Math.max(-MAXANG, req); q.vel = Math.min(q.vel, 0); empujados.add(q); siguiente.push(q); }
+        }
+      }
+      frente = siguiente;
+    }
+  }
+  for (const p of petalos) {
     // 35 % del movimiento es giro rígido en la bisagra; el resto, doblez progresivo hacia la punta (shader)
     qTmp.setFromAxisAngle(p.eje, p.ang * 0.35);
-    const qRoll = new THREE.Quaternion().setFromAxisAngle(p.radial.clone().applyAxisAngle(p.eje, Math.PI / 2), p.giro * 0.3);
-    qTmp.multiply(qRoll);
     p.nodo.quaternion.copy(qTmp);
     vTmp.copy(p.origen).sub(p.pivote).applyQuaternion(qTmp).add(p.pivote);
     p.nodo.position.copy(vTmp);
-    // respiración: en reposo los pétalos se mecen apenas, cada uno a su ritmo
-    const respira = INMERSION ? 0.022 * Math.sin(tiempo * 0.9 + p.az * 2.3) + 0.012 * Math.sin(tiempo * 0.37 + p.az * 5.1) : 0;
-    p.u.uBend.value = p.ang * 0.65 + respira; p.u.uPivot.value.copy(p.pivote); p.u.uAxis.value.copy(p.eje);
+    p.u.uBend.value = p.ang * 0.65; p.u.uPivot.value.copy(p.pivote); p.u.uAxis.value.copy(p.eje);
   }
 }
 
-// --- Inmersión: la cámara sigue apenas al puntero (o al giro del celular) y partículas de luz -----
+// --- Inmersión: partículas de luz (bokeh) ------------------------------------------------------------
 const INMERSION = !P.has('encuadre') && !P.has('quieto') && !matchMedia('(prefers-reduced-motion: reduce)').matches;
 let tiempo = 0;
-const mira = { x: 0, y: 0, ox: 0, oy: 0 };
-addEventListener('pointermove', (e) => { mira.x = (e.clientX / innerWidth) * 2 - 1; mira.y = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
-addEventListener('deviceorientation', (e) => {
-  if (e.gamma == null) return;
-  mira.x = Math.max(-1, Math.min(1, e.gamma / 25)); mira.y = Math.max(-1, Math.min(1, (e.beta - 45) / 25));
-}, { passive: true });
-function paralaje(dt) {
-  if (!INMERSION) return;
-  mira.ox += (mira.x - mira.ox) * Math.min(1, dt * 2.5); mira.oy += (mira.y - mira.oy) * Math.min(1, dt * 2.5);
-  camera.rotateY(-mira.ox * 0.018); camera.rotateX(-mira.oy * 0.012);
-}
 let particulas = null;
 if (INMERSION) {
   const n = esMovil ? 34 : 64;
@@ -594,14 +650,14 @@ let muestras = [], decidido = !!AJUSTES.calidad;
 function bucle() {
   requestAnimationFrame(bucle);
   if (!visible) return;
-  const dt = Math.min(reloj.getDelta(), 1 / 30);
+  const dtReal = Math.min(reloj.getDelta(), 0.5), dt = Math.min(dtReal, 1 / 30);
   const objetivo = 1 + progreso * (datos.frames - 1);
   cuadro += (objetivo - cuadro) * Math.min(1, dt * 8);     // suaviza el scrub sin tocar el scroll
   tiempo += dt;
   aplicarCuadro(cuadro);
-  paralaje(dt);
   ubicarPlacas();
-  fisica(dt);
+  // la física avanza en tiempo real aunque el equipo dibuje pocos cuadros (pasos de 1/60 s)
+  for (let resto = dtReal; resto > 1e-4; resto -= 1 / 60) fisica(Math.min(resto, 1 / 60));
   if (particulas) { particulas.material.uniforms.uT.value = tiempo; particulas.material.uniforms.uEsc.value = renderer.getPixelRatio() * canvas.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)); }
   actualizarUI();
   renderer.render(scene, camera);
