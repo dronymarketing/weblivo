@@ -354,9 +354,11 @@ datos.petals.forEach((info, k) => {
 const mallas = petalos.map((p) => p.malla);
 
 // Vecinos por ángulo alrededor del eje (para que el toque se propague como una ola suave)
+const centroFlor = new THREE.Vector3(); petalos.forEach((p) => centroFlor.add(p.pivotes[N - 1])); centroFlor.divideScalar(petalos.length);
 for (const p of petalos) {
   const a = Math.atan2(p.puntas[N - 1].z - p.pivotes[N - 1].z, p.puntas[N - 1].x - p.pivotes[N - 1].x);
   p.az = a;
+  p.afuera = Math.hypot(p.puntas[N - 1].x - centroFlor.x, p.puntas[N - 1].z - centroFlor.z);   // qué tan de afuera es el pétalo
 }
 for (const p of petalos) {
   p.vecinos = petalos.filter((q) => q !== p).sort((a, b) => Math.abs(Math.atan2(Math.sin(a.az - p.az), Math.cos(a.az - p.az))) - Math.abs(Math.atan2(Math.sin(b.az - p.az), Math.cos(b.az - p.az)))).slice(0, 2);
@@ -438,14 +440,21 @@ function alMover(ev) {
 }
 function empujar(p, fuerza, dx) {
   p.vel += 3.4 * fuerza;                        // hacia afuera (se abre y vuelve)
-  p.velGiro += Math.sign(dx || 1) * 1.1 * fuerza; // se tuerce apenas en el sentido del gesto
-  for (const v of p.vecinos) v.vel += 1.3 * fuerza;
+  p.velGiro += Math.sign(dx || 1) * 0.6 * fuerza; // se tuerce apenas en el sentido del gesto
+  // Para que no se atraviesen: los pétalos que están por fuera en la misma zona se mueven casi igual
+  // (como un bloque); los de adentro y los de los costados, menos.
+  for (const q of petalos) {
+    if (q === p) continue;
+    const dAz = Math.abs(Math.atan2(Math.sin(q.az - p.az), Math.cos(q.az - p.az)));
+    const cerca = Math.exp(-((dAz / 0.7) ** 2));
+    q.vel += 3.4 * fuerza * cerca * (q.afuera >= p.afuera - 0.02 ? 0.9 : 0.35);
+  }
 }
 canvas.addEventListener('pointermove', alMover);
 canvas.addEventListener('pointerdown', (ev) => { alMover(ev); });
 canvas.addEventListener('pointerleave', () => { ultimoTocado = null; canvas.style.cursor = ''; });
 
-const K = 34, C = 3.6, LIM = 0.5;   // rigidez, amortiguación (sub-crítica → rebota), ángulo máximo
+const K = 34, C = 3.6, LIM = 0.35;   // rigidez, amortiguación (sub-crítica → rebota), ángulo máximo
 const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3();
 function fisica(dt) {
   for (const p of petalos) {

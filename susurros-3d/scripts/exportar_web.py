@@ -11,7 +11,7 @@ OUT = bpy.path.abspath("//../web3d/assets/")
 D, S = bpy.data, bpy.context.scene
 F0, F1, STEP = 1, 240, 4
 SAMPLES = list(range(F0, F1 + 1, STEP)) + ([F1] if (F1 - F0) % STEP else [])
-b = open(bpy.path.abspath("//cache/v13_suave.pc2"), "rb").read()
+b = open(bpy.path.abspath("//cache/" + os.environ.get("CACHE", "v13_suave") + ".pc2"), "rb").read()
 _, _, nv, s_, r_, nf = struct.unpack("<12siiffi", b[:32]); G = np.frombuffer(b[32:], "<f4").reshape(nf, nv, 3)
 tela = D.objects["Petalos_Tela"]; me = tela.data
 pid = np.zeros(len(me.polygons), int); me.attributes["petalo"].data.foreach_get("value", pid)
