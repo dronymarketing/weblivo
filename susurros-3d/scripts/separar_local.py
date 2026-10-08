@@ -8,7 +8,7 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 GAP = float(os.environ.get('GAP', 0.003)); NEAR = 0.04; ITER = int(os.environ.get('ITER', 10))
 D = bpy.data
-src = bpy.path.abspath("//cache/v13_suave.pc2"); dst = bpy.path.abspath("//cache/v13_web.pc2")
+src = bpy.path.abspath("//cache/" + os.environ.get("SRC", "v13_suave") + ".pc2"); dst = bpy.path.abspath("//cache/" + os.environ.get("DST", "v13_web") + ".pc2")
 b = open(src, "rb").read(); head = b[:32]
 _, _, nv, s_, r_, nf = struct.unpack("<12siiffi", head); G = np.frombuffer(b[32:], "<f4").reshape(nf, nv, 3).copy()
 me = D.objects["Petalos_Tela"].data

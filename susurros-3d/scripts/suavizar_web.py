@@ -3,7 +3,7 @@ import bpy, os, sys, numpy as np
 from mathutils.bvhtree import BVHTree
 exec(open(bpy.path.abspath("//separar_local.py")).read().split("t0 = time.time()")[0])
 TOPE = float(os.environ.get('TOPE', 0.02)); PASADAS = int(os.environ.get('PASADAS', 3))
-W = np.frombuffer(open(bpy.path.abspath("//cache/v13_web.pc2"), "rb").read()[32:], "<f4").reshape(nf, nv, 3)
+W = np.frombuffer(open(dst, "rb").read()[32:], "<f4").reshape(nf, nv, 3)
 S = [f - 1 for f in SAMPLES]
 Dp = (W[S] - G[S]).astype(np.float64)
 n = np.linalg.norm(Dp, axis=2, keepdims=True); Dp *= np.minimum(1, TOPE / np.maximum(n, 1e-12))
@@ -30,4 +30,4 @@ for vuelta in range(int(os.environ.get('VUELTAS', 4))):
     print("VUELTA", vuelta + 1, "CORTES", c0, "→", c1, "| empuje máx %.1f mm | salto máx %.1f mm" % (np.linalg.norm(Dp, axis=2).max() * 1000, dd.max() * 1000)); sys.stdout.flush()
 out = G.copy()
 for j, s in enumerate(S): out[s] = G[s] + Dp[j]
-open(bpy.path.abspath("//cache/v13_web2.pc2"), "wb").write(head + out.astype("<f4").tobytes())
+open(bpy.path.abspath("//cache/" + os.environ.get("DST2", "v13_web2") + ".pc2"), "wb").write(head + out.astype("<f4").tobytes())

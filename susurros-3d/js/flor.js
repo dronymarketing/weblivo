@@ -8,18 +8,20 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const P = new URLSearchParams(location.search);
 const num = (k, d) => (P.has(k) ? parseFloat(P.get(k)) : d);
+const V = '?v=7';   // versión de los archivos pesados (subirla cuando cambian)
 const AJUSTES = {
-  luz: num('luz', 1),            // multiplicador de las luces del estudio
+  luz: num('luz', 0.775),            // multiplicador de las luces del estudio
   env: num('env', 0.9),          // intensidad del HDRI
   transl: num('transl', 0.68),    // translucidez de los pétalos (en Blender: 0.68)
-  base: num('base', 1.6),          // brillo del núcleo en la base
+  base: num('base', 0.9),          // brillo del núcleo en la base
   sat: num('sat', 1.35),           // saturación del pétalo (look Punchy de Blender)
-  contraste: num('contraste', 1.25),
+  contraste: num('contraste', 1.29),
   relieve: num('relieve', 0.12),    // relieve de las venas (en Blender son sutiles)
-  expo: num('expo', 0.95),
-  reflejo: num('reflejo', 4),      // brillo de las luces que reflejan las facetas de la roca
+  expo: num('expo', 1.3),
+  reflejo: num('reflejo', 1.5),      // brillo de las luces que reflejan las facetas de la roca
   disp: num('disp', 4),          // dispersión del cristal (en Blender: IOR 1.665 / 1.7 / 1.735)
-  sombras: num('sombras', 1),    // sombras suaves entre pétalos (oclusión horneada)
+  sombras: num('sombras', 1.075),
+  opacidad: num('opacidad', 1),     // pétalos apenas translúcidos (seda): se ven las siluetas de atrás    // sombras suaves entre pétalos (oclusión horneada)
   calidad: P.get('calidad'),     // forzar 'alta' | 'media' | 'baja'
 };
 
@@ -81,19 +83,20 @@ function aplicarCalidad() {
 // --- Carga -------------------------------------------------------------------------------------
 const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const [gltf, datos, hdr] = await Promise.all([
-  loader.loadAsync('assets/flor.glb'),
-  fetch('assets/escena.json').then((r) => r.json()),
-  new RGBELoader().loadAsync('assets/estudio.hdr'),
+  loader.loadAsync('assets/flor.glb' + V),
+  fetch('assets/escena.json' + V).then((r) => r.json()),
+  new RGBELoader().loadAsync('assets/estudio.hdr' + V),
 ]);
 hdr.mapping = THREE.EquirectangularReflectionMapping;
 scene.environment = hdr;
 scene.environmentIntensity = AJUSTES.env;
 
 // Luces del .blend, pegadas a la cámara (en Blender giraban con la cámara)
+const luces = [];
 for (const l of datos.lights) {
   const luz = new THREE.PointLight(new THREE.Color(...l.color), (l.energy / 100) * 1.6 * AJUSTES.luz, 0, 2);
-  luz.position.set(...l.cam_local);
-  camera.add(luz);
+  luz.position.set(...l.cam_local); luz.userData.base = (l.energy / 100) * 1.6;
+  camera.add(luz); luces.push(luz);
 }
 
 const raiz = gltf.scene;
@@ -153,7 +156,7 @@ const panelesNegros = [];
   for (const l of datos.lights) {
     const brillo = (l.energy / (l.size * l.size)) * 0.01 * AJUSTES.reflejo;
     const m = plano(l.size, l.size, new THREE.MeshBasicMaterial({ color: new THREE.Color(...l.color).multiplyScalar(brillo), side: THREE.DoubleSide }));
-    m.position.set(...l.cam_local); m.userData.mira = true; rigEstudio.add(m);
+    m.position.set(...l.cam_local); m.userData.mira = true; m.userData.color = new THREE.Color(...l.color).multiplyScalar(brillo / AJUSTES.reflejo); rigEstudio.add(m);
   }
   // Paneles negros (Panel_Atras/Der/Izq): en Blender no los ve la cámara, pero sí los reflejos y lo que
   // se ve a través del cristal. Acá: en el estudio de reflejos y, en la escena, solo dentro de la pasada
@@ -175,8 +178,11 @@ const cuboRT = new THREE.WebGLCubeRenderTarget(128, { type: THREE.HalfFloatType 
 const cuboCam = new THREE.CubeCamera(0.05, 30, cuboRT);
 cuboCam.position.copy(cajaCentro); estudio.add(cuboCam);
 const pmrem = new THREE.PMREMGenerator(renderer);
-let reflejoRT = null, ultimaCamEstudio = '';
-function actualizarEstudio() {
+let reflejoRT = null, ultimaCamEstudio = '', saltoEstudio = 0;
+function actualizarEstudio(forzar) {
+  // en calidad media/baja el mapa de reflejos se rehace cada algunos cuadros (es lo más caro de la roca)
+  const cada = nivel === 'alta' ? 1 : nivel === 'media' ? 3 : 6;
+  if (!forzar && reflejoRT && (++saltoEstudio % cada)) return;
   const clave = camera.position.toArray().map((x) => x.toFixed(3)).join() + camera.quaternion.toArray().map((x) => x.toFixed(3)).join();
   if (clave === ultimaCamEstudio) return;
   ultimaCamEstudio = clave;
@@ -191,17 +197,19 @@ function actualizarEstudio() {
 // Lo que la transmisión en pantalla no puede hacer (Blender sí, con trazado de rayos): que cada
 // faceta tenga su propio tono y que algunas reflejen por dentro los pétalos de arriba. Se imita por
 // faceta: la normal de la cara elige un tono lila (de oscuro a claro) y si muestra los pétalos.
-{
-  const u = {
+const uRoca = {
     uOsc: { value: new THREE.Color(P.get('rocaOsc') ? '#' + P.get('rocaOsc') : '#6f68bd') },
     uCla: { value: new THREE.Color(P.get('rocaCla') ? '#' + P.get('rocaCla') : '#dcd6f8') },
-    uInterno: { value: num('interno', 0.9) },
+    uInterno: { value: num('interno', 0.3) },
     uLado: { value: num('lado', 0.85) },
+    uFacetas: { value: num('facetas', 0.6) },
   };
+{
+  const u = uRoca;
   cristal.material.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 uOsc, uCla; uniform float uInterno, uLado;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 uOsc, uCla; uniform float uInterno, uLado, uFacetas;')
       .replace('#include <transmission_fragment>', `#include <transmission_fragment>
       #ifdef USE_TRANSMISSION
       {
@@ -216,6 +224,23 @@ function actualizarEstudio() {
         vec3 adentro = textureLod(transmissionSamplerMap, clamp(uvR, 0.001, 0.999), 1.5).rgb;
         float k = smoothstep(0.4, 0.75, h2) * uInterno;
         totalDiffuse = mix(totalDiffuse, adentro * mix(uOsc, vec3(1.0), 0.55), k);
+        // facetas internas: el rayo refractado atraviesa caras de adentro (en Blender se ven como zonas
+        // claras y oscuras de borde nítido que se mueven con la cámara)
+        // celdas irregulares (Voronoi) en una orientación torcida: astillas en ángulo, no una grilla
+        const mat3 TORC = mat3(0.64, 0.58, -0.50, -0.70, 0.71, -0.02, 0.34, 0.39, 0.86);
+        vec3 rd = TORC * (refract(-v, n, 1.0 / 1.7) * 2.6 + vWorldPosition * 1.3);
+        vec3 ci = floor(rd), cf = fract(rd);
+        float f1 = 9., f2 = 9.; vec3 id1 = vec3(0.);
+        for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) for (int z = -1; z <= 1; z++) {
+          vec3 g = vec3(float(x), float(y), float(z));
+          vec3 o = fract(sin(vec3(dot(ci + g, vec3(127.1, 311.7, 74.7)), dot(ci + g, vec3(269.5, 183.3, 246.1)), dot(ci + g, vec3(113.5, 271.9, 124.6)))) * 43758.5453);
+          vec3 r = g + o - cf; float d = dot(r, r);
+          if (d < f1) { f2 = f1; f1 = d; id1 = ci + g; } else if (d < f2) f2 = d;
+        }
+        float hc = fract(sin(dot(id1, vec3(41.3, 289.1, 97.7))) * 15731.7);
+        float borde = (sqrt(f2) - sqrt(f1)) * 0.5;
+        totalDiffuse *= mix(1. - .32 * uFacetas, 1. + .22 * uFacetas, hc);
+        totalDiffuse += vec3(1.) * smoothstep(.03, .0, borde) * .3 * uFacetas * hc;
       }
       #endif`);
   };
@@ -245,8 +270,8 @@ raiz.traverse((o) => { if (o.isMesh && (o.name.startsWith('Caliz') || o.parent?.
 // más cuanto más cerca de la punta (como una hoja real).
 const texLoader = new THREE.TextureLoader();
 const [mapaColor, mapaRelieve, mapaAO] = await Promise.all([
-  texLoader.loadAsync('assets/petalos_color.webp'), texLoader.loadAsync('assets/petalos_relieve.webp'),
-  texLoader.loadAsync('assets/petalos_ao.png'),
+  texLoader.loadAsync('assets/petalos_color.webp' + V), texLoader.loadAsync('assets/petalos_relieve.webp' + V),
+  texLoader.loadAsync('assets/petalos_ao.png' + V),
 ]);
 // Oclusión horneada (herramientas/hornear_ao.mjs): una fila por pétalo y pose (1 de cada 2 muestras),
 // una columna por vértice; R = cara del frente, G = cara de atrás
@@ -255,7 +280,7 @@ const AO_PASO = 2, AO_S = Math.ceil(datos.samples.length / AO_PASO);
 // Corrección de color medida píxel a píxel contra el render (herramientas/ajuste_color.py), en lineal
 const colorM = new THREE.Matrix3();
 if (num('colorM', 1)) colorM.set(1.120, 0.047, 0.019, -0.015, 0.864, 0.058, 0.028, 0.143, 1.147);
-const uAOComun = { uColorM: { value: colorM }, uAO: { value: mapaAO }, uAOm: { value: 0 }, uAOFuerza: { value: AJUSTES.sombras } };
+const uAOComun = { uOpac: { value: AJUSTES.opacidad }, uBorde: { value: num('borde', 0.4) }, uColorM: { value: colorM }, uAO: { value: mapaAO }, uAOm: { value: 0 }, uAOFuerza: { value: AJUSTES.sombras } };
 mapaColor.colorSpace = THREE.SRGBColorSpace;
 mapaColor.anisotropy = mapaRelieve.anisotropy = renderer.capabilities.getMaxAnisotropy();
 const petalos = [];
@@ -281,13 +306,14 @@ datos.petals.forEach((info, k) => {
   const mat = new THREE.MeshPhysicalMaterial({
     map: mapaColor, bumpMap: mapaRelieve, bumpScale: AJUSTES.relieve,
     side: THREE.DoubleSide, roughness: 0.42, metalness: 0, specularIntensity: 0.35,
+    transparent: AJUSTES.opacidad < 1,
     sheen: 0.08, sheenRoughness: 0.3, sheenColor: new THREE.Color('#ffffff'), envMapIntensity: 1,
   });
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
-        attribute float aV; attribute float aU; varying float vV; varying vec2 vAO; uniform sampler2D uAO; uniform float uAOFila, uAOm; uniform float uBend; uniform vec3 uPivot; uniform vec3 uAxis;
+        attribute float aV; attribute float aU; varying float vV; varying float vU; varying vec2 vAO; uniform sampler2D uAO; uniform float uAOFila, uAOm; uniform float uBend; uniform vec3 uPivot; uniform vec3 uAxis;
         vec3 rotEje(vec3 v, vec3 k, float a){ float c = cos(a), s = sin(a); return v*c + cross(k, v)*s + k*dot(k, v)*(1.-c); }`)
       .replace('#include <defaultnormal_vertex>', `
         // al interpolar las muestras, la normal de algún vértice puede pasar por cero: sin esto da NaN
@@ -300,11 +326,11 @@ datos.petals.forEach((info, k) => {
         wp.xyz = uPivot + rotEje(wp.xyz - uPivot, uAxis, angBend);
         vec4 mvPosition = viewMatrix * wp;
         gl_Position = projectionMatrix * mvPosition;
-        vV = aV;
+        vV = aV; vU = aU;
         { int s0 = int(floor(uAOm)), s1 = min(s0 + 1, ${AO_S - 1}), fila = int(uAOFila);
           vAO = mix(texelFetch(uAO, ivec2(gl_VertexID, fila + s0), 0).rg, texelFetch(uAO, ivec2(gl_VertexID, fila + s1), 0).rg, uAOm - floor(uAOm)); }`);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying float vV; varying vec2 vAO; uniform mat3 uColorM; uniform float uAOFuerza; uniform float uTransl; uniform float uBase; uniform float uSat; uniform float uContraste;')
+      .replace('#include <common>', '#include <common>\nvarying float vV; varying float vU; varying vec2 vAO; uniform mat3 uColorM; uniform float uAOFuerza; uniform float uBorde; uniform float uOpac; uniform float uTransl; uniform float uBase; uniform float uSat; uniform float uContraste;')
       .replace('#include <map_fragment>', `
         // en la punta del pétalo el UV se comprime a un punto y el mipmap mezclaría los colores de otros
         // pétalos del atlas: se limita cuánto puede desenfocar
@@ -314,7 +340,9 @@ datos.petals.forEach((info, k) => {
           sampledDiffuseColor.rgb = max(mix(vec3(lum), sampledDiffuseColor.rgb, uSat), 0.);
           sampledDiffuseColor.rgb = pow(sampledDiffuseColor.rgb, vec3(uContraste));
           sampledDiffuseColor.rgb = max(uColorM * sampledDiffuseColor.rgb, 0.); }
-        diffuseColor *= sampledDiffuseColor;`)
+        diffuseColor *= sampledDiffuseColor;
+        // seda: la base es opaca y hacia la punta deja ver un poco lo que hay detrás
+        diffuseColor.a *= mix(1., uOpac, smoothstep(.25, .85, vV));`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
         // sombras entre pétalos: la de esta cara para la luz directa y la de la cara opuesta para la que lo atraviesa
         float aoF = mix(1., gl_FrontFacing ? vAO.x : vAO.y, uAOFuerza), aoB = mix(1., gl_FrontFacing ? vAO.y : vAO.x, uAOFuerza);
@@ -330,7 +358,8 @@ datos.petals.forEach((info, k) => {
               atras += pointLights[i].color * getDistanceAttenuation(d, pointLights[i].distance, pointLights[i].decay) * max(dot(nB, lv / d), 0.);
             }
           #endif
-          float fino = 0.75 + 0.5 * smoothstep(0.3, 1., vV);          // la punta es más fina: deja pasar más luz
+          // la punta y los bordes son más finos: dejan pasar más luz (como la seda del render)
+          float fino = 0.75 + 0.5 * smoothstep(0.3, 1., vV) + uBorde * smoothstep(0.3, 0.5, abs(vU - 0.5));
           totalEmissiveRadiance += diffuseColor.rgb * atras * RECIPROCAL_PI * uTransl * fino * aoB;
           diffuseColor.rgb *= 1. - uTransl;
           // núcleo encendido en la base (Nucleo_Emision del .blend)
@@ -468,8 +497,61 @@ function fisica(dt) {
     p.nodo.quaternion.copy(qTmp);
     vTmp.copy(p.origen).sub(p.pivote).applyQuaternion(qTmp).add(p.pivote);
     p.nodo.position.copy(vTmp);
-    p.u.uBend.value = p.ang * 0.65; p.u.uPivot.value.copy(p.pivote); p.u.uAxis.value.copy(p.eje);
+    // respiración: en reposo los pétalos se mecen apenas, cada uno a su ritmo
+    const respira = INMERSION ? 0.022 * Math.sin(tiempo * 0.9 + p.az * 2.3) + 0.012 * Math.sin(tiempo * 0.37 + p.az * 5.1) : 0;
+    p.u.uBend.value = p.ang * 0.65 + respira; p.u.uPivot.value.copy(p.pivote); p.u.uAxis.value.copy(p.eje);
   }
+}
+
+// --- Inmersión: la cámara sigue apenas al puntero (o al giro del celular) y partículas de luz -----
+const INMERSION = !P.has('encuadre') && !P.has('quieto') && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tiempo = 0;
+const mira = { x: 0, y: 0, ox: 0, oy: 0 };
+addEventListener('pointermove', (e) => { mira.x = (e.clientX / innerWidth) * 2 - 1; mira.y = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
+addEventListener('deviceorientation', (e) => {
+  if (e.gamma == null) return;
+  mira.x = Math.max(-1, Math.min(1, e.gamma / 25)); mira.y = Math.max(-1, Math.min(1, (e.beta - 45) / 25));
+}, { passive: true });
+function paralaje(dt) {
+  if (!INMERSION) return;
+  mira.ox += (mira.x - mira.ox) * Math.min(1, dt * 2.5); mira.oy += (mira.y - mira.oy) * Math.min(1, dt * 2.5);
+  camera.rotateY(-mira.ox * 0.018); camera.rotateX(-mira.oy * 0.012);
+}
+let particulas = null;
+if (INMERSION) {
+  const n = esMovil ? 34 : 64;
+  const pos = new Float32Array(n * 3), sem = new Float32Array(n * 4), col = new Float32Array(n * 3);
+  const paleta = [new THREE.Color('#b9a2ff'), new THREE.Color('#ffc49e'), new THREE.Color('#a9c8ff'), new THREE.Color('#e7dcff')];
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, r = 0.45 + Math.random() * 1.3;
+    pos[i * 3] = centroFlor.x + Math.cos(a) * r; pos[i * 3 + 1] = centroFlor.y - 0.3 + Math.random() * 1.9; pos[i * 3 + 2] = centroFlor.z + Math.sin(a) * r;
+    sem[i * 4] = Math.random(); sem[i * 4 + 1] = 0.6 + Math.random() * 0.8; sem[i * 4 + 2] = Math.random() * 6.28; sem[i * 4 + 3] = Math.random() < 0.2 ? 2.2 + Math.random() * 1.8 : 0.5 + Math.random() * 0.7;   // algunas grandes y muy tenues (bokeh)
+    const c = paleta[i % paleta.length]; col.set([c.r, c.g, c.b], i * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('aSem', new THREE.BufferAttribute(sem, 4)); g.setAttribute('aCol', new THREE.BufferAttribute(col, 3));
+  particulas = new THREE.Points(g, new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uT: { value: 0 }, uEsc: { value: 1 } },
+    vertexShader: `attribute vec4 aSem; attribute vec3 aCol; uniform float uT, uEsc; varying vec3 vCol; varying float vA;
+      void main() {
+        vec3 p = position;
+        float sube = fract(aSem.x + uT * 0.018 * aSem.y);                       // suben despacio y vuelven a empezar
+        p.y += sube * 1.2 - 0.6;
+        p.x += sin(uT * 0.35 * aSem.y + aSem.z) * 0.08; p.z += cos(uT * 0.3 * aSem.y + aSem.z) * 0.08;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = aSem.w * 0.035 * uEsc / -mv.z;           // ~3 cm de tamaño real
+        vA = smoothstep(0., .15, sube) * smoothstep(1., .7, sube) * (0.55 + 0.45 * sin(uT * 1.7 * aSem.y + aSem.z));
+        vA /= max(1., aSem.w * 0.8);                                              // las grandes, más tenues
+        vCol = aCol;
+      }`,
+    fragmentShader: `varying vec3 vCol; varying float vA;
+      void main() { float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .0, d); a *= a;
+        gl_FragColor = vec4(vCol * a * vA * 0.32, 1.0); }`,
+  }));
+  particulas.frustumCulled = false;
+  scene.add(particulas);
 }
 
 // --- Scroll (nativo) con ScrollTrigger: abre la flor y mueve la cámara ---------------------------
@@ -515,9 +597,12 @@ function bucle() {
   const dt = Math.min(reloj.getDelta(), 1 / 30);
   const objetivo = 1 + progreso * (datos.frames - 1);
   cuadro += (objetivo - cuadro) * Math.min(1, dt * 8);     // suaviza el scrub sin tocar el scroll
+  tiempo += dt;
   aplicarCuadro(cuadro);
+  paralaje(dt);
   ubicarPlacas();
   fisica(dt);
+  if (particulas) { particulas.material.uniforms.uT.value = tiempo; particulas.material.uniforms.uEsc.value = renderer.getPixelRatio() * canvas.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)); }
   actualizarUI();
   renderer.render(scene, camera);
   // calidad automática: mide los primeros ~2 s y baja un nivel si no llega
@@ -533,5 +618,22 @@ function bucle() {
 }
 aplicarCuadro(1);
 document.documentElement.classList.add('flor-lista');
-window.__flor = { scene, cristal, petalos, empujar, aplicarCuadro, camera, renderer, setProgreso: (v) => { progreso = v; cuadro = 1 + v * (datos.frames - 1); } };
+// Ajuste en vivo (para calibrar contra el render sin recargar): __flor.ajustar({ expo: 1.1, sat: 1.4, ... })
+function ajustar(o) {
+  Object.assign(AJUSTES, o);
+  renderer.toneMappingExposure = AJUSTES.expo;
+  scene.environmentIntensity = AJUSTES.env;
+  for (const l of luces) l.intensity = l.userData.base * AJUSTES.luz;
+  for (const p of petalos) { p.u.uTransl.value = AJUSTES.transl; p.u.uBase.value = AJUSTES.base; p.u.uSat.value = AJUSTES.sat; p.u.uContraste.value = AJUSTES.contraste; p.malla.material.bumpScale = AJUSTES.relieve;
+    const tr = AJUSTES.opacidad < 1; if (p.malla.material.transparent !== tr) { p.malla.material.transparent = tr; p.malla.material.needsUpdate = true; } }
+  uAOComun.uOpac.value = AJUSTES.opacidad;
+  uAOComun.uAOFuerza.value = AJUSTES.sombras;
+  if (o.rocaOsc) uRoca.uOsc.value.set(o.rocaOsc); if (o.rocaCla) uRoca.uCla.value.set(o.rocaCla);
+  if (o.facetas !== undefined) uRoca.uFacetas.value = o.facetas;
+  if (o.interno !== undefined) uRoca.uInterno.value = o.interno; if (o.lado !== undefined) uRoca.uLado.value = o.lado;
+  if (o.atenuacion !== undefined) cristal.material.attenuationDistance = o.atenuacion;
+  if (o.disp !== undefined) cristal.material.dispersion = o.disp;
+  if (o.reflejo !== undefined) { rigEstudio.children.forEach((m) => { if (m.userData.color) m.material.color.copy(m.userData.color).multiplyScalar(AJUSTES.reflejo); }); ultimaCamEstudio = ''; actualizarEstudio(true); }
+}
+window.__flor = { scene, cristal, petalos, empujar, aplicarCuadro, camera, renderer, ajustar, AJUSTES, setProgreso: (v) => { progreso = v; cuadro = 1 + v * (datos.frames - 1); } };
 bucle();
