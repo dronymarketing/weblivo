@@ -181,6 +181,8 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     la muestra se pueden borrar cuantas veces haga falta (`de-fabrica.sql` o `vaciar-datos.sql`).
     Los cambios futuros a la base se aplican con SQL sin perder datos. **Al instalarlo definitivamente,
     correr otra vez `de-fabrica.sql`** y que la dueña cree la primera cuenta (Administración).
+    Ese día también: contraseña nueva de la base (Reset database password) y actualizar el secreto
+    `SUPABASE_DB_URL` del repo de respaldos.
   - `js/supabase.js` — supabase-js 2.117.3 (UMD) copiado en el proyecto.
   - `js/datos.js` — `window.PD`: sesión, carga, escrituras por RPC y **en vivo** (Realtime): cualquier
     cambio recarga y avisa a las pantallas abiertas («Nueva reserva PD-1001 desde la web · pagada»).
