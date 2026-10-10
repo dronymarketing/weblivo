@@ -37,6 +37,7 @@
     try { return await fn(); }
     catch (e) {
       if (errEl) { errEl.textContent = e.message; errEl.hidden = false; } else avisar(e.message, 'alerta');
+      vigilarBase();
       return FALLO;
     } finally {
       if (boton) { boton.disabled = false; boton.classList.remove('es-cargando'); }
@@ -904,6 +905,7 @@
     var inp = f && f.querySelector('input'); if (inp) inp.focus();
   }
   function pintar() {
+    if (pantalla === 'pausa') return;
     if (!PD.configurado) return mostrarIngreso('sin-base');
     if (PD.enRecuperacion()) { if (pantalla !== 'nueva-clave') mostrarIngreso('nueva-clave'); return; }
     var p = PD.perfil();
@@ -1162,7 +1164,73 @@
   function reloj() { var el = $('[data-reloj]'); if (el) el.textContent = new Date().toLocaleString('es-UY', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); }
   reloj(); setInterval(reloj, 15000);
 
+  /* ---------- Base en pausa ----------
+     El plan gratis de Supabase pausa la base tras una semana sin uso (los respaldos
+     diarios la mantienen activa, así que no debería pasar). Si pasa, un cartel tapa
+     todo el sistema, con un único botón: Confirmar, que la reactiva. No se puede
+     cerrar ni cancelar: el sistema se vuelve a abrir solo cuando la base responde. */
+  var TEXTO_PAUSA = {
+    pausada: ['La base de datos está en pausa', 'Pasó una semana sin uso y el servicio de datos se pausó. Los datos están a salvo. Tocá Confirmar para reactivarlo: tarda unos minutos y el sistema se abre solo.'],
+    despertando: ['Reactivando la base de datos', 'Tarda entre 2 y 5 minutos. No hace falta tocar nada: el sistema se abre solo cuando esté lista.'],
+    'sin-internet': ['Sin conexión a internet', 'Revisá el wifi o los datos del celular. El sistema vuelve solo apenas haya conexión.'],
+    caida: ['No hay conexión con la base de datos', 'El servicio no responde en este momento. Seguimos probando solos cada pocos segundos.']
+  };
+  var pausa = { confirmada: false, tempo: null, revisando: false };
+  function mostrarPausa(estado) {
+    if (estado === 'pausando' || (estado === 'pausada' && pausa.confirmada)) estado = pausa.confirmada ? 'despertando' : 'pausada';
+    var t = TEXTO_PAUSA[estado] || TEXTO_PAUSA.caida;
+    if (!ventana.hidden) cerrarVentana();
+    if (pantalla !== 'pausa') mostrarIngreso('pausa');
+    $('[data-pausa-titulo]').textContent = t[0];
+    $('[data-pausa-texto]').textContent = t[1];
+    $('[data-pausa-confirmar]').hidden = estado !== 'pausada';
+    $('[data-pausa-espera]').hidden = estado === 'pausada';
+    $('[data-pausa-espera-texto]').textContent = estado === 'despertando' ? 'Reactivando' : 'Reintentando';
+    clearTimeout(pausa.tempo);
+    pausa.tempo = setTimeout(revisarPausa, estado === 'pausada' ? 30000 : 15000);
+  }
+  async function revisarPausa() {
+    var s = await PD.salud();
+    if (s === 'ok') return volverDePausa();
+    if (pausa.confirmada && (s === 'pausada' || s === 'pausando')) PD.despertar();
+    mostrarPausa(s);
+  }
+  function volverDePausa() {
+    clearTimeout(pausa.tempo);
+    pausa.confirmada = false;
+    pantalla = 'cargando'; mostrarIngreso('cargando');
+    PD.iniciar().then(function () { pantalla = 'cargando'; pintar(); avisar('La base de datos está activa de nuevo'); })
+      .catch(function (e) { mostrarIngreso('ingresar'); avisar(e.message, 'alerta'); });
+  }
+  /* Revisa la base sin molestar: si no responde, aparece el cartel */
+  function vigilarBase() {
+    if (pausa.revisando || pantalla === 'pausa' || !PD.configurado) return;
+    pausa.revisando = true;
+    PD.salud().then(function (s) { pausa.revisando = false; if (s !== 'ok' && pantalla !== 'pausa') mostrarPausa(s); });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pausa-confirmar]');
+    if (!b) return;
+    var err = $('[data-pausa-error]');
+    err.hidden = true; b.disabled = true; b.classList.add('es-cargando');
+    PD.despertar().then(function (estado) {
+      b.disabled = false; b.classList.remove('es-cargando');
+      if (!estado || estado === 'error') {
+        err.textContent = 'No se pudo pedir la reactivación. Probá de nuevo en un minuto; si sigue igual, avisale a Livo.';
+        err.hidden = false;
+        return;
+      }
+      pausa.confirmada = true;
+      if (estado === 'activa') return revisarPausa();
+      mostrarPausa(estado === 'otro' ? 'despertando' : estado);
+    });
+  });
+  setInterval(vigilarBase, 5 * 60000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') vigilarBase(); });
+
   window.addEventListener('hashchange', function () { if (pantalla === 'app') pintar(); });
-  PD.iniciar().then(function () { pantalla = 'cargando'; pintar(); })
-    .catch(function (e) { mostrarIngreso('ingresar'); avisar(e.message, 'alerta'); });
+  PD.salud().then(function (s) {
+    if (s !== 'ok') return mostrarPausa(s);
+    return PD.iniciar().then(function () { pantalla = 'cargando'; pintar(); });
+  }).catch(function (e) { mostrarIngreso('ingresar'); avisar(e.message, 'alerta'); });
 })();

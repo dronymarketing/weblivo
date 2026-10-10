@@ -124,6 +124,15 @@
 @keyframes latir { from { transform: scale(.6); opacity: .5; } to { transform: scale(1.6); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .punto-vivo::after { animation: none; } }
 
+/* Base en pausa: cartel que bloquea todo hasta reactivarla */
+.pausa { justify-items: center; text-align: center; }
+.pausa__ico { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--alerta-fondo); color: var(--alerta); }
+.pausa__ico .ico { width: 30px; height: 30px; }
+.pausa .ingreso__titulo { font-size: 30px; text-wrap: balance; }
+.pausa .ingreso__bajada { font-size: 15px; text-wrap: pretty; }
+.pausa .campo-error { text-align: left; }
+.pausa__boton { min-height: 56px; font-size: 17px; }
+
 /* Botón mientras el servidor responde */
 .btn.es-cargando { opacity: .6; cursor: progress; }
 .btn:disabled { cursor: not-allowed; }

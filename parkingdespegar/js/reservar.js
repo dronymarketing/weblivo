@@ -253,7 +253,19 @@
     c.focus({ preventScroll: true });
   }
 
+  /* Si la base no responde (por ejemplo, en pausa por falta de uso), se ofrece WhatsApp,
+     se le pide al servicio que la despierte y se vuelve a probar cada 30 segundos. */
+  function arrancar() {
+    PD.tarifasPublicas().then(function () {
+      if (!listo) { listo = true; error(1, ''); $('[data-siguiente]').disabled = false; }
+      pintarResumen();
+    }).catch(function () {
+      noDisponible();
+      PD.despertar();
+      setTimeout(arrancar, 30000);
+    });
+  }
   mostrar(1);
   if (!PD.configurado) noDisponible();
-  else PD.tarifasPublicas().then(function () { listo = true; pintarResumen(); }).catch(noDisponible);
+  else arrancar();
 })();

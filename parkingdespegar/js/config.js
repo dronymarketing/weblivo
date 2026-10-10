@@ -7,5 +7,8 @@
    ============================================================ */
 window.PD_CONFIG = {
   url: 'https://ixryfteknrcghmsxyowp.supabase.co',
-  clave: 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o'
+  clave: 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o',
+  /* Servicio que despierta la base si el plan gratis la pausa (supabase/reactivar/).
+     Es la dirección pública del Worker de Cloudflare; la llave queda allá. */
+  reactivar: ''
 };

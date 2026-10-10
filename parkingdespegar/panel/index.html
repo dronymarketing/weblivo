@@ -6,7 +6,7 @@
 <title>Gestión — Parking Despegar</title>
 <meta name="robots" content="noindex, nofollow">
 <!-- Seguridad: el navegador solo ejecuta los scripts de este sitio y solo se conecta a la base de datos -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#053f5c">
 <link rel="icon" href="../img/isotipo.svg" type="image/svg+xml">
@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="../css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="../css/fuentes.css?v=1">
 <link rel="stylesheet" href="../css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=17">
+<link rel="stylesheet" href="css/movil.css?v=18">
 <link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 1024px)">
 </head>
 <body class="tablero">
@@ -71,6 +71,7 @@
 <symbol id="i-bell-ring" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" /> <path d="M22 8c0-2.3-.8-4.3-2-6" /> <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /> <path d="M4 2C2.8 3.7 2 5.7 2 8" /></symbol>
 <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></symbol>
 <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m16 9-5.5 5.5L8 12" /></symbol>
+<symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" /> <path d="M3 5V19A9 3 0 0 0 21 19V5" /> <path d="M3 12A9 3 0 0 0 21 12" /></symbol>
 <symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></symbol>
 <symbol id="i-square-parking" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 17V7h4a3 3 0 0 1 0 6H9" /></symbol>
 <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></symbol>
@@ -163,6 +164,16 @@
       <button type="button" class="btn btn--linea" data-salir-espera>Salir</button>
     </div>
 
+    <!-- Base en pausa (plan gratis de Supabase): bloquea todo hasta reactivarla. Sin «cancelar». -->
+    <div class="ingreso__pantalla pausa" data-pantalla="pausa" role="alertdialog" aria-modal="true" aria-labelledby="pausa-titulo" aria-describedby="pausa-texto" hidden>
+      <span class="pausa__ico" aria-hidden="true"><svg class="ico"><use href="#i-database"/></svg></span>
+      <h1 class="ingreso__titulo" id="pausa-titulo" data-pausa-titulo>La base de datos está en pausa</h1>
+      <p class="ingreso__bajada" id="pausa-texto" data-pausa-texto></p>
+      <p class="campo-error" data-error data-pausa-error hidden></p>
+      <button type="button" class="btn btn--primario pausa__boton" data-pausa-confirmar><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Confirmar</button>
+      <p class="ingreso__espera" data-pausa-espera hidden><span class="punto-vivo" aria-hidden="true"></span><span data-pausa-espera-texto>Reactivando</span></p>
+    </div>
+
     <div class="ingreso__pantalla" data-pantalla="sin-base" hidden>
       <h1 class="ingreso__titulo">Falta conectar la base de datos</h1>
       <p class="ingreso__bajada">Cargá la dirección y la clave publicable del proyecto en <code>js/config.js</code>.</p>
@@ -206,8 +217,8 @@
 
 <script src="lib/JsBarcode.code128.min.js"></script>
 <script src="../js/supabase.js?v=2.117.3"></script>
-<script src="../js/config.js?v=2"></script>
-<script src="../js/datos.js?v=8"></script>
-<script src="js/app.js?v=19"></script>
+<script src="../js/config.js?v=3"></script>
+<script src="../js/datos.js?v=9"></script>
+<script src="js/app.js?v=20"></script>
 </body>
 </html>

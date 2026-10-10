@@ -221,6 +221,43 @@
     escuchar();
   }
 
+  /* ---------- Salud de la base ----------
+     El plan gratis de Supabase pausa el proyecto tras una semana sin uso.
+     salud() dice si la base responde y, si no, por qué: sin internet, en pausa,
+     despertando o caída. despertar() le pide al servicio «reactivar»
+     (supabase/reactivar/worker.js, dirección en js/config.js) que la despierte:
+     la llave de Supabase vive en ese servicio, nunca en la página. */
+  function conTiempo(promesa, ms) {
+    var t;
+    var limite = new Promise(function (_, no) { t = setTimeout(function () { no(new Error('tiempo')); }, ms); });
+    return Promise.race([promesa, limite]).finally(function () { clearTimeout(t); });
+  }
+  async function servicio(ruta, metodo) {
+    if (!C.reactivar) return null;
+    try {
+      var r = await conTiempo(fetch(C.reactivar.replace(/\/+$/, '') + ruta, { method: metodo || 'GET', cache: 'no-store' }), 10000);
+      var j = await r.json();
+      return (j && j.estado) || null;
+    } catch (e) { return null; }
+  }
+  async function hayInternet() {
+    try { await conTiempo(fetch(location.pathname + '?vivo=' + Date.now(), { method: 'HEAD', cache: 'no-store' }), 6000); return true; }
+    catch (e) { return false; }
+  }
+  async function salud() {
+    if (!sb) return 'ok';
+    try {
+      var r = await conTiempo(sb.from('tarifas').select('id').limit(1), 8000);
+      if (!r.error || (r.status >= 400 && r.status < 500)) return 'ok';
+    } catch (e) { /* no respondió a tiempo */ }
+    if (!(await hayInternet())) return 'sin-internet';
+    var s = await servicio('/estado');
+    if (s === 'activa') return 'caida';
+    if (s === 'pausando' || s === 'despertando') return s;
+    return 'pausada';
+  }
+  function despertar() { return servicio('/reactivar', 'POST'); }
+
   /* ---------- Escrituras: siempre por el servidor, después se recarga ---------- */
   async function hacer(nombre, args) { var res = await rpc(nombre, args); await cargar(); avisar([]); return res; }
   async function actualizar(tabla, cambios, filtro) {
@@ -244,6 +281,7 @@
       return cache.lugares.filter(function (l) { return (!tipo || l.tipo === tipo) && !ocupados[l.id]; });
     },
     alCambiar: function (fn) { oyentes.push(fn); },
+    salud: salud, despertar: despertar,
     iniciar: iniciar, ingresar: ingresar, registrarse: registrarse, salir: salir,
     recuperar: recuperar, nuevaClave: nuevaClave, cargar: cargar,
 

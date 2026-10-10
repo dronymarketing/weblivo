@@ -175,6 +175,14 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     `SUPABASE_DB_URL` (Session pooler con la contraseña de la base), que carga Santi en GitHub y
     nunca pasa por el chat. Kit: `supabase/kit-respaldos/` (copia exacta de lo que va en el
     repo privado).
+  - **Base en pausa (Santi, 10/10):** el plan gratis pausa tras una semana sin uso. Prevención: el
+    respaldo consulta la base dos veces por día (`kit-respaldos/scripts/mantener-activa.sh`). Red de
+    seguridad: `PD.salud()` (arranque, cada 5 min, al volver a la pestaña y cuando falla una acción)
+    → cartel `data-pantalla="pausa"` que tapa todo, sin cancelar, único botón **Confirmar** →
+    `PD.despertar()` → Worker de Cloudflare `supabase/reactivar/worker.js` (guarda la llave de
+    Supabase; solo `GET /estado` y `POST /reactivar` del proyecto). Se reabre solo al volver la base.
+    Sin internet / caída: otro texto, sin botón. La reserva web ofrece WhatsApp, despierta la base y
+    reintenta cada 30 s. Dirección del Worker en `js/config.js` → `reactivar` + CSP del panel.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de
