@@ -166,6 +166,15 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     precios) y reinicia la numeración. Para empezar de cero después de probar.
   - `supabase/de-fabrica.sql` — borra TODO, incluidas las cuentas, y vuelve precios, datos de factura y
     lugares a los de fábrica. Después, la primera cuenta que se crea queda como Administración.
+  - **Respaldos (Santi, 10/10):** repositorio privado `dronymarketing/parkingdespegar` (los datos
+    nunca van a weblivo, que es público). GitHub Actions copia la base a las 12:00 y a las 00:00 de
+    Uruguay en `respaldos/AAAA-MM-DD_HHhMM/` (datos.sql, esquema.sql, estructura.sql, resumen.txt) y
+    actualiza `sistema/` con esta carpeta. Se ven 30 días; lo anterior queda en el historial.
+    «Restaurar un respaldo» (a mano, escribiendo RESTAURAR) guarda primero cómo está la base y
+    restaura todo en una transacción; sirve también para un proyecto nuevo y vacío. Usa el secreto
+    `SUPABASE_DB_URL` (Session pooler con la contraseña de la base), que carga Santi en GitHub y
+    nunca pasa por el chat. Kit: `supabase/kit-respaldos/` (copia exacta de lo que va en el
+    repo privado).
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de

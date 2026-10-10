@@ -1,0 +1,52 @@
+# Copia automática de la base de Parking Despegar.
+# Corre todos los días a las 12 del mediodía y a las 12 de la noche (hora de Uruguay,
+# UTC−3) y también se puede correr a mano desde Actions → «Respaldo diario» → Run workflow.
+name: Respaldo diario
+
+on:
+  schedule:
+    - cron: '0 15 * * *'   # 12:00 en Uruguay
+    - cron: '0 3 * * *'    # 00:00 en Uruguay
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: base-de-datos
+  cancel-in-progress: false
+
+jobs:
+  respaldo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Bajar este repositorio
+        uses: actions/checkout@v5
+
+      - name: Bajar el sistema (código y documentación de la web)
+        continue-on-error: true
+        uses: actions/checkout@v5
+        with:
+          repository: dronymarketing/weblivo
+          path: _weblivo
+          sparse-checkout: parkingdespegar
+          persist-credentials: false
+
+      - name: Instalar la herramienta de Supabase
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
+
+      - name: Copiar la base
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/respaldar.sh
+
+      - name: Guardar la copia en el repositorio
+        run: |
+          git config user.name "Respaldo automático"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A respaldos sistema
+          git commit -q -m "Respaldo del $(TZ=America/Montevideo date '+%d/%m/%Y %H:%M')"
+          git push

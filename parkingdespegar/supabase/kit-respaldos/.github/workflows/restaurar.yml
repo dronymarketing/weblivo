@@ -1,0 +1,73 @@
+# Vuelve la base de Parking Despegar al estado de un respaldo.
+# Solo se corre a mano: Actions → «Restaurar un respaldo» → Run workflow.
+# Antes de restaurar guarda una copia de cómo está la base en ese momento,
+# así que si se elige mal la carpeta, se puede volver atrás.
+name: Restaurar un respaldo
+
+on:
+  workflow_dispatch:
+    inputs:
+      carpeta:
+        description: 'Carpeta a recuperar (el nombre tal cual aparece en respaldos/, por ejemplo 2026-10-11_00h00)'
+        required: true
+        type: string
+      confirmar:
+        description: 'Escribí RESTAURAR en mayúsculas. Los datos actuales se reemplazan por los de esa carpeta.'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: base-de-datos
+  cancel-in-progress: false
+
+jobs:
+  restaurar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARPETA: ${{ inputs.carpeta }}
+      CONFIRMAR: ${{ inputs.confirmar }}
+    steps:
+      - name: Revisar la confirmación y la carpeta
+        run: |
+          if [ "$CONFIRMAR" != "RESTAURAR" ]; then
+            echo "::error::No se escribió RESTAURAR: no se hizo nada."; exit 1
+          fi
+          if ! [[ "$CARPETA" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}h[0-9]{2}(_[a-z0-9-]+)?$ ]]; then
+            echo "::error::El nombre de carpeta no es válido: $CARPETA"; exit 1
+          fi
+
+      - name: Bajar este repositorio
+        uses: actions/checkout@v5
+
+      - name: Revisar que la carpeta exista
+        run: |
+          test -f "respaldos/$CARPETA/datos.sql" || { echo "::error::No existe respaldos/$CARPETA"; exit 1; }
+
+      - name: Instalar la herramienta de Supabase y psql
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
+      - run: command -v psql || (sudo apt-get update -q && sudo apt-get install -y -q postgresql-client)
+
+      - name: Copia de seguridad de cómo está la base ahora
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/respaldar.sh antes-de-restaurar
+
+      - name: Guardar esa copia
+        run: |
+          git config user.name "Respaldo automático"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A respaldos
+          if git diff --cached --quiet; then echo "No había datos que guardar."; exit 0; fi
+          git commit -q -m "Copia antes de restaurar $CARPETA"
+          git push
+
+      - name: Restaurar
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/restaurar.sh "respaldos/$CARPETA"
