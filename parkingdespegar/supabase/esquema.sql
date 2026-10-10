@@ -679,6 +679,8 @@ drop policy if exists auditoria_ver on public.auditoria;
 create policy auditoria_ver on public.auditoria for select to authenticated using ((select public.tiene_rol('admin')));
 
 -- Privilegios: la web anónima solo ve tarifas; el personal solo escribe por las funciones
+-- (No depende de «Automatically expose new tables»: todo se otorga a mano acá abajo.)
+grant usage on schema public to anon, authenticated;
 revoke all on all tables in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
 grant select on public.tarifas to anon;
