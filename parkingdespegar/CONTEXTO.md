@@ -167,6 +167,11 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
   - `supabase/de-fabrica.sql` — borra TODO, incluidas las cuentas, y vuelve precios, datos de factura y
     lugares a los de fábrica. Después, la primera cuenta que se crea queda como Administración.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
+  - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
+    instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de
+    la muestra se pueden borrar cuantas veces haga falta (`de-fabrica.sql` o `vaciar-datos.sql`).
+    Los cambios futuros a la base se aplican con SQL sin perder datos. **Al instalarlo definitivamente,
+    correr otra vez `de-fabrica.sql`** y que la dueña cree la primera cuenta (Administración).
   - `js/supabase.js` — supabase-js 2.117.3 (UMD) copiado en el proyecto.
   - `js/datos.js` — `window.PD`: sesión, carga, escrituras por RPC y **en vivo** (Realtime): cualquier
     cambio recarga y avisa a las pantallas abiertas («Nueva reserva PD-1001 desde la web · pagada»).
