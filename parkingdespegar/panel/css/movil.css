@@ -108,7 +108,7 @@
   width: 100%; max-width: 400px; display: grid; gap: 16px;
   padding: 32px 24px; border-radius: var(--radio); background: var(--superficie);
 }
-.ingreso__logo { width: 150px; height: auto; color: var(--acento); fill: currentColor; margin-bottom: 8px; }
+.ingreso__logo { justify-self: center; width: 150px; height: auto; color: var(--acento); fill: currentColor; margin-bottom: 8px; }
 .ingreso__titulo { font-size: 26px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em; }
 .ingreso__bajada { color: var(--texto-suave); font-size: 14px; }
 .ingreso .btn { width: 100%; }

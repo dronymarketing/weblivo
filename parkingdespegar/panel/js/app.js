@@ -43,7 +43,7 @@
     }
   }
 
-  var ROLES = { admin: 'Dueña · administración', personal: 'Personal de turno', chofer: 'Chofer' };
+  var ROLES = { admin: 'Administración', personal: 'Personal de turno', chofer: 'Chofer' };
   /* Cinco sectores, cada uno con su color (variantes del azul y del naranja de marca):
      Hoy (navy) · Autos en el parking (azul) · Reservas (celeste) · Plata (naranja) · Ajustes (ámbar) */
   var SECTORES = [

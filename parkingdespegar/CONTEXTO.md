@@ -164,6 +164,9 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     apagado, Site URL y Redirect URL = `https://livo.com.uy/parkingdespegar/panel/`.
   - `supabase/vaciar-datos.sql` — borra reservas, pagos, caja, facturas y registro (no usuarios ni
     precios) y reinicia la numeración. Para empezar de cero después de probar.
+  - `supabase/de-fabrica.sql` — borra TODO, incluidas las cuentas, y vuelve precios, datos de factura y
+    lugares a los de fábrica. Después, la primera cuenta que se crea queda como Administración.
+  - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - `js/supabase.js` — supabase-js 2.117.3 (UMD) copiado en el proyecto.
   - `js/datos.js` — `window.PD`: sesión, carga, escrituras por RPC y **en vivo** (Realtime): cualquier
     cambio recarga y avisa a las pantallas abiertas («Nueva reserva PD-1001 desde la web · pagada»).
@@ -263,5 +266,5 @@ recordatorio por WhatsApp un día antes. Registrar la base de datos personales (
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=8`, reservar.js `?v=5`, config.js `?v=2`, supabase.js `?v=2.117.3`; en `panel/`: movil.css `?v=16`, escritorio.css `?v=5`, app.js `?v=18`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=8`, reservar.js `?v=5`, config.js `?v=2`, supabase.js `?v=2.117.3`; en `panel/`: movil.css `?v=17`, escritorio.css `?v=5`, app.js `?v=19`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.
