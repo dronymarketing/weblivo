@@ -140,31 +140,51 @@ copió** (producto y marca de terceros); se hizo un sistema propio con la lógic
 aeropuerto y la estética del branding. Alcance elegido: **borrador funcional** con datos de muestra,
 pasarela de pago **simulada** y **tarifas de muestra** editables.
 
-- `js/datos.js` — capa de datos `window.PD` (reservas, lugares A-01…A-24 techado y B-01…B-36 aire
-  libre, caja, usuarios, auditoría). Hoy vive en `localStorage` (`pd-datos-v1`) y se sincroniza entre
-  pestañas con el evento `storage`: si en una pestaña se reserva desde la web, el dashboard abierto en
-  otra avisa al instante. Todas las pantallas usan solo esa API, así que pasar a producción es
-  cambiar ese archivo por una base real.
+- **En línea desde el 10/10 (Supabase).** La versión con datos de muestra en el navegador quedó en el
+  historial de git. Ahora todo vive en una base en la nube y arranca **vacía**:
+  - `supabase/esquema.sql` — se pega una vez en Supabase → SQL Editor → Run (se puede volver a correr
+    sin romper nada). Tablas: perfiles, tarifas, empresa, lugares (A-01…A-24 techado, B-01…B-36 predio:
+    cantidades a confirmar, se cambian en Precios), reservas, pagos, pagos_web, caja_turnos,
+    caja_movimientos, facturas, auditoria.
+  - **Seguridad:** RLS en todas las tablas; toda la operación pasa por funciones del servidor que
+    controlan el rol y calculan precio y saldo (`crear_reserva`, `registrar_pago`, `registrar_entrada`
+    —cobra, asigna lugar y factura en una sola transacción—, `registrar_salida`, `cancelar_reserva`,
+    `marcar_traslado`, `abrir_caja`, `egreso_caja`, `cerrar_caja`, `configurar_lugares`). La web anónima
+    solo lee tarifas, consulta disponibilidad (`disponibilidad_web`), crea su reserva
+    (`crear_reserva_web`) y la paga con un código secreto de un solo uso (`pagar_reserva_web`, la
+    pasarela de prueba). Un lugar no puede tener dos autos (índice único). El registro de cambios lo
+    escribe el servidor. La dueña no puede quitarse su propio acceso.
+  - **Usuarios:** email y contraseña (Supabase Auth). La **primera cuenta que se crea es la dueña**
+    (admin). Las demás quedan «Sin acceso» hasta que ella elige el rol (personal / chofer / admin) en
+    Equipo; la persona que espera entra sola cuando la aprueban. El chofer solo ve Traslados.
+  - `js/config.js` — `url` y `clave` (publishable key, pública por diseño). Vacío = el panel muestra
+    «Falta conectar la base de datos» y la reserva web manda a WhatsApp. Nunca poner la secret key.
+  - `js/supabase.js` — supabase-js 2.117.3 (UMD) copiado en el proyecto.
+  - `js/datos.js` — `window.PD`: sesión, carga, escrituras por RPC y **en vivo** (Realtime): cualquier
+    cambio recarga y avisa a las pantallas abiertas («Nueva reserva PD-1001 desde la web · pagada»).
+  - `panel/index.html` tiene Content-Security-Policy: solo scripts propios y conexión a `*.supabase.co`.
+  - Probado de punta a punta con Supabase corriendo en Docker (registro, aprobación, reserva y pago
+    web en vivo, traslados, entrada con factura, caja, permisos por rol).
 - `reservar.html` + `js/reservar.js` — 4 pasos (fechas y vuelo · lugar y servicio · auto y datos ·
   resumen y pago), precio y lugares libres en vivo, pasarela de prueba (no pide datos de tarjeta),
   confirmación con código `PD-xxxx` y envío por WhatsApp. El nav «Reservar», el botón del menú y el
   del hero del inicio llevan acá; los demás botones de WhatsApp siguen como estaban.
-- `panel/` — gestión (`noindex`). Usuarios de prueba `admin` / `personal` / `chofer`, contraseña
-  `despegar`. Secciones: Panel del día, Reservas (filtros, búsqueda, detalle, nueva reserva por
+- `panel/` — gestión (`noindex`). Secciones: Panel del día, Reservas (filtros, búsqueda, detalle, nueva reserva por
   WhatsApp o mostrador), Registrar llegada (buscador apto para lector de código, lugar sugerido,
   cobro opcional, comprobante con código de barras Code128 vía `panel/lib/JsBarcode`, MIT), Retiros y
   cobro (días reales, vuelto, libera el lugar), Traslados (camioneta: salida +15 min de la llegada,
   búsqueda +25 min del aterrizaje), Lugares (mapa por zona), Caja (base, movimientos, egresos,
   cierre con conteo: cuadra / sobra / falta; lo online va aparte), Clientes; y solo para la dueña:
   Reportes (recaudado por día, por medio, por tipo de lugar, por origen; CSV e impresión), Tarifas
-  (con simulador; se aplican en la web al instante), Usuarios y Sistema (respaldo JSON, restaurar,
-  volver a la muestra, registro de cambios). El chofer solo ve Traslados.
+  (con calculadora, datos para la factura y cantidad de lugares; se aplican en la web al instante),
+  Equipo (dar y quitar acceso) y Respaldos (descarga JSON y registro de cambios). El chofer solo ve Traslados.
 - Estilos propios en `panel/css/movil.css` y `panel/css/escritorio.css` (≥ 1024px: lateral fijo y
   tablas; en celular las tablas pasan a tarjetas y el lateral es un cajón).
 
 **Sin avisos de borrador en pantalla (Santi, 6/10):** se sacaron «Borrador», «de muestra», «de prueba» y
-las notas internas de la reserva y del panel; la clave de `localStorage` pasó a `pd-datos-v2`.
-Ojo: la pasarela sigue siendo simulada aunque ya no lo diga — no compartir `reservar.html` con clientes reales.
+las notas internas de la reserva y del panel.
+Ojo: la pasarela sigue siendo de prueba (botón «Pagar») aunque no lo diga — no compartir `reservar.html`
+con clientes reales hasta conectar la pasarela real.
 
 **Rediseño para que se entienda (Santi, 6/10):** el panel se ordena en cinco sectores, cada uno con su
 color (variantes del azul y el naranja de marca): **Hoy** (navy), **Autos en el predio** (azul: Entra un
@@ -214,9 +234,11 @@ genera traslados en las próximas horas para que la pantalla tenga contenido.
 
 **Fechas en el panel:** «06/10 | 16:30 Hrs.» (Santi, 6/10).
 
-**Para ponerlo en producción:** base de datos en la nube con usuarios reales (por ejemplo Supabase),
-cuenta de la clienta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco) con
-webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día antes.
+**Para ponerlo en producción:** crear el proyecto Supabase a nombre de la clienta (plan pago para
+respaldos diarios), cuenta en una pasarela uruguaya (Mercado Pago, dLocal Go, Plexo o la de su banco)
+con webhook que confirme el pago en lugar de `pagar_reserva_web`, proveedor de facturación electrónica
+habilitado por DGI, SMTP propio para los mails de cuenta, tarifas y cantidad de lugares reales,
+recordatorio por WhatsApp un día antes. Registrar la base de datos personales (Ley 18.331).
 
 ## PENDIENTE
 
@@ -226,12 +248,15 @@ webhook que confirme el pago, tarifas reales, recordatorio por WhatsApp un día 
   la clienta si se entrega en la terminal o en el parking.
 - Más reseñas reales de Google para el carrusel (hoy rotan dos).
 - Mail de contacto (no aparece en ningún lado).
-- **Tarifas reales** (hoy de muestra: techado $ 490/día, aire libre $ 390/día, valet $ 450).
-- **Backend real y pasarela de pago:** cuentas a nombre de la clienta (ver «Reserva online y gestión»).
+- **Tarifas reales** (la base arranca con techado $ 490/día, predio $ 390/día, valet $ 450; se cambian en Precios).
+- **Conectar Supabase:** crear el proyecto, correr `supabase/esquema.sql` y cargar URL y publishable key
+  en `js/config.js`. Recién ahí la dueña crea su cuenta (la primera es la de administración).
+- **Pasarela de pago real y facturación electrónica:** cuentas a nombre de la clienta.
+- **Cantidad real de lugares** techados y en predio (hoy 24 y 36, se cambian en Precios).
 
 ## Cómo se generó
 
 Las seis páginas repiten sprite, header, menú y pie idénticos (el ítem de la página actual lleva
 `aria-current="page"`). Si cambia el header o el pie, cambiarlo en los seis archivos.
-Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=7`, reservar.js `?v=4`; en `panel/`: movil.css `?v=15`, escritorio.css `?v=4`, app.js `?v=17`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
+Caché: CSS y JS con `?v=1` (movil.css `?v=15`, escritorio.css `?v=9`, main.js `?v=5`, escena.js `?v=2`, base.css `?v=4`, tokens-proyecto.css `?v=3`, datos.js `?v=8`, reservar.js `?v=5`, config.js `?v=1`, supabase.js `?v=2.117.3`; en `panel/`: movil.css `?v=16`, escritorio.css `?v=5`, app.js `?v=18`); subirlo en los seis HTML (y en `panel/index.html` si cambia `datos.js`) cada vez que se tocan.
 `reservar.html` se armó tomando cabeza y pie de `contacto.html`.

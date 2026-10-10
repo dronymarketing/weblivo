@@ -1,10 +1,10 @@
 /* ============================================================
    PARKING DESPEGAR — Gestión
-   Sistema propio para la operación del parking: reservas, llegadas,
-   retiros con cobro, traslados al aeropuerto, lugares, caja,
-   clientes, reportes, tarifas, usuarios y respaldos.
-   Lee y escribe en ../js/datos.js; con una base real, todo el equipo
-   ve lo mismo en vivo desde cualquier dispositivo.
+   Operación del parking en línea: reservas, entrada (con cobro y
+   factura), salida, traslados, lugares, caja, clientes, reportes,
+   precios, equipo y registro de cambios.
+   Lee de ../js/datos.js (Supabase). Cada acción se hace en el
+   servidor y todas las pantallas abiertas se actualizan en vivo.
    ============================================================ */
 (function () {
   'use strict';
@@ -25,12 +25,23 @@
   var mismoDia = function (a, b) { return inicioDia(a) === inicioDia(b); };
 
   /* ---------- Sesión ---------- */
-  var CLAVE_SESION = 'pd-sesion';
   var usuario = null;
-  function leerSesion() {
-    try { var id = sessionStorage.getItem(CLAVE_SESION); usuario = D().usuarios.filter(function (u) { return u.id === id && u.activo; })[0] || null; } catch (e) { usuario = null; }
-  }
+  function leerSesion() { var p = PD.perfil(); usuario = p && p.activo ? p : null; }
   function nombreUsuario() { return usuario ? usuario.nombre : 'sistema'; }
+
+  /* Corre una acción del servidor: bloquea el botón y muestra el error si falla */
+  var FALLO = {};
+  async function ejecutar(boton, fn, errEl) {
+    if (boton) { boton.disabled = true; boton.classList.add('es-cargando'); }
+    if (errEl) errEl.hidden = true;
+    try { return await fn(); }
+    catch (e) {
+      if (errEl) { errEl.textContent = e.message; errEl.hidden = false; } else avisar(e.message, 'alerta');
+      return FALLO;
+    } finally {
+      if (boton) { boton.disabled = false; boton.classList.remove('es-cargando'); }
+    }
+  }
 
   var ROLES = { admin: 'Dueña · administración', personal: 'Personal de turno', chofer: 'Chofer' };
   /* Cinco sectores, cada uno con su color (variantes del azul y del naranja de marca):
@@ -69,7 +80,7 @@
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
     { id: 'sistema', sector: 'ajustes', nombre: 'Respaldos', ico: 'settings', roles: ['admin'],
-      desc: 'Guardá una copia de todo y mirá quién hizo cada cambio.' }
+      desc: 'Descargá una copia de todo y mirá quién hizo cada cambio.' }
   ];
   function puede(id) { var s = SECCIONES.filter(function (x) { return x.id === id; })[0]; return s && usuario && s.roles.indexOf(usuario.rol) >= 0; }
 
@@ -88,7 +99,7 @@
     return '<span class="estado estado--error">' + ico('circle-x') + 'No pagado</span>';
   }
   var TIPO = { techado: 'Techado', aire: 'Predio' };
-  var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador' };
+  var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador', telefono: 'Teléfono' };
   var MEDIOS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta (POS)', transferencia: 'Transferencia', online: 'Online', egreso: 'Egreso' };
 
   /* ---------- Traslados derivados de las reservas ---------- */
@@ -128,10 +139,12 @@
     (f || caja.querySelector('button')).focus();
     return caja;
   }
+  var repintar = false;
   function cerrarVentana() {
     ventana.hidden = true;
     document.documentElement.classList.remove('ventana-abierta');
-    if (focoPrevio) focoPrevio.focus();
+    if (focoPrevio && focoPrevio.isConnected) focoPrevio.focus();
+    if (repintar) { repintar = false; pintar(); }
   }
   ventana.addEventListener('click', function (e) { if (e.target === ventana || e.target.closest('[data-cerrar-ventana]')) cerrarVentana(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ventana.hidden) cerrarVentana(); });
@@ -309,7 +322,7 @@
     var man = new Date(Date.now() + PD.DIA);
     var caja = abrirVentana(
       '<h2 class="ventana__titulo">Nueva reserva</h2><form class="formulario" data-form-nueva novalidate>' +
-      '<div class="formulario__fila"><label class="campo"><span>Origen</span><select name="origen"><option value="whatsapp">WhatsApp</option><option value="mostrador">Mostrador</option><option value="web">Teléfono / otra</option></select></label>' +
+      '<div class="formulario__fila"><label class="campo"><span>Origen</span><select name="origen"><option value="whatsapp">WhatsApp</option><option value="mostrador">Mostrador</option><option value="telefono">Teléfono</option></select></label>' +
       '<label class="campo"><span>Lugar</span><select name="lugarTipo"><option value="techado">Techado · ' + plata(t.techado) + '/día</option><option value="aire">Predio · ' + plata(t.aire) + '/día</option></select></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Entrada</span><input type="datetime-local" name="entrada" value="' + local(man.setHours(6, 0, 0, 0)) + '" required></label>' +
       '<label class="campo"><span>Salida</span><input type="datetime-local" name="salida" value="' + local(new Date(man.getTime() + 7 * PD.DIA).setHours(18, 0, 0, 0)) + '" required></label></div>' +
@@ -338,22 +351,27 @@
       totalNueva();
     });
     totalNueva();
-    $('[data-form-nueva]', caja).addEventListener('submit', function (e) {
+    $('[data-form-nueva]', caja).addEventListener('submit', async function (e) {
       e.preventDefault();
       var f = e.target, err = $('[data-error-nueva]', caja);
       var ent = new Date(f.entrada.value), sal = new Date(f.salida.value);
+      err.hidden = true;
       if (!f.matricula.value.trim() || !f.nombre.value.trim() || !f.telefono.value.trim()) { err.textContent = 'Completá matrícula, nombre y teléfono.'; err.hidden = false; return; }
       if (!(sal > ent)) { err.textContent = 'La salida tiene que ser después de la entrada.'; err.hidden = false; return; }
-      if (f.pagoNueva.value === 'transferencia' && !(+f.montoTransf.value > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
-      var r = PD.crearReserva({
-        origen: f.origen.value, lugarTipo: f.lugarTipo.value, servicio: f.servicio.value, pasajeros: +f.pasajeros.value || 1,
-        entrada: ent.toISOString(), salida: sal.toISOString(), vuelo: { ida: '', vuelta: '' },
-        cliente: { nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), email: '' },
-        vehiculo: { matricula: f.matricula.value.trim().toUpperCase(), modelo: f.modelo.value.trim(), color: '' }
-      }, nombreUsuario());
-      var transf = f.pagoNueva.value === 'transferencia' ? Math.min(+f.montoTransf.value || 0, r.total) : 0;
-      if (transf > 0) PD.registrarPago(r, transf, 'transferencia', nombreUsuario(), f.refTransf.value.trim() || null);
-      cerrarVentana(); avisar('Reserva ' + r.codigo + ' guardada' + (transf > 0 ? ' con ' + plata(transf) + ' por transferencia' : '')); pintar();
+      var transf = f.pagoNueva.value === 'transferencia' ? (+f.montoTransf.value || 0) : 0;
+      if (f.pagoNueva.value === 'transferencia' && !(transf > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
+      var res = await ejecutar(f.querySelector('[type=submit]'), async function () {
+        var r = await PD.crearReserva({
+          origen: f.origen.value, lugar_tipo: f.lugarTipo.value, servicio: f.servicio.value, pasajeros: +f.pasajeros.value || 1,
+          entrada: ent.toISOString(), salida: sal.toISOString(),
+          nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), matricula: f.matricula.value.trim(), modelo: f.modelo.value.trim()
+        });
+        var monto = transf > 0 ? Math.min(transf, r.total) : 0;
+        if (monto > 0) await PD.registrarPago(r.id, monto, 'transferencia', f.refTransf.value.trim());
+        return { r: r, monto: monto };
+      }, err);
+      if (res === FALLO) return;
+      cerrarVentana(); avisar('Reserva ' + res.r.codigo + ' guardada' + (res.monto > 0 ? ' con ' + plata(res.monto) + ' por transferencia' : '')); pintar();
     });
   }
   function local(ms) { var d = new Date(ms); return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()) + 'T' + PD.pad(d.getHours()) + ':' + PD.pad(d.getMinutes()); }
@@ -426,28 +444,31 @@
         (x.fecha ? ' el ' + fechaCorta(x.fecha) : '') + (x.ref && x.medio === 'transferencia' ? ' · op. ' + esc(x.ref) : '');
     }).join(' y ');
   }
-  function registrarLlegada(id, f) {
-    var d = D(), r = d.reservas.filter(function (x) { return x.id === id; })[0];
+  async function registrarLlegada(id, f) {
+    var r = D().reservas.filter(function (x) { return x.id === id; })[0];
     var err = $('[data-error-llegada]');
     if (!r || !f.lugar.value) { avisar('No quedan lugares libres de ese tipo', 'alerta'); return; }
     var tipo = f.tipoFactura.value, rut = f.rut.value.replace(/\D/g, ''), razon = f.razon.value.trim();
     if (tipo === 'efactura' && (rut.length !== 12 || !razon)) { err.textContent = 'Para la e-Factura completá el RUT (12 dígitos) y la razón social.'; err.hidden = false; return; }
-    var saldo = +f.getAttribute('data-saldo');
-    if (saldo > 0) PD.registrarPago(r, saldo, f.medio.value, nombreUsuario());
-    r.estado = 'en_predio'; r.lugar = f.lugar.value; r.checkin = new Date().toISOString(); r.notas = f.notas.value.trim();
-    PD.guardar(nombreUsuario(), 'Entrada de ' + r.codigo + ' (' + r.vehiculo.matricula + ') al lugar ' + r.lugar);
-    var fac = PD.emitirFactura(r, { tipo: tipo, rut: rut, razon: razon }, nombreUsuario());
-    avisar('Entrada registrada y ' + (fac.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + ' A-' + PD.pad4(fac.numero) + ' emitido');
-    ticket(r, 'entrada', fac);
+    var res = await ejecutar(f.querySelector('[type=submit]'), function () {
+      return PD.registrarEntrada(id, { lugar: f.lugar.value, notas: f.notas.value.trim(), medio: f.medio ? f.medio.value : null, tipoFactura: tipo, rut: rut, razon: razon });
+    }, err);
+    if (res === FALLO) return;
+    var rr = D().reservas.filter(function (x) { return x.id === id; })[0];
+    var fac = D().facturas.filter(function (x) { return x.id === res.factura; })[0];
+    avisar('Entrada registrada y ' + (res.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + ' A-' + PD.pad4(res.numero) + ' emitido');
     location.hash = '#/llegada';
+    pintar();
+    if (rr) ticket(rr, 'entrada', fac);
   }
-  function guardarTransferencia(id, boton) {
-    var r = D().reservas.filter(function (x) { return x.id === id; })[0];
+  async function guardarTransferencia(id, boton) {
     var caja = boton.closest('.transferencia');
     var monto = +$('[data-monto-transf]', caja).value, ref = $('[data-ref-transf]', caja).value.trim();
     if (!(monto > 0)) { avisar('Escribí cuánto transfirió', 'alerta'); return; }
-    PD.registrarPago(r, monto, 'transferencia', nombreUsuario(), ref || null);
-    avisar('Transferencia de ' + plata(monto) + ' registrada en ' + r.codigo);
+    var r = D().reservas.filter(function (x) { return x.id === id; })[0];
+    var res = await ejecutar(boton, function () { return PD.registrarPago(id, monto, 'transferencia', ref); });
+    if (res === FALLO) return;
+    avisar('Transferencia de ' + plata(monto) + ' registrada en ' + (r ? r.codigo : 'la reserva'));
     pintar();
   }
 
@@ -535,16 +556,15 @@
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Registrar salida y liberar lugar</button></div>' +
       '</form>';
   }
-  function registrarRetiro(id, f) {
-    var d = D(), r = d.reservas.filter(function (x) { return x.id === id; })[0];
+  async function registrarRetiro(id, f) {
     if (!f.llaves.checked) { avisar('Confirmá la entrega de llaves', 'alerta'); return; }
-    var dif = +f.getAttribute('data-dif');
-    if (dif > 0 && f.medio && f.medio.value) { r.total += dif; PD.registrarPago(r, dif, f.medio.value, nombreUsuario()); }
-    r.estado = 'finalizada'; r.checkout = new Date().toISOString(); r.traslado.vuelta = 'hecho';
-    PD.guardar(nombreUsuario(), 'Salida de ' + r.codigo + ' (' + r.vehiculo.matricula + '), libera ' + r.lugar);
-    avisar('Salida registrada: ' + r.lugar + ' quedó libre');
-    ticket(r, 'salida');
+    var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.registrarSalida(id, f.medio ? f.medio.value : ''); });
+    if (res === FALLO) return;
+    var rr = D().reservas.filter(function (x) { return x.id === id; })[0];
+    avisar('Salida registrada: ' + (res.lugar || 'el lugar') + ' quedó libre' + (res.diferencia ? ' · cobró ' + plata(res.diferencia) + ' de diferencia' : ''));
     location.hash = '#/retiros';
+    pintar();
+    if (rr) ticket(rr, 'salida');
   }
 
   /* ---------- TRASLADOS ---------- */
@@ -654,7 +674,7 @@
     return '<div class="herramientas"><p class="ayuda">Turno abierto el ' + fechaHora(t.apertura) + ' por ' + esc(t.usuario) + '.</p>' +
         '<button class="btn btn--linea" type="button" data-egreso>' + ico('arrow-down') + 'Registrar egreso</button>' +
         '<button class="btn btn--primario" type="button" data-cerrar-caja data-esperado="' + esperado + '">' + ico('lock') + 'Cerrar caja</button></div>' +
-      '<div class="kpis">' + kpi('wallet', 'Base inicial', plata(t.base), 'efectivo al abrir') + kpi('circle-dollar-sign', 'Cobrado', plata(cobrado), t.movimientos.filter(function (m) { return m.monto > 0; }).length + ' cobros') +
+      '<div class="kpis">' + kpi('wallet', 'Base inicial', plata(t.base), 'efectivo al abrir') + kpi('circle-dollar-sign', 'Cobrado', plata(cobrado), (function (n) { return n + (n === 1 ? ' cobro' : ' cobros'); })(t.movimientos.filter(function (m) { return m.monto > 0; }).length)) +
         kpi('arrow-down', 'Egresos', plata(-egresos), 'gastos del turno') + kpi('banknote', 'Efectivo esperado', plata(esperado), 'base + efectivo − egresos', true) + '</div>' +
       '<div class="columnas columnas--caja">' +
         bloque('Movimientos del turno', t.movimientos.length, t.movimientos.length ? '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Hora</th><th>Concepto</th><th>Medio</th><th class="num">Monto</th></tr></thead><tbody>' +
@@ -705,28 +725,31 @@
   }
   V.reportes = function (q) {
     var per = q.p || '30', R = rango(per), d = D();
-    var pagadas = d.reservas.filter(function (r) { return r.pago.estado !== 'pendiente' && r.pago.fecha && new Date(r.pago.fecha) >= R[0] && new Date(r.pago.fecha) < R[1]; });
+    var porId = {}; d.reservas.forEach(function (r) { porId[r.id] = r; });
+    var pagos = d.pagos.filter(function (p) { var f = new Date(p.fecha); return f >= R[0] && f < R[1]; });
     var hechas = d.reservas.filter(function (r) { return r.estado !== 'cancelada' && new Date(r.entrada) >= R[0] && new Date(r.entrada) < R[1]; });
-    var total = pagadas.reduce(function (s, r) { return s + r.pago.monto; }, 0);
+    var total = pagos.reduce(function (s, p) { return s + p.monto; }, 0);
+    var cobradas = {}; pagos.forEach(function (p) { cobradas[p.reserva_id] = 1; });
+    var nCobradas = Object.keys(cobradas).length;
     var porDia = [], dias = Math.round((R[1] - R[0]) / PD.DIA);
     for (var i = 0; i < dias; i++) porDia.push({ dia: R[0] + i * PD.DIA, monto: 0, n: 0 });
-    pagadas.forEach(function (r) { var k = Math.floor((inicioDia(r.pago.fecha) - R[0]) / PD.DIA); if (porDia[k]) { porDia[k].monto += r.pago.monto; porDia[k].n++; } });
-    var medios = {}, tipos = { techado: 0, aire: 0 }, origenes = { web: 0, whatsapp: 0, mostrador: 0 };
-    pagadas.forEach(function (r) { medios[r.pago.medio] = (medios[r.pago.medio] || 0) + r.pago.monto; tipos[r.lugarTipo] += r.pago.monto; });
-    hechas.forEach(function (r) { origenes[r.origen]++; });
+    pagos.forEach(function (p) { var k = Math.floor((inicioDia(p.fecha) - R[0]) / PD.DIA); if (porDia[k]) { porDia[k].monto += p.monto; porDia[k].n++; } });
+    var medios = {}, tipos = { techado: 0, aire: 0 }, origenes = { web: 0, whatsapp: 0, mostrador: 0, telefono: 0 };
+    pagos.forEach(function (p) { medios[p.medio] = (medios[p.medio] || 0) + p.monto; var r = porId[p.reserva_id]; if (r) tipos[r.lugarTipo] += p.monto; });
+    hechas.forEach(function (r) { origenes[r.origen] = (origenes[r.origen] || 0) + 1; });
     var estadia = hechas.length ? hechas.reduce(function (s, r) { return s + PD.dias(r.entrada, r.salida); }, 0) / hechas.length : 0;
     return '<div class="herramientas"><div class="chips">' + PERIODOS.map(function (x) { return '<a class="chip' + (x[0] === per ? ' es-activo' : '') + '" href="#/reportes?p=' + x[0] + '">' + x[1] + '</a>'; }).join('') + '</div>' +
         '<button class="btn btn--linea" type="button" data-exportar="' + per + '">' + ico('file-spreadsheet') + 'Exportar a Excel (CSV)</button>' +
         '<button class="btn btn--linea" type="button" data-imprimir-pagina>' + ico('printer') + 'Imprimir</button></div>' +
       '<p class="ayuda">Del ' + new Date(R[0]).toLocaleDateString('es-UY') + ' al ' + new Date(R[1] - 1).toLocaleDateString('es-UY') + '</p>' +
-      '<div class="kpis">' + kpi('circle-dollar-sign', 'Recaudado', plata(total), pagadas.length + ' cobros', true) + kpi('calendar-check', 'Reservas', hechas.length, 'que llegaron en el período') +
-        kpi('timer', 'Estadía promedio', estadia.toFixed(1).replace('.', ',') + ' días', 'por reserva') + kpi('receipt', 'Ticket promedio', plata(pagadas.length ? total / pagadas.length : 0), 'por reserva cobrada') + '</div>' +
+      '<div class="kpis">' + kpi('circle-dollar-sign', 'Recaudado', plata(total), pagos.length + (pagos.length === 1 ? ' cobro' : ' cobros'), true) + kpi('calendar-check', 'Reservas', hechas.length, 'que entran en el período') +
+        kpi('timer', 'Estadía promedio', estadia.toFixed(1).replace('.', ',') + ' días', 'por reserva') + kpi('receipt', 'Ticket promedio', plata(nCobradas ? total / nCobradas : 0), 'por reserva cobrada') + '</div>' +
       bloque('Recaudado por día', null, graficoDias(porDia)) +
       '<div class="columnas">' +
         bloque('Por medio de pago', null, barrasH(Object.keys(medios).map(function (k) { return [MEDIOS[k], medios[k]]; }), true)) +
         bloque('Por tipo de lugar', null, barrasH([['Techado', tipos.techado], ['Predio', tipos.aire]], true)) +
       '</div>' +
-      bloque('Cómo reservan', null, barrasH([['Web', origenes.web], ['WhatsApp', origenes.whatsapp], ['Mostrador', origenes.mostrador]], false));
+      bloque('Cómo reservan', null, barrasH([['Web', origenes.web], ['WhatsApp', origenes.whatsapp], ['Mostrador', origenes.mostrador], ['Teléfono', origenes.telefono]], false));
   };
   /* Barras verticales de una serie: navy; hoy en naranja. Tooltip al pasar o tocar. */
   function graficoDias(datos) {
@@ -788,7 +811,13 @@
         '<form class="formulario" data-form-empresa>' +
         '<div class="formulario__fila"><label class="campo"><span>Razón social</span><input name="razon" value="' + esc(D().empresa.razon) + '"></label><label class="campo"><span>RUT del parking</span><input name="rut" inputmode="numeric" maxlength="12" value="' + esc(D().empresa.rut) + '"></label></div>' +
         '<div class="formulario__fila"><label class="campo"><span>Dirección</span><input name="direccion" value="' + esc(D().empresa.direccion) + '"></label><label class="campo"><span>IVA (%)</span><input name="iva" type="number" min="0" max="30" value="' + D().empresa.iva + '"></label></div>' +
-        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar datos</button></div></form>');
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar datos</button></div></form>') +
+      bloque('Lugares del parking', null, '<p class="aviso-tabla">' + ico('info') + 'Si sacás lugares, se sacan los últimos y tienen que estar vacíos.</p>' +
+        '<form class="formulario" data-form-lugares>' +
+        '<div class="formulario__fila"><label class="campo"><span>Lugares techados (zona A)</span><input name="techado" type="number" min="0" max="500" value="' + D().lugares.filter(function (l) { return l.tipo === 'techado'; }).length + '"></label>' +
+        '<label class="campo"><span>Lugares en predio (zona B)</span><input name="aire" type="number" min="0" max="500" value="' + D().lugares.filter(function (l) { return l.tipo === 'aire'; }).length + '"></label></div>' +
+        '<p class="campo-error" data-error-lugares hidden></p>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar lugares</button></div></form>');
   };
   function simular() {
     var f = $('[data-form-simulador]'); if (!f) return;
@@ -798,25 +827,35 @@
   }
 
   /* ---------- USUARIOS ---------- */
+  var PUEDE_ROL = { admin: 'Todo, incluidos reportes, precios y equipo', personal: 'Reservas, entradas, salidas, traslados, caja y clientes', chofer: 'Solo traslados' };
+  function selectorRol(u) {
+    return '<select class="selector-rol" data-rol-usuario="' + u.id + '" aria-label="Rol de ' + esc(u.nombre) + '">' +
+      ['personal', 'chofer', 'admin'].map(function (k) { return '<option value="' + k + '"' + (u.rol === k ? ' selected' : '') + '>' + ROLES[k] + '</option>'; }).join('') + '</select>';
+  }
   V.usuarios = function () {
     var us = D().usuarios;
-    return '<div class="herramientas"><p class="ayuda">Cada persona entra con su usuario y todo lo que hace queda registrado a su nombre.</p><button class="btn btn--primario" type="button" data-nuevo-usuario>' + ico('plus') + 'Nuevo usuario</button></div>' +
-      '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Puede</th><th>Estado</th><th></th></tr></thead><tbody>' +
-      us.map(function (u) {
-        var puedeTxt = { admin: 'Todo, incluidos reportes, tarifas y respaldos', personal: 'Reservas, llegadas, retiros, caja y clientes', chofer: 'Solo traslados' }[u.rol];
-        return '<tr><td data-et="Nombre"><strong>' + esc(u.nombre) + '</strong></td><td data-et="Usuario"><code>' + esc(u.usuario) + '</code></td><td data-et="Rol">' + ROLES[u.rol] + '</td><td data-et="Puede">' + puedeTxt + '</td>' +
-          '<td data-et="Estado">' + (u.activo ? '<span class="estado estado--bien">' + ico('circle-check') + 'Activo</span>' : '<span class="estado estado--neutro">Inactivo</span>') + '</td>' +
-          '<td>' + (u.id !== usuario.id ? '<button type="button" class="btn btn--chico btn--linea" data-alternar-usuario="' + u.id + '">' + (u.activo ? 'Desactivar' : 'Activar') + '</button>' : '<small>Sos vos</small>') + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
+    var esperan = us.filter(function (u) { return !u.activo; });
+    var link = location.origin + location.pathname;
+    return '<div class="invitar"><p><strong>Para sumar a alguien:</strong> que entre a este link, toque «Crear cuenta» y elija su contraseña. Aparece acá abajo y vos le das acceso.</p>' +
+        '<div class="invitar__link"><code>' + esc(link) + '</code><button type="button" class="btn btn--chico btn--linea" data-copiar="' + esc(link) + '">' + ico('copy') + 'Copiar link</button></div></div>' +
+      (esperan.length ? bloque('Sin acceso', esperan.length, '<ul class="esperan">' + esperan.map(function (u) {
+        return '<li class="espera-fila"><span class="espera-fila__quien"><strong>' + esc(u.nombre || '—') + '</strong><small>' + esc(u.email) + ' · se registró el ' + fechaHora(u.creado) + '</small></span>' +
+          '<span class="espera-fila__accion">' + selectorRol(u) + '<button type="button" class="btn btn--chico btn--primario" data-dar-acceso="' + u.id + '">' + ico('check') + 'Dar acceso</button></span></li>';
+      }).join('') + '</ul>', null, 'salida') : '') +
+      bloque('Con acceso', us.length - esperan.length, '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Puede</th><th></th></tr></thead><tbody>' +
+        us.filter(function (u) { return u.activo; }).map(function (u) {
+          var yo = u.id === usuario.id;
+          return '<tr><td data-et="Nombre"><strong>' + esc(u.nombre) + '</strong>' + (yo ? '<small>Sos vos</small>' : '') + '</td><td data-et="Email">' + esc(u.email) + '</td>' +
+            '<td data-et="Rol">' + (yo ? ROLES[u.rol] : selectorRol(u)) + '</td><td data-et="Puede">' + PUEDE_ROL[u.rol] + '</td>' +
+            '<td>' + (yo ? '' : '<button type="button" class="btn btn--chico btn--linea btn--peligro" data-quitar-acceso="' + u.id + '">Quitar acceso</button>') + '</td></tr>';
+        }).join('') + '</tbody></table></div>');
   };
 
   /* ---------- SISTEMA ---------- */
   V.sistema = function () {
     var d = D();
-    return bloque('Respaldos', null, '<p class="texto">Descargá una copia de todo (reservas, caja, tarifas y usuarios) o restaurá una anterior.</p>' +
-        '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-respaldar>' + ico('download') + 'Descargar respaldo</button>' +
-        '<label class="btn btn--linea">' + ico('upload') + 'Restaurar<input type="file" accept="application/json" data-restaurar hidden></label>' +
-        '<button class="btn btn--linea btn--peligro" type="button" data-restablecer>' + ico('rotate-ccw') + 'Reiniciar datos</button></div>') +
+    return bloque('Respaldos', null, '<p class="texto">Los datos están en la base en línea, que guarda su propia copia. Además podés descargar una copia de todo (reservas, pagos, caja, facturas, precios y equipo) para tenerla en la computadora.</p>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="button" data-respaldar>' + ico('download') + 'Descargar respaldo</button></div>') +
       bloque('Registro de cambios', d.auditoria.length, '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Fecha</th><th>Usuario</th><th>Qué pasó</th></tr></thead><tbody>' +
         d.auditoria.slice(0, 60).map(function (a) { return '<tr><td data-et="Fecha">' + fechaHora(a.fecha) + '</td><td data-et="Usuario">' + esc(a.usuario) + '</td><td data-et="Qué pasó">' + esc(a.accion) + '</td></tr>'; }).join('') + '</tbody></table></div>');
   };
@@ -847,17 +886,31 @@
     if (sec.id === 'panel') {
       var h = new Date().getHours();
       return '<header class="cabecera"><p class="cabecera__sector">' + esc(diaLargo(Date.now())) + '</p>' +
-        '<h1 class="cabecera__titulo">' + (h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches') + '</h1>' +
+        '<h1 class="cabecera__titulo">' + (h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches') + '</h1>' +
         '<p class="cabecera__desc">' + sec.desc + '</p></header>';
     }
     return '<header class="cabecera"><p class="cabecera__sector">' + nombreSector + '</p>' +
       '<h1 class="cabecera__titulo"><span class="cabecera__ico">' + ico(sec.ico) + '</span>' + sec.nombre + '</h1>' +
       '<p class="cabecera__desc">' + sec.desc + '</p></header>';
   }
-  var editando = false;
+  /* Pantallas de ingreso: ingresar, registro, recuperar, nueva clave, confirmar, espera, sin base */
+  var pantalla = 'cargando';
+  function mostrarIngreso(cual) {
+    pantalla = cual;
+    $('[data-app]').hidden = true; $('[data-ingreso]').hidden = false;
+    $$('[data-pantalla]').forEach(function (el) { el.hidden = el.getAttribute('data-pantalla') !== cual; });
+    var f = $('[data-pantalla="' + cual + '"]');
+    $$('[data-error], [data-ok]', f).forEach(function (el) { el.hidden = true; });
+    var inp = f && f.querySelector('input'); if (inp) inp.focus();
+  }
   function pintar() {
+    if (!PD.configurado) return mostrarIngreso('sin-base');
+    if (PD.enRecuperacion()) { if (pantalla !== 'nueva-clave') mostrarIngreso('nueva-clave'); return; }
+    var p = PD.perfil();
     leerSesion();
-    if (!usuario) { $('[data-app]').hidden = true; $('[data-ingreso]').hidden = false; return; }
+    if (!p) { if (['ingresar', 'registro', 'recuperar', 'confirmar'].indexOf(pantalla) < 0) mostrarIngreso('ingresar'); return; }
+    if (!usuario) { $('[data-espera-nombre]').textContent = p.nombre || p.email; if (pantalla !== 'espera') mostrarIngreso('espera'); return; }
+    pantalla = 'app';
     $('[data-ingreso]').hidden = true; $('[data-app]').hidden = false;
     var r = ruta();
     if (!puede(r.id)) { location.hash = '#/' + (usuario.rol === 'chofer' ? 'traslados' : 'panel'); return; }
@@ -876,18 +929,53 @@
   }
 
   /* Ingreso */
-  $('[data-form-ingreso]').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var f = e.target, err = $('[data-error-ingreso]');
-    var u = D().usuarios.filter(function (x) { return x.usuario === f.usuario.value.trim().toLowerCase() && x.clave === f.clave.value; })[0];
-    if (!u || !u.activo) { err.textContent = u ? 'Ese usuario está desactivado.' : 'Usuario o contraseña incorrectos.'; err.hidden = false; return; }
-    sessionStorage.setItem(CLAVE_SESION, u.id);
-    PD.guardar(u.nombre, 'Ingresó al sistema');
-    location.hash = '#/' + (u.rol === 'chofer' ? 'traslados' : 'panel');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-ir]');
+    if (b) mostrarIngreso(b.getAttribute('data-ir'));
+  });
+  function formIngreso(nombre, fn) {
+    var f = $('[data-pantalla="' + nombre + '"]');
+    f.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var err = $('[data-error]', f);
+      await ejecutar(f.querySelector('[type=submit]'), function () { return fn(f); }, err);
+    });
+  }
+  var emailValido = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
+  formIngreso('ingresar', async function (f) {
+    if (!emailValido(f.email.value.trim()) || !f.clave.value) throw new Error('Escribí tu email y tu contraseña.');
+    var p = await PD.ingresar(f.email.value.trim(), f.clave.value);
+    f.clave.value = '';
+    if (p && p.activo) location.hash = '#/' + (p.rol === 'chofer' ? 'traslados' : 'panel');
     pintar();
   });
-  $$('[data-demo]').forEach(function (b) { b.addEventListener('click', function () { var f = $('[data-form-ingreso]'); f.usuario.value = b.getAttribute('data-demo'); f.clave.value = 'despegar'; f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit')); }); });
-  $('[data-salir]').addEventListener('click', function () { PD.guardar(nombreUsuario(), 'Salió del sistema'); sessionStorage.removeItem(CLAVE_SESION); location.hash = ''; pintar(); });
+  formIngreso('registro', async function (f) {
+    var nombre = f.nombre.value.trim(), email = f.email.value.trim();
+    if (nombre.length < 2) throw new Error('Escribí tu nombre y apellido.');
+    if (!emailValido(email)) throw new Error('Revisá el email.');
+    if (f.clave.value.length < 8) throw new Error('La contraseña tiene que tener al menos 8 caracteres.');
+    var r = await PD.registrarse(nombre, email, f.clave.value);
+    f.clave.value = '';
+    if (r.confirmar) return mostrarIngreso('confirmar');
+    location.hash = '#/panel';
+    pintar();
+  });
+  formIngreso('recuperar', async function (f) {
+    if (!emailValido(f.email.value.trim())) throw new Error('Revisá el email.');
+    await PD.recuperar(f.email.value.trim());
+    var ok = $('[data-ok]', f); ok.textContent = 'Listo: si ese email tiene cuenta, te llega un link en unos minutos.'; ok.hidden = false;
+  });
+  formIngreso('nueva-clave', async function (f) {
+    if (f.clave.value.length < 8) throw new Error('La contraseña tiene que tener al menos 8 caracteres.');
+    await PD.nuevaClave(f.clave.value);
+    f.clave.value = '';
+    avisar('Contraseña cambiada');
+    pantalla = 'cargando';
+    pintar();
+  });
+  async function cerrarSesion() { await PD.salir(); usuario = null; location.hash = ''; mostrarIngreso('ingresar'); }
+  $('[data-salir]').addEventListener('click', cerrarSesion);
+  $('[data-salir-espera]').addEventListener('click', cerrarSesion);
   $('[data-abrir-lateral]').addEventListener('click', function () { document.documentElement.classList.add('lateral-abierto'); });
   $('[data-cerrar-lateral]').addEventListener('click', function () { document.documentElement.classList.remove('lateral-abierto'); });
 
@@ -904,61 +992,78 @@
     if ((el = t.closest('[data-ver-ticket]'))) { var rt = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-ver-ticket'); })[0]; if (rt) ticket(rt, 'entrada'); return; }
     if (t.closest('[data-sin-reserva]')) return sinReserva();
     if ((el = t.closest('[data-cancelar]'))) {
-      var r = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-cancelar'); })[0];
-      if (r && confirm('¿Cancelar la reserva ' + r.codigo + '?')) { r.estado = 'cancelada'; PD.guardar(nombreUsuario(), 'Canceló ' + r.codigo); cerrarVentana(); avisar('Reserva ' + r.codigo + ' cancelada', 'info'); pintar(); }
+      var rc = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-cancelar'); })[0];
+      if (rc && confirm('¿Cancelar la reserva ' + rc.codigo + '?' + (rc.pago.monto > 0 ? ' Ya pagó ' + plata(rc.pago.monto) + ': la devolución se hace aparte.' : ''))) {
+        ejecutar(el, function () { return PD.cancelar(rc.id); }).then(function (res) { if (res !== FALLO) { cerrarVentana(); avisar('Reserva ' + rc.codigo + ' cancelada', 'info'); pintar(); } });
+      }
       return;
     }
     if ((el = t.closest('[data-traslado]'))) {
       var partes = el.getAttribute('data-traslado').split('|');
       var rr = D().reservas.filter(function (x) { return x.id === partes[0]; })[0];
-      rr.traslado[partes[1]] = PASOS_TRASLADO[rr.traslado[partes[1]]];
-      PD.guardar(nombreUsuario(), (partes[1] === 'ida' ? 'Llevar al aeropuerto' : 'Buscar en el aeropuerto') + ' a ' + rr.cliente.nombre + ' (' + rr.codigo + '): ' + TXT_TRASLADO[rr.traslado[partes[1]]]);
-      return pintar();
+      if (!rr) return;
+      ejecutar(el, function () { return PD.traslado(rr.id, partes[1], PASOS_TRASLADO[rr.traslado[partes[1]]]); }).then(function (res) { if (res !== FALLO) pintar(); });
+      return;
     }
     if ((el = t.closest('[data-buscar-cliente]'))) { location.hash = '#/reservas?f=todas&b=' + encodeURIComponent(el.getAttribute('data-buscar-cliente')); return; }
     if ((el = t.closest('[data-exportar]'))) return exportarCSV(el.getAttribute('data-exportar'));
     if (t.closest('[data-imprimir-pagina]')) return window.print();
     if (t.closest('[data-abrir-caja]')) {
-      var base = +prompt('Efectivo con el que se abre la caja', '3000');
-      if (isNaN(base)) return;
-      D().caja.turnoActual = { id: PD.uid(), apertura: new Date().toISOString(), base: base, usuario: nombreUsuario(), movimientos: [] };
-      PD.guardar(nombreUsuario(), 'Abrió caja con ' + plata(base)); return pintar();
+      var ca = abrirVentana('<h2 class="ventana__titulo">Abrir caja</h2><form class="formulario" data-form-abrir-caja><label class="campo campo--corto"><span>Efectivo con el que se abre</span><input name="base" type="number" min="0" required></label><p class="campo-error" data-error-caja hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Abrir turno</button></div></form>');
+      $('[data-form-abrir-caja]', ca).addEventListener('submit', async function (ev) {
+        ev.preventDefault(); var f = ev.target;
+        if (f.base.value === '' || +f.base.value < 0) return;
+        var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.abrirCaja(Math.round(+f.base.value)); }, $('[data-error-caja]', ca));
+        if (res !== FALLO) { cerrarVentana(); avisar('Caja abierta'); pintar(); }
+      });
+      return;
     }
     if (t.closest('[data-egreso]')) {
-      var c = abrirVentana('<h2 class="ventana__titulo">Registrar egreso</h2><form class="formulario" data-form-egreso><label class="campo"><span>Concepto</span><input name="concepto" required placeholder="Ej.: nafta de la camioneta"></label><label class="campo campo--corto"><span>Monto</span><input name="monto" type="number" min="1" required></label><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar</button></div></form>');
-      $('[data-form-egreso]', c).addEventListener('submit', function (ev) {
+      var c = abrirVentana('<h2 class="ventana__titulo">Registrar egreso</h2><form class="formulario" data-form-egreso><label class="campo"><span>Concepto</span><input name="concepto" required maxlength="100" placeholder="Ej.: nafta de la camioneta"></label><label class="campo campo--corto"><span>Monto</span><input name="monto" type="number" min="1" required></label><p class="campo-error" data-error-egreso hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar</button></div></form>');
+      $('[data-form-egreso]', c).addEventListener('submit', async function (ev) {
         ev.preventDefault(); var f = ev.target; if (!f.concepto.value.trim() || !(+f.monto.value > 0)) return;
-        D().caja.turnoActual.movimientos.unshift({ id: PD.uid(), hora: new Date().toISOString(), concepto: f.concepto.value.trim(), medio: 'egreso', monto: -Math.abs(+f.monto.value), usuario: nombreUsuario() });
-        PD.guardar(nombreUsuario(), 'Egreso: ' + f.concepto.value.trim() + ' ' + plata(+f.monto.value)); cerrarVentana(); pintar();
+        var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.egreso(f.concepto.value.trim(), Math.round(+f.monto.value)); }, $('[data-error-egreso]', c));
+        if (res !== FALLO) { cerrarVentana(); pintar(); }
       });
       return;
     }
     if ((el = t.closest('[data-cerrar-caja]'))) {
       var esperado = +el.getAttribute('data-esperado');
-      var cj = abrirVentana('<h2 class="ventana__titulo">Cerrar caja</h2><p class="texto">Contá el efectivo y escribí cuánto hay. El sistema te dice si cuadra. Un cierre no se puede modificar después.</p><form class="formulario" data-form-cierre><label class="campo campo--corto"><span>Efectivo contado</span><input name="contado" type="number" min="0" required></label><p class="vuelto" data-dif hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('lock') + 'Cerrar turno</button></div></form>');
+      var cj = abrirVentana('<h2 class="ventana__titulo">Cerrar caja</h2><p class="texto">Contá el efectivo y escribí cuánto hay. El sistema te dice si cuadra. Un cierre no se puede modificar después.</p><form class="formulario" data-form-cierre><label class="campo campo--corto"><span>Efectivo contado</span><input name="contado" type="number" min="0" required></label><p class="vuelto" data-dif hidden></p><p class="campo-error" data-error-cierre hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('lock') + 'Cerrar turno</button></div></form>');
       var fc = $('[data-form-cierre]', cj);
       fc.contado.addEventListener('input', function () { var dif = +fc.contado.value - esperado, p = $('[data-dif]', cj); p.hidden = fc.contado.value === ''; p.textContent = dif === 0 ? 'Cuadra justo.' : (dif > 0 ? 'Sobran ' : 'Faltan ') + plata(Math.abs(dif)) + ' (esperado ' + plata(esperado) + ').'; p.className = 'vuelto' + (dif === 0 ? '' : ' vuelto--alerta'); });
-      fc.addEventListener('submit', function (ev) {
+      fc.addEventListener('submit', async function (ev) {
         ev.preventDefault(); if (fc.contado.value === '') return;
-        var caja = D().caja, tu = caja.turnoActual;
-        caja.cerrados.unshift({ apertura: tu.apertura, cierre: new Date().toISOString(), cerro: nombreUsuario(), esperado: esperado, contado: +fc.contado.value, movimientos: tu.movimientos.length });
-        caja.turnoActual = null;
-        PD.guardar(nombreUsuario(), 'Cerró caja: esperado ' + plata(esperado) + ', contado ' + plata(+fc.contado.value)); cerrarVentana(); avisar('Caja cerrada'); pintar();
+        var res = await ejecutar(fc.querySelector('[type=submit]'), function () { return PD.cerrarCaja(Math.round(+fc.contado.value)); }, $('[data-error-cierre]', cj));
+        if (res !== FALLO) { cerrarVentana(); avisar('Caja cerrada'); pintar(); }
       });
       return;
     }
-    if (t.closest('[data-nuevo-usuario]')) {
-      var cu = abrirVentana('<h2 class="ventana__titulo">Nuevo usuario</h2><form class="formulario" data-form-usuario><label class="campo"><span>Nombre</span><input name="nombre" required></label><div class="formulario__fila"><label class="campo"><span>Usuario</span><input name="usuario" required></label><label class="campo"><span>Contraseña</span><input name="clave" required></label></div><label class="campo"><span>Rol</span><select name="rol"><option value="personal">Personal de turno</option><option value="chofer">Chofer</option><option value="admin">Administración</option></select></label><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Crear</button></div></form>');
-      $('[data-form-usuario]', cu).addEventListener('submit', function (ev) {
-        ev.preventDefault(); var f = ev.target; if (!f.nombre.value.trim() || !f.usuario.value.trim() || !f.clave.value) return;
-        D().usuarios.push({ id: PD.uid(), nombre: f.nombre.value.trim(), usuario: f.usuario.value.trim().toLowerCase(), clave: f.clave.value, rol: f.rol.value, activo: true });
-        PD.guardar(nombreUsuario(), 'Creó el usuario ' + f.usuario.value.trim()); cerrarVentana(); pintar();
-      });
+    if ((el = t.closest('[data-copiar]'))) {
+      var texto = el.getAttribute('data-copiar');
+      (navigator.clipboard ? navigator.clipboard.writeText(texto) : Promise.reject()).then(function () { avisar('Link copiado'); }, function () { prompt('Copiá el link:', texto); });
       return;
     }
-    if ((el = t.closest('[data-alternar-usuario]'))) { var u = D().usuarios.filter(function (x) { return x.id === el.getAttribute('data-alternar-usuario'); })[0]; u.activo = !u.activo; PD.guardar(nombreUsuario(), (u.activo ? 'Activó' : 'Desactivó') + ' a ' + u.usuario); return pintar(); }
-    if (t.closest('[data-respaldar]')) { descargar('respaldo-parking-despegar-' + new Date().toISOString().slice(0, 10) + '.json', PD.exportar(), 'application/json'); PD.guardar(nombreUsuario(), 'Descargó un respaldo'); return; }
-    if (t.closest('[data-restablecer]')) { if (confirm('¿Borrar todo y reiniciar los datos?')) { PD.restablecer(); avisar('Datos reiniciados', 'info'); pintar(); } return; }
+    if ((el = t.closest('[data-dar-acceso]'))) {
+      var idU = el.getAttribute('data-dar-acceso');
+      var rol = ($('[data-rol-usuario="' + idU + '"]') || {}).value || 'personal';
+      var uA = D().usuarios.filter(function (x) { return x.id === idU; })[0];
+      ejecutar(el, function () { return PD.actualizarPerfil(idU, { activo: true, rol: rol }); }).then(function (res) { if (res !== FALLO) { avisar((uA ? uA.nombre : 'La persona') + ' ya tiene acceso como ' + ROLES[rol].toLowerCase()); pintar(); } });
+      return;
+    }
+    if ((el = t.closest('[data-quitar-acceso]'))) {
+      var idQ = el.getAttribute('data-quitar-acceso');
+      var uQ = D().usuarios.filter(function (x) { return x.id === idQ; })[0];
+      if (uQ && confirm('¿Quitarle el acceso a ' + uQ.nombre + '? No va a poder entrar hasta que se lo vuelvas a dar.')) {
+        ejecutar(el, function () { return PD.actualizarPerfil(idQ, { activo: false }); }).then(function (res) { if (res !== FALLO) { avisar('Acceso quitado a ' + uQ.nombre, 'info'); pintar(); } });
+      }
+      return;
+    }
+    if (t.closest('[data-respaldar]')) {
+      descargar('respaldo-parking-despegar-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(D(), null, 2), 'application/json');
+      PD.auditar('Descargó un respaldo');
+      return;
+    }
   });
   document.addEventListener('keydown', function (e) {
     var el = e.target.closest && e.target.closest('tr[data-abrir-reserva], tr[data-buscar-cliente]');
@@ -966,9 +1071,12 @@
   });
   document.addEventListener('change', function (e) {
     if (e.target.matches('[name="tipoFactura"]')) { var cr = $('[data-campos-rut]'); if (cr) cr.hidden = e.target.value !== 'efactura'; }
-    if (e.target.matches('[data-restaurar]')) {
-      var f = e.target.files[0]; if (!f) return;
-      f.text().then(function (txt) { try { PD.importar(txt); avisar('Respaldo restaurado'); pintar(); } catch (err) { avisar('Ese archivo no es un respaldo válido', 'alerta'); } });
+    var sel = e.target.closest('[data-rol-usuario]');
+    if (sel && sel.closest('.tabla')) {
+      var u = D().usuarios.filter(function (x) { return x.id === sel.getAttribute('data-rol-usuario'); })[0];
+      ejecutar(sel, function () { return PD.actualizarPerfil(u.id, { rol: sel.value }); }).then(function (res) {
+        if (res !== FALLO) avisar(u.nombre + ' ahora es ' + ROLES[sel.value].toLowerCase()); pintar();
+      });
     }
   });
   document.addEventListener('submit', function (e) {
@@ -976,15 +1084,27 @@
     if (f.matches('[data-form-llegada]')) { e.preventDefault(); return registrarLlegada(f.getAttribute('data-id'), f); }
     if (f.matches('[data-form-retiro]')) { e.preventDefault(); return registrarRetiro(f.getAttribute('data-id'), f); }
     if (f.matches('[data-form-empresa]')) {
-      e.preventDefault(); var em = D().empresa;
-      em.razon = f.razon.value.trim() || em.razon; em.rut = f.rut.value.replace(/\D/g, ''); em.direccion = f.direccion.value.trim(); em.iva = Math.max(0, +f.iva.value || 0);
-      PD.guardar(nombreUsuario(), 'Cambió los datos para la factura'); avisar('Datos para la factura guardados'); return pintar();
+      e.preventDefault();
+      var rut = f.rut.value.replace(/\D/g, '');
+      if (rut && rut.length !== 12) { avisar('El RUT tiene que tener 12 dígitos', 'alerta'); return; }
+      ejecutar(f.querySelector('[type=submit]'), function () {
+        return PD.guardarEmpresa({ razon: f.razon.value.trim() || 'Parking Despegar', rut: rut, direccion: f.direccion.value.trim(), iva: Math.max(0, Math.min(30, Math.round(+f.iva.value || 0))) });
+      }).then(function (res) { if (res !== FALLO) { avisar('Datos para la factura guardados'); pintar(); } });
+      return;
     }
     if (f.matches('[data-form-tarifas]')) {
-      e.preventDefault(); var t = D().tarifas;
-      ['techado', 'aire', 'valet', 'graciaHoras', 'minimoDias'].forEach(function (k) { t[k] = Math.max(0, +f[k].value || 0); });
-      PD.guardar(nombreUsuario(), 'Cambió las tarifas: techado ' + plata(t.techado) + ', predio ' + plata(t.aire) + ', valet ' + plata(t.valet));
-      avisar('Tarifas guardadas: ya se aplican en la web'); simular();
+      e.preventDefault();
+      var nt = {};
+      ['techado', 'aire', 'valet', 'graciaHoras', 'minimoDias'].forEach(function (k) { nt[k] = Math.max(0, Math.round(+f[k].value || 0)); });
+      nt.minimoDias = Math.max(1, nt.minimoDias); nt.graciaHoras = Math.min(12, nt.graciaHoras);
+      ejecutar(f.querySelector('[type=submit]'), function () { return PD.guardarTarifas(nt); })
+        .then(function (res) { if (res !== FALLO) { avisar('Precios guardados: ya se aplican en la web'); simular(); } });
+      return;
+    }
+    if (f.matches('[data-form-lugares]')) {
+      e.preventDefault();
+      ejecutar(f.querySelector('[type=submit]'), function () { return PD.configurarLugares(Math.round(+f.techado.value || 0), Math.round(+f.aire.value || 0)); }, $('[data-error-lugares]', f))
+        .then(function (res) { if (res !== FALLO) { avisar('Lugares guardados'); pintar(); } });
     }
   });
   var temporizador;
@@ -1020,26 +1140,29 @@
     document.addEventListener(ev, function (e) { var c = e.target.closest && e.target.closest('[data-tip]'); if (c) { var s = $('[data-tip-salida]'); if (s) s.textContent = c.getAttribute('data-tip'); } });
   });
 
-  /* En vivo: si llega una reserva desde la web (otra pestaña), avisar y repintar */
-  var conocidas = D().reservas.length;
-  PD.alCambiar(function (d, deAfuera) {
-    if (!deAfuera) return;
-    if (d.reservas.length > conocidas) {
-      /* El pago online llega un instante después de la reserva: esperar y avisar con el estado final */
-      var id = d.reservas[d.reservas.length - 1].id;
-      setTimeout(function () {
-        var nueva = D().reservas.filter(function (x) { return x.id === id; })[0];
-        if (usuario && nueva) avisar('Nueva reserva ' + nueva.codigo + ' desde la ' + ORIGEN[nueva.origen].toLowerCase() + ' · ' + nueva.vehiculo.matricula + (nueva.pago.estado === 'pagado' ? ' · pagada' : ' · a cobrar'), 'info');
-      }, 800);
-    }
-    conocidas = d.reservas.length;
+  /* En vivo: cualquier cambio en la base (desde la web, otro mostrador o el chofer) llega solo */
+  PD.alCambiar(function (d, cambios) {
+    if (cambios.some(function (c) { return c.tabla === 'sesion'; })) return pintar();
+    cambios.forEach(function (c) {
+      if (c.tabla === 'reservas' && c.tipo === 'INSERT' && c.nuevo.origen === 'web' && usuario && usuario.rol !== 'chofer') {
+        /* El pago llega un instante después: esperar y avisar con el estado final */
+        setTimeout(function () {
+          var n = D().reservas.filter(function (x) { return x.id === c.nuevo.id; })[0];
+          if (n) avisar('Nueva reserva ' + n.codigo + ' desde la web · ' + n.vehiculo.matricula + (n.pago.estado === 'pagado' ? ' · pagada' : ' · a cobrar'), 'info');
+        }, 1800);
+      }
+    });
+    if (!cambios.length) return;
+    if (pantalla !== 'app') return pintar();
     if (ventana.hidden && !(document.activeElement && document.activeElement.matches('input, select, textarea'))) pintar();
+    else repintar = true;
   });
 
   /* Reloj */
   function reloj() { var el = $('[data-reloj]'); if (el) el.textContent = new Date().toLocaleString('es-UY', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); }
   reloj(); setInterval(reloj, 15000);
 
-  window.addEventListener('hashchange', pintar);
-  pintar();
+  window.addEventListener('hashchange', function () { if (pantalla === 'app') pintar(); });
+  PD.iniciar().then(function () { pantalla = 'cargando'; pintar(); })
+    .catch(function (e) { mostrarIngreso('ingresar'); avisar(e.message, 'alerta'); });
 })();

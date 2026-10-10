@@ -112,9 +112,32 @@
 .ingreso__titulo { font-size: 26px; font-weight: 500; line-height: 1.15; letter-spacing: -.01em; }
 .ingreso__bajada { color: var(--texto-suave); font-size: 14px; }
 .ingreso .btn { width: 100%; }
-.ingreso__demo { padding-top: 16px; border-top: var(--borde); font-size: 13px; color: var(--texto-suave); }
-.ingreso__demo strong { color: var(--texto); }
-.ingreso__demo-botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ingreso__pantalla { display: grid; gap: 16px; }
+.ingreso__links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-top: 4px; }
+.ingreso__links .enlace-chico { font-size: 14px; color: var(--texto); }
+.ingreso__espera { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--azul-apagado); }
+.ingreso code { font-size: 13px; }
+
+/* Punto que late: algo está pasando en vivo */
+.punto-vivo { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--acento); flex-shrink: 0; }
+.punto-vivo::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: var(--acento); opacity: .35; animation: latir 1.6s var(--ease) infinite; }
+@keyframes latir { from { transform: scale(.6); opacity: .5; } to { transform: scale(1.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .punto-vivo::after { animation: none; } }
+
+/* Botón mientras el servidor responde */
+.btn.es-cargando { opacity: .6; cursor: progress; }
+.btn:disabled { cursor: not-allowed; }
+
+/* ---------- Equipo ---------- */
+.invitar { display: grid; gap: 12px; padding: 16px; border-radius: var(--radio); background: var(--superficie); font-size: 14px; }
+.invitar__link { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.invitar__link code { padding: 8px 12px; border-radius: var(--radio-chico); background: var(--fondo); overflow-wrap: anywhere; }
+.esperan { display: grid; }
+.espera-fila { display: grid; gap: 10px; padding: 12px 0; border-top: 1px solid rgba(5, 63, 92, .08); }
+.espera-fila:first-child { border-top: 0; }
+.espera-fila__quien { display: grid; gap: 2px; }
+.espera-fila__accion { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.selector-rol { min-height: 36px; padding: 0 10px; border-radius: var(--radio-chico); border: 1px solid rgba(5, 63, 92, .2); background: var(--superficie); color: var(--texto); font: inherit; font-size: 14px; }
 
 /* ---------- Estructura ---------- */
 .lateral {

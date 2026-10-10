@@ -86,3 +86,4 @@
 .avisos { left: auto; right: 24px; bottom: 24px; width: 380px; }
 
 .ingreso__caja { padding: 40px 36px; }
+.espera-fila { grid-template-columns: 1fr auto; align-items: center; }

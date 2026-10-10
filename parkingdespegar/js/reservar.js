@@ -1,9 +1,10 @@
 /* ============================================================
    PARKING DESPEGAR — Reserva online
    Cuatro pasos: fechas · lugar y servicio · datos · pago.
-   El precio se calcula en vivo con las tarifas del dashboard
-   (js/datos.js). El pago es SIMULADO: en producción se abre la
-   pasarela real y la reserva se confirma cuando la pasarela avisa.
+   Tarifas y lugares libres vienen de la base en línea (js/datos.js).
+   El total que vale lo calcula el servidor. La pasarela es de prueba:
+   el botón «Pagar» crea la reserva y la marca pagada en la base, y el
+   panel de gestión la ve al instante.
    ============================================================ */
 (function () {
   'use strict';
@@ -36,15 +37,25 @@
     };
   }
 
-  /* ---------- Disponibilidad: autos que se superponen con las fechas ---------- */
-  function libres(tipo, entrada, salida) {
-    var d = PD.datos();
-    var capacidad = d.lugares.filter(function (l) { return l.tipo === tipo; }).length;
-    var usados = d.reservas.filter(function (r) {
-      if (r.lugarTipo !== tipo || r.estado === 'cancelada' || r.estado === 'finalizada') return false;
-      return new Date(r.entrada) < salida && new Date(r.salida) > entrada;
-    }).length;
-    return Math.max(0, capacidad - usados);
+  /* ---------- Disponibilidad: la consulta el servidor (sin ver datos de otros clientes) ---------- */
+  var disp = null, dispClave = '', dispTempo = null, listo = false;
+  function libres(tipo) { return disp ? disp[tipo] : null; }
+  function actualizarDisponibilidad() {
+    var b = borrador();
+    if (!listo || !b.entrada || !b.salida || b.salida <= b.entrada) return;
+    var clave = b.entrada.toISOString() + b.salida.toISOString();
+    if (clave === dispClave) return;
+    dispClave = clave;
+    clearTimeout(dispTempo);
+    dispTempo = setTimeout(function () {
+      PD.disponibilidad(b.entrada.toISOString(), b.salida.toISOString())
+        .then(function (d) { if (clave === dispClave) { disp = d; pintarResumen(); } })
+        .catch(function () { disp = null; pintarResumen(); });
+    }, 250);
+  }
+  function noDisponible() {
+    error(1, 'La reserva online no está disponible en este momento. Escribinos por WhatsApp al 099 114 144 y te reservamos el lugar.');
+    $('[data-siguiente]').disabled = true;
   }
 
   /* ---------- Resumen en vivo ---------- */
@@ -56,6 +67,8 @@
 
   function pintarResumen() {
     var t = PD.datos().tarifas;
+    if (!listo) return null;
+    actualizarDisponibilidad();
     $$('[data-precio]').forEach(function (el) {
       var k = el.getAttribute('data-precio');
       el.textContent = k === 'valet' ? 'Te esperamos en la terminal. + ' + plata(t.valet) : plata(t[k]) + ' por día';
@@ -66,8 +79,9 @@
       var el = $('[data-libres="' + tipo + '"]');
       var input = $('input[name="lugarTipo"][value="' + tipo + '"]');
       if (!ok) { el.textContent = ''; input.disabled = false; return; }
-      var n = libres(tipo, b.entrada, b.salida);
-      el.textContent = n > 0 ? n + ' lugares libres en esas fechas' : 'Sin lugar en esas fechas';
+      var n = libres(tipo);
+      if (n === null) { el.textContent = ''; input.disabled = false; return; }
+      el.textContent = n > 0 ? (n === 1 ? 'Queda 1 lugar en esas fechas' : n + ' lugares libres en esas fechas') : 'Sin lugar en esas fechas';
       el.classList.toggle('es-agotado', n === 0);
       input.disabled = n === 0;
       if (n === 0 && input.checked) {
@@ -149,6 +163,7 @@
       pasajeros: form.pasajeros.value
     };
     var p = PD.precio({ entrada: b.entrada, salida: b.salida, lugarTipo: datos.lugarTipo, servicio: datos.servicio });
+    if (r && r.total) p.total = r.total;
     var filas = [
       ['Entrada', fechaLarga(b.entrada)],
       ['Salida', fechaLarga(b.salida)],
@@ -193,27 +208,34 @@
   pasarela.addEventListener('click', function (e) { if (e.target === pasarela) cerrarPasarela(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pasarela.hidden) cerrarPasarela(); });
 
-  $('[data-pasarela-confirmar]').addEventListener('click', function () {
-    var btn = this;
-    btn.disabled = true;
-    btn.lastChild.textContent = 'Procesando…';
-    setTimeout(function () {
-      var b = borrador();
-      var r = PD.crearReserva({
-        origen: 'web',
-        cliente: { nombre: form.nombre.value.trim(), telefono: form.telefono.value.trim(), email: form.email.value.trim() },
-        vehiculo: { matricula: form.matricula.value.trim().toUpperCase(), modelo: form.modelo.value.trim(), color: form.color.value.trim() },
-        lugarTipo: form.lugarTipo.value, servicio: form.servicio.value, pasajeros: +form.pasajeros.value,
+  $('[data-pasarela-confirmar]').addEventListener('click', async function () {
+    var btn = this, err = $('[data-pasarela-error]'), texto = btn.querySelector('span');
+    var b = borrador();
+    btn.disabled = true; err.hidden = true;
+    texto.textContent = 'Procesando…';
+    try {
+      var datos = {
+        nombre: form.nombre.value.trim(), telefono: form.telefono.value.trim(), email: form.email.value.trim(),
+        matricula: form.matricula.value.trim(), modelo: form.modelo.value.trim(), color: form.color.value.trim(),
+        lugar_tipo: form.lugarTipo.value, servicio: form.servicio.value, pasajeros: +form.pasajeros.value,
         entrada: b.entrada.toISOString(), salida: b.salida.toISOString(),
-        vuelo: { ida: form.vueloIda.value.trim().toUpperCase(), vuelta: form.vueloVuelta.value.trim().toUpperCase() }
-      }, 'web');
-      var medio = (form.ownerDocument.querySelector('input[name="medio"]:checked') || {}).value || 'online';
-      PD.registrarPago(r, r.total, 'online', 'web', 'WEB-' + PD.uid().toUpperCase().slice(0, 6) + ' · ' + medio);
-      btn.disabled = false;
-      btn.lastChild.textContent = 'Confirmar pago';
+        vuelo_ida: form.vueloIda.value.trim(), vuelo_vuelta: form.vueloVuelta.value.trim()
+      };
+      var r = await PD.reservarWeb(datos);
+      await PD.pagarWeb(r.id, r.token);
       cerrarPasarela();
-      confirmar(r);
-    }, 1400);
+      confirmar({
+        codigo: r.codigo, entrada: r.entrada, salida: r.salida, total: r.total,
+        lugarTipo: datos.lugar_tipo, servicio: datos.servicio,
+        vehiculo: { matricula: datos.matricula.toUpperCase(), modelo: datos.modelo, color: datos.color },
+        cliente: { nombre: datos.nombre, telefono: datos.telefono }
+      });
+    } catch (e) {
+      err.textContent = e.message; err.hidden = false;
+      dispClave = ''; actualizarDisponibilidad();
+    } finally {
+      btn.disabled = false; texto.textContent = 'Pagar';
+    }
   });
 
   function confirmar(r) {
@@ -231,6 +253,7 @@
     c.focus({ preventScroll: true });
   }
 
-  PD.alCambiar(pintarResumen);
   mostrar(1);
+  if (!PD.configurado) noDisponible();
+  else PD.tarifasPublicas().then(function () { listo = true; pintarResumen(); }).catch(noDisponible);
 })();

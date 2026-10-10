@@ -281,23 +281,19 @@
   </div>
 </main>
 
-<!-- ============ PASARELA DE PAGO — SIMULADA. En producción se reemplaza por la pasarela real
-     (la tarjeta se carga en su página, nunca en la web del parking). Ver js/datos.js ============ -->
+<!-- ============ PASARELA DE PAGO — DE PRUEBA: el botón «Pagar» confirma el pago en la base.
+     Con la pasarela real, la tarjeta se carga en su página (nunca en la web del parking) y la
+     reserva se marca pagada cuando la pasarela avisa al servidor. ============ -->
 <div class="pasarela" data-pasarela hidden role="dialog" aria-modal="true" aria-labelledby="pasarela-titulo">
   <div class="pasarela__caja">
     <p class="pasarela__marca"><svg class="ico" aria-hidden="true"><use href="#i-shield-check"/></svg>Pago seguro</p>
     <p class="pasarela__titulo" id="pasarela-titulo">Parking Despegar</p>
     <p class="pasarela__monto" data-pasarela-monto>$ 0</p>
-    <fieldset class="pasarela__medios">
-      <legend>Medio de pago</legend>
-      <label><input type="radio" name="medio" value="Tarjeta de crédito" checked><svg class="ico" aria-hidden="true"><use href="#i-credit-card"/></svg>Tarjeta de crédito</label>
-      <label><input type="radio" name="medio" value="Tarjeta de débito"><svg class="ico" aria-hidden="true"><use href="#i-credit-card"/></svg>Tarjeta de débito</label>
-      <label><input type="radio" name="medio" value="Billetera digital"><svg class="ico" aria-hidden="true"><use href="#i-wallet"/></svg>Billetera digital</label>
-      <label><input type="radio" name="medio" value="Redes de cobranza"><svg class="ico" aria-hidden="true"><use href="#i-banknote"/></svg>Redes de cobranza</label>
-    </fieldset>
+    <p class="pasarela__nota">Tarjeta de crédito o débito, billetera digital o redes de cobranza.</p>
+    <p class="campo-error" data-pasarela-error hidden></p>
     <div class="pasarela__botones">
       <button type="button" class="btn btn--linea" data-pasarela-cancelar>Cancelar</button>
-      <button type="button" class="btn btn--primario" data-pasarela-confirmar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Confirmar pago</button>
+      <button type="button" class="btn btn--primario" data-pasarela-confirmar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><span>Pagar</span></button>
     </div>
   </div>
 </div>
@@ -336,8 +332,10 @@
 
 <script src="lib/gsap.min.js"></script>
 <script src="lib/ScrollTrigger.min.js"></script>
-<script src="js/datos.js?v=7"></script>
-<script src="js/reservar.js?v=4"></script>
+<script src="js/supabase.js?v=2.117.3"></script>
+<script src="js/config.js?v=1"></script>
+<script src="js/datos.js?v=8"></script>
+<script src="js/reservar.js?v=5"></script>
 <script src="js/main.js?v=5"></script>
 </body>
 </html>

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Gestión — Parking Despegar</title>
 <meta name="robots" content="noindex, nofollow">
+<!-- Seguridad: el navegador solo ejecuta los scripts de este sitio y solo se conecta a la base de datos -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#053f5c">
 <link rel="icon" href="../img/isotipo.svg" type="image/svg+xml">
 <script>document.documentElement.classList.add('js');</script>
@@ -12,8 +15,8 @@
 <link rel="stylesheet" href="../css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="../css/fuentes.css?v=1">
 <link rel="stylesheet" href="../css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=15">
-<link rel="stylesheet" href="css/escritorio.css?v=4" media="(min-width: 1024px)">
+<link rel="stylesheet" href="css/movil.css?v=16">
+<link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 1024px)">
 </head>
 <body class="tablero">
 
@@ -94,28 +97,77 @@
 </defs></svg>
 
 <!-- ============================================================
-     GESTIÓN — Parking Despegar. Los datos viven en ../js/datos.js.
+     GESTIÓN — Parking Despegar. Datos en línea: ../js/datos.js
      ============================================================ -->
 
-<!-- Ingreso -->
-<main class="ingreso" data-ingreso hidden>
-  <form class="ingreso__caja" data-form-ingreso novalidate>
+<!-- Ingreso, cuenta nueva, contraseña y espera de aprobación -->
+<main class="ingreso" data-ingreso>
+  <div class="ingreso__caja">
     <svg class="ingreso__logo" viewBox="0 0 822.78 263.63" role="img" aria-label="Parking Despegar"><use href="#logo-v"/></svg>
-    <h1 class="ingreso__titulo">Gestión del parking</h1>
-    <p class="ingreso__bajada">Entrá con tu usuario. Todo lo que hagas queda registrado a tu nombre.</p>
-    <label class="campo"><span>Usuario</span><input name="usuario" autocomplete="username" required></label>
-    <label class="campo"><span>Contraseña</span><input name="clave" type="password" autocomplete="current-password" required></label>
-    <p class="campo-error" data-error-ingreso hidden></p>
-    <button class="btn btn--primario" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-log-in"/></svg>Ingresar</button>
-    <div class="ingreso__demo">
-      <p><strong>Acceso rápido</strong></p>
-      <div class="ingreso__demo-botones">
-        <button type="button" class="chip" data-demo="admin">Dueña</button>
-        <button type="button" class="chip" data-demo="personal">Personal</button>
-        <button type="button" class="chip" data-demo="chofer">Chofer</button>
-      </div>
+
+    <div class="ingreso__pantalla" data-pantalla="cargando">
+      <p class="ingreso__bajada">Cargando…</p>
     </div>
-  </form>
+
+    <form class="ingreso__pantalla" data-pantalla="ingresar" novalidate hidden>
+      <h1 class="ingreso__titulo">Gestión del parking</h1>
+      <p class="ingreso__bajada">Entrá con tu email y tu contraseña.</p>
+      <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="username" required></label>
+      <label class="campo"><span>Contraseña</span><input name="clave" type="password" autocomplete="current-password" required></label>
+      <p class="campo-error" data-error hidden></p>
+      <button class="btn btn--primario" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-log-in"/></svg>Ingresar</button>
+      <div class="ingreso__links">
+        <button type="button" class="enlace-chico" data-ir="registro">Crear cuenta</button>
+        <button type="button" class="enlace-chico" data-ir="recuperar">Olvidé mi contraseña</button>
+      </div>
+    </form>
+
+    <form class="ingreso__pantalla" data-pantalla="registro" novalidate hidden>
+      <h1 class="ingreso__titulo">Crear cuenta</h1>
+      <p class="ingreso__bajada">La primera cuenta es la de la dueña. Las demás quedan esperando que ella las apruebe.</p>
+      <label class="campo"><span>Nombre y apellido</span><input name="nombre" autocomplete="name" required></label>
+      <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="username" required></label>
+      <label class="campo"><span>Contraseña <em>(mínimo 8 caracteres)</em></span><input name="clave" type="password" autocomplete="new-password" minlength="8" required></label>
+      <p class="campo-error" data-error hidden></p>
+      <button class="btn btn--primario" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>Crear cuenta</button>
+      <div class="ingreso__links"><button type="button" class="enlace-chico" data-ir="ingresar">Ya tengo cuenta</button></div>
+    </form>
+
+    <form class="ingreso__pantalla" data-pantalla="recuperar" novalidate hidden>
+      <h1 class="ingreso__titulo">Recuperar contraseña</h1>
+      <p class="ingreso__bajada">Te mandamos un link a tu email para elegir una contraseña nueva.</p>
+      <label class="campo"><span>Email</span><input name="email" type="email" autocomplete="username" required></label>
+      <p class="campo-error" data-error hidden></p>
+      <p class="ok" data-ok hidden></p>
+      <button class="btn btn--primario" type="submit">Mandar link</button>
+      <div class="ingreso__links"><button type="button" class="enlace-chico" data-ir="ingresar">Volver</button></div>
+    </form>
+
+    <form class="ingreso__pantalla" data-pantalla="nueva-clave" novalidate hidden>
+      <h1 class="ingreso__titulo">Contraseña nueva</h1>
+      <label class="campo"><span>Contraseña nueva <em>(mínimo 8 caracteres)</em></span><input name="clave" type="password" autocomplete="new-password" minlength="8" required></label>
+      <p class="campo-error" data-error hidden></p>
+      <button class="btn btn--primario" type="submit">Guardar contraseña</button>
+    </form>
+
+    <div class="ingreso__pantalla" data-pantalla="confirmar" hidden>
+      <h1 class="ingreso__titulo">Revisá tu email</h1>
+      <p class="ingreso__bajada">Te mandamos un link para confirmar la cuenta. Después de confirmarla, entrá desde acá.</p>
+      <button type="button" class="btn btn--linea" data-ir="ingresar">Ir a ingresar</button>
+    </div>
+
+    <div class="ingreso__pantalla" data-pantalla="espera" hidden>
+      <h1 class="ingreso__titulo">Cuenta creada</h1>
+      <p class="ingreso__bajada"><strong data-espera-nombre></strong>, tu cuenta está esperando que la dueña la apruebe en Equipo. Cuando lo haga, esta pantalla entra sola.</p>
+      <p class="ingreso__espera"><span class="punto-vivo" aria-hidden="true"></span>Esperando aprobación</p>
+      <button type="button" class="btn btn--linea" data-salir-espera>Salir</button>
+    </div>
+
+    <div class="ingreso__pantalla" data-pantalla="sin-base" hidden>
+      <h1 class="ingreso__titulo">Falta conectar la base de datos</h1>
+      <p class="ingreso__bajada">Cargá la dirección y la clave publicable del proyecto en <code>js/config.js</code>.</p>
+    </div>
+  </div>
 </main>
 
 <!-- Aplicación -->
@@ -153,7 +205,9 @@
 <div class="avisos" data-avisos aria-live="polite"></div>
 
 <script src="lib/JsBarcode.code128.min.js"></script>
-<script src="../js/datos.js?v=7"></script>
-<script src="js/app.js?v=17"></script>
+<script src="../js/supabase.js?v=2.117.3"></script>
+<script src="../js/config.js?v=1"></script>
+<script src="../js/datos.js?v=8"></script>
+<script src="js/app.js?v=18"></script>
 </body>
 </html>
