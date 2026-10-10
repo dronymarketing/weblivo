@@ -27,6 +27,8 @@ scripts/                     ← los programas que copian y restauran
   en el historial del repositorio y se pueden recuperar.
 - Una carpeta que termina en `_antes-de-restaurar` es la copia que se hace sola justo antes de una
   restauración (por si hay que deshacerla).
+- Cada vez que corre, también hace una consulta a la base. Así el plan gratis de Supabase ve actividad
+  y **no pausa el proyecto**, aunque el parking pase semanas sin abrir el sistema.
 - Si una copia falla, aparece en rojo en **Actions** y GitHub avisa por email a la cuenta dueña del repositorio
   (si no se cambiaron las notificaciones).
 
@@ -80,6 +82,8 @@ Lo que se cargó después de esa copia se pierde, y las personas tienen que volv
 
 ## Para quien mantiene el sistema
 
+- Actividad: `scripts/mantener-activa.sh` (GET a `tarifas` por la API pública con la publishable key
+  que lee de `js/config.js`; si la base no responde, la tarea queda en rojo).
 - Copia: `scripts/respaldar.sh` (Supabase CLI `db dump`: esquemas `public` y `auth`, solo datos).
 - Restauración: `scripts/restaurar.sh` + `scripts/restaurar.sql`, en una sola transacción.
   Controla que el archivo esté completo antes de conectarse y que haya precios, empresa y lugares

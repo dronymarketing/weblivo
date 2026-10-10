@@ -1,6 +1,7 @@
 # Copia automática de la base de Parking Despegar.
 # Corre todos los días a las 12 del mediodía y a las 12 de la noche (hora de Uruguay,
 # UTC−3) y también se puede correr a mano desde Actions → «Respaldo diario» → Run workflow.
+# De paso consulta la base, así Supabase nunca la pausa por falta de uso.
 name: Respaldo diario
 
 on:
@@ -50,3 +51,7 @@ jobs:
           git add -A respaldos sistema
           git commit -q -m "Respaldo del $(TZ=America/Montevideo date '+%d/%m/%Y %H:%M')"
           git push
+
+      - name: Mantener la base activa (el plan gratis se pausa tras una semana sin uso)
+        if: always()
+        run: bash scripts/mantener-activa.sh
