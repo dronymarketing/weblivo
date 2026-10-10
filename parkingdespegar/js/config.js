@@ -6,6 +6,6 @@
    definidos en supabase/esquema.sql. Nunca poner acá la «secret key».
    ============================================================ */
 window.PD_CONFIG = {
-  url: '',
-  clave: ''
+  url: 'https://ixryfteknrcghmsxyowp.supabase.co',
+  clave: 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o'
 };
