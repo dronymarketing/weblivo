@@ -48,8 +48,19 @@ Ninguna llave vive en la página: todas son **secretos cifrados de Cloudflare**.
 14. **Webhook:** en Meta, **WhatsApp → Configuration → Webhook**: Callback URL
     `https://parking-despegar.….workers.dev/whatsapp`, Verify token = la palabra del paso 12 →
     **Verify and save** → en *Webhook fields*, suscribir **messages**.
-15. Pasar la app a modo **Live** (Meta pide la dirección de una política de privacidad).
-16. Probar: desde el celular habilitado, escribirle «hola» al número del asistente.
+15. Pasar la app a modo **Live** (Meta pide la dirección de una política de privacidad:
+    `https://livo.com.uy/parkingdespegar/privacidad.html`, también para «eliminación de datos»).
+16. **Enganchar la cuenta de WhatsApp a la app** (Meta no siempre lo hace solo; sin esto no llega
+    nada a Cloudflare): developers.facebook.com/tools/explorer → app «Asistente Parking Despegar»,
+    permisos `whatsapp_business_management` y `whatsapp_business_messaging` → Generate Access Token →
+    **POST** `<ID de la cuenta de WhatsApp Business>/subscribed_apps` → `{"success": true}`.
+17. Probar: desde el celular habilitado, escribirle «hola» al número del asistente.
+
+**Cómo se instaló la prueba (12/10/2026):** número de prueba de Meta +1 555-654-1926 (cuenta de
+WhatsApp Business 1427428212193072, Phone Number ID 1324018230800909), app «Asistente Parking
+Despegar» (1075117355134631) publicada, porfolio «Parking Despegar», usuario del sistema «asistente»
+con token sin vencimiento. El token temporal de la pantalla de prueba deja de valer al publicar:
+usar siempre el del usuario del sistema. Diagnóstico: Cloudflare → Observability → Live.
 
 Abrir la dirección del Worker muestra `{"reactivar": true, "whatsapp": true}` cuando está todo cargado,
 y el panel (Ajustes → Asistente) indica «Servicio de WhatsApp conectado».
