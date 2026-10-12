@@ -137,6 +137,17 @@
 .btn.es-cargando { opacity: .6; cursor: progress; }
 .btn:disabled { cursor: not-allowed; }
 
+/* ---------- Asistente de WhatsApp ---------- */
+[data-asistente] { display: contents; } /* sus bloques siguen la grilla de la vista */
+.ejemplos { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; }
+.ejemplos li { padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(5, 63, 92, .14); font-size: 13px; }
+.conexion { display: grid; gap: 10px; margin-bottom: 16px; font-size: 14px; }
+.conexion__item { display: flex; align-items: center; gap: 10px; }
+.conexion__item .ico { width: 18px; height: 18px; flex-shrink: 0; }
+.conexion__item--ok .ico { color: var(--bien); }
+.conexion__item--falta .ico { color: var(--alerta); }
+.asistente__form { padding-top: 16px; margin-top: 8px; border-top: 1px solid rgba(5, 63, 92, .08); }
+
 /* ---------- Equipo ---------- */
 .invitar { display: grid; gap: 12px; padding: 16px; border-radius: var(--radio); background: var(--superficie); font-size: 14px; }
 .invitar__link { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }

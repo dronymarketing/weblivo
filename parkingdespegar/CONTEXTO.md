@@ -179,10 +179,21 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     respaldo consulta la base dos veces por día (`kit-respaldos/scripts/mantener-activa.sh`). Red de
     seguridad: `PD.salud()` (arranque, cada 5 min, al volver a la pestaña y cuando falla una acción)
     → cartel `data-pantalla="pausa"` que tapa todo, sin cancelar, único botón **Confirmar** →
-    `PD.despertar()` → Worker de Cloudflare `supabase/reactivar/worker.js` (guarda la llave de
+    `PD.despertar()` → Worker de Cloudflare `supabase/servicio/worker.js` (guarda la llave de
     Supabase; solo `GET /estado` y `POST /reactivar` del proyecto). Se reabre solo al volver la base.
     Sin internet / caída: otro texto, sin botón. La reserva web ofrece WhatsApp, despierta la base y
     reintenta cada 30 s. Dirección del Worker en `js/config.js` → `reactivar` + CSP del panel.
+  - **Asistente de WhatsApp (Santi, 12/10):** gratis y sin IA, en el mismo Worker (`POST /whatsapp`).
+    La dueña escribe o manda audio al número del asistente → firma de Meta verificada → audio a texto
+    con Whisper (Workers AI) → temas por palabras clave y período («ayer», «esta semana», «septiembre»)
+    → `asistente_consulta(clave, teléfono, desde, hasta)` (anon, solo lectura, exige la clave del
+    asistente —en la base solo su huella— y un número habilitado) → respuesta por WhatsApp. A números
+    no habilitados no contesta; si la base está en pausa, la despierta. Panel → Ajustes → Asistente
+    (solo admin): números habilitados (máx. 10) y «Crear clave» (se muestra una vez). Se carga aparte
+    de `cargar()`: si falta correr `supabase/asistente.sql`, la sección lo avisa y el resto anda.
+    El bloque SQL está también al final de `esquema.sql` (mantener los dos iguales). Instalación paso
+    a paso en `supabase/servicio/LEEME.md`. Si más adelante quieren IA (preguntas libres), se agrega
+    en el mismo Worker con Claude y herramientas de solo lectura.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de

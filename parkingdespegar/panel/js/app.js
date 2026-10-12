@@ -80,6 +80,8 @@
       desc: 'Lo que se cobra por día y los datos que salen en la factura. Si cambiás un precio acá, cambia también en la web.' },
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
+    { id: 'asistente', sector: 'ajustes', nombre: 'Asistente', ico: 'message-circle', roles: ['admin'],
+      desc: 'Consultá el parking por WhatsApp, escribiendo o con un audio: cuántos autos hay, cuánto se cobró, la caja y más. Acá elegís qué números pueden preguntar.' },
     { id: 'sistema', sector: 'ajustes', nombre: 'Respaldos', ico: 'settings', roles: ['admin'],
       desc: 'Descargá una copia de todo y mirá quién hizo cada cambio.' }
   ];
@@ -852,6 +854,61 @@
         }).join('') + '</tbody></table></div>');
   };
 
+  /* ---------- ASISTENTE DE WHATSAPP ----------
+     Se carga aparte (no en cargar()): si todavía no se corrió asistente.sql en la base,
+     esta sección lo avisa y el resto del panel sigue andando. */
+  var claveNueva = null; // la clave recién creada se muestra una sola vez
+  var ultimoAsistente = null; // lo último leído: se muestra mientras se actualiza (sin parpadeo)
+  V.asistente = function () {
+    return '<div data-asistente>' + (ultimoAsistente ? vistaAsistente(ultimoAsistente[0], ultimoAsistente[1]) : '<p class="vacio">Cargando…</p>') + '</div>';
+  };
+  function telLindo(t) { var m = /^598(\d{2})(\d{3})(\d{3})$/.exec(t); return m ? '+598 ' + m[1] + ' ' + m[2] + ' ' + m[3] : '+' + t; }
+  function cargarAsistente() {
+    if (!$('[data-asistente]')) return;
+    Promise.all([PD.asistenteEstado(), PD.servicioInfo()]).then(function (r) {
+      ultimoAsistente = r;
+      var caja = $('[data-asistente]'); if (!caja) return;
+      var f = $('[data-form-asistente]', caja), escrito = f && { nombre: f.nombre.value, telefono: f.telefono.value };
+      if (f && f.contains(document.activeElement)) return; // no pisar lo que se está escribiendo
+      caja.innerHTML = vistaAsistente(r[0], r[1]);
+      if (escrito && (escrito.nombre || escrito.telefono) && !cargarAsistente.limpiar) { var g = $('[data-form-asistente]'); g.nombre.value = escrito.nombre; g.telefono.value = escrito.telefono; }
+      cargarAsistente.limpiar = false;
+    }, function (e) {
+      var caja = $('[data-asistente]'); if (!caja) return;
+      var o = (e && e.original) || {};
+      caja.innerHTML = o.code === 'PGRST202' || /Could not find the function/i.test(o.message || '')
+        ? bloque('Falta activarlo', null, '<p class="texto">Hay que agregar las consultas del asistente a la base, una sola vez: en Supabase → SQL Editor, pegar el archivo <code>supabase/asistente.sql</code> y tocar Run.</p>')
+        : '<p class="campo-error">' + esc(e.message) + '</p>';
+    });
+  }
+  function vistaAsistente(est, serv) {
+    var tels = est.telefonos || [];
+    var ejemplos = ['¿Cuántos autos hay?', '¿Quién llega hoy?', '¿Cuánto cobré esta semana?', '¿Cómo está la caja?', '¿Qué traslados quedan?', 'Resumen'];
+    var estado = function (ok, si, no) { return '<li class="conexion__item conexion__item--' + (ok ? 'ok' : 'falta') + '">' + ico(ok ? 'circle-check' : 'circle-x') + '<span>' + (ok ? si : no) + '</span></li>'; };
+    return '<div class="columnas">' +
+      bloque('Números que pueden preguntar', tels.length,
+        (tels.length ? '<ul class="esperan">' + tels.map(function (t) {
+          return '<li class="espera-fila"><span class="espera-fila__quien"><strong>' + esc(t.nombre || 'Sin nombre') + '</strong><small>' + telLindo(t.telefono) + ' · desde el ' + fechaHora(t.creado) + '</small></span>' +
+            '<span class="espera-fila__accion"><button type="button" class="btn btn--chico btn--linea btn--peligro" data-asis-quitar="' + esc(t.telefono) + '">Quitar</button></span></li>';
+        }).join('') + '</ul>' : '<p class="vacio">Todavía no hay números habilitados.</p>') +
+        '<form class="formulario asistente__form" data-form-asistente>' +
+        '<div class="formulario__fila"><label class="campo"><span>Nombre</span><input name="nombre" maxlength="60" autocomplete="off" placeholder="Ej.: Mariana"></label>' +
+        '<label class="campo"><span>Celular con WhatsApp</span><input name="telefono" inputmode="tel" autocomplete="off" placeholder="099 123 456"></label></div>' +
+        '<p class="campo-error" data-error hidden></p>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Habilitar número</button></div></form>') +
+      bloque('Cómo se usa', null, '<p class="texto">Desde un número habilitado, se le escribe o se le manda un audio al WhatsApp del asistente, y contesta con los datos de ese momento. A los demás números no les responde, y no puede cobrar, borrar ni cambiar nada.</p>' +
+        '<ul class="ejemplos">' + ejemplos.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>') +
+      '</div>' +
+      bloque('Conexión con WhatsApp', null,
+        '<ul class="conexion">' +
+          estado(serv && serv.whatsapp, 'Servicio de WhatsApp conectado', 'Servicio de WhatsApp sin conectar todavía') +
+          estado(est.clave, 'Clave del asistente creada el ' + (est.creada ? fechaHora(est.creada) : ''), 'Falta crear la clave del asistente') +
+        '</ul>' +
+        (claveNueva ? '<div class="invitar"><p><strong>Clave nueva:</strong> copiala y pegala en Cloudflare como <code>ASISTENTE_CLAVE</code>. Se muestra una sola vez.</p>' +
+          '<div class="invitar__link"><code>' + esc(claveNueva) + '</code><button type="button" class="btn btn--chico btn--linea" data-copiar="' + esc(claveNueva) + '" data-copiar-aviso="Clave copiada">' + ico('copy') + 'Copiar clave</button></div></div>' : '') +
+        '<div class="ventana__acciones"><button class="btn btn--linea" type="button" data-asis-clave="' + (est.clave ? 'nueva' : 'primera') + '">' + ico('key-round') + (est.clave ? 'Crear clave nueva' : 'Crear clave') + '</button></div>');
+  }
+
   /* ---------- SISTEMA ---------- */
   V.sistema = function () {
     var d = D();
@@ -925,6 +982,7 @@
     pintarNav(r.id);
     $('[data-vista]').innerHTML = cabecera(sec) + V[r.id](r.q);
     if (r.id === 'tarifas') simular();
+    if (r.id === 'asistente') cargarAsistente(); else claveNueva = null;
     /* En celular, la ficha elegida queda debajo de la lista: llevarla a la vista */
     if (r.q.c && innerWidth < 1024) { var fichaEl = $('[data-panel-llegada], [data-panel-retiro]'); if (fichaEl) fichaEl.scrollIntoView({ block: 'start', behavior: 'instant' }); }
     document.documentElement.classList.remove('lateral-abierto');
@@ -1043,7 +1101,21 @@
     }
     if ((el = t.closest('[data-copiar]'))) {
       var texto = el.getAttribute('data-copiar');
-      (navigator.clipboard ? navigator.clipboard.writeText(texto) : Promise.reject()).then(function () { avisar('Link copiado'); }, function () { prompt('Copiá el link:', texto); });
+      (navigator.clipboard ? navigator.clipboard.writeText(texto) : Promise.reject()).then(function () { avisar(el.getAttribute('data-copiar-aviso') || 'Link copiado'); }, function () { prompt('Copiá:', texto); });
+      return;
+    }
+    if ((el = t.closest('[data-asis-quitar]'))) {
+      var tq = el.getAttribute('data-asis-quitar');
+      if (confirm('¿Quitar el número ' + telLindo(tq) + '? Ya no va a poder consultar al asistente.')) {
+        ejecutar(el, function () { return PD.asistenteQuitar(tq); }).then(function (res) { if (res !== FALLO) { avisar('Número quitado'); cargarAsistente(); } });
+      }
+      return;
+    }
+    if ((el = t.closest('[data-asis-clave]'))) {
+      if (el.getAttribute('data-asis-clave') === 'nueva' && !confirm('¿Crear una clave nueva? La anterior deja de funcionar y hay que pegar la nueva en Cloudflare.')) return;
+      ejecutar(el, function () { return PD.asistenteNuevaClave(); }).then(function (res) {
+        if (res !== FALLO) { claveNueva = res; avisar('Clave creada: copiala en Cloudflare'); cargarAsistente(); }
+      });
       return;
     }
     if ((el = t.closest('[data-dar-acceso]'))) {
@@ -1101,6 +1173,14 @@
       nt.minimoDias = Math.max(1, nt.minimoDias); nt.graciaHoras = Math.min(12, nt.graciaHoras);
       ejecutar(f.querySelector('[type=submit]'), function () { return PD.guardarTarifas(nt); })
         .then(function (res) { if (res !== FALLO) { avisar('Precios guardados: ya se aplican en la web'); simular(); } });
+      return;
+    }
+    if (f.matches('[data-form-asistente]')) {
+      e.preventDefault();
+      ejecutar(f.querySelector('[type=submit]'), function () {
+        if (f.telefono.value.replace(/\D/g, '').length < 8) throw new Error('Escribí el celular, por ejemplo 099 123 456.');
+        return PD.asistenteAgregar(f.telefono.value, f.nombre.value.trim());
+      }, $('[data-error]', f)).then(function (res) { if (res !== FALLO) { avisar('Número habilitado'); f.querySelector('[type=submit]').blur(); cargarAsistente.limpiar = true; cargarAsistente(); } });
       return;
     }
     if (f.matches('[data-form-lugares]')) {

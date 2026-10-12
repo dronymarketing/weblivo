@@ -8,7 +8,7 @@
 window.PD_CONFIG = {
   url: 'https://ixryfteknrcghmsxyowp.supabase.co',
   clave: 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o',
-  /* Servicio que despierta la base si el plan gratis la pausa (supabase/reactivar/).
-     Es la dirección pública del Worker de Cloudflare; la llave queda allá. */
+  /* Servicio de Cloudflare (supabase/servicio/): despierta la base si el plan gratis la pausa
+     y atiende el asistente de WhatsApp. Es su dirección pública; las llaves quedan allá. */
   reactivar: ''
 };

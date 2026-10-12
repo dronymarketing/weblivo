@@ -225,7 +225,7 @@
      El plan gratis de Supabase pausa el proyecto tras una semana sin uso.
      salud() dice si la base responde y, si no, por qué: sin internet, en pausa,
      despertando o caída. despertar() le pide al servicio «reactivar»
-     (supabase/reactivar/worker.js, dirección en js/config.js) que la despierte:
+     (supabase/servicio/worker.js, dirección en js/config.js) que la despierte:
      la llave de Supabase vive en ese servicio, nunca en la página. */
   function conTiempo(promesa, ms) {
     var t;
@@ -305,6 +305,17 @@
     },
     guardarEmpresa: function (e) { return actualizar('empresa', { razon: e.razon, rut: e.rut, direccion: e.direccion, iva: e.iva }, { id: 1 }); },
     actualizarPerfil: function (id, cambios) { return actualizar('perfiles', cambios, { id: id }); },
+
+    /* Asistente de WhatsApp: se lee solo en su sección (si falta correr asistente.sql, el resto sigue andando) */
+    asistenteEstado: function () { return rpc('asistente_estado'); },
+    asistenteAgregar: function (tel, nombre) { return rpc('asistente_agregar', { p_telefono: tel, p_nombre: nombre || '' }); },
+    asistenteQuitar: function (tel) { return rpc('asistente_quitar', { p_telefono: tel }); },
+    asistenteNuevaClave: function () { return rpc('asistente_nueva_clave'); },
+    servicioInfo: async function () {
+      if (!C.reactivar) return null;
+      try { var r = await conTiempo(fetch(C.reactivar.replace(/\/+$/, '') + '/', { cache: 'no-store' }), 8000); return await r.json(); }
+      catch (e) { return null; }
+    },
 
     /* Web pública */
     tarifasPublicas: async function () {

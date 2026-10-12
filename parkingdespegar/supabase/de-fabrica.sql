@@ -19,3 +19,10 @@ insert into public.lugares (id, tipo, orden)
   select 'B-' || lpad(n::text, 2, '0'), 'aire', 100 + n from generate_series(1, 36) n;
 alter sequence public.reserva_numero restart with 1001;
 alter sequence public.factura_numero restart with 1;
+-- Asistente de WhatsApp: sin números habilitados ni clave (si ya estaba instalado)
+do $$ begin
+  if to_regclass('public.asistente_telefonos') is not null then
+    truncate public.asistente_telefonos;
+    update public.asistente_config set clave_hash = null, creada = null where id = 1;
+  end if;
+end $$;
