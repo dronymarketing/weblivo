@@ -183,6 +183,8 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     Supabase; solo `GET /estado` y `POST /reactivar` del proyecto). Se reabre solo al volver la base.
     Sin internet / caída: otro texto, sin botón. La reserva web ofrece WhatsApp, despierta la base y
     reintenta cada 30 s. Dirección del Worker en `js/config.js` → `reactivar` + CSP del panel.
+  - **Nombre (Santi, 12/10): «Torre de Parking Despegar», y se la llama «Torre»** (saludo del Worker y
+    sección del panel Ajustes → Torre). Nombre visible del número definitivo en Meta: «Torre de Parking Despegar».
   - **Asistente de WhatsApp (Santi, 12/10):** gratis y sin IA, en el mismo Worker (`POST /whatsapp`).
     La dueña escribe o manda audio al número del asistente → firma de Meta verificada → audio a texto
     con Whisper (Workers AI) → temas por palabras clave y período («ayer», «esta semana», «septiembre»)

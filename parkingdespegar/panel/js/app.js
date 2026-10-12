@@ -80,8 +80,8 @@
       desc: 'Lo que se cobra por día y los datos que salen en la factura. Si cambiás un precio acá, cambia también en la web.' },
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
-    { id: 'asistente', sector: 'ajustes', nombre: 'Asistente', ico: 'message-circle', roles: ['admin'],
-      desc: 'Consultá el parking por WhatsApp, escribiendo o con un audio: cuántos autos hay, cuánto se cobró, la caja y más. Acá elegís qué números pueden preguntar.' },
+    { id: 'asistente', sector: 'ajustes', nombre: 'Torre', ico: 'message-circle', roles: ['admin'],
+      desc: 'Torre de Parking Despegar: tu asistente por WhatsApp. Preguntale escribiendo o con un audio cuántos autos hay, cuánto se cobró, la caja y más. Acá elegís qué números pueden consultarla.' },
     { id: 'sistema', sector: 'ajustes', nombre: 'Respaldos', ico: 'settings', roles: ['admin'],
       desc: 'Descargá una copia de todo y mirá quién hizo cada cambio.' }
   ];
@@ -896,7 +896,7 @@
         '<label class="campo"><span>Celular con WhatsApp</span><input name="telefono" inputmode="tel" autocomplete="off" placeholder="099 123 456"></label></div>' +
         '<p class="campo-error" data-error hidden></p>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Habilitar número</button></div></form>') +
-      bloque('Cómo se usa', null, '<p class="texto">Desde un número habilitado, se le escribe o se le manda un audio al WhatsApp del asistente, y contesta con los datos de ese momento. A los demás números no les responde, y no puede cobrar, borrar ni cambiar nada.</p>' +
+      bloque('Cómo se usa', null, '<p class="texto">Desde un número habilitado, se le escribe o se le manda un audio al WhatsApp de Torre, y contesta con los datos de ese momento. A los demás números no les responde, y no puede cobrar, borrar ni cambiar nada.</p>' +
         '<ul class="ejemplos">' + ejemplos.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>') +
       '</div>' +
       bloque('Conexión con WhatsApp', null,

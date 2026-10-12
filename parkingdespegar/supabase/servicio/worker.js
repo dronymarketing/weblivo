@@ -4,7 +4,7 @@
    1) Reactivar la base si el plan gratis de Supabase la pausa
         GET  /estado     → si la base está activa, en pausa o despertando
         POST /reactivar  → si está en pausa, la despierta
-   2) Asistente de WhatsApp para la dueña
+   2) «Torre de Parking Despegar»: asistente de WhatsApp para la dueña («Torre»)
         GET  /whatsapp   → Meta comprueba que el servicio es nuestro
         POST /whatsapp   → llega un mensaje (texto o audio) y se responde
 
@@ -258,7 +258,7 @@ function interpretar(texto, ahora) {
   if (temas.includes('ayuda') && temas.length > 1) temas = temas.filter((x) => x !== 'ayuda');
   if (temas.includes('resumen') && temas.length > 1) temas = temas.filter((x) => x !== 'resumen');
   if (temas.includes('entradas') || temas.includes('salidas')) temas = temas.filter((x) => x !== 'autos');
-  if (!temas.length && /^(hola|buenas|buen dia|buenos dias|buenas tardes|buenas noches|que tal)\b/.test(t)) temas = ['ayuda'];
+  if (!temas.length && /^(hola|buenas|buen dia|buenos dias|buenas tardes|buenas noches|que tal|torre)\b/.test(t)) temas = ['ayuda'];
   return { texto: t, temas, manana, periodo: periodo(t, ahora) };
 }
 
@@ -369,7 +369,7 @@ function responder(p, f) {
   return partes.join('\n\n');
 }
 function AYUDA(quien, corto) {
-  return (corto ? '' : 'Hola' + (quien ? ' ' + quien.split(' ')[0] : '') + '. ') +
+  return (corto ? '' : 'Hola' + (quien ? ' ' + quien.split(' ')[0] : '') + ', habla *Torre*, el asistente de Parking Despegar. ') +
     'Preguntame escribiendo o con un audio, por ejemplo:\n' +
     '• ¿Cuántos autos hay?\n• ¿Cuántos lugares libres quedan?\n• ¿Quién llega hoy? · ¿Quién sale hoy?\n' +
     '• ¿Cuánto cobré hoy? (o ayer, esta semana, este mes, septiembre)\n• ¿Cómo está la caja?\n' +
