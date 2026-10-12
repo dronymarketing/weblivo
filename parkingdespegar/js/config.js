@@ -10,5 +10,5 @@ window.PD_CONFIG = {
   clave: 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o',
   /* Servicio de Cloudflare (supabase/servicio/): despierta la base si el plan gratis la pausa
      y atiende el asistente de WhatsApp. Es su dirección pública; las llaves quedan allá. */
-  reactivar: ''
+  reactivar: 'https://parking-despegar.dronymarketing.workers.dev'
 };
