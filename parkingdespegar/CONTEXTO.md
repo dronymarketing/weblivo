@@ -196,6 +196,16 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     El bloque SQL está también al final de `esquema.sql` (mantener los dos iguales). Instalación paso
     a paso en `supabase/servicio/LEEME.md`. Si más adelante quieren IA (preguntas libres), se agrega
     en el mismo Worker con Claude y herramientas de solo lectura.
+  - **Torre más completa (Santi, 13/10):** saluda según la hora; ficha de cada auto («¿Qué auto es?»,
+    lugar A-05, matrícula, código, nombre) con `asistente_buscar()`, que deja ese auto como tema de
+    conversación (`asistente_contexto`, 30 min) para que «sí» devuelva su teléfono
+    (`asistente_telefono()`, anotado en auditoría como «Torre»); mapa por zonas («¿Qué autos hay?»).
+    **Avisos:** disparador `al_cambiar_reserva_avisar` (pg_net) → `POST /aviso` del Worker →
+    `asistente_aviso()` (reciente, una sola vez: `asistente_avisos`) → «Hola Mariana, acaba de entrar
+    un vehículo nuevo» / «entró una reserva nueva» a cada número habilitado. Se avisa la entrada
+    (check-in) y las reservas nuevas: del panel al crearlas, las web recién cuando se pagan. Gratis
+    dentro de las 24 h del último mensaje de la dueña (`asistente_telefonos.ultimo_mensaje`); fuera,
+    plantilla opcional `WHATSAPP_PLANTILLA` (paga). Variable `WHATSAPP_NUMERO_ID` en Cloudflare.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de

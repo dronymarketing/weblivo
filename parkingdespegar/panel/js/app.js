@@ -81,7 +81,7 @@
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
     { id: 'asistente', sector: 'ajustes', nombre: 'Torre', ico: 'message-circle', roles: ['admin'],
-      desc: 'Torre de Parking Despegar: tu asistente por WhatsApp. Preguntale escribiendo o con un audio cuántos autos hay, cuánto se cobró, la caja y más. Acá elegís qué números pueden consultarla.' },
+      desc: 'Torre de Parking Despegar: tu asistente por WhatsApp. Te avisa cuando entra un auto o llega una reserva nueva, y le preguntás escribiendo o con un audio: qué autos hay, de quién es cada uno, cuánto se cobró, la caja y más. Acá elegís qué números pueden usarla.' },
     { id: 'sistema', sector: 'ajustes', nombre: 'Respaldos', ico: 'settings', roles: ['admin'],
       desc: 'Descargá una copia de todo y mirá quién hizo cada cambio.' }
   ];
@@ -883,7 +883,7 @@
   }
   function vistaAsistente(est, serv) {
     var tels = est.telefonos || [];
-    var ejemplos = ['¿Cuántos autos hay?', '¿Quién llega hoy?', '¿Cuánto cobré esta semana?', '¿Cómo está la caja?', '¿Qué traslados quedan?', 'Resumen'];
+    var ejemplos = ['¿Cuántos autos hay?', '¿Qué autos hay? (el mapa)', '¿Qué auto es? · ¿De quién es el A-05?', '¿Quién llega hoy?', '¿Cuánto cobré esta semana?', '¿Cómo está la caja?', '¿Qué traslados quedan?', 'Resumen'];
     var estado = function (ok, si, no) { return '<li class="conexion__item conexion__item--' + (ok ? 'ok' : 'falta') + '">' + ico(ok ? 'circle-check' : 'circle-x') + '<span>' + (ok ? si : no) + '</span></li>'; };
     return '<div class="columnas">' +
       bloque('Números que pueden preguntar', tels.length,
@@ -896,12 +896,13 @@
         '<label class="campo"><span>Celular con WhatsApp</span><input name="telefono" inputmode="tel" autocomplete="off" placeholder="099 123 456"></label></div>' +
         '<p class="campo-error" data-error hidden></p>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Habilitar número</button></div></form>') +
-      bloque('Cómo se usa', null, '<p class="texto">Desde un número habilitado, se le escribe o se le manda un audio al WhatsApp de Torre, y contesta con los datos de ese momento. A los demás números no les responde, y no puede cobrar, borrar ni cambiar nada.</p>' +
+      bloque('Cómo se usa', null, '<p class="texto">Desde un número habilitado, se le escribe o se le manda un audio al WhatsApp de Torre, y contesta con los datos de ese momento. Además, les avisa a estos números cada vez que entra un auto o llega una reserva nueva, y si le responden «sí», les pasa el teléfono del cliente. A los demás números no les responde, y no puede cobrar, borrar ni cambiar nada.</p>' +
         '<ul class="ejemplos">' + ejemplos.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>') +
       '</div>' +
       bloque('Conexión con WhatsApp', null,
         '<ul class="conexion">' +
           estado(serv && serv.whatsapp, 'Servicio de WhatsApp conectado', 'Servicio de WhatsApp sin conectar todavía') +
+          estado(serv && serv.avisos, 'Avisos de entradas y reservas activados', 'Avisos de entradas y reservas sin activar todavía') +
           estado(est.clave, 'Clave del asistente creada el ' + (est.creada ? fechaHora(est.creada) : ''), 'Falta crear la clave del asistente') +
         '</ul>' +
         (claveNueva ? '<div class="invitar"><p><strong>Clave nueva:</strong> copiala y pegala en Cloudflare como <code>ASISTENTE_CLAVE</code>. Se muestra una sola vez.</p>' +

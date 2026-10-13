@@ -176,6 +176,8 @@ end $$;
 -- ---------- Torre: detalle de cada auto, «¿querés su teléfono?» y avisos ----------
 
 alter table public.asistente_config add column if not exists aviso_url text;
+-- Último mensaje de cada número: WhatsApp deja escribirle gratis solo dentro de las 24 h siguientes
+alter table public.asistente_telefonos add column if not exists ultimo_mensaje timestamptz;
 
 -- Último auto del que Torre le habló a cada número (para responder «sí» a «¿querés su teléfono?»)
 create table if not exists public.asistente_contexto (
@@ -206,6 +208,14 @@ begin
   if p_telefono is not null and not exists (select 1 from public.asistente_telefonos where telefono = p_telefono) then
     raise exception 'Este número no está habilitado.' using errcode = '42501';
   end if;
+end $$;
+
+-- Torre anota que ese número le escribió (abre la ventana de 24 h para los avisos)
+create or replace function public.asistente_visto(p_clave text, p_telefono text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.asistente_validar(p_clave, p_telefono);
+  update public.asistente_telefonos set ultimo_mensaje = now() where telefono = p_telefono;
 end $$;
 
 -- Ficha de un auto/reserva para contarla por WhatsApp (sin el teléfono del cliente)
@@ -296,16 +306,18 @@ begin
   perform public.asistente_validar(p_clave, null);
   select * into r from public.reservas where id = p_reserva;
   if not found then return null; end if;
+  if p_tipo not in ('entrada', 'reserva') then return null; end if;
   if p_tipo = 'entrada' and not (r.estado = 'en_predio' and r.checkin > now() - interval '15 minutes') then return null; end if;
   if p_tipo = 'reserva' and not (r.estado = 'confirmada' and r.creada > now() - interval '2 hours') then return null; end if;
-  if p_tipo not in ('entrada', 'reserva') then return null; end if;
   insert into public.asistente_avisos (reserva_id, tipo) values (r.id, p_tipo) on conflict do nothing;
   if not found then return null; end if;
   insert into public.asistente_contexto (telefono, reserva_id, actualizado)
     select telefono, r.id, now() from public.asistente_telefonos
     on conflict (telefono) do update set reserva_id = excluded.reserva_id, actualizado = now();
   return jsonb_build_object('tipo', p_tipo, 'ficha', public.asistente_ficha(r),
-    'destinatarios', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre)) from public.asistente_telefonos), '[]'::jsonb),
+    'destinatarios', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre,
+                                 'ventana', coalesce(ultimo_mensaje > now() - interval '23 hours 50 minutes', false)))
+                                from public.asistente_telefonos), '[]'::jsonb),
     'libres', (select jsonb_build_object(
                  'techado', (select count(*) from public.lugares where tipo = 'techado') - (select count(*) from public.reservas where estado = 'en_predio' and lugar_tipo = 'techado'),
                  'aire', (select count(*) from public.lugares where tipo = 'aire') - (select count(*) from public.reservas where estado = 'en_predio' and lugar_tipo = 'aire'))));
@@ -343,14 +355,14 @@ update public.asistente_config set aviso_url = 'https://parking-despegar.dronyma
 revoke execute on function public.asistente_normalizar(text), public.asistente_estado(), public.asistente_agregar(text, text),
                            public.asistente_quitar(text), public.asistente_nueva_clave(),
                            public.asistente_consulta(text, text, timestamptz, timestamptz),
-                           public.asistente_validar(text, text), public.asistente_ficha(public.reservas), public.unaccent_simple(text),
+                           public.asistente_validar(text, text), public.asistente_visto(text, text), public.asistente_ficha(public.reservas), public.unaccent_simple(text),
                            public.asistente_buscar(text, text, text), public.asistente_telefono(text, text, text),
                            public.anotar_sistema(text), public.asistente_aviso(text, uuid, text),
                            public.al_cambiar_reserva_avisar() from public, anon, authenticated;
 grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text),
                           public.asistente_nueva_clave() to authenticated;
 grant execute on function public.asistente_consulta(text, text, timestamptz, timestamptz),
-                          public.asistente_buscar(text, text, text), public.asistente_telefono(text, text, text),
-                          public.asistente_aviso(text, uuid, text) to anon, authenticated;
+                          public.asistente_visto(text, text), public.asistente_buscar(text, text, text),
+                          public.asistente_telefono(text, text, text), public.asistente_aviso(text, uuid, text) to anon, authenticated;
 
 notify pgrst, 'reload schema';

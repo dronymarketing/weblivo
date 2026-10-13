@@ -11,6 +11,11 @@ Un solo Worker de Cloudflare (gratis) que hace dos cosas:
    Sin IA paga: entiende las preguntas comunes por palabras clave y pasa los audios a texto con
    Whisper de Workers AI (gratis en este uso). Lee la base con `asistente_consulta()`, que solo
    responde con la clave del asistente y a números habilitados en el panel, y no puede cambiar nada.
+3. **Avisos de Torre**: cuando entra un auto (check-in) o llega una reserva nueva (las de la web, al
+   pagarse), la base llama a `POST /aviso` (disparador con `pg_net`) y Torre les escribe a los números
+   habilitados: «Hola Mariana, acaba de entrar un vehículo nuevo» con la ficha del auto, y ofrece el
+   teléfono del cliente (se responde «sí»). `asistente_aviso()` confirma que el aviso es real y
+   reciente, y que no se mandó antes.
 
 Ninguna llave vive en la página: todas son **secretos cifrados de Cloudflare**.
 
@@ -55,6 +60,17 @@ Ninguna llave vive en la página: todas son **secretos cifrados de Cloudflare**.
     permisos `whatsapp_business_management` y `whatsapp_business_messaging` → Generate Access Token →
     **POST** `<ID de la cuenta de WhatsApp Business>/subscribed_apps` → `{"success": true}`.
 17. Probar: desde el celular habilitado, escribirle «hola» al número del asistente.
+18. **Avisos:** Worker → **Settings → Variables and Secrets → Add** → tipo **Text**:
+    `WHATSAPP_NUMERO_ID` = el *Phone number ID* del número (WhatsApp → API Setup).
+19. *(Opcional, pago)* **Avisos aunque la dueña no le haya escrito en las últimas 24 h:** WhatsApp solo
+    deja escribir libre dentro de las 24 h siguientes al último mensaje de esa persona. Para avisar
+    fuera de ese plazo: Meta → **WhatsApp Manager → Message templates → Create**, categoría
+    **Utility**, idioma español, nombre `aviso_torre`, cuerpo:
+    `{{1}}` + salto de línea + `Respondeme este mensaje y te paso el detalle.` → cuando la aprueben,
+    variable **Text** `WHATSAPP_PLANTILLA` = `aviso_torre` (y `WHATSAPP_PLANTILLA_IDIOMA` si no es `es`).
+    Cada aviso con plantilla cuesta unos USD 0,01 y Meta pide una tarjeta cargada.
+    Sin plantilla, Torre igual avisa siempre que la dueña le haya escrito en las últimas 24 h
+    (alcanza con mandarle «Torre» a la mañana).
 
 **Cómo se instaló la prueba (12/10/2026):** número de prueba de Meta +1 555-654-1926 (cuenta de
 WhatsApp Business 1427428212193072, Phone Number ID 1324018230800909), app «Asistente Parking
@@ -68,15 +84,23 @@ y el panel (Ajustes → Asistente) indica «Servicio de WhatsApp conectado».
 ## Costos
 
 - Cloudflare Workers y Workers AI: gratis en este uso (los audios usan una fracción mínima de la cuota diaria).
-- WhatsApp: desde el 1/10/2026 Meta cobra las respuestas, pero las primeras 1.000 por mes por número
-  son gratis. Con la dueña consultando, no se llega.
+- WhatsApp: las respuestas y los avisos dentro de las 24 h desde el último mensaje de la dueña son
+  gratis. Solo la plantilla opcional (avisos fuera de ese plazo) se cobra, unos USD 0,01 cada una.
 
 ## Qué entiende
 
 Autos en el parking, lugares libres, quién llega y quién sale hoy (y cuántos llegan mañana), lo cobrado
 (hoy, ayer, esta semana, la semana pasada, este mes, el mes pasado, un mes por nombre, este año) con el
 detalle por medio de pago y facturas, la caja abierta, reservas web y reservas nuevas por origen,
-traslados pendientes, el equipo y quién entró hoy, y un resumen. Si no entiende, contesta con ejemplos.
+traslados pendientes, el equipo y quién entró hoy, y un resumen. Además:
+
+- **Cada auto:** «¿Qué auto es?» (el último del que se habló o el último que entró), «¿De quién es el
+  A-05?», una matrícula («SBA 1234»), un código («PD-1001») o un nombre («Pérez») → ficha con modelo,
+  color, cliente, lugar, salida y vuelo, servicio y pago, y «¿Querés el teléfono? Respondé *sí*».
+- **Teléfono:** «sí», o «teléfono de Juan Pérez» → número y enlace a su WhatsApp (queda anotado en
+  el registro de cambios del panel).
+- **Mapa:** «¿Qué autos hay?» → lugar por lugar, techado y predio, con los libres.
+- Saluda según la hora y responde «gracias». Si no entiende, contesta con ejemplos.
 Si la base está en pausa, la despierta y avisa. A números no habilitados no les contesta.
 
 ## Si cambia algo
