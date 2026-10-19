@@ -83,6 +83,28 @@ usar siempre el del usuario del sistema. Diagnóstico: Cloudflare → Observabil
 Abrir la dirección del Worker muestra `{"reactivar": true, "whatsapp": true}` cuando está todo cargado,
 y el panel (Ajustes → Asistente) indica «Servicio de WhatsApp conectado».
 
+### D. Pago online (dLocal Go)
+La reserva web cobra con **dLocal Go**: el cliente toca «Pagar», va a la página segura de dLocal
+(tarjeta de crédito o débito, no necesita cuenta) y vuelve a la web con la reserva confirmada.
+dLocal avisa al servicio con un aviso firmado (`POST /pago/aviso`) y recién ahí la reserva queda
+pagada online (también se confirma al volver, por si el aviso tarda). Sin las llaves, la web sigue
+con el botón de pago de prueba.
+
+20. **Base:** correr `esquema.sql` completo una vez (agrega las funciones del pago).
+21. **dLocal Go → Conexiones → API → Claves de integración:** copiar la **API Key** y la **Secret key**
+    → Cloudflare, tipo **Secret**: `DLOCAL_API_KEY` y `DLOCAL_SECRET`.
+22. Variables **Text**:
+    - `DLOCAL_ENTORNO` = `real` para cobrar de verdad. Si falta, usa el **entorno de prueba** (claves
+      de prueba aparte, tarjeta de prueba 4111 1111 1111 1111, cualquier vencimiento futuro y CVV).
+    - *(Opcional)* `DLOCAL_MONTO_PRUEBA` = por ejemplo `50`: cobra $ 50 en vez del total y la reserva queda
+      saldada (se anota «prueba»). **Borrarla** después de probar.
+23. Abrir la dirección del Worker: tiene que decir `"pagos": true`.
+
+Importante: dLocal asocia las claves al sitio declarado en la cuenta (livo.com.uy); usarlas en otro
+sitio puede bloquear la cuenta. Con el primer pago real confirmado, el botón de prueba se apaga solo.
+Para retirar la plata y pasar de USD 3.000, completar el Paso 2 de dLocal (documentos y cuenta
+bancaria, idealmente a nombre del parking).
+
 ## Costos
 
 - Cloudflare Workers y Workers AI: gratis en este uso (los audios usan una fracción mínima de la cuota diaria).

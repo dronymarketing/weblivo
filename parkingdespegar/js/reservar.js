@@ -187,6 +187,26 @@
     form.matricula.value = m ? m[1] + ' ' + m[2] : form.matricula.value.toUpperCase();
   });
 
+  /* ---------- Pago ----------
+     Con dLocal Go conectado (servicio de Cloudflare), «Pagar» crea la reserva, pide el cobro y lleva
+     al cliente a la página segura de dLocal; a la vuelta (?pago=ok) se confirma y se muestra la reserva.
+     Sin dLocal, el botón confirma el pago de prueba como hasta ahora. */
+  var SERVICIO = ((window.PD_CONFIG || {}).reactivar || '').replace(/\/+$/, '');
+  var conDlocal = false;
+  if (SERVICIO) fetch(SERVICIO + '/', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+    conDlocal = !!(j && j.pagos);
+    if (conDlocal) {
+      var n = $('.pasarela__nota'); if (n) n.textContent = 'Te llevamos a la página segura de dLocal Go para pagar con tarjeta de crédito o débito. Al terminar volvés acá.';
+      if (j.pagos_entorno !== 'real') { var m = $('.pasarela__marca'); if (m) m.insertAdjacentHTML('beforeend', ' <small>· modo de prueba</small>'); }
+    }
+  }).catch(function () {});
+  function servicio(ruta, cuerpo) {
+    return fetch(SERVICIO + ruta, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var e = new Error((j && j.error) || 'No se pudo conectar con el pago.'); e.codigo = j && j.error; throw e; } return j; }); });
+  }
+  function guardarPendiente(id, token, codigo) { try { sessionStorage.setItem('pd-pago-' + id, JSON.stringify({ token: token, codigo: codigo })); } catch (e) { /* sin almacenamiento: igual se paga */ } }
+  function pendiente(id) { try { return JSON.parse(sessionStorage.getItem('pd-pago-' + id) || 'null'); } catch (e) { return null; } }
+
   /* ---------- Pasarela simulada ---------- */
   var pasarela = $('[data-pasarela]');
   var botonPagar = $('[data-pagar]');
@@ -222,6 +242,17 @@
         vuelo_ida: form.vueloIda.value.trim(), vuelo_vuelta: form.vueloVuelta.value.trim()
       };
       var r = await PD.reservarWeb(datos);
+      if (conDlocal) {
+        guardarPendiente(r.id, r.token, r.codigo);
+        texto.textContent = 'Te llevamos a pagar…';
+        try {
+          var cobro = await servicio('/pago/crear', { reserva: r.id, token: r.token });
+          location.href = cobro.url;
+          return;
+        } catch (x) {
+          if (x.codigo !== 'sin-pasarela') throw new Error('Tu reserva ' + r.codigo + ' quedó guardada, pero no pudimos abrir el pago: ' + x.message + ' Podés pagar al llegar o escribirnos por WhatsApp.');
+        }
+      }
       await PD.pagarWeb(r.id, r.token);
       cerrarPasarela();
       confirmar({
@@ -266,7 +297,56 @@
       setTimeout(arrancar, 30000);
     });
   }
+  /* ---------- Vuelta de dLocal: ?pago=ok (pagó) o ?pago=volver (no terminó) ---------- */
+  function vueltaDelPago() {
+    var q = new URLSearchParams(location.search), id = q.get('r'), estado = q.get('pago');
+    if (!estado || !id) return false;
+    var p = pendiente(id);
+    history.replaceState(null, '', location.pathname);
+    form.hidden = true; $('.pasos-reserva').hidden = true; $('.reserva__resumen').hidden = true;
+    var aviso = document.createElement('div');
+    aviso.className = 'confirmacion pago-vuelta';
+    aviso.setAttribute('tabindex', '-1');
+    $('[data-confirmacion]').before(aviso);
+    function mensaje(titulo, texto, botones) {
+      aviso.innerHTML = '<p class="antetitulo">' + titulo + '</p><p class="bajada">' + texto + '</p>' + (botones ? '<div class="seccion__pie">' + botones + '</div>' : '');
+      aviso.hidden = false;
+    }
+    var wa = '<a class="btn btn--linea" href="https://wa.me/59899114144?text=' + encodeURIComponent('Hola, tengo una consulta por el pago de mi reserva' + (p ? ' ' + p.codigo : '') + '.') + '" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escribinos</a>';
+    if (!p) { mensaje('Tu pago', 'No encontramos los datos del pago en este navegador. Si pagaste, te confirmamos por WhatsApp; si tenés dudas, escribinos.', wa); return true; }
+    if (estado === 'volver') {
+      mensaje('Pago sin terminar', 'Tu reserva <strong>' + p.codigo + '</strong> quedó guardada, pero el pago no se completó. Podés intentarlo de nuevo o pagar al llegar al parking.',
+        '<button type="button" class="btn btn--primario" data-reintentar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Intentar el pago de nuevo</button>' + wa);
+      aviso.querySelector('[data-reintentar]').addEventListener('click', function () {
+        var btn = this; btn.disabled = true;
+        servicio('/pago/crear', { reserva: id, token: p.token }).then(function (c) { location.href = c.url; })
+          .catch(function (e) { btn.disabled = false; mensaje('Pago sin terminar', e.message, wa); });
+      });
+      return true;
+    }
+    mensaje('Confirmando tu pago…', 'Un momento: estamos esperando la confirmación de dLocal Go.');
+    var intentos = 0;
+    (function revisar() {
+      Promise.all([servicio('/pago/estado', { reserva: id, token: p.token }), PD.tarifasPublicas()]).then(function (res) {
+        var e = res[0];
+        if (e.pagada) {
+          aviso.remove();
+          confirmar({ codigo: e.codigo, entrada: e.entrada, salida: e.salida, total: e.total, lugarTipo: e.lugar_tipo, servicio: e.servicio,
+            vehiculo: { matricula: e.matricula, modelo: e.modelo, color: e.color }, cliente: { nombre: e.nombre, telefono: e.telefono } });
+          try { sessionStorage.removeItem('pd-pago-' + id); } catch (x) { /* nada */ }
+          return;
+        }
+        if (++intentos < 10) return setTimeout(revisar, 3000);
+        mensaje('Pago en proceso', 'Tu reserva <strong>' + e.codigo + '</strong> está guardada y el pago todavía se está procesando. Apenas se acredite queda confirmada; si en un rato no te llega la confirmación, escribinos.', wa);
+      }).catch(function (x) {
+        if (++intentos < 10) return setTimeout(revisar, 3000);
+        mensaje('No pudimos confirmar el pago', x.message + ' Si te cobraron, tu reserva queda confirmada igual: escribinos y lo revisamos.', wa);
+      });
+    })();
+    return true;
+  }
+
   mostrar(1);
   if (!PD.configurado) noDisponible();
-  else arrancar();
+  else { vueltaDelPago(); arrancar(); }
 })();

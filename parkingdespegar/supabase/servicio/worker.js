@@ -10,6 +10,10 @@
         POST /aviso      → la base avisa que entró un auto, una reserva nueva o que alguien
                            del equipo empezó o terminó de trabajar, y Torre se lo cuenta
                            por WhatsApp a los números habilitados
+   3) Pago online de la reserva web (dLocal Go)
+        POST /pago/crear   → crea el cobro en dLocal y devuelve la página de pago
+        POST /pago/estado  → al volver de dLocal: cómo quedó el pago (y lo confirma si ya se pagó)
+        POST /pago/aviso   → dLocal avisa (firmado) que cambió un pago; si está pagado, se confirma
 
    El asistente no usa IA paga: entiende las preguntas comunes por sus
    palabras clave, pasa los audios a texto con Whisper (Workers AI, gratis
@@ -22,7 +26,11 @@
      WHATSAPP_TOKEN         token de acceso de la app de Meta
      WHATSAPP_SECRETO_APP   «App secret» de la app de Meta (firma de los avisos)
      WHATSAPP_VERIFICACION  una palabra cualquiera, la misma que se pone en Meta
+     DLOCAL_API_KEY         «API Key» de dLocal Go (Conexiones → API)
+     DLOCAL_SECRET          «Secret key» de dLocal Go
    Variables comunes (no secretas):
+     DLOCAL_ENTORNO         'real' para cobrar de verdad; si falta o dice 'prueba', usa el entorno de prueba
+     DLOCAL_MONTO_PRUEBA    opcional: cobra este monto (en pesos) en vez del total, para probar con poca plata
      WHATSAPP_NUMERO_ID     «Phone number ID» del número de Torre (para los avisos)
      WHATSAPP_PLANTILLA     opcional: plantilla aprobada por Meta para avisar aunque
                             la dueña no le haya escrito a Torre en las últimas 24 h
@@ -42,6 +50,7 @@ export default {
     const ruta = url.pathname.replace(/\/+$/, '') || '/';
     if (ruta === '/whatsapp') return whatsapp(pedido, url, env, ctx);
     if (ruta === '/aviso') return recibirAviso(pedido, env, ctx);
+    if (ruta.startsWith('/pago/')) return pagos(pedido, ruta, env);
     return reactivacion(pedido, ruta, env);
   }
 };
@@ -52,7 +61,7 @@ export default {
 async function reactivacion(pedido, ruta, env) {
   const origen = pedido.headers.get('Origin') || '';
   const cabeceras = {
-    'Access-Control-Allow-Origin': ORIGENES.includes(origen) ? origen : ORIGENES[0],
+    'Access-Control-Allow-Origin': ORIGENES.concat(env.ORIGEN_EXTRA ? [env.ORIGEN_EXTRA] : []).includes(origen) ? origen : ORIGENES[0],
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Vary': 'Origin',
     'Cache-Control': 'no-store',
@@ -60,7 +69,8 @@ async function reactivacion(pedido, ruta, env) {
   };
   const responder = (cuerpo, status = 200) => new Response(JSON.stringify(cuerpo), { status, headers: cabeceras });
   if (pedido.method === 'OPTIONS') return new Response(null, { status: 204, headers: cabeceras });
-  if (ruta === '/') return responder({ servicio: 'Parking Despegar', reactivar: !!env.SUPABASE_TOKEN, whatsapp: !!(env.WHATSAPP_TOKEN && env.ASISTENTE_CLAVE), avisos: !!env.WHATSAPP_NUMERO_ID });
+  if (ruta === '/') return responder({ servicio: 'Parking Despegar', reactivar: !!env.SUPABASE_TOKEN, whatsapp: !!(env.WHATSAPP_TOKEN && env.ASISTENTE_CLAVE), avisos: !!env.WHATSAPP_NUMERO_ID,
+    pagos: !!(env.DLOCAL_API_KEY && env.DLOCAL_SECRET && env.ASISTENTE_CLAVE), pagos_entorno: env.DLOCAL_ENTORNO === 'real' ? 'real' : 'prueba' });
   if (!env.SUPABASE_TOKEN) return responder({ estado: 'error', detalle: 'Falta cargar SUPABASE_TOKEN en Cloudflare.' }, 500);
   try {
     if (ruta === '/estado' && pedido.method === 'GET') return responder(traducir(await estadoSupabase(env)));
@@ -592,6 +602,109 @@ function lineaAviso(a, ahora = Date.now()) {
   return (a.tipo === 'entrada'
     ? 'Acaba de entrar ' + auto(f) + ' (' + f.matricula + ') de ' + f.cliente + (f.lugar ? ', lugar ' + f.lugar : '')
     : 'Reserva nueva ' + f.codigo + ' de ' + f.cliente + ' (' + auto(f) + ', ' + f.matricula + '), llega ' + cuando(f.entrada, ahora)).replace(/\s+/g, ' ');
+}
+
+/* ============================================================
+   4) PAGO ONLINE (dLocal Go)
+   El navegador nunca toca las llaves: este servicio crea el cobro con la reserva y su código
+   secreto de un solo uso, y la reserva se marca pagada solo cuando dLocal confirma.
+   ============================================================ */
+const DLOCAL = { prueba: 'https://api-sbx.dlocalgo.com', real: 'https://api.dlocalgo.com' };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function dlocal(env, metodo, ruta, cuerpo) {
+  const r = await fetch((env.DLOCAL_ENTORNO === 'real' ? DLOCAL.real : DLOCAL.prueba) + ruta, {
+    method: metodo,
+    headers: { Authorization: 'Bearer ' + env.DLOCAL_API_KEY + ':' + env.DLOCAL_SECRET, 'Content-Type': 'application/json' },
+    body: cuerpo ? JSON.stringify(cuerpo) : undefined
+  });
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error('dLocal respondió ' + r.status + (j && j.message ? ': ' + j.message : ''));
+  return j;
+}
+function montoPrueba(env) { const m = +env.DLOCAL_MONTO_PRUEBA; return m > 0 ? m : 0; }
+function confirmarPago(env, p) {
+  return rpc(env, 'pago_web_confirmar', { p_clave: env.ASISTENTE_CLAVE || '', p_pasarela_id: p.id, p_cobrado: p.amount, p_prueba: montoPrueba(env) > 0 });
+}
+
+async function pagos(pedido, ruta, env) {
+  if (ruta === '/pago/aviso') return avisoPago(pedido, env);
+  const origen = pedido.headers.get('Origin') || '';
+  const permitidos = ORIGENES.concat(env.ORIGEN_EXTRA ? [env.ORIGEN_EXTRA] : []);
+  const cabeceras = {
+    'Access-Control-Allow-Origin': permitidos.includes(origen) ? origen : ORIGENES[0],
+    'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin', 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8'
+  };
+  const responder = (cuerpo, status = 200) => new Response(JSON.stringify(cuerpo), { status, headers: cabeceras });
+  if (pedido.method === 'OPTIONS') return new Response(null, { status: 204, headers: cabeceras });
+  if (pedido.method !== 'POST') return responder({ error: 'No existe' }, 405);
+  if (!env.DLOCAL_API_KEY || !env.DLOCAL_SECRET || !env.ASISTENTE_CLAVE) return responder({ error: 'sin-pasarela' }, 503);
+  let b;
+  try { b = await pedido.json(); } catch (e) { b = null; }
+  if (!b || !UUID.test(String(b.reserva || '')) || !UUID.test(String(b.token || ''))) return responder({ error: 'Datos no válidos.' }, 400);
+  const args = { p_clave: env.ASISTENTE_CLAVE, p_reserva: b.reserva, p_token: b.token };
+  try {
+    if (ruta === '/pago/crear') {
+      const d = await rpc(env, 'pago_web_preparar', args);
+      const sitio = (env.SITIO || 'https://livo.com.uy/parkingdespegar/').replace(/\/?$/, '/');
+      const prueba = montoPrueba(env);
+      const p = await dlocal(env, 'POST', '/v1/payments', {
+        currency: 'UYU', amount: prueba || d.saldo, country: 'UY', order_id: b.reserva,
+        description: ('Reserva ' + d.codigo + ' · Parking Despegar').slice(0, 100),
+        payer: Object.assign({ name: String(d.nombre || '').slice(0, 100), phone: String(d.telefono || '').slice(0, 100) }, d.email ? { email: String(d.email).slice(0, 100) } : {}),
+        success_url: sitio + 'reservar.html?pago=ok&r=' + b.reserva,
+        back_url: sitio + 'reservar.html?pago=volver&r=' + b.reserva,
+        notification_url: new URL(pedido.url).origin + '/pago/aviso'
+      });
+      if (!p || !p.id || !p.redirect_url) throw new Error('dLocal no devolvió la página de pago');
+      await rpc(env, 'pago_web_guardar', { p_clave: env.ASISTENTE_CLAVE, p_reserva: b.reserva, p_pasarela_id: p.id });
+      return responder({ url: p.redirect_url, codigo: d.codigo });
+    }
+    if (ruta === '/pago/estado') {
+      let e = await rpc(env, 'pago_web_estado', args);
+      if (!e.pagada && e.pasarela_id) {
+        const p = await dlocal(env, 'GET', '/v1/payments/' + encodeURIComponent(e.pasarela_id));
+        if (p && p.status === 'PAID') { await confirmarPago(env, p); e = await rpc(env, 'pago_web_estado', args); }
+        else e.estado_pago = p && p.status;
+      }
+      delete e.pasarela_id;
+      return responder(e);
+    }
+    return responder({ error: 'No existe' }, 404);
+  } catch (x) {
+    console.error('pago:', x);
+    return responder({ error: x.sinBase ? 'No pudimos conectarnos. Probá de nuevo en un momento.' : x.message.replace(/^[a-z_]+: \d+ /, '') }, x.sinBase ? 503 : 400);
+  }
+}
+
+/* dLocal avisa con POST {"payment_id": "DP-…"} firmado: HMAC-SHA256(secret, apiKey + cuerpo) */
+async function firmaDlocal(cuerpo, cabecera, env) {
+  const m = /Signature:\s*([0-9a-f]{64})/i.exec(cabecera || '');
+  if (!m || !env.DLOCAL_API_KEY || !env.DLOCAL_SECRET) return false;
+  const clave = await crypto.subtle.importKey('raw', new TextEncoder().encode(env.DLOCAL_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', clave, new TextEncoder().encode(env.DLOCAL_API_KEY + cuerpo)));
+  const esperado = [...mac].map((x) => x.toString(16).padStart(2, '0')).join(''), firma = m[1].toLowerCase();
+  let dif = 0;
+  for (let i = 0; i < esperado.length; i++) dif |= esperado.charCodeAt(i) ^ firma.charCodeAt(i);
+  return dif === 0;
+}
+async function avisoPago(pedido, env) {
+  if (pedido.method !== 'POST') return new Response('No', { status: 405 });
+  const cuerpo = await pedido.text();
+  if (!(await firmaDlocal(cuerpo, pedido.headers.get('Authorization'), env))) return new Response('Firma inválida', { status: 401 });
+  let id;
+  try { id = JSON.parse(cuerpo).payment_id; } catch (e) { id = null; }
+  if (!id) return new Response('ok', { status: 200 });
+  try {
+    const p = await dlocal(env, 'GET', '/v1/payments/' + encodeURIComponent(id));
+    if (p && p.status === 'PAID') await confirmarPago(env, p);
+    return new Response('ok', { status: 200 });
+  } catch (e) {
+    if (/Pago desconocido/.test(e.message)) return new Response('ok', { status: 200 });   // un pago que no es de una reserva
+    console.error('aviso de pago:', e);
+    return new Response('reintentar', { status: 500 });   // dLocal reintenta cada 10 minutos
+  }
 }
 
 // Para las pruebas (Cloudflare ignora estas exportaciones)

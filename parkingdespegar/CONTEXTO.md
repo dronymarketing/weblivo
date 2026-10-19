@@ -225,6 +225,15 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
       responde «¿quién está trabajando?» con quién marcó entrada.
     · Para aplicarlo en una base que ya funciona: correr `esquema.sql` completo (se puede re-correr).
     · La primera pantalla del menú se llama «Inicio» (antes «Hoy»).
+  - **Pago online con dLocal Go (Santi, 19/10):** Checkout estándar (redirección). `reservar.js`: si el
+    Worker dice `pagos: true`, «Pagar» crea la reserva, pide `POST /pago/crear` (reserva + token de un
+    solo uso) y redirige a dLocal; vuelve a `reservar.html?pago=ok|volver&r=<id>` (token en
+    sessionStorage) y `POST /pago/estado` confirma. Aviso firmado HMAC-SHA256(secret, apiKey+cuerpo) en
+    `/pago/aviso`. Base: `pago_web_preparar/guardar/estado/confirmar` (clave del servicio = la de Torre),
+    `pagos_web.pasarela_id`, `asistente_config.pasarela` ('prueba'→'dlocal' con el primer pago real; ahí
+    `pagar_reserva_web` deja de andar). Secretos `DLOCAL_API_KEY`, `DLOCAL_SECRET`; `DLOCAL_ENTORNO`
+    (real/prueba) y `DLOCAL_MONTO_PRUEBA` opcional. Cuenta de dLocal hoy a nombre de Santi (unipersonal),
+    Paso 1 verificado (hasta USD 3.000); pasar a la dueña para producción.
     · **Entrada rehecha (Santi, 19/10):** arriba un buscador (código o matrícula; los resultados
       aparecen al escribir, Enter abre el primero) y el botón «Agregar reserva» (mostrador). Abajo el
       día hora por hora: cada cosa muestra la reserva completa (auto, cliente, lugar, servicio, vuelo,

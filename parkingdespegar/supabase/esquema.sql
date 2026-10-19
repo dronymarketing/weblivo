@@ -344,6 +344,10 @@ declare
   v_res public.reservas;
   v_monto int;
 begin
+  /* Con la pasarela real funcionando, el botón simulado ya no marca nada como pagado */
+  if exists (select 1 from public.asistente_config where id = 1 and pasarela <> 'prueba') then
+    raise exception 'El pago se hace con la pasarela de pago.' using errcode = 'P0001';
+  end if;
   select * into v_pw from public.pagos_web where reserva_id = p_id and token = p_token for update;
   if not found or v_pw.usado is not null or v_pw.vence < now() then
     raise exception 'No se pudo confirmar el pago. Volvé a intentar la reserva.' using errcode = 'P0001';
@@ -1269,6 +1273,79 @@ drop trigger if exists al_marcar_asistencia_avisar on public.asistencias;
 create trigger al_marcar_asistencia_avisar after insert or update of salida on public.asistencias
   for each row execute function public.al_marcar_asistencia_avisar();
 
+-- ---------- Pago online (dLocal Go) ----------
+-- El servicio de Cloudflare crea el pago en dLocal Go, el cliente paga en la página de dLocal y
+-- vuelve; dLocal le avisa al servicio (aviso firmado) y el servicio confirma acá. Todo con la
+-- clave del servicio (la misma de Torre): desde el navegador no se puede marcar nada como pagado.
+alter table public.pagos_web add column if not exists pasarela_id text;
+create unique index if not exists pagos_web_pasarela on public.pagos_web (pasarela_id) where pasarela_id is not null;
+-- 'prueba' = botón «Pagar» simulado; al confirmarse el primer pago real pasa a 'dlocal' y el simulado se apaga
+alter table public.asistente_config add column if not exists pasarela text not null default 'prueba';
+
+-- Datos para crear el cobro de una reserva web (solo con su código secreto de un solo uso)
+create or replace function public.pago_web_preparar(p_clave text, p_reserva uuid, p_token uuid) returns json
+language plpgsql security definer set search_path = public as $$
+declare v_pw public.pagos_web; r public.reservas;
+begin
+  perform public.asistente_validar(p_clave, null);
+  select * into v_pw from public.pagos_web where reserva_id = p_reserva and token = p_token;
+  if not found or v_pw.usado is not null or v_pw.vence < now() then
+    raise exception 'El pago de esta reserva venció o ya se hizo. Volvé a hacer la reserva.' using errcode = 'P0001';
+  end if;
+  select * into r from public.reservas where id = p_reserva;
+  if r.estado = 'cancelada' or r.total - r.pagado <= 0 then raise exception 'Esta reserva no tiene nada para pagar.' using errcode = 'P0001'; end if;
+  return json_build_object('codigo', r.codigo, 'saldo', r.total - r.pagado, 'total', r.total, 'nombre', r.cliente_nombre,
+    'email', r.cliente_email, 'telefono', r.cliente_telefono, 'matricula', r.matricula, 'entrada', r.entrada, 'salida', r.salida,
+    'lugar_tipo', r.lugar_tipo, 'servicio', r.servicio, 'pasarela_id', v_pw.pasarela_id);
+end $$;
+
+-- Guarda el identificador del pago en dLocal (para confirmarlo cuando avise)
+create or replace function public.pago_web_guardar(p_clave text, p_reserva uuid, p_pasarela_id text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.asistente_validar(p_clave, null);
+  update public.pagos_web set pasarela_id = left(p_pasarela_id, 60) where reserva_id = p_reserva and usado is null;
+end $$;
+
+-- Cómo quedó el pago de una reserva (para la pantalla de vuelta de dLocal)
+create or replace function public.pago_web_estado(p_clave text, p_reserva uuid, p_token uuid) returns json
+language plpgsql security definer set search_path = public as $$
+declare v_pw public.pagos_web; r public.reservas;
+begin
+  perform public.asistente_validar(p_clave, null);
+  select * into v_pw from public.pagos_web where reserva_id = p_reserva and token = p_token;
+  if not found then raise exception 'No encontramos esa reserva.' using errcode = 'P0001'; end if;
+  select * into r from public.reservas where id = p_reserva;
+  return json_build_object('pasarela_id', v_pw.pasarela_id, 'pagada', r.pagado >= r.total and r.total > 0,
+    'codigo', r.codigo, 'total', r.total, 'pagado', r.pagado, 'entrada', r.entrada, 'salida', r.salida,
+    'lugar_tipo', r.lugar_tipo, 'servicio', r.servicio, 'matricula', r.matricula, 'modelo', r.modelo, 'color', r.color,
+    'nombre', r.cliente_nombre, 'telefono', r.cliente_telefono, 'estado', r.estado);
+end $$;
+
+-- dLocal confirmó el pago: se registra (una sola vez) y la reserva queda pagada online.
+-- p_cobrado es lo que cobró dLocal; con p_prueba (monto de prueba) igual se salda la reserva.
+create or replace function public.pago_web_confirmar(p_clave text, p_pasarela_id text, p_cobrado numeric, p_prueba boolean default false) returns json
+language plpgsql security definer set search_path = public as $$
+declare v_pw public.pagos_web; r public.reservas; v_monto int;
+begin
+  perform public.asistente_validar(p_clave, null);
+  select * into v_pw from public.pagos_web where pasarela_id = p_pasarela_id for update;
+  if not found then raise exception 'Pago desconocido.' using errcode = 'P0001'; end if;
+  select * into r from public.reservas where id = v_pw.reserva_id for update;
+  if v_pw.usado is not null or r.pagado >= r.total then return json_build_object('codigo', r.codigo, 'ya', true); end if;
+  v_monto := case when p_prueba then r.total - r.pagado else least(r.total - r.pagado, floor(coalesce(p_cobrado, 0))::int) end;
+  if v_monto <= 0 then raise exception 'Monto cobrado no válido.' using errcode = 'P0001'; end if;
+  insert into public.pagos (reserva_id, monto, medio, ref, usuario_nombre)
+  values (r.id, v_monto, 'online', left('dLocal ' || p_pasarela_id || case when p_prueba then ' (prueba: $ ' || p_cobrado || ')' else '' end, 60), 'web');
+  update public.reservas set pagado = pagado + v_monto where id = r.id;
+  update public.pagos_web set usado = now() where reserva_id = r.id;
+  perform public.mover_caja('Reserva ' || r.codigo || ' · ' || r.matricula, 'online', v_monto, 'web');
+  insert into public.auditoria (usuario_nombre, accion)
+  values ('web', 'Pago online (dLocal ' || p_pasarela_id || ') de ' || r.codigo || ': $ ' || v_monto || case when p_prueba then ' · prueba, cobró $ ' || p_cobrado else '' end);
+  update public.asistente_config set pasarela = 'dlocal' where id = 1 and pasarela = 'prueba';
+  return json_build_object('codigo', r.codigo, 'monto', v_monto);
+end $$;
+
 revoke execute on function public.asistente_normalizar(text), public.asistente_estado(), public.asistente_agregar(text, text),
                            public.asistente_quitar(text), public.asistente_nueva_clave(),
                            public.asistente_consulta(text, text, timestamptz, timestamptz),
@@ -1276,11 +1353,15 @@ revoke execute on function public.asistente_normalizar(text), public.asistente_e
                            public.asistente_buscar(text, text, text), public.asistente_telefono(text, text, text),
                            public.anotar_sistema(text), public.asistente_aviso(text, uuid, text),
                            public.asistente_aviso_personal(uuid, text), public.al_marcar_asistencia_avisar(),
+                           public.pago_web_preparar(text, uuid, uuid), public.pago_web_guardar(text, uuid, text),
+                           public.pago_web_estado(text, uuid, uuid), public.pago_web_confirmar(text, text, numeric, boolean),
                            public.al_cambiar_reserva_avisar() from public, anon, authenticated;
 grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text),
                           public.asistente_nueva_clave() to authenticated;
 grant execute on function public.asistente_consulta(text, text, timestamptz, timestamptz),
                           public.asistente_visto(text, text), public.asistente_buscar(text, text, text),
+                          public.pago_web_preparar(text, uuid, uuid), public.pago_web_guardar(text, uuid, text),
+                          public.pago_web_estado(text, uuid, uuid), public.pago_web_confirmar(text, text, numeric, boolean),
                           public.asistente_telefono(text, text, text), public.asistente_aviso(text, uuid, text) to anon, authenticated;
 
 notify pgrst, 'reload schema';
