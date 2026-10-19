@@ -121,7 +121,7 @@
   var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador', telefono: 'Teléfono' };
   /* Por dónde entró la reserva, con su color: así no hace falta una leyenda aparte */
   var ORIGEN_LARGO = { web: 'Reserva web', whatsapp: 'Reserva por WhatsApp', mostrador: 'Reserva en mostrador', telefono: 'Reserva por teléfono' };
-  function badgeOrigen(r) { return '<span class="origen origen--' + r.origen + '"><i class="punto punto--' + r.origen + '"></i>' + (ORIGEN_LARGO[r.origen] || r.origen) + '</span>'; }
+  function badgeOrigen(r, codigo) { return '<span class="origen origen--' + r.origen + '"><i class="punto punto--' + r.origen + '"></i>' + (ORIGEN_LARGO[r.origen] || r.origen) + (codigo ? ' · ' + codigo : '') + '</span>'; }
   var MEDIOS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta (POS)', transferencia: 'Transferencia', online: 'Online', egreso: 'Egreso' };
 
   /* ---------- Traslados derivados de las reservas ---------- */
@@ -914,8 +914,7 @@
       ['user', '<strong>' + esc(r.cliente.nombre) + '</strong>'],
       ['car-front', '<span class="matricula">' + esc(r.vehiculo.matricula) + '</span> ' + esc([r.vehiculo.modelo, r.vehiculo.color].filter(Boolean).join(' '))],
       ['square-parking', TIPO[r.lugarTipo] + (r.lugar ? ' · lugar ' + r.lugar : '') + (r.servicio === 'valet' ? ' · Valet' : '')],
-      vuelo ? [x.cat === 'sale' ? 'plane-landing' : 'plane-takeoff', 'Vuelo ' + esc(vuelo)] : null,
-      ['calendar-check', 'Reserva ' + r.codigo]
+      vuelo ? [x.cat === 'sale' ? 'plane-landing' : 'plane-takeoff', 'Vuelo ' + esc(vuelo)] : null
     ].filter(Boolean);
     var attr = porEntrar ? 'data-entrada="' + r.codigo + '"' : porSalir ? 'data-salida="' + r.codigo + '"' : 'data-abrir-reserva="' + r.id + '"';
     var dato = function (i, t, cls) { return '<span class="ev__dato' + (cls ? ' ' + cls : '') + '">' + ico(i) + '<span>' + t + '</span></span>'; };
@@ -925,7 +924,7 @@
       '<span class="ev__fila">' + '<span class="ev__tipo">' + ico(cat[2]) + cat[1] + '</span>' +
         dato('clock', (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora), 'ev__dato--hora') + dato(lineas[0][0], lineas[0][1]) + dato(lineas[1][0], lineas[1][1]) + '</span>' +
       /* Fila 2: lugar, vuelo, reserva y cómo viene */
-      '<span class="ev__fila ev__fila--2">' + (x.cat === 'llega' || x.cat === 'sale' ? badgeOrigen(r) : '') + lineas.slice(2).map(function (l) { return dato(l[0], l[1]); }).join('') +
+      '<span class="ev__fila ev__fila--2">' + lineas.slice(2).map(function (l) { return dato(l[0], l[1]); }).join('') + badgeOrigen(r, r.codigo) +
         dato(estado[0], estado[1], 'ev__dato--estado') + '</span>' +
       /* Al costado, bien visible: el pago (y el botón) */
       '<span class="ev__lado">' + pagoGrande(r) + accion + '</span>' +
