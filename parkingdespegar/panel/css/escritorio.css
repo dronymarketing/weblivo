@@ -105,3 +105,8 @@
 .entrada-barra__fila { grid-template-columns: 1fr auto; align-items: center; }
 .entrada-barra__fila .btn { width: auto; min-height: 56px; padding: 0 28px; }
 .ev__accion { justify-self: start; }
+/* Agenda: la tarjeta a lo ancho, dos filas a la izquierda y el pago a la derecha */
+.hora-fila__eventos { grid-template-columns: 1fr; }
+.ev { grid-template-columns: 1fr auto; grid-template-areas: "f1 lado" "f2 lado"; gap: 4px 16px; padding: 8px 12px 8px 14px; }
+.ev__lado { flex-wrap: nowrap; justify-content: flex-end; }
+.pago { min-width: 150px; justify-content: center; }

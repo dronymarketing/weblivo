@@ -337,7 +337,7 @@
   function fila(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
 
   /* Nueva reserva desde el mostrador o por WhatsApp */
-  function formReserva() {
+  function formReserva(origen) {
     var t = D().tarifas;
     var man = new Date(Date.now() + PD.DIA);
     var caja = abrirVentana(
@@ -350,26 +350,42 @@
       '<div class="formulario__fila"><label class="campo"><span>Nombre</span><input name="nombre" required></label><label class="campo"><span>Teléfono</span><input name="telefono" type="tel" required></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet (+' + plata(t.valet) + ')</option></select></label><label class="campo"><span>Pasajeros</span><input name="pasajeros" type="number" min="1" max="8" value="2"></label></div>' +
       '<p class="total-linea">Total <strong data-total-nueva></strong><small data-dias-nueva></small></p>' +
-      '<fieldset class="factura-campos"><legend>' + ico('landmark') + 'Pago</legend>' +
-        '<div class="eleccion"><label><input type="radio" name="pagoNueva" value="no" checked><span>Todavía no pagó<small>Paga al entrar</small></span></label>' +
-        '<label><input type="radio" name="pagoNueva" value="transferencia"><span>Ya pagó por transferencia<small>Queda listo para la entrada</small></span></label></div>' +
-        '<div class="formulario__fila" data-campos-transf hidden><label class="campo"><span>Monto transferido</span><input name="montoTransf" type="number" min="1" data-monto-nueva></label>' +
-        '<label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off"></label></div>' +
-      '</fieldset>' +
+      '<fieldset class="factura-campos" data-pago-nueva></fieldset>' +
       '<p class="campo-error" data-error-nueva hidden></p>' +
-      '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar reserva</button></div></form>', 'ancha');
+      '<div class="ventana__acciones"><button class="btn btn--primario" type="submit" data-guardar-nueva>' + ico('check') + 'Guardar reserva</button></div></form>', 'ancha');
     var fn = $('[data-form-nueva]', caja), montoTocado = false;
+    if (origen) fn.origen.value = origen;
+    /* En el mostrador el cliente está ahí: se cobra en el momento y la reserva queda pagada.
+       Por WhatsApp o teléfono: paga al entrar, o ya pagó por transferencia. */
+    function campospago() {
+      var mostrador = fn.origen.value === 'mostrador';
+      $('[data-pago-nueva]', caja).innerHTML = '<legend>' + ico('landmark') + (mostrador ? 'Cobro en el mostrador' : 'Pago') + '</legend>' +
+        (mostrador
+          ? '<div class="eleccion eleccion--tres">' + [['efectivo', 'Efectivo'], ['tarjeta', 'Tarjeta (POS)'], ['transferencia', 'Transferencia']].map(function (m, i) {
+              return '<label><input type="radio" name="pagoNueva" value="' + m[0] + '"' + (i === 0 ? ' checked' : '') + '><span>' + m[1] + '<small>Cobra ahora</small></span></label>';
+            }).join('') + '</div>' +
+            '<p class="ayuda">Se cobra el total ahora y la reserva queda pagada. En la entrada no hay nada más que cobrar.</p>' +
+            '<div class="formulario__fila" data-campos-transf hidden><label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off"></label></div>'
+          : '<div class="eleccion"><label><input type="radio" name="pagoNueva" value="no" checked><span>Todavía no pagó<small>Paga al entrar</small></span></label>' +
+            '<label><input type="radio" name="pagoNueva" value="transferencia"><span>Ya pagó por transferencia<small>Queda listo para la entrada</small></span></label></div>' +
+            '<div class="formulario__fila" data-campos-transf hidden><label class="campo"><span>Monto transferido</span><input name="montoTransf" type="number" min="1" data-monto-nueva></label>' +
+            '<label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off"></label></div>');
+      montoTocado = false;
+    }
     function totalNueva() {
       var p = PD.precio({ entrada: fn.entrada.value, salida: fn.salida.value, lugarTipo: fn.lugarTipo.value, servicio: fn.servicio.value });
       $('[data-total-nueva]', caja).textContent = plata(p.total);
       $('[data-dias-nueva]', caja).textContent = p.dias + (p.dias === 1 ? ' día' : ' días');
-      if (!montoTocado) fn.montoTransf.value = p.total;
+      if (fn.montoTransf && !montoTocado) fn.montoTransf.value = p.total;
+      $('[data-guardar-nueva]', caja).innerHTML = ico('check') + (fn.origen.value === 'mostrador' ? 'Cobrar ' + plata(p.total) + ' y guardar' : 'Guardar reserva');
     }
     fn.addEventListener('input', function (e) { if (e.target === fn.montoTransf) montoTocado = true; totalNueva(); });
     fn.addEventListener('change', function (e) {
-      if (e.target.name === 'pagoNueva') $('[data-campos-transf]', caja).hidden = e.target.value !== 'transferencia';
+      if (e.target.name === 'origen') campospago();
+      if (e.target.name === 'pagoNueva' || e.target.name === 'origen') $('[data-campos-transf]', caja).hidden = fn.pagoNueva.value !== 'transferencia';
       totalNueva();
     });
+    campospago();
     totalNueva();
     $('[data-form-nueva]', caja).addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -378,20 +394,22 @@
       err.hidden = true;
       if (!f.matricula.value.trim() || !f.nombre.value.trim() || !f.telefono.value.trim()) { err.textContent = 'Completá matrícula, nombre y teléfono.'; err.hidden = false; return; }
       if (!(sal > ent)) { err.textContent = 'La salida tiene que ser después de la entrada.'; err.hidden = false; return; }
-      var transf = f.pagoNueva.value === 'transferencia' ? (+f.montoTransf.value || 0) : 0;
-      if (f.pagoNueva.value === 'transferencia' && !(transf > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
+      var mostrador = f.origen.value === 'mostrador', medio = f.pagoNueva.value;
+      var transf = !mostrador && medio === 'transferencia' ? (+f.montoTransf.value || 0) : 0;
+      if (!mostrador && medio === 'transferencia' && !(transf > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
       var res = await ejecutar(f.querySelector('[type=submit]'), async function () {
         var r = await PD.crearReserva({
           origen: f.origen.value, lugar_tipo: f.lugarTipo.value, servicio: f.servicio.value, pasajeros: +f.pasajeros.value || 1,
           entrada: ent.toISOString(), salida: sal.toISOString(),
           nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), matricula: f.matricula.value.trim(), modelo: f.modelo.value.trim()
         });
-        var monto = transf > 0 ? Math.min(transf, r.total) : 0;
-        if (monto > 0) await PD.registrarPago(r.id, monto, 'transferencia', f.refTransf.value.trim());
+        /* Mostrador: se cobra el total que calculó el servidor */
+        var monto = mostrador ? r.total : transf > 0 ? Math.min(transf, r.total) : 0;
+        if (monto > 0) await PD.registrarPago(r.id, monto, mostrador ? medio : 'transferencia', f.refTransf ? f.refTransf.value.trim() : '');
         return { r: r, monto: monto };
       }, err);
       if (res === FALLO) return;
-      cerrarVentana(); avisar('Reserva ' + res.r.codigo + ' guardada' + (res.monto > 0 ? ' con ' + plata(res.monto) + ' por transferencia' : '')); pintar();
+      cerrarVentana(); avisar('Reserva ' + res.r.codigo + ' guardada' + (res.monto > 0 ? (mostrador ? ' y cobrada: ' + plata(res.monto) + ' en ' + MEDIOS[medio].toLowerCase() : ' con ' + plata(res.monto) + ' por transferencia') : '')); pintar();
     });
   }
   function local(ms) { var d = new Date(ms); return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()) + 'T' + PD.pad(d.getHours()) + ':' + PD.pad(d.getMinutes()); }
@@ -519,9 +537,8 @@
     $('[data-imprimir]', caja).addEventListener('click', function () { window.print(); });
   }
   function sinReserva() {
-    formReserva();
-    $('[name="origen"]').value = 'mostrador';
-    var e = $('[name="entrada"]'); e.value = local(Date.now());
+    formReserva('mostrador');
+    var e = $('[name="entrada"]'); e.value = local(Date.now()); e.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
   /* Comprobante imprimible con código de barras */
@@ -902,12 +919,25 @@
       ['calendar-check', 'Reserva ' + r.codigo]
     ].filter(Boolean);
     var attr = porEntrar ? 'data-entrada="' + r.codigo + '"' : porSalir ? 'data-salida="' + r.codigo + '"' : 'data-abrir-reserva="' + r.id + '"';
+    var dato = function (i, t, cls) { return '<span class="ev__dato' + (cls ? ' ' + cls : '') + '">' + ico(i) + '<span>' + t + '</span></span>'; };
+    var accion = porEntrar ? '<span class="ev__accion">' + ico('log-in') + 'Registrar entrada</span>' : porSalir ? '<span class="ev__accion">' + ico('log-out') + 'Registrar salida</span>' : '';
     return '<button type="button" class="ev ev--' + x.cat + (x.atrasada ? ' ev--atrasada' : '') + '" ' + attr + '>' +
-      '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + ico('clock') + (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora) + '</span></span>' +
-      lineas.map(function (l) { return '<span class="ev__linea">' + ico(l[0]) + '<span>' + l[1] + '</span></span>'; }).join('') +
-      '<span class="ev__pie"><span class="ev__estado">' + ico(estado[0]) + estado[1] + '</span>' + (r.estado === 'cancelada' ? '' : badgePago(r)) + '</span>' +
-      (porEntrar ? '<span class="ev__accion">' + ico('log-in') + 'Registrar entrada</span>' : porSalir ? '<span class="ev__accion">' + ico('log-out') + 'Registrar salida</span>' : '') +
+      /* Fila 1: qué es, a qué hora, quién y con qué auto */
+      '<span class="ev__fila">' + '<span class="ev__tipo">' + ico(cat[2]) + cat[1] + '</span>' +
+        dato('clock', (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora), 'ev__dato--hora') + dato(lineas[0][0], lineas[0][1]) + dato(lineas[1][0], lineas[1][1]) + '</span>' +
+      /* Fila 2: lugar, vuelo, reserva y cómo viene */
+      '<span class="ev__fila ev__fila--2">' + lineas.slice(2).map(function (l) { return dato(l[0], l[1]); }).join('') +
+        dato(estado[0], estado[1], 'ev__dato--estado') + '</span>' +
+      /* Al costado, bien visible: el pago (y el botón) */
+      '<span class="ev__lado">' + pagoGrande(r) + accion + '</span>' +
     '</button>';
+  }
+  /* El pago, grande y con color: que no pase desapercibido */
+  function pagoGrande(r) {
+    if (r.estado === 'cancelada') return '';
+    if (r.pago.estado === 'pagado') return '<span class="pago pago--bien">' + ico('circle-check') + '<span>Pagado' + (r.pago.medio === 'online' ? ' online' : '') + '</span></span>';
+    if (r.pago.estado === 'parcial') return '<span class="pago pago--alerta">' + ico('triangle-alert') + '<span>Falta ' + plata(r.total - r.pago.monto) + '</span></span>';
+    return '<span class="pago pago--error">' + ico('circle-x') + '<span>No pagado<small>Cobrar ' + plata(r.total) + '</small></span></span>';
   }
 
   /* ---------- HORARIOS DEL EQUIPO ---------- */

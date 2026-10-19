@@ -230,6 +230,12 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
       día hora por hora: cada cosa muestra la reserva completa (auto, cliente, lugar, servicio, vuelo,
       código, estado y pago, cada dato con su ícono; sin traslados, que van en su pestaña); las llegadas pendientes tienen «Registrar entrada» y se abren en una
       ventana (cobro, factura y lugar). Hoy también muestra arriba las llegadas atrasadas.
+      Tarjeta horizontal de dos filas con el pago en un recuadro grande de color (verde pagado,
+      rojo «No pagado · Cobrar $», ámbar «Falta $»).
+    · **Reserva en el mostrador = se cobra en el momento** (Santi, 19/10): el formulario de nueva
+      reserva con origen Mostrador pide el medio (efectivo, tarjeta o transferencia) y registra el
+      pago del total; «Agregar reserva» de Entrada abre así. WhatsApp/teléfono: paga al entrar o ya
+      pagó por transferencia, como antes.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de
