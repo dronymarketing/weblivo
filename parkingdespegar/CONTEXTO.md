@@ -228,7 +228,7 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     · **Entrada rehecha (Santi, 19/10):** arriba un buscador (código o matrícula; los resultados
       aparecen al escribir, Enter abre el primero) y el botón «Agregar reserva» (mostrador). Abajo el
       día hora por hora: cada cosa muestra la reserva completa (auto, cliente, lugar, servicio, vuelo,
-      código, estado y pago); las llegadas pendientes tienen «Registrar entrada» y se abren en una
+      código, estado y pago, cada dato con su ícono; sin traslados, que van en su pestaña); las llegadas pendientes tienen «Registrar entrada» y se abren en una
       ventana (cobro, factura y lugar). Hoy también muestra arriba las llegadas atrasadas.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la

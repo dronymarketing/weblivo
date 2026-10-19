@@ -768,3 +768,13 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
 .hora-fila--atrasadas { grid-template-columns: 1fr; }
 .hora-fila--atrasadas .hora-fila__h { padding-top: 0; }
 .ventana-llegada .bloque__cabeza { padding-right: 44px; }
+/* Líneas de la ficha en la agenda: un ícono para cada dato */
+.ev__linea { display: grid; grid-template-columns: 16px 1fr; align-items: center; gap: 8px; font-size: 13px; overflow-wrap: anywhere; }
+.ev__linea .ico { width: 16px; height: 16px; color: #47728a; stroke-width: 2; }
+.ev__linea .matricula { font-size: 12px; margin-right: 4px; }
+.ev__hora { display: inline-flex; align-items: center; gap: 4px; }
+.ev__hora .ico { width: 13px; height: 13px; }
+.ev__estado { display: inline-flex; align-items: center; gap: 5px; }
+.ev__estado .ico { width: 14px; height: 14px; stroke-width: 2; }
+.ev--atrasada .ev__estado { color: #9a3a05; }
+.ev__cabeza { padding-bottom: 4px; margin-bottom: 2px; border-bottom: 1px solid rgba(5, 63, 92, .1); }

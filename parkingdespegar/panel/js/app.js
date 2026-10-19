@@ -67,7 +67,7 @@
     { id: 'ajustes', nombre: 'Ajustes' }
   ];
   var SECCIONES = [
-    { id: 'panel', sector: 'hoy', nombre: 'Inicio', ico: 'sun', roles: ['admin', 'personal'],
+    { id: 'panel', sector: 'hoy', nombre: 'Inicio', ico: 'house', roles: ['admin', 'personal'],
       desc: 'Lo que pasa hoy en el parking, de un vistazo.' },
     { id: 'horarios', sector: 'hoy', nombre: 'Horarios', ico: 'timer', roles: ['admin', 'personal', 'chofer'],
       desc: 'Cuándo empieza y termina cada jornada de trabajo. Marcá tu entrada al llegar y tu salida al irte: Torre le avisa a la dueña.' },
@@ -849,7 +849,7 @@
   var CATEGORIAS = [
     ['web', 'Reserva web', 'calendar-check'], ['whatsapp', 'Reserva por WhatsApp', 'calendar-check'],
     ['mostrador', 'Reserva en mostrador', 'calendar-check'], ['telefono', 'Reserva por teléfono', 'calendar-check'],
-    ['llega', 'Entrada', 'log-in'], ['sale', 'Salida', 'log-out'], ['traslado', 'Traslado', 'bus']
+    ['llega', 'Entrada', 'log-in'], ['sale', 'Salida', 'log-out']
   ];
   /* Cuándo se hizo cada reserva y por dónde, quién llega, quién sale y los traslados (va en Entrada) */
   function agendaHoras(dia) {
@@ -861,7 +861,6 @@
       var sale = r.estado === 'finalizada' && r.checkout ? r.checkout : r.salida;
       if (mismoDia(sale, dia)) ev.push({ r: r, cat: 'sale', hora: sale, nota: r.estado === 'finalizada' ? 'ya se fue' : (r.vuelo.vuelta ? 'vuelo ' + esc(r.vuelo.vuelta) : 'todavía adentro') });
     });
-    trasladosDe(dia).forEach(function (t) { ev.push({ r: t.r, cat: 'traslado', hora: t.hora, nota: (t.tipo === 'ida' ? 'llevar al aeropuerto' : 'buscar en el aeropuerto') + ' · ' + TXT_TRASLADO[t.estado].toLowerCase() }); });
     /* Hoy: también las que tenían que llegar antes y todavía no llegaron */
     var esHoy = dia === inicioDia();
     var atrasadas = !esHoy ? [] : D().reservas.filter(function (r) { return r.estado === 'confirmada' && new Date(r.entrada) < dia; })
@@ -879,7 +878,7 @@
     return '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
         return '<span class="leyenda__item"><i class="punto punto--' + c[0] + '"></i>' + c[1] + ' <strong>' + (cuenta[c[0]] || 0) + '</strong></span>';
       }).join('') + '</div>' +
-      (ev.length || atrasadas.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas, salidas ni traslados.</p>') +
+      (ev.length || atrasadas.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas ni salidas.</p>') +
       '<ol class="horas">' + filas + '</ol>';
   }
 
@@ -889,18 +888,24 @@
     var r = x.r, cat = CATEGORIAS.filter(function (c) { return c[0] === x.cat; })[0];
     var porEntrar = x.cat === 'llega' && r.estado === 'confirmada' && puede('llegada');
     var porSalir = x.cat === 'sale' && r.estado === 'en_predio' && puede('retiros');
-    var estado = r.estado === 'cancelada' ? 'Cancelada' : x.cat === 'llega' ? (r.estado === 'confirmada' ? (x.atrasada ? 'Era el ' + fechaCorta(r.entrada) + ': todavía no llegó' : 'Todavía no llegó') : 'Ya entró' + (r.checkin ? ' a las ' + hora(r.checkin) : ''))
-      : x.cat === 'sale' ? (r.estado === 'finalizada' ? 'Ya se fue' : r.estado === 'en_predio' ? 'Todavía adentro' : 'Todavía no entró')
-      : x.cat === 'traslado' ? x.nota : 'Reserva para el ' + DIAS_CORTOS[new Date(r.entrada).getDay()] + ' ' + fechaCorta(r.entrada) + ' a las ' + hora(r.entrada);
-    var datos = [esc([r.vehiculo.modelo, r.vehiculo.color].filter(Boolean).join(' ')), TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ''),
-      r.servicio === 'valet' ? 'Valet' : 'Traslado · ' + r.pasajeros + ' pas.', x.cat === 'sale' && r.vuelo.vuelta ? 'Vuelo ' + esc(r.vuelo.vuelta) : x.cat !== 'sale' && r.vuelo.ida ? 'Vuelo ' + esc(r.vuelo.ida) : '', r.codigo]
-      .filter(Boolean).join(' · ');
+    /* Cómo viene: [ícono, texto] */
+    var estado = r.estado === 'cancelada' ? ['x', 'Cancelada']
+      : x.cat === 'llega' ? (r.estado === 'confirmada' ? (x.atrasada ? ['triangle-alert', 'Era el ' + fechaCorta(r.entrada) + ': todavía no llegó'] : ['clock', 'Todavía no llegó']) : ['circle-check', 'Ya entró' + (r.checkin ? ' a las ' + hora(r.checkin) : '')])
+      : x.cat === 'sale' ? (r.estado === 'finalizada' ? ['circle-check', 'Ya se fue'] : r.estado === 'en_predio' ? ['square-parking', 'Todavía adentro'] : ['clock', 'Todavía no entró'])
+      : ['calendar', 'Llega el ' + DIAS_CORTOS[new Date(r.entrada).getDay()] + ' ' + fechaCorta(r.entrada) + ' a las ' + hora(r.entrada)];
+    var vuelo = x.cat === 'sale' ? r.vuelo.vuelta : r.vuelo.ida;
+    var lineas = [
+      ['user', '<strong>' + esc(r.cliente.nombre) + '</strong>'],
+      ['car-front', '<span class="matricula">' + esc(r.vehiculo.matricula) + '</span> ' + esc([r.vehiculo.modelo, r.vehiculo.color].filter(Boolean).join(' '))],
+      ['square-parking', TIPO[r.lugarTipo] + (r.lugar ? ' · lugar ' + r.lugar : '') + (r.servicio === 'valet' ? ' · Valet' : '')],
+      vuelo ? [x.cat === 'sale' ? 'plane-landing' : 'plane-takeoff', 'Vuelo ' + esc(vuelo)] : null,
+      ['calendar-check', 'Reserva ' + r.codigo]
+    ].filter(Boolean);
     var attr = porEntrar ? 'data-entrada="' + r.codigo + '"' : porSalir ? 'data-salida="' + r.codigo + '"' : 'data-abrir-reserva="' + r.id + '"';
     return '<button type="button" class="ev ev--' + x.cat + (x.atrasada ? ' ev--atrasada' : '') + '" ' + attr + '>' +
-      '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora) + '</span></span>' +
-      '<span class="ev__titulo"><span class="matricula">' + esc(r.vehiculo.matricula) + '</span><strong>' + esc(r.cliente.nombre) + '</strong></span>' +
-      '<span class="ev__datos">' + datos + '</span>' +
-      '<span class="ev__pie"><span class="ev__estado">' + estado + '</span>' + (r.estado === 'cancelada' ? '' : badgePago(r)) + '</span>' +
+      '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + ico('clock') + (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora) + '</span></span>' +
+      lineas.map(function (l) { return '<span class="ev__linea">' + ico(l[0]) + '<span>' + l[1] + '</span></span>'; }).join('') +
+      '<span class="ev__pie"><span class="ev__estado">' + ico(estado[0]) + estado[1] + '</span>' + (r.estado === 'cancelada' ? '' : badgePago(r)) + '</span>' +
       (porEntrar ? '<span class="ev__accion">' + ico('log-in') + 'Registrar entrada</span>' : porSalir ? '<span class="ev__accion">' + ico('log-out') + 'Registrar salida</span>' : '') +
     '</button>';
   }
