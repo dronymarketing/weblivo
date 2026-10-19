@@ -1477,6 +1477,11 @@
   .vr .campo-fila { grid-template-columns: 1fr 1fr; }
   .vr .extras__lista { grid-template-columns: 1fr 1fr; }
 }
+/* En la computadora el total va en una sola línea: «TOTAL · 8 días  $ 3.920  IVA incluido» */
+@media (min-width: 600px) {
+  .vr__total { display: flex; align-items: baseline; gap: 12px; }
+  .vr__total strong { font-size: 28px; }
+}
 
 /* Dentro del marco: solo la ventana, a pantalla completa */
 .en-ventana .nav, .en-ventana .menu, .en-ventana .menu__velo, .en-ventana .pie { display: none !important; }
