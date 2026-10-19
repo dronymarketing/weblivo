@@ -19,6 +19,39 @@
   function escapar(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function ico(n) { return '<svg class="ico" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
 
+  /* ---------- En ventana (abierta desde otra página) o como página ---------- */
+  var enVentana = window.self !== window.top;
+  function arriba() {
+    var c = $('[data-cuerpo]');
+    if (c) c.scrollTop = 0;
+    var v = $('.vr'), y = v.getBoundingClientRect().top + window.scrollY - 90;
+    if (!enVentana && window.scrollY > y) window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+  /* La pasarela de pago se abre en la ventana entera del navegador, no dentro del marco */
+  function irA(url) { try { window.top.location.href = url; } catch (e) { location.href = url; } }
+  document.addEventListener('click', function (e) {
+    var c = e.target.closest('[data-cerrar-reserva]');
+    if (!c) return;
+    if (enVentana) { e.preventDefault(); window.parent.postMessage({ pd: 'cerrar-reserva' }, location.origin); return; }
+    var vino = document.referrer && new URL(document.referrer).origin === location.origin && !/reservar\.html/.test(document.referrer);
+    if (vino && history.length > 1) { e.preventDefault(); history.back(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && enVentana && $('[data-pasarela]').hidden) window.parent.postMessage({ pd: 'cerrar-reserva' }, location.origin);
+  });
+
+  if (enVentana && window.ResizeObserver) {
+    var medir = function () {
+      var alto = ['.vr__cabeza', '.vr__pasos', '[data-pie]'].reduce(function (t, sel) { var el = $(sel); return t + (el && !el.hidden ? el.offsetHeight : 0); }, 0);
+      var c = $('[data-cuerpo]'), cs = getComputedStyle(c);
+      alto += Array.prototype.reduce.call(c.children, function (t, el) { return t + (el.hidden ? 0 : el.offsetHeight); }, 0) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      window.parent.postMessage({ pd: 'alto-reserva', alto: Math.ceil(alto) }, location.origin);
+    };
+    var ro = new ResizeObserver(medir);
+    Array.prototype.forEach.call($('[data-cuerpo]').children, function (el) { ro.observe(el); });
+    ['.vr__cabeza', '[data-pie]'].forEach(function (sel) { ro.observe($(sel)); });
+  }
+
   /* ---------- Fechas por defecto: mañana a la madrugada, vuelta en 7 días ---------- */
   function ymd(d) { return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()); }
   var hoy = new Date();
@@ -159,22 +192,21 @@
     });
     $('[data-campo-pasajeros]').hidden = form.servicio.value === 'valet';
     var chip = $('[data-chip-fechas]');
-    chip.hidden = !ok;
-    var cot = $('[data-cotizacion]'), lin = $('[data-lineas]');
+    chip.hidden = !ok || form.hidden;
+    var cot = $('[data-cotizacion]');
     if (!ok) {
       $('[data-total]').textContent = '$ —';
-      $('[data-dias]').textContent = 'Elegí las fechas';
+      $('[data-dias]').textContent = '';
       $('[data-cotizacion-total]').textContent = '$ —';
-      lin.innerHTML = cot.innerHTML = '';
+      cot.innerHTML = '';
       return null;
     }
     var p = calcular(b);
     $('[data-chip-texto]').textContent = fechaChip(b.entrada) + ' → ' + fechaChip(b.salida);
     $('[data-chip-dias]').textContent = p.dias + (p.dias === 1 ? ' día' : ' días');
     $('[data-total]').textContent = plata(p.total);
-    $('[data-dias]').textContent = p.dias + (p.dias === 1 ? ' día' : ' días');
+    $('[data-dias]').textContent = '· ' + p.dias + (p.dias === 1 ? ' día' : ' días');
     var l = htmlLineas(lineas(p, form.lugarTipo.value, form.servicio.value));
-    lin.innerHTML = l;
     cot.innerHTML = l;
     $('[data-cotizacion-total]').textContent = plata(p.total);
     $('[data-pagar-texto]').textContent = 'Pagar ' + plata(p.total);
@@ -229,12 +261,11 @@
     $('[data-atras]').hidden = n === 1;
     $('[data-siguiente]').hidden = n === TOTAL_PASOS;
     $('[data-pagar]').hidden = n !== TOTAL_PASOS;
-    $('[data-siguiente-texto]').textContent = n === 1 ? 'Ver precio' : n === 2 ? 'Continuar con mis datos' : 'Revisar la reserva';
+    $('[data-siguiente-texto]').textContent = n === 1 ? 'Ver precio' : n === 2 ? 'Mis datos' : 'Revisar';
     pintarResumen();
     if (n === TOTAL_PASOS) pintarRevisar();
     var titulo = $('[data-paso-reserva="' + n + '"] .paso-reserva__titulo');
-    var y = $('.reserva__arriba').getBoundingClientRect().top + window.scrollY - 110;
-    if (window.scrollY > y) window.scrollTo({ top: y, behavior: 'smooth' });
+    arriba();
     if (titulo) { titulo.setAttribute('tabindex', '-1'); titulo.focus({ preventScroll: true }); }
   }
 
@@ -374,7 +405,7 @@
         texto.textContent = 'Te llevamos a pagar…';
         try {
           var cobro = await servicio('/pago/crear', { reserva: r.id, token: r.token });
-          location.href = cobro.url;
+          irA(cobro.url);
           return;
         } catch (x) {
           if (x.codigo !== 'sin-pasarela') throw new Error('Tu reserva ' + r.codigo + ' quedó guardada, pero no pudimos abrir el pago: ' + x.message + ' Podés pagar al llegar o escribirnos por WhatsApp.');
@@ -417,7 +448,7 @@
     form.hidden = true;
     marcarPasos(5);
     $('[data-chip-fechas]').hidden = true;
-    $('.reserva__resumen').hidden = true;
+    $('[data-pie]').hidden = true;
     var c = $('[data-confirmacion]');
     $('[data-codigo]').textContent = r.codigo;
     var cl = $('[data-cambiar-link]'); if (cl) cl.href = 'mi-reserva.html?codigo=' + encodeURIComponent(r.codigo);
@@ -426,7 +457,7 @@
       new Date(r.entrada).toLocaleDateString('es-UY') + ' al ' + new Date(r.salida).toLocaleDateString('es-UY') + ').';
     $('[data-wa-confirmacion]').href = 'https://wa.me/59899114144?text=' + encodeURIComponent(texto);
     c.hidden = false;
-    window.scrollTo({ top: c.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
+    arriba();
     c.focus({ preventScroll: true });
   }
 
@@ -451,7 +482,7 @@
     if (!estado || !id) return false;
     var p = pendiente(id);
     history.replaceState(null, '', location.pathname);
-    form.hidden = true; $('.reserva__arriba').hidden = true; $('.reserva__resumen').hidden = true;
+    form.hidden = true; $('.vr__pasos').hidden = true; $('[data-pie]').hidden = true;
     var aviso = document.createElement('div');
     aviso.className = 'confirmacion pago-vuelta';
     aviso.setAttribute('tabindex', '-1');
@@ -467,7 +498,7 @@
         '<button type="button" class="btn btn--primario" data-reintentar><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Intentar el pago de nuevo</button>' + wa);
       aviso.querySelector('[data-reintentar]').addEventListener('click', function () {
         var btn = this; btn.disabled = true;
-        servicio('/pago/crear', { reserva: id, token: p.token }).then(function (c) { location.href = c.url; })
+        servicio('/pago/crear', { reserva: id, token: p.token }).then(function (c) { irA(c.url); })
           .catch(function (e) { btn.disabled = false; mensaje('Pago sin terminar', e.message, wa); });
       });
       return true;
@@ -479,7 +510,7 @@
         var e = res[0];
         if (e.pagada) {
           aviso.remove();
-          $('.reserva__arriba').hidden = false;
+          $('.vr__pasos').hidden = false;
           confirmar({ codigo: e.codigo, entrada: e.entrada, salida: e.salida, total: e.total, lugarTipo: e.lugar_tipo, servicio: e.servicio,
             vehiculo: { matricula: e.matricula, modelo: e.modelo, color: e.color }, cliente: { nombre: e.nombre, telefono: e.telefono },
             extras: e.extras || [], promo: e.promo || '' });

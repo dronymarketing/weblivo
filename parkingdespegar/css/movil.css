@@ -1358,3 +1358,135 @@
 /* Opiniones: cada reseña es una tarjeta */
 .resenas .resena { display: flex; flex-direction: column; justify-content: space-between; gap: 16px; padding: 22px; border: var(--borde); border-radius: var(--radio); background: var(--superficie); }
 .resenas .resena__autor { margin-top: 0; }
+
+/* ============================================================
+   RESERVA EN VENTANA (reservar.html)
+   Entrando directo: la ventana sobre una banda navy. Desde otra página:
+   la misma ventana en un marco encima (js/ventana-reserva.js), a pantalla completa.
+   ============================================================ */
+.reserva-pagina {
+  padding: calc(var(--nav-alto) + 16px) var(--margen-lateral) var(--sp-5);
+  background: linear-gradient(var(--fondo-alt) 0 220px, var(--fondo) 220px);
+}
+.pagina--reserva .pie { padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom)); }
+.vr {
+  max-width: 760px; margin: 0 auto;
+  display: flex; flex-direction: column;
+  background: var(--superficie);
+  border-radius: var(--radio);
+  box-shadow: 0 24px 60px -24px rgba(5, 63, 92, .45);
+}
+.vr__cabeza {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+  padding: 14px 16px 12px 20px;
+}
+.vr__logo { width: auto; height: 22px; flex-shrink: 0; }
+.vr__titulo { flex: 1; font-size: 18px; font-weight: 500; letter-spacing: -.01em; }
+.vr__cabeza .chip-fechas { order: 3; padding: 6px 12px; }
+.vr__cerrar {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--fondo); color: var(--texto);
+}
+.vr__cerrar .ico { width: 18px; height: 18px; }
+.vr__pasos { padding: 4px 20px 0; }
+.vr__pasos[hidden] { display: none; }
+.vr__cuerpo { padding: 18px 20px 22px; }
+.vr .paso-reserva { gap: 14px; }
+.vr .paso-reserva__titulo { font-size: 22px; margin-bottom: 0; }
+.vr .paso-reserva__sub { margin-top: 4px; font-size: 16px; }
+.vr .opciones { gap: 10px; }
+.vr .opcion__caja { padding: 12px 14px; row-gap: 0; }
+.vr .opcion__caja strong { font-size: 16px; }
+.vr .opcion__caja small { font-size: 13px; }
+.vr .opcion__total { font-size: 19px; }
+.vr .extras__lista { gap: 10px; }
+.vr .extra__caja { padding: 12px 14px; }
+.vr .grupo-datos { padding: 14px; }
+.vr .cotizacion { padding: 16px; }
+.vr .confirmacion { padding: 4px 0; }
+
+/* Entrada y salida: día y hora juntos en una caja */
+.fechas-fila { display: grid; gap: 10px; }
+.fecha-caja {
+  display: grid; gap: 2px;
+  padding: 10px 14px;
+  border-radius: var(--radio-chico);
+  border: 1px solid rgba(5, 63, 92, .2);
+  background: var(--superficie);
+}
+.fecha-caja:focus-within { border-color: var(--acento); box-shadow: inset 0 0 0 1px var(--acento); }
+.fecha-caja__rotulo { display: flex; align-items: center; gap: 6px; font-size: var(--fs-micro); font-weight: 500; letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--texto-suave); }
+.fecha-caja__rotulo .ico { width: 15px; height: 15px; color: var(--acento); }
+.fecha-caja__campos { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.fecha-caja__campos label { display: block; min-width: 0; }
+.fecha-caja input {
+  width: 100%; min-height: 40px; padding: 0;
+  border: 0; background: transparent; color: var(--texto);
+  font: inherit; font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums;
+}
+.fecha-caja input:focus { outline: none; }
+.fecha-caja input[type="time"] { width: auto; }
+
+/* Abajo, siempre a mano: el total y el botón para seguir */
+.vr__pie {
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 20px;
+  background: var(--superficie);
+  border-top: var(--borde);
+  border-radius: 0 0 var(--radio) var(--radio);
+}
+.vr__pie[hidden] { display: none; }
+.vr__total { display: grid; line-height: 1.1; min-width: 0; white-space: nowrap; }
+.vr__total-rotulo { font-size: var(--fs-micro); font-weight: 500; letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--texto-suave); }
+.vr__total-rotulo small { font-size: inherit; letter-spacing: 0; text-transform: none; }
+.vr__total strong { font-size: 26px; font-weight: 500; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.vr__iva { font-size: 12px; color: var(--texto-suave); }
+.vr__botones { display: flex; gap: 8px; flex-shrink: 0; }
+.vr__botones .btn { padding-inline: 18px; }
+@media (max-width: 420px) {
+  .vr__atras-txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .vr__botones [data-atras] { padding-inline: 14px; }
+  .vr__total strong { font-size: 22px; }
+}
+
+/* Desde 520 px (también dentro del marco en la computadora): fechas y lugares lado a lado */
+@media (min-width: 520px) {
+  .vr__cabeza { flex-wrap: nowrap; }
+  .vr__cabeza .chip-fechas { order: 0; }
+  .fechas-fila { grid-template-columns: 1fr 1fr; }
+  .vr .opciones { grid-template-columns: 1fr 1fr; }
+  .vr .campo-fila { grid-template-columns: 1fr 1fr; }
+  .vr .extras__lista { grid-template-columns: 1fr 1fr; }
+}
+
+/* Dentro del marco: solo la ventana, a pantalla completa */
+.en-ventana .nav, .en-ventana .menu, .en-ventana .menu__velo, .en-ventana .pie { display: none !important; }
+.en-ventana body { background: var(--superficie); }
+.en-ventana .reserva-pagina { padding: 0; background: none; }
+.en-ventana .vr { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
+.en-ventana .vr__cuerpo { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.en-ventana .vr__pie { position: static; border-radius: 0; }
+
+/* La capa que la abre encima de las otras páginas */
+.reserva-abierta, .reserva-abierta body { overflow: hidden; }
+.vr-capa {
+  position: fixed; inset: 0; z-index: 1000;
+  display: grid; place-items: center;
+  background: rgba(5, 63, 92, .55);
+  opacity: 0; transition: opacity 220ms var(--ease);
+}
+.vr-capa.es-visible { opacity: 1; }
+.vr-marco {
+  position: relative;
+  width: 100%; height: 100%;
+  background: var(--superficie);
+  overflow: hidden;
+  transform: translateY(16px); transition: transform 260ms var(--ease);
+}
+.vr-capa.es-visible .vr-marco { transform: none; }
+.vr-marco iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity 200ms var(--ease); }
+.vr-capa.es-lista iframe { opacity: 1; }
+.vr-marco__cargando { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--fs-small); color: var(--texto-suave); }
+@media (prefers-reduced-motion: reduce) { .vr-capa, .vr-marco, .vr-marco iframe { transition: none; } }

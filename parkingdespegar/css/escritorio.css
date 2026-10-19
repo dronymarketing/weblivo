@@ -323,3 +323,13 @@
 .promo__cifra strong { font-size: 96px; }
 .promo__cuerpo { padding: 32px; align-content: center; }
 .promo__titulo { font-size: 30px; }
+
+/* Reserva en ventana */
+.reserva-pagina { padding-top: calc(var(--nav-alto) + 40px); background: linear-gradient(var(--fondo-alt) 0 300px, var(--fondo) 300px); }
+.vr .paso-reserva__titulo { font-size: 26px; }
+.vr__cabeza { padding: 18px 20px 14px 28px; }
+.vr__pasos { padding: 4px 28px 0; }
+.vr__cuerpo { padding: 22px 28px 26px; }
+.vr__pie { padding: 14px 20px 14px 28px; }
+.vr .detalle div { grid-template-columns: 130px 1fr; }
+.vr-marco { width: min(760px, 100% - 48px); height: min(var(--alto-reserva, 860px), 100% - 48px); transition: transform 260ms var(--ease), height 200ms var(--ease); border-radius: var(--radio); box-shadow: 0 30px 80px -20px rgba(5, 63, 92, .6); }

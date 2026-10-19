@@ -346,6 +346,11 @@ diseño, los colores y la tipografía de Parking Despegar:
   RUT» y comentarios) · Revisar (todo junto, con «Cambiar» en cada parte) · Listo. Arriba, las fechas
   elegidas («20 oct → 27 oct · 8 días»). Los datos del cliente se pueden recordar en ese navegador
   (localStorage, nunca en el servidor). `reservar.html?promo=CODIGO` trae el código cargado.
+- **La reserva es una ventana** (19/10, pedido de Santi): cualquier link a `reservar.html` de las otras
+  páginas la abre encima (`js/ventana-reserva.js` carga la misma página en un marco; adentro lleva la clase
+  `en-ventana` y solo se ve la ventana, que avisa su alto para no dejar espacio de más). Entrando directo,
+  la ventana se ve sobre una banda navy. Arriba: logo, «Reservá tu lugar», fechas elegidas y la X; abajo,
+  siempre a mano, el total y el botón para seguir. La pasarela de pago se abre en la página entera.
 - **Servicios extra** (tabla `extras`, se editan en Precios): de ejemplo Lavado ($ 900) y Service (a
   cotizar: precio vacío, no suma al total). La reserva guarda nombre y precio del momento.
 - **Promociones y convenios** (tabla `promociones`, sección Promociones del panel): código, % de

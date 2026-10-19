@@ -19,14 +19,14 @@
 <meta name="twitter:image" content="https://livo.com.uy/parkingdespegar/img/og-blanco.jpg">
 <meta name="theme-color" content="#053f5c">
 <link rel="icon" href="img/isotipo.svg" type="image/svg+xml">
-<script>document.documentElement.classList.add('js');</script>
+<script>document.documentElement.classList.add('js'); if (window.self !== window.top) document.documentElement.classList.add('en-ventana');</script>
 <link rel="preload" href="fonts/inktura-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/tokens.css?v=1">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="css/fuentes.css?v=1">
 <link rel="stylesheet" href="css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=17">
-<link rel="stylesheet" href="css/escritorio.css?v=11" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=18">
+<link rel="stylesheet" href="css/escritorio.css?v=12" media="(min-width: 768px)">
 </head>
 <body class="pagina pagina--reserva">
 
@@ -161,44 +161,45 @@
 </nav>
 <!-- ===== /HEADER ===== -->
 
-<main>
+<main class="reserva-pagina">
+  <!-- ============ RESERVA ONLINE — una ventana compacta. Desde las otras páginas se abre encima
+       (js/ventana-reserva.js la carga en un marco con ?ventana=1); entrando directo, se ve sobre el fondo. ============ -->
+  <div class="vr" id="siguiente">
+    <header class="vr__cabeza">
+      <img class="vr__logo" src="img/isotipo.svg" alt="" width="45" height="30">
+      <h1 class="vr__titulo">Reservá tu lugar</h1>
+      <p class="chip-fechas" data-chip-fechas hidden><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg><span data-chip-texto></span><strong data-chip-dias></strong></p>
+      <a class="vr__cerrar" href="index.html" data-cerrar-reserva aria-label="Cerrar la reserva"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></a>
+    </header>
+    <ol class="pasos-reserva vr__pasos" aria-label="Pasos de la reserva">
+      <li class="es-actual" data-indicador="1"><span>1</span>Fechas</li>
+      <li data-indicador="2"><span>2</span>Precio</li>
+      <li data-indicador="3"><span>3</span>Tus datos</li>
+      <li data-indicador="4"><span>4</span>Revisar</li>
+      <li data-indicador="5"><span>5</span>Listo</li>
+    </ol>
 
-  <!-- ============ RESERVA ONLINE — banda navy (el nav va en blanco como en las demás internas) ============ -->
-  <section class="hero hero--pagina hero--reserva" id="inicio" data-hero>
-    <p class="antetitulo"><span class="punto-vivo" aria-hidden="true"></span>Reserva online · 24 h</p>
-    <h1 class="hero__titulo">Reserva online</h1>
-    <p class="hero__sub">Elegí fechas, lugar y servicio. Pagás online y te confirmamos por WhatsApp.</p>
-  </section>
-
-  <div class="sobre-hero">
-    <section class="seccion reserva" id="siguiente">
-      <div class="contenedor reserva__cuerpo">
-
-        <div class="reserva__arriba">
-          <ol class="pasos-reserva" aria-label="Pasos de la reserva">
-            <li class="es-actual" data-indicador="1"><span>1</span>Fechas</li>
-            <li data-indicador="2"><span>2</span>Precio</li>
-            <li data-indicador="3"><span>3</span>Tus datos</li>
-            <li data-indicador="4"><span>4</span>Revisar</li>
-            <li data-indicador="5"><span>5</span>Listo</li>
-          </ol>
-          <p class="chip-fechas" data-chip-fechas hidden><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg><span data-chip-texto></span><strong data-chip-dias></strong></p>
-        </div>
-
-        <form class="reserva__form" id="form-reserva" novalidate>
+    <div class="vr__cuerpo" data-cuerpo>
+      <form class="reserva__form" id="form-reserva" novalidate>
 
           <!-- PASO 1 · FECHAS Y LUGAR -->
           <fieldset class="paso-reserva" data-paso-reserva="1">
             <legend class="paso-reserva__titulo">¿Cuándo viajás?</legend>
-            <div class="campo-grupo">
-              <p class="campo-grupo__titulo"><svg class="ico" aria-hidden="true"><use href="#i-plane-takeoff"/></svg>Entrada</p>
-              <label class="campo"><span>Día</span><input type="date" name="entradaDia" required></label>
-              <label class="campo"><span>Hora</span><input type="time" name="entradaHora" value="06:00" required></label>
-            </div>
-            <div class="campo-grupo">
-              <p class="campo-grupo__titulo"><svg class="ico" aria-hidden="true"><use href="#i-plane-landing"/></svg>Salida</p>
-              <label class="campo"><span>Día</span><input type="date" name="salidaDia" required></label>
-              <label class="campo"><span>Hora</span><input type="time" name="salidaHora" value="18:00" required></label>
+            <div class="fechas-fila">
+              <div class="fecha-caja">
+                <p class="fecha-caja__rotulo"><svg class="ico" aria-hidden="true"><use href="#i-plane-takeoff"/></svg>Entrada</p>
+                <div class="fecha-caja__campos">
+                  <label><span class="solo-lectores">Día de entrada</span><input type="date" name="entradaDia" required></label>
+                  <label><span class="solo-lectores">Hora de entrada</span><input type="time" name="entradaHora" value="06:00" required></label>
+                </div>
+              </div>
+              <div class="fecha-caja">
+                <p class="fecha-caja__rotulo"><svg class="ico" aria-hidden="true"><use href="#i-plane-landing"/></svg>Salida</p>
+                <div class="fecha-caja__campos">
+                  <label><span class="solo-lectores">Día de salida</span><input type="date" name="salidaDia" required></label>
+                  <label><span class="solo-lectores">Hora de salida</span><input type="time" name="salidaHora" value="18:00" required></label>
+                </div>
+              </div>
             </div>
             <p class="paso-reserva__sub">¿Dónde lo dejás?</p>
             <div class="opciones">
@@ -306,20 +307,7 @@
             <p class="nota-pago"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>El pago se hace en la página segura de la pasarela: la web del parking no ve ni guarda los datos de tu tarjeta.</p>
           </fieldset>
 
-          <div class="reserva__botones">
-            <button type="button" class="btn btn--linea" data-atras hidden><svg class="ico" aria-hidden="true"><use href="#i-chevron-left"/></svg>Atrás</button>
-            <button type="button" class="btn btn--primario" data-siguiente><span data-siguiente-texto>Continuar</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
-            <button type="button" class="btn btn--primario btn--premium" data-pagar hidden><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><span data-pagar-texto>Pagar</span></button>
-          </div>
-        </form>
-
-        <!-- Resumen que acompaña (en celular, barra fija abajo) -->
-        <aside class="reserva__resumen" aria-live="polite">
-          <p class="reserva__resumen-rotulo">Tu reserva</p>
-          <p class="reserva__total"><span data-total>$ —</span><small data-dias></small></p>
-          <ul class="reserva__lineas" data-lineas></ul>
-          <p class="reserva__iva">IVA incluido</p>
-        </aside>
+      </form>
 
         <!-- Confirmación -->
         <div class="confirmacion" data-confirmacion hidden tabindex="-1">
@@ -330,13 +318,25 @@
           <dl class="detalle" data-detalle-final></dl>
           <div class="seccion__pie">
             <a class="btn btn--primario" data-wa-confirmacion href="#" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>Enviar por WhatsApp</a>
-            <a class="btn btn--linea" href="index.html">Volver al inicio<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            <a class="btn btn--linea" href="index.html" data-cerrar-reserva>Listo<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
           </div>
-          <p class="bajada">¿Se atrasa tu vuelo o te quedás más días? <a href="mi-reserva.html" data-cambiar-link>Cambiá las fechas de tu reserva</a>.</p>
+          <p class="bajada">¿Se atrasa tu vuelo o te quedás más días? <a href="mi-reserva.html" target="_top" data-cambiar-link>Cambiá las fechas de tu reserva</a>.</p>
         </div>
 
+    </div>
+
+    <footer class="vr__pie" data-pie>
+      <div class="vr__total" aria-live="polite">
+        <span class="vr__total-rotulo">Total <small data-dias></small></span>
+        <strong data-total>$ —</strong>
+        <small class="vr__iva">IVA incluido</small>
       </div>
-    </section>
+      <div class="vr__botones">
+        <button type="button" class="btn btn--linea" data-atras hidden><svg class="ico" aria-hidden="true"><use href="#i-chevron-left"/></svg><span class="vr__atras-txt">Atrás</span></button>
+        <button type="button" class="btn btn--primario" data-siguiente><span data-siguiente-texto>Continuar</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+        <button type="button" class="btn btn--primario" data-pagar hidden><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><span data-pagar-texto>Pagar</span></button>
+      </div>
+    </footer>
   </div>
 </main>
 
@@ -395,7 +395,7 @@
 <script src="js/supabase.js?v=2.117.3"></script>
 <script src="js/config.js?v=4"></script>
 <script src="js/datos.js?v=12"></script>
-<script src="js/reservar.js?v=9"></script>
+<script src="js/reservar.js?v=10"></script>
 <script src="js/main.js?v=5"></script>
 </body>
 </html>
