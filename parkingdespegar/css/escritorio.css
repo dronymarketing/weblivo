@@ -280,7 +280,7 @@
 .hero--reserva .hero__titulo { font-size: clamp(72px, 7vw, 120px); max-width: none; }
 .reserva { padding-bottom: var(--sp-7); }
 .reserva__cuerpo { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); column-gap: var(--sp-7); align-items: start; }
-.pasos-reserva, .reserva__form, .confirmacion { grid-column: 1; }
+.pasos-reserva, .reserva__form, .confirmacion, .pago-vuelta { grid-column: 1; }
 .pasos-reserva li { font-size: 13px; }
 .paso-reserva__titulo { font-size: 34px; }
 .campo-fila { grid-template-columns: 1fr 1fr; }
@@ -299,6 +299,10 @@
   background: var(--superficie);
 }
 .reserva__total { grid-row: auto; font-size: 48px; }
+.reserva__arriba { grid-column: 1; grid-template-columns: 1fr auto; align-items: end; column-gap: var(--sp-4); }
+.reserva__iva { display: block; font-size: 13px; color: var(--texto-suave); }
+.extras__lista { grid-template-columns: 1fr 1fr; }
+.grupo-datos { padding: 20px 22px; }
 .reserva__total small { display: block; margin: 6px 0 0; }
 .reserva__lineas { display: grid; gap: 8px; padding-top: 12px; border-top: var(--borde); font-size: var(--fs-small); }
 .reserva__lineas li { display: flex; justify-content: space-between; gap: 12px; }
@@ -310,3 +314,12 @@
 
 /* Cambiar mi reserva: la ayuda va al costado */
 .mi-reserva__ayuda { grid-column: 2; grid-row: 1 / span 3; position: sticky; top: calc(var(--nav-alto) + var(--sp-3)); }
+
+/* Promociones: tarjeta horizontal, con flechas */
+.promos__flechas:not([hidden]) { display: flex; }
+.promos__pista { grid-auto-columns: min(760px, 78%); margin-inline: 0; padding-inline: 0; scroll-padding-inline: 0; }
+.promo { grid-template-rows: none; grid-template-columns: 220px 1fr; }
+.promo__cifra { flex-direction: column; justify-content: center; align-items: flex-start; gap: 8px; padding: 32px; }
+.promo__cifra strong { font-size: 96px; }
+.promo__cuerpo { padding: 32px; align-content: center; }
+.promo__titulo { font-size: 30px; }

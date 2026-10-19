@@ -25,8 +25,8 @@
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="css/fuentes.css?v=1">
 <link rel="stylesheet" href="css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=16">
-<link rel="stylesheet" href="css/escritorio.css?v=10" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=17">
+<link rel="stylesheet" href="css/escritorio.css?v=11" media="(min-width: 768px)">
 </head>
 <body class="pagina pagina--reserva">
 
@@ -111,6 +111,12 @@
 <symbol id="i-file-spreadsheet" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /> <path d="M14 2v5a1 1 0 0 0 1 1h5" /> <path d="M8 13h2" /> <path d="M14 13h2" /> <path d="M8 17h2" /> <path d="M14 17h2" /></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /> <circle cx="12" cy="12" r="3" /></symbol>
 <symbol id="i-log-in" viewBox="0 0 24 24"><path d="m10 17 5-5-5-5" /> <path d="M15 12H3" /> <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /> <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /> <path d="M20 3v4" /> <path d="M22 5h-4" /> <path d="M4 17v2" /> <path d="M5 18H3" /></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></symbol>
+<symbol id="i-message-square" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></symbol>
+<symbol id="i-percent" viewBox="0 0 24 24"><line x1="19" x2="5" y1="5" y2="19" /> <circle cx="6.5" cy="6.5" r="2.5" /> <circle cx="17.5" cy="17.5" r="2.5" /></symbol>
+<symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10 9H8" /> <path d="M16 13H8" /> <path d="M16 17H8" /></symbol>
 </defs></svg>
 
 <!-- ===== HEADER — si cambia, cambiar en todas las páginas (se generan juntas) ===== -->
@@ -168,16 +174,20 @@
     <section class="seccion reserva" id="siguiente">
       <div class="contenedor reserva__cuerpo">
 
-        <ol class="pasos-reserva" aria-label="Pasos de la reserva">
-          <li class="es-actual" data-indicador="1"><span>1</span>Fechas</li>
-          <li data-indicador="2"><span>2</span>Lugar</li>
-          <li data-indicador="3"><span>3</span>Tus datos</li>
-          <li data-indicador="4"><span>4</span>Pago</li>
-        </ol>
+        <div class="reserva__arriba">
+          <ol class="pasos-reserva" aria-label="Pasos de la reserva">
+            <li class="es-actual" data-indicador="1"><span>1</span>Fechas</li>
+            <li data-indicador="2"><span>2</span>Precio</li>
+            <li data-indicador="3"><span>3</span>Tus datos</li>
+            <li data-indicador="4"><span>4</span>Revisar</li>
+            <li data-indicador="5"><span>5</span>Listo</li>
+          </ol>
+          <p class="chip-fechas" data-chip-fechas hidden><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg><span data-chip-texto></span><strong data-chip-dias></strong></p>
+        </div>
 
         <form class="reserva__form" id="form-reserva" novalidate>
 
-          <!-- PASO 1 · FECHAS -->
+          <!-- PASO 1 · FECHAS Y LUGAR -->
           <fieldset class="paso-reserva" data-paso-reserva="1">
             <legend class="paso-reserva__titulo">¿Cuándo viajás?</legend>
             <div class="campo-grupo">
@@ -190,29 +200,24 @@
               <label class="campo"><span>Día</span><input type="date" name="salidaDia" required></label>
               <label class="campo"><span>Hora</span><input type="time" name="salidaHora" value="18:00" required></label>
             </div>
-            <div class="campo-fila">
-              <label class="campo"><span>Vuelo de ida <em>(opcional)</em></span><input type="text" name="vueloIda" placeholder="Ej.: AR 1291" autocomplete="off"></label>
-              <label class="campo"><span>Vuelo de vuelta <em>(opcional)</em></span><input type="text" name="vueloVuelta" placeholder="Ej.: LA 7731" autocomplete="off"></label>
-            </div>
-            <label class="campo campo--corto"><span>Pasajeros en el traslado</span>
-              <select name="pasajeros"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
-            </label>
-            <p class="campo-error" data-error="1" hidden></p>
-          </fieldset>
-
-          <!-- PASO 2 · LUGAR Y SERVICIO -->
-          <fieldset class="paso-reserva" data-paso-reserva="2" hidden>
-            <legend class="paso-reserva__titulo">Lugar y servicio</legend>
+            <p class="paso-reserva__sub">¿Dónde lo dejás?</p>
             <div class="opciones">
               <label class="opcion">
                 <input type="radio" name="lugarTipo" value="techado" checked>
-                <span class="opcion__caja"><svg class="ico" aria-hidden="true"><use href="#i-house"/></svg><strong>Techado</strong><small data-precio="techado"></small><small class="opcion__libres" data-libres="techado"></small></span>
+                <span class="opcion__caja opcion__caja--precio"><svg class="ico" aria-hidden="true"><use href="#i-house"/></svg><strong>Techado</strong><span class="opcion__total" data-total-lugar="techado"></span><small data-precio="techado"></small><small class="opcion__libres" data-libres="techado"></small></span>
               </label>
               <label class="opcion">
                 <input type="radio" name="lugarTipo" value="aire">
-                <span class="opcion__caja"><svg class="ico" aria-hidden="true"><use href="#i-cloud-sun"/></svg><strong>Predio</strong><small data-precio="aire"></small><small class="opcion__libres" data-libres="aire"></small></span>
+                <span class="opcion__caja opcion__caja--precio"><svg class="ico" aria-hidden="true"><use href="#i-cloud-sun"/></svg><strong>Predio</strong><span class="opcion__total" data-total-lugar="aire"></span><small data-precio="aire"></small><small class="opcion__libres" data-libres="aire"></small></span>
               </label>
             </div>
+            <p class="campo-error" data-error="1" hidden></p>
+          </fieldset>
+
+          <!-- PASO 2 · PRECIO: servicio, extras y código de descuento -->
+          <fieldset class="paso-reserva" data-paso-reserva="2" hidden>
+            <legend class="paso-reserva__titulo">Tu precio</legend>
+            <p class="paso-reserva__sub">¿Cómo llegás al aeropuerto?</p>
             <div class="opciones">
               <label class="opcion">
                 <input type="radio" name="servicio" value="traslado" checked>
@@ -223,35 +228,87 @@
                 <span class="opcion__caja"><svg class="ico" aria-hidden="true"><use href="#i-key-round"/></svg><strong>Valet Parking</strong><small data-precio="valet"></small></span>
               </label>
             </div>
+
+            <div class="extras" data-bloque-extras hidden>
+              <p class="paso-reserva__sub">Servicios extra <em>(opcional)</em></p>
+              <div class="extras__lista" data-extras></div>
+            </div>
+
+            <div class="cupon">
+              <p class="paso-reserva__sub"><svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg>¿Tenés un código de descuento?</p>
+              <div class="cupon__fila">
+                <label class="campo"><span class="solo-lectores">Código de descuento</span><input type="text" name="promo" placeholder="Ej.: EMPRESA15" autocomplete="off" spellcheck="false" autocapitalize="characters"></label>
+                <button type="button" class="btn btn--linea" data-aplicar-promo>Aplicar</button>
+              </div>
+              <p class="cupon__ok" data-promo-ok hidden></p>
+            </div>
+
+            <div class="cotizacion" aria-live="polite">
+              <p class="cotizacion__titulo">Tu cotización</p>
+              <ul class="cotizacion__lineas" data-cotizacion></ul>
+              <p class="cotizacion__total"><span>Total</span><strong data-cotizacion-total>$ —</strong></p>
+              <p class="cotizacion__nota">IVA incluido · El precio se calcula según tus fechas.</p>
+            </div>
             <p class="campo-error" data-error="2" hidden></p>
           </fieldset>
 
-          <!-- PASO 3 · AUTO Y CONTACTO -->
+          <!-- PASO 3 · TUS DATOS -->
           <fieldset class="paso-reserva" data-paso-reserva="3" hidden>
-            <legend class="paso-reserva__titulo">Tu auto y tus datos</legend>
-            <div class="campo-fila">
-              <label class="campo"><span>Matrícula</span><input type="text" name="matricula" placeholder="SBA 1234" autocomplete="off" required></label>
-              <label class="campo"><span>Marca y modelo</span><input type="text" name="modelo" placeholder="Ej.: Chevrolet Onix" required></label>
+            <legend class="paso-reserva__titulo">Tus datos</legend>
+            <div class="grupo-datos">
+              <p class="campo-grupo__titulo"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>Quién reserva</p>
+              <div class="campo-fila">
+                <label class="campo"><span>Nombre y apellido</span><input type="text" name="nombre" autocomplete="name" required></label>
+                <label class="campo"><span>WhatsApp</span><input type="tel" name="telefono" placeholder="099 123 456" autocomplete="tel" required></label>
+              </div>
+              <label class="campo"><span>Email <em>(opcional)</em></span><input type="email" name="email" autocomplete="email"></label>
             </div>
-            <label class="campo campo--corto"><span>Color</span><input type="text" name="color" placeholder="Ej.: Gris"></label>
-            <div class="campo-fila">
-              <label class="campo"><span>Nombre y apellido</span><input type="text" name="nombre" autocomplete="name" required></label>
-              <label class="campo"><span>WhatsApp</span><input type="tel" name="telefono" placeholder="099 123 456" autocomplete="tel" required></label>
+            <div class="grupo-datos">
+              <p class="campo-grupo__titulo"><svg class="ico" aria-hidden="true"><use href="#i-car-front"/></svg>Tu auto</p>
+              <div class="campo-fila">
+                <label class="campo"><span>Matrícula</span><input type="text" name="matricula" placeholder="SBA 1234" autocomplete="off" required></label>
+                <label class="campo"><span>Tipo de vehículo</span>
+                  <select name="vehiculoTipo"><option value="auto">Auto</option><option value="suv">SUV o camioneta</option><option value="pickup">Pick-up</option><option value="utilitario">Utilitario</option><option value="moto">Moto</option></select>
+                </label>
+              </div>
+              <div class="campo-fila">
+                <label class="campo"><span>Marca y modelo</span><input type="text" name="modelo" placeholder="Ej.: Chevrolet Onix" required></label>
+                <label class="campo"><span>Color <em>(opcional)</em></span><input type="text" name="color" placeholder="Ej.: Gris"></label>
+              </div>
             </div>
-            <label class="campo"><span>Email <em>(opcional)</em></span><input type="email" name="email" autocomplete="email"></label>
+            <div class="grupo-datos">
+              <p class="campo-grupo__titulo"><svg class="ico" aria-hidden="true"><use href="#i-plane-takeoff"/></svg>Tu viaje</p>
+              <div class="campo-fila">
+                <label class="campo"><span>Vuelo de ida <em>(opcional)</em></span><input type="text" name="vueloIda" placeholder="Ej.: AR 1291" autocomplete="off"></label>
+                <label class="campo"><span>Vuelo de vuelta <em>(opcional)</em></span><input type="text" name="vueloVuelta" placeholder="Ej.: LA 7731" autocomplete="off"></label>
+              </div>
+              <label class="campo campo--corto" data-campo-pasajeros><span>Pasajeros en el traslado</span>
+                <select name="pasajeros"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+              </label>
+            </div>
+            <div class="grupo-datos">
+              <label class="casilla"><input type="checkbox" name="factura" data-pide-factura><span><svg class="ico" aria-hidden="true"><use href="#i-file-text"/></svg>Necesito factura con RUT (empresa)</span></label>
+              <div class="campo-fila" data-campos-factura hidden>
+                <label class="campo"><span>RUT</span><input type="text" name="facturaRut" inputmode="numeric" maxlength="12" placeholder="12 dígitos" autocomplete="off"></label>
+                <label class="campo"><span>Razón social</span><input type="text" name="facturaRazon" autocomplete="organization"></label>
+              </div>
+            </div>
+            <label class="campo"><span>Comentarios <em>(opcional)</em></span><textarea name="comentarios" rows="3" maxlength="300" placeholder="Ej.: viajo con una silla de bebé, llego con mucho equipaje…"></textarea></label>
+            <label class="casilla casilla--chica"><input type="checkbox" name="recordar" checked><span>Recordar mis datos en este dispositivo para la próxima reserva</span></label>
             <p class="campo-error" data-error="3" hidden></p>
           </fieldset>
 
-          <!-- PASO 4 · RESUMEN Y PAGO -->
+          <!-- PASO 4 · REVISAR Y PAGAR -->
           <fieldset class="paso-reserva" data-paso-reserva="4" hidden>
-            <legend class="paso-reserva__titulo">Revisá y pagá</legend>
-            <dl class="detalle" data-detalle></dl>
+            <legend class="paso-reserva__titulo">Revisá tu reserva</legend>
+            <div class="revisar" data-revisar></div>
+            <div class="cotizacion" data-cotizacion-final></div>
             <p class="nota-pago"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>El pago se hace en la página segura de la pasarela: la web del parking no ve ni guarda los datos de tu tarjeta.</p>
           </fieldset>
 
           <div class="reserva__botones">
             <button type="button" class="btn btn--linea" data-atras hidden><svg class="ico" aria-hidden="true"><use href="#i-chevron-left"/></svg>Atrás</button>
-            <button type="button" class="btn btn--primario" data-siguiente>Siguiente<svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+            <button type="button" class="btn btn--primario" data-siguiente><span data-siguiente-texto>Continuar</span><svg class="ico" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
             <button type="button" class="btn btn--primario btn--premium" data-pagar hidden><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><span data-pagar-texto>Pagar</span></button>
           </div>
         </form>
@@ -261,6 +318,7 @@
           <p class="reserva__resumen-rotulo">Tu reserva</p>
           <p class="reserva__total"><span data-total>$ —</span><small data-dias></small></p>
           <ul class="reserva__lineas" data-lineas></ul>
+          <p class="reserva__iva">IVA incluido</p>
         </aside>
 
         <!-- Confirmación -->
@@ -336,8 +394,8 @@
 <script src="lib/ScrollTrigger.min.js"></script>
 <script src="js/supabase.js?v=2.117.3"></script>
 <script src="js/config.js?v=4"></script>
-<script src="js/datos.js?v=11"></script>
-<script src="js/reservar.js?v=8"></script>
+<script src="js/datos.js?v=12"></script>
+<script src="js/reservar.js?v=9"></script>
 <script src="js/main.js?v=5"></script>
 </body>
 </html>

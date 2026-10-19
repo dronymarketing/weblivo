@@ -79,12 +79,12 @@
     if (!n.entrada || !n.salida || n.salida <= n.entrada) { el.textContent = 'La salida tiene que ser después de la entrada.'; return; }
     if (!tarifasListas) { el.textContent = ''; return; }
     if (res.estado === 'en_predio') {
-      var real = PD.precio({ entrada: n.entrada, salida: n.salida, lugarTipo: res.lugar_tipo, servicio: res.servicio });
+      var real = PD.precio({ entrada: n.entrada, salida: n.salida, lugarTipo: res.lugar_tipo, servicio: res.servicio, descuentoPct: res.descuento_pct, extrasTotal: res.extras_total });
       var dif = real.total - res.total;
       el.innerHTML = 'Retirás el <strong>' + fechaLarga(n.salida) + '</strong>' + (dif > 0 ? '<small>Son ' + real.dias + ' días: al retirarlo se pagan ' + plata(dif) + ' de diferencia.</small>' : '');
       return;
     }
-    var p = PD.precio({ entrada: n.entrada, salida: n.salida, lugarTipo: res.lugar_tipo, servicio: res.servicio }), saldo = p.total - res.pagado;
+    var p = PD.precio({ entrada: n.entrada, salida: n.salida, lugarTipo: res.lugar_tipo, servicio: res.servicio, descuentoPct: res.descuento_pct, extrasTotal: res.extras_total }), saldo = p.total - res.pagado;
     el.innerHTML = 'Nuevo total <strong>' + plata(p.total) + '</strong><small>' + p.dias + (p.dias === 1 ? ' día' : ' días') +
       (p.total !== res.total ? ' · antes ' + plata(res.total) : ' · el precio no cambia') +
       (res.pagado > 0 ? (saldo > 0 ? ' · ya pagaste ' + plata(res.pagado) + ': la diferencia de ' + plata(saldo) + ' se paga al llegar' : saldo < 0 ? ' · ya pagaste ' + plata(res.pagado) + ': te devolvemos ' + plata(-saldo) + ' en el parking' : ' · ya está pago') : ' · se paga al llegar') + '</small>';

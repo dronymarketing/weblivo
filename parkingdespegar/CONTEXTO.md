@@ -335,13 +335,38 @@ con webhook que confirme el pago en lugar de `pagar_reserva_web`, proveedor de f
 habilitado por DGI, SMTP propio para los mails de cuenta, tarifas y cantidad de lugares reales,
 recordatorio por WhatsApp un día antes. Registrar la base de datos personales (Ley 18.331).
 
+## Ideas tomadas de Ezypark (19/10)
+
+La clienta pasó ezypark.cl (Chile, hecha con ParkAlto) como ejemplo. Se tomaron **solo las ideas**, con el
+diseño, los colores y la tipografía de Parking Despegar:
+
+- **Reserva en 5 pasos** (`reservar.html`): Fechas (entrada, salida y lugar con el total de esas fechas y
+  los lugares libres) · Precio (traslado o valet, servicios extra, código de descuento y la cotización
+  con «IVA incluido») · Tus datos (quién reserva, auto con tipo de vehículo, viaje, «Necesito factura con
+  RUT» y comentarios) · Revisar (todo junto, con «Cambiar» en cada parte) · Listo. Arriba, las fechas
+  elegidas («20 oct → 27 oct · 8 días»). Los datos del cliente se pueden recordar en ese navegador
+  (localStorage, nunca en el servidor). `reservar.html?promo=CODIGO` trae el código cargado.
+- **Servicios extra** (tabla `extras`, se editan en Precios): de ejemplo Lavado ($ 900) y Service (a
+  cotizar: precio vacío, no suma al total). La reserva guarda nombre y precio del momento.
+- **Promociones y convenios** (tabla `promociones`, sección Promociones del panel): código, % de
+  descuento sobre el estacionamiento (los extras se cobran enteros), vigencia, si se muestra en el inicio
+  y si el código se ve en la web. El servidor valida el código (`promo_vigente`) y calcula el total
+  (`total_reserva`); el cambio de fechas y la salida con días de más respetan el descuento y los extras;
+  la factura sale con líneas de descuento y de cada extra.
+- **Inicio:** sección 04 «Ofertas para tu viaje» (`js/promociones.js`, sin supabase-js: llama a
+  `promociones_web` por REST). Si no hay promociones vigentes para la web, no aparece.
+- **Opiniones:** cada reseña con la inicial, las estrellas y la marca de Google; en Opiniones, en
+  tarjetas. Faltan más reseñas reales: no se inventan.
+- **Torre** muestra en la ficha del auto los extras, la promoción y los comentarios.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace
   falta la licencia web (Indotype). Con la completa se pueden poner tildes en los títulos.
 - **Valet — devolución del auto:** el paso 04 dice «Coordinamos cómo te lo devolvemos». Confirmar con
   la clienta si se entrega en la terminal o en el parking.
-- Más reseñas reales de Google para el carrusel (hoy rotan dos).
+- Más reseñas reales de Google para el carrusel y la página de Opiniones (hoy hay dos).
+- **Precios reales de los servicios extra** (Lavado está en $ 900 de ejemplo; Service, a cotizar).
 - Mail de contacto (no aparece en ningún lado).
 - **Tarifas reales** (la base arranca con techado $ 490/día, predio $ 390/día, valet $ 450; se cambian en Precios).
 - **Conectar Supabase:** crear el proyecto, correr `supabase/esquema.sql` y cargar URL y publishable key

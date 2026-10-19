@@ -186,6 +186,54 @@ create table if not exists public.asistencias (
 create unique index if not exists asistencia_abierta on public.asistencias (usuario_id) where salida is null;
 create index if not exists asistencias_entrada on public.asistencias (entrada);
 
+-- Servicios extra que el cliente suma a la reserva (lavado, service…). La dueña los edita en el panel.
+-- precio null = «a cotizar»: se coordina aparte y no suma al total.
+create table if not exists public.extras (
+  id      uuid primary key default gen_random_uuid(),
+  nombre  text not null check (char_length(nombre) between 2 and 40),
+  detalle text not null default '' check (char_length(detalle) <= 160),
+  precio  int check (precio between 0 and 1000000),
+  activo  boolean not null default true,
+  orden   int not null default 0
+);
+-- Dos de ejemplo la primera vez (los precios se cambian en el panel)
+insert into public.extras (nombre, detalle, precio, orden)
+  select * from (values
+    ('Lavado', 'Lavamos tu auto mientras viajás: a la vuelta te espera limpio.', 900, 1),
+    ('Service', 'Llevamos tu auto al service mientras viajás. El precio depende del auto: te lo pasamos por WhatsApp.', null::int, 2)
+  ) v (nombre, detalle, precio, orden)
+  where not exists (select 1 from public.extras);
+
+-- Promociones y convenios con empresas: un código de descuento sobre el estacionamiento
+create table if not exists public.promociones (
+  id         uuid primary key default gen_random_uuid(),
+  codigo     text not null unique check (codigo ~ '^[A-Z0-9-]{3,20}$'),
+  empresa    text not null default '' check (char_length(empresa) <= 60),
+  titulo     text not null check (char_length(titulo) between 2 and 80),
+  detalle    text not null default '' check (char_length(detalle) <= 240),
+  porcentaje int not null check (porcentaje between 1 and 90),
+  desde      date,
+  hasta      date,
+  activa     boolean not null default true,
+  en_web     boolean not null default true,   -- se muestra en «Promociones» del inicio
+  publico    boolean not null default false,  -- el código se ve en la web (si no, se pide a la empresa)
+  enlace     text not null default '' check (enlace = '' or enlace ~ '^https://'),
+  usos       int not null default 0,
+  creada     timestamptz not null default now(),
+  check (hasta is null or desde is null or hasta >= desde)
+);
+
+-- Lo que el cliente suma al reservar: extras, código de descuento, factura con RUT, tipo de vehículo y comentarios
+alter table public.reservas add column if not exists extras        jsonb not null default '[]';
+alter table public.reservas add column if not exists extras_total  int not null default 0 check (extras_total >= 0);
+alter table public.reservas add column if not exists promo_codigo  text not null default '';
+alter table public.reservas add column if not exists descuento_pct int not null default 0 check (descuento_pct between 0 and 90);
+alter table public.reservas add column if not exists descuento     int not null default 0 check (descuento >= 0);
+alter table public.reservas add column if not exists factura_rut   text not null default '' check (factura_rut ~ '^(\d{12})?$');
+alter table public.reservas add column if not exists factura_razon text not null default '' check (char_length(factura_razon) <= 120);
+alter table public.reservas add column if not exists vehiculo_tipo text not null default '' check (vehiculo_tipo in ('', 'auto', 'suv', 'pickup', 'utilitario', 'moto'));
+alter table public.reservas add column if not exists comentarios   text not null default '' check (char_length(comentarios) <= 300);
+
 -- ---------- Quién es quién ----------
 
 create or replace function public.mi_rol() returns text
@@ -234,6 +282,24 @@ language sql stable security definer set search_path = public as $$
   select d.n, d.n * d.por_dia, d.valet, d.n * d.por_dia + d.valet from d
 $$;
 
+-- Total de una reserva: estacionamiento (y valet) con el descuento de la promoción, más los extras
+create or replace function public.total_reserva(p_entrada timestamptz, p_salida timestamptz, p_tipo text, p_servicio text,
+                                                p_pct int, p_extras int) returns table (total int, descuento int)
+language sql stable security definer set search_path = public as $$
+  select c.total - round(c.total * coalesce(p_pct, 0) / 100.0)::int + coalesce(p_extras, 0),
+         round(c.total * coalesce(p_pct, 0) / 100.0)::int
+  from public.calcular_precio(p_entrada, p_salida, p_tipo, p_servicio) c
+$$;
+
+-- Busca un código de promoción vigente (null si no existe o venció)
+create or replace function public.promo_vigente(p_codigo text) returns public.promociones
+language sql stable security definer set search_path = public as $$
+  select * from public.promociones
+   where codigo = upper(btrim(coalesce(p_codigo, ''))) and activa
+     and (desde is null or desde <= (now() at time zone 'America/Montevideo')::date)
+     and (hasta is null or hasta >= (now() at time zone 'America/Montevideo')::date)
+$$;
+
 -- Lugares de un tipo que quedan libres entre dos fechas
 create or replace function public.libres_entre(p_tipo text, p_entrada timestamptz, p_salida timestamptz) returns int
 language sql stable security definer set search_path = public as $$
@@ -262,6 +328,13 @@ declare
   v_nom  text := btrim(coalesce(p ->> 'nombre', ''));
   v_tel  text := btrim(coalesce(p ->> 'telefono', ''));
   v_mat  text := regexp_replace(upper(btrim(coalesce(p ->> 'matricula', ''))), '^([A-Z]{3})\s*(\d{3,4})$', '\1 \2');
+  v_rut  text := regexp_replace(coalesce(p ->> 'factura_rut', ''), '\D', '', 'g');
+  v_raz  text := left(btrim(coalesce(p ->> 'factura_razon', '')), 120);
+  v_vt   text := coalesce(p ->> 'vehiculo_tipo', '');
+  v_promo public.promociones;
+  v_ext  jsonb := '[]';
+  v_extt int := 0;
+  v_tot  record;
   v_res  public.reservas;
 begin
   begin
@@ -283,13 +356,38 @@ begin
     raise exception 'No quedan lugares de ese tipo en esas fechas.' using errcode = 'P0001';
   end if;
 
+  if v_rut <> '' and (v_rut !~ '^\d{12}$' or char_length(v_raz) < 2) then
+    raise exception 'Para la factura completá el RUT (12 dígitos) y la razón social.' using errcode = 'P0001';
+  end if;
+  if v_vt not in ('', 'auto', 'suv', 'pickup', 'utilitario', 'moto') then v_vt := ''; end if;
+
+  -- Código de promoción: lo valida el servidor (desde el navegador no se puede inventar un descuento)
+  if btrim(coalesce(p ->> 'promo', '')) <> '' then
+    v_promo := public.promo_vigente(p ->> 'promo');
+    if v_promo.id is null then raise exception 'El código de descuento no existe o ya venció.' using errcode = 'P0001'; end if;
+    update public.promociones set usos = usos + 1 where id = v_promo.id;
+  end if;
+
+  -- Extras: se guardan con el nombre y el precio del momento
+  select coalesce(jsonb_agg(jsonb_build_object('id', e.id, 'nombre', e.nombre, 'precio', e.precio) order by e.orden), '[]'),
+         coalesce(sum(e.precio), 0)
+    into v_ext, v_extt
+    from public.extras e
+   where e.activo and e.id::text in (select jsonb_array_elements_text(case when jsonb_typeof(p -> 'extras') = 'array' then p -> 'extras' else '[]' end));
+
+  select * into v_tot from public.total_reserva(v_ent, v_sal, v_tipo, v_serv, coalesce(v_promo.porcentaje, 0), v_extt);
+
   insert into public.reservas (origen, cliente_nombre, cliente_telefono, cliente_email, matricula, modelo, color,
-                               lugar_tipo, servicio, pasajeros, entrada, salida, vuelo_ida, vuelo_vuelta, total)
+                               lugar_tipo, servicio, pasajeros, entrada, salida, vuelo_ida, vuelo_vuelta, total,
+                               extras, extras_total, promo_codigo, descuento_pct, descuento,
+                               factura_rut, factura_razon, vehiculo_tipo, comentarios)
   values (p_origen, left(v_nom, 80), left(v_tel, 30), left(btrim(coalesce(p ->> 'email', '')), 120), left(v_mat, 12),
           left(btrim(coalesce(p ->> 'modelo', '')), 60), left(btrim(coalesce(p ->> 'color', '')), 30),
           v_tipo, v_serv, least(8, greatest(1, coalesce((p ->> 'pasajeros')::int, 1))), v_ent, v_sal,
           left(upper(btrim(coalesce(p ->> 'vuelo_ida', ''))), 12), left(upper(btrim(coalesce(p ->> 'vuelo_vuelta', ''))), 12),
-          (select total from public.calcular_precio(v_ent, v_sal, v_tipo, v_serv)))
+          v_tot.total, v_ext, v_extt, coalesce(v_promo.codigo, ''), coalesce(v_promo.porcentaje, 0), v_tot.descuento,
+          case when v_rut <> '' then v_rut else '' end, case when v_rut <> '' then v_raz else '' end, v_vt,
+          left(btrim(coalesce(p ->> 'comentarios', '')), 300))
   returning * into v_res;
   return v_res;
 end $$;
@@ -318,6 +416,26 @@ begin
                            'aire', public.libres_entre('aire', p_entrada, p_salida));
 end $$;
 
+-- Valida un código de descuento (la web muestra el descuento antes de pagar)
+create or replace function public.promo_web(p_codigo text) returns json
+language plpgsql stable security definer set search_path = public as $$
+declare v public.promociones;
+begin
+  v := public.promo_vigente(p_codigo);
+  if v.id is null then raise exception 'El código de descuento no existe o ya venció.' using errcode = 'P0001'; end if;
+  return json_build_object('codigo', v.codigo, 'porcentaje', v.porcentaje, 'empresa', v.empresa, 'titulo', v.titulo);
+end $$;
+
+-- Promociones vigentes para el inicio (el código solo si la dueña lo hizo público)
+create or replace function public.promociones_web() returns json
+language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(json_build_object('empresa', p.empresa, 'titulo', p.titulo, 'detalle', p.detalle,
+           'porcentaje', p.porcentaje, 'hasta', p.hasta, 'enlace', p.enlace,
+           'codigo', case when p.publico then p.codigo end) order by p.creada desc), '[]')
+  from public.promociones p
+  where p.en_web and p.id = (public.promo_vigente(p.codigo)).id
+$$;
+
 create or replace function public.crear_reserva_web(p jsonb) returns json
 language plpgsql security definer set search_path = public as $$
 declare
@@ -332,7 +450,8 @@ begin
   insert into public.auditoria (usuario_nombre, accion)
   values ('web', 'Nueva reserva ' || v_res.codigo || ' desde la web (' || v_res.matricula || ')');
   return json_build_object('id', v_res.id, 'codigo', v_res.codigo, 'total', v_res.total, 'token', v_token,
-                           'entrada', v_res.entrada, 'salida', v_res.salida);
+                           'entrada', v_res.entrada, 'salida', v_res.salida, 'descuento', v_res.descuento,
+                           'extras', v_res.extras, 'promo', v_res.promo_codigo);
 end $$;
 
 -- PASARELA DE PRUEBA: el botón «Pagar» marca la reserva como pagada online.
@@ -445,7 +564,14 @@ begin
              'Estacionamiento ' || case when v_res.lugar_tipo = 'techado' then 'techado' else 'en predio' end ||
              ' · ' || v_p.dias || case when v_p.dias = 1 then ' día' else ' días' end, 'monto', v_p.base));
   if v_p.extra > 0 then v_lin := v_lin || jsonb_build_object('concepto', 'Valet Parking', 'monto', v_p.extra); end if;
-  if v_res.total <> v_p.total then v_lin := v_lin || jsonb_build_object('concepto', 'Ajuste', 'monto', v_res.total - v_p.total); end if;
+  if v_res.descuento > 0 then
+    v_lin := v_lin || jsonb_build_object('concepto', 'Descuento ' || v_res.promo_codigo || ' (' || v_res.descuento_pct || '%)', 'monto', -v_res.descuento);
+  end if;
+  select v_lin || coalesce(jsonb_agg(jsonb_build_object('concepto', x ->> 'nombre', 'monto', (x ->> 'precio')::int)), '[]')
+    into v_lin from jsonb_array_elements(v_res.extras) x where x ->> 'precio' is not null;
+  if v_res.total <> v_p.total - v_res.descuento + v_res.extras_total then
+    v_lin := v_lin || jsonb_build_object('concepto', 'Ajuste', 'monto', v_res.total - (v_p.total - v_res.descuento + v_res.extras_total));
+  end if;
 
   insert into public.facturas (tipo, reserva_id, codigo, cliente, lineas, total, iva, usuario_nombre)
   values (case when p_tipo_factura = 'efactura' then 'efactura' else 'eticket' end, v_res.id, v_res.codigo,
@@ -473,7 +599,8 @@ begin
   perform public.exigir_rol('admin', 'personal');
   select * into v_res from public.reservas where id = p_reserva for update;
   if not found or v_res.estado <> 'en_predio' then raise exception 'Este auto no está en el parking.' using errcode = 'P0001'; end if;
-  select total into v_real from public.calcular_precio(coalesce(v_res.checkin, v_res.entrada), now(), v_res.lugar_tipo, v_res.servicio);
+  select total into v_real from public.total_reserva(coalesce(v_res.checkin, v_res.entrada), now(), v_res.lugar_tipo, v_res.servicio,
+                                                    v_res.descuento_pct, v_res.extras_total);
   v_dif := greatest(0, v_real - v_res.total);
   if v_dif > 0 and coalesce(p_medio_dif, '') in ('efectivo', 'tarjeta', 'transferencia') then
     update public.reservas set total = total + v_dif where id = v_res.id returning * into v_res;
@@ -572,6 +699,7 @@ create or replace function public.aplicar_fechas(p_res public.reservas, p_entrad
 language plpgsql security definer set search_path = public as $$
 declare
   v_total int := p_res.total;
+  v_desc  int := p_res.descuento;
   v_ocup  int;
   v_cap   int;
   f       text := 'DD/MM HH24:MI';
@@ -596,9 +724,10 @@ begin
 
   -- Si todavía no entró, el precio se recalcula. Si ya está adentro, la diferencia se cobra al salir.
   if p_res.estado = 'confirmada' then
-    select total into v_total from public.calcular_precio(p_entrada, p_salida, p_res.lugar_tipo, p_res.servicio);
+    select t.total, t.descuento into v_total, v_desc
+      from public.total_reserva(p_entrada, p_salida, p_res.lugar_tipo, p_res.servicio, p_res.descuento_pct, p_res.extras_total) t;
   end if;
-  update public.reservas set entrada = p_entrada, salida = p_salida, total = v_total where id = p_res.id;
+  update public.reservas set entrada = p_entrada, salida = p_salida, total = v_total, descuento = v_desc where id = p_res.id;
   perform public.anotar('Cambió las fechas de ' || p_res.codigo || ' (' || p_res.matricula || '): ' ||
     case when p_entrada <> p_res.entrada then 'entrada ' || to_char(p_res.entrada at time zone z, f) || ' → ' || to_char(p_entrada at time zone z, f) || '; ' else '' end ||
     case when p_salida <> p_res.salida then 'salida ' || to_char(p_res.salida at time zone z, f) || ' → ' || to_char(p_salida at time zone z, f) else '' end ||
@@ -641,7 +770,8 @@ begin
   if v_res.id is null then raise exception 'No encontramos una reserva con ese código y ese teléfono.' using errcode = 'P0001'; end if;
   return json_build_object('codigo', v_res.codigo, 'nombre', split_part(v_res.cliente_nombre, ' ', 1), 'matricula', v_res.matricula,
     'entrada', v_res.entrada, 'salida', v_res.salida, 'lugar_tipo', v_res.lugar_tipo, 'servicio', v_res.servicio,
-    'estado', v_res.estado, 'total', v_res.total, 'pagado', v_res.pagado);
+    'estado', v_res.estado, 'total', v_res.total, 'pagado', v_res.pagado,
+    'descuento_pct', v_res.descuento_pct, 'extras_total', v_res.extras_total);
 end $$;
 
 create or replace function public.reserva_web_cambiar(p_codigo text, p_telefono text, p_entrada timestamptz, p_salida timestamptz) returns json
@@ -702,6 +832,96 @@ begin
     on conflict do nothing;
   end loop;
   perform public.anotar('Cambió la cantidad de lugares: ' || p_techado || ' techados y ' || p_aire || ' en predio');
+end $$;
+
+-- Promociones y convenios: crear, editar, pausar o borrar
+create or replace function public.guardar_promocion(p jsonb) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_id  uuid := nullif(p ->> 'id', '')::uuid;
+  v_cod text := upper(regexp_replace(btrim(coalesce(p ->> 'codigo', '')), '\s+', '', 'g'));
+  v_pct int;
+  v_des date; v_has date;
+begin
+  perform public.exigir_rol('admin');
+  if v_cod !~ '^[A-Z0-9-]{3,20}$' then raise exception 'El código tiene que tener de 3 a 20 letras o números, sin espacios.' using errcode = 'P0001'; end if;
+  begin
+    v_pct := (p ->> 'porcentaje')::int;
+    v_des := nullif(p ->> 'desde', '')::date;
+    v_has := nullif(p ->> 'hasta', '')::date;
+  exception when others then raise exception 'Revisá el porcentaje y las fechas.' using errcode = 'P0001';
+  end;
+  if v_pct is null or v_pct not between 1 and 90 then raise exception 'El descuento tiene que ser entre 1 %% y 90 %%.' using errcode = 'P0001'; end if;
+  if v_has < v_des then raise exception 'La fecha «hasta» tiene que ser después de «desde».' using errcode = 'P0001'; end if;
+  if char_length(btrim(coalesce(p ->> 'titulo', ''))) < 2 then raise exception 'Poné un título a la promoción.' using errcode = 'P0001'; end if;
+  if coalesce(p ->> 'enlace', '') <> '' and (p ->> 'enlace') !~ '^https://' then raise exception 'El enlace tiene que empezar con https://' using errcode = 'P0001'; end if;
+  if exists (select 1 from public.promociones where codigo = v_cod and id is distinct from v_id) then
+    raise exception 'Ya hay una promoción con el código %.', v_cod using errcode = 'P0001';
+  end if;
+  if v_id is null then
+    insert into public.promociones (codigo, empresa, titulo, detalle, porcentaje, desde, hasta, activa, en_web, publico, enlace)
+    values (v_cod, left(btrim(coalesce(p ->> 'empresa', '')), 60), left(btrim(p ->> 'titulo'), 80), left(btrim(coalesce(p ->> 'detalle', '')), 240),
+            v_pct, v_des, v_has, coalesce((p ->> 'activa')::boolean, true), coalesce((p ->> 'en_web')::boolean, true),
+            coalesce((p ->> 'publico')::boolean, false), btrim(coalesce(p ->> 'enlace', '')))
+    returning id into v_id;
+    perform public.anotar('Creó la promoción ' || v_cod || ' (' || v_pct || '%)');
+  else
+    update public.promociones set codigo = v_cod, empresa = left(btrim(coalesce(p ->> 'empresa', '')), 60), titulo = left(btrim(p ->> 'titulo'), 80),
+           detalle = left(btrim(coalesce(p ->> 'detalle', '')), 240), porcentaje = v_pct, desde = v_des, hasta = v_has,
+           activa = coalesce((p ->> 'activa')::boolean, activa), en_web = coalesce((p ->> 'en_web')::boolean, en_web),
+           publico = coalesce((p ->> 'publico')::boolean, publico), enlace = btrim(coalesce(p ->> 'enlace', ''))
+     where id = v_id;
+    if not found then raise exception 'La promoción ya no existe.' using errcode = 'P0001'; end if;
+    perform public.anotar('Cambió la promoción ' || v_cod || ' (' || v_pct || '%)');
+  end if;
+  return v_id;
+end $$;
+
+create or replace function public.borrar_promocion(p_id uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_cod text;
+begin
+  perform public.exigir_rol('admin');
+  delete from public.promociones where id = p_id returning codigo into v_cod;
+  if v_cod is not null then perform public.anotar('Borró la promoción ' || v_cod); end if;
+end $$;
+
+-- Servicios extra: crear, editar, pausar o borrar (las reservas ya hechas guardan su copia)
+create or replace function public.guardar_extra(p jsonb) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_id  uuid := nullif(p ->> 'id', '')::uuid;
+  v_nom text := left(btrim(coalesce(p ->> 'nombre', '')), 40);
+  v_pre int;
+begin
+  perform public.exigir_rol('admin');
+  if char_length(v_nom) < 2 then raise exception 'Poné el nombre del servicio.' using errcode = 'P0001'; end if;
+  begin v_pre := nullif(p ->> 'precio', '')::int;
+  exception when others then raise exception 'Revisá el precio.' using errcode = 'P0001'; end;
+  if v_pre is not null and v_pre not between 0 and 1000000 then raise exception 'Revisá el precio.' using errcode = 'P0001'; end if;
+  if v_id is null then
+    insert into public.extras (nombre, detalle, precio, activo, orden)
+    values (v_nom, left(btrim(coalesce(p ->> 'detalle', '')), 160), v_pre, coalesce((p ->> 'activo')::boolean, true),
+            coalesce((select max(orden) from public.extras), 0) + 1)
+    returning id into v_id;
+    perform public.anotar('Agregó el servicio extra ' || v_nom);
+  else
+    update public.extras set nombre = v_nom, detalle = left(btrim(coalesce(p ->> 'detalle', '')), 160), precio = v_pre,
+           activo = coalesce((p ->> 'activo')::boolean, activo)
+     where id = v_id;
+    if not found then raise exception 'El servicio ya no existe.' using errcode = 'P0001'; end if;
+    perform public.anotar('Cambió el servicio extra ' || v_nom || ': ' || coalesce('$ ' || v_pre, 'a cotizar'));
+  end if;
+  return v_id;
+end $$;
+
+create or replace function public.borrar_extra(p_id uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_nom text;
+begin
+  perform public.exigir_rol('admin');
+  delete from public.extras where id = p_id returning nombre into v_nom;
+  if v_nom is not null then perform public.anotar('Borró el servicio extra ' || v_nom); end if;
 end $$;
 
 create or replace function public.auditar(p_accion text) returns void
@@ -781,6 +1001,8 @@ alter table public.caja_movimientos enable row level security;
 alter table public.facturas         enable row level security;
 alter table public.auditoria        enable row level security;
 alter table public.asistencias      enable row level security;
+alter table public.extras           enable row level security;
+alter table public.promociones      enable row level security;
 
 drop policy if exists perfiles_ver on public.perfiles;
 create policy perfiles_ver on public.perfiles for select to authenticated
@@ -826,14 +1048,24 @@ drop policy if exists asistencias_ver on public.asistencias;
 create policy asistencias_ver on public.asistencias for select to authenticated
   using ((select public.tiene_rol('admin')) or (usuario_id = (select auth.uid()) and (select public.tiene_rol('personal', 'chofer'))));
 
+-- Extras: la web ve los activos; el equipo, todos. Promociones: el equipo (la web usa promociones_web y promo_web)
+drop policy if exists extras_ver on public.extras;
+create policy extras_ver on public.extras for select to authenticated
+  using (activo or (select public.tiene_rol('admin', 'personal')));
+drop policy if exists extras_web on public.extras;
+create policy extras_web on public.extras for select to anon using (activo);
+drop policy if exists promociones_ver on public.promociones;
+create policy promociones_ver on public.promociones for select to authenticated using ((select public.tiene_rol('admin', 'personal')));
+
 -- Privilegios: la web anónima solo ve tarifas; el personal solo escribe por las funciones
 -- (No depende de «Automatically expose new tables»: todo se otorga a mano acá abajo.)
 grant usage on schema public to anon, authenticated;
 revoke all on all tables in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
-grant select on public.tarifas to anon;
+grant select on public.tarifas, public.extras to anon;
 grant select on public.perfiles, public.tarifas, public.empresa, public.lugares, public.reservas, public.pagos,
-                public.caja_turnos, public.caja_movimientos, public.facturas, public.auditoria, public.asistencias to authenticated;
+                public.caja_turnos, public.caja_movimientos, public.facturas, public.auditoria, public.asistencias,
+                public.extras, public.promociones to authenticated;
 grant update (techado, aire, valet, gracia_horas, minimo_dias) on public.tarifas to authenticated;
 grant update (razon, rut, direccion, iva) on public.empresa to authenticated;
 grant update (nombre, rol, activo) on public.perfiles to authenticated;
@@ -842,7 +1074,8 @@ revoke execute on all functions in schema public from public, anon, authenticate
 grant execute on function public.disponibilidad_web(timestamptz, timestamptz),
                           public.crear_reserva_web(jsonb),
                           public.pagar_reserva_web(uuid, uuid),
-                          public.reserva_web_ver(text, text), public.reserva_web_cambiar(text, text, timestamptz, timestamptz) to anon, authenticated;
+                          public.reserva_web_ver(text, text), public.reserva_web_cambiar(text, text, timestamptz, timestamptz),
+                          public.promo_web(text), public.promociones_web() to anon, authenticated;
 grant execute on function public.mi_rol(), public.tiene_rol(text[]), public.mi_nombre(),
                           public.crear_reserva(jsonb), public.registrar_pago(uuid, int, text, text),
                           public.registrar_entrada(uuid, text, text, text, text, text, text),
@@ -850,7 +1083,9 @@ grant execute on function public.mi_rol(), public.tiene_rol(text[]), public.mi_n
                           public.marcar_traslado(uuid, text, text),
                           public.abrir_caja(int, text), public.egreso_caja(text, int), public.cerrar_caja(int),
                           public.cambiar_fechas(uuid, timestamptz, timestamptz), public.marcar_asistencia(),
-                          public.configurar_lugares(int, int), public.auditar(text) to authenticated;
+                          public.configurar_lugares(int, int), public.auditar(text),
+                          public.guardar_promocion(jsonb), public.borrar_promocion(uuid),
+                          public.guardar_extra(jsonb), public.borrar_extra(uuid) to authenticated;
 
 -- ---------- En vivo (Realtime) ----------
 do $$
@@ -858,7 +1093,8 @@ declare t text;
 begin
   if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
     foreach t in array array['perfiles', 'tarifas', 'empresa', 'lugares', 'reservas', 'pagos',
-                             'caja_turnos', 'caja_movimientos', 'facturas', 'auditoria', 'asistencias'] loop
+                             'caja_turnos', 'caja_movimientos', 'facturas', 'auditoria', 'asistencias',
+                             'extras', 'promociones'] loop
       if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
         execute format('alter publication supabase_realtime add table public.%I', t);
       end if;
@@ -1096,7 +1332,9 @@ language sql stable set search_path = public as $$
   select jsonb_build_object('id', r.id, 'codigo', r.codigo, 'cliente', r.cliente_nombre, 'matricula', r.matricula,
     'modelo', r.modelo, 'color', r.color, 'lugar', r.lugar, 'tipo', r.lugar_tipo, 'servicio', r.servicio,
     'pasajeros', r.pasajeros, 'entrada', r.entrada, 'salida', r.salida, 'checkin', r.checkin, 'checkout', r.checkout,
-    'estado', r.estado, 'origen', r.origen, 'total', r.total, 'pagado', r.pagado, 'vuelo', r.vuelo_vuelta)
+    'estado', r.estado, 'origen', r.origen, 'total', r.total, 'pagado', r.pagado, 'vuelo', r.vuelo_vuelta,
+    'extras', (select coalesce(jsonb_agg(x ->> 'nombre'), '[]'::jsonb) from jsonb_array_elements(r.extras) x),
+    'promo', r.promo_codigo, 'descuento_pct', r.descuento_pct, 'comentarios', r.comentarios)
 $$;
 
 -- Busca autos por lugar (A-05), código (PD-1234), matrícula (SBA 1234) o nombre del cliente.
@@ -1319,7 +1557,8 @@ begin
   return json_build_object('pasarela_id', v_pw.pasarela_id, 'pagada', r.pagado >= r.total and r.total > 0,
     'codigo', r.codigo, 'total', r.total, 'pagado', r.pagado, 'entrada', r.entrada, 'salida', r.salida,
     'lugar_tipo', r.lugar_tipo, 'servicio', r.servicio, 'matricula', r.matricula, 'modelo', r.modelo, 'color', r.color,
-    'nombre', r.cliente_nombre, 'telefono', r.cliente_telefono, 'estado', r.estado);
+    'nombre', r.cliente_nombre, 'telefono', r.cliente_telefono, 'estado', r.estado,
+    'extras', (select coalesce(json_agg(x ->> 'nombre'), '[]'::json) from jsonb_array_elements(r.extras) x), 'promo', r.promo_codigo);
 end $$;
 
 -- dLocal confirmó el pago: se registra (una sola vez) y la reserva queda pagada online.

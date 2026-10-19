@@ -411,6 +411,9 @@ function ficha(f, ahora = Date.now()) {
     l.push((atrasado ? '⚠️ Tenía que salir ' : '🛫 Sale ') + cuando(f.salida, ahora) + (f.vuelo ? ' · vuelo ' + f.vuelo : ''));
   }
   l.push(f.servicio === 'traslado' ? '🚐 Traslado al aeropuerto · ' + n(f.pasajeros, 'pasajero', 'pasajeros') : '🔑 Valet');
+  if (f.extras && f.extras.length) l.push('🧽 Pidió ' + f.extras.join(' y '));
+  if (f.promo) l.push('🏷️ Promoción ' + f.promo + ' (' + f.descuento_pct + '% de descuento)');
+  if (f.comentarios) l.push('💬 «' + f.comentarios + '»');
   const falta = f.total - f.pagado;
   l.push('💵 ' + (falta <= 0 ? 'Pagó todo (' + plata(f.total) + ')' : f.pagado > 0 ? 'Pagó ' + plata(f.pagado) + ', falta ' + plata(falta) : plata(f.total) + ', todavía sin pagar'));
   return l.join('\n');

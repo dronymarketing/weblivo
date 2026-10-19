@@ -812,3 +812,17 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
 .origen--telefono { background: #f0eaf8; }
 .ev .origen { margin-top: 0; font-size: 11px; padding: 1px 8px 1px 6px; }
 .tabla td .origen { display: flex; }
+
+/* ---------- Servicios extra y promociones ---------- */
+.extra-linea { display: flex; align-items: center; gap: 6px; }
+.extra-linea + .extra-linea { margin-top: 4px; }
+.extra-linea .ico { width: 16px; height: 16px; color: var(--acento); flex-shrink: 0; }
+.extra-ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--fondo); }
+.extra-ico .ico { width: 18px; height: 18px; color: var(--acento); }
+li[data-editar-extra] { cursor: pointer; }
+li[data-editar-extra] .mini__accion { display: flex; align-items: center; gap: 8px; }
+li[data-editar-extra] .mini__accion > .ico { width: 16px; height: 16px; color: var(--texto-suave); }
+.tabla tr[data-editar-promo] { cursor: pointer; }
+.tabla tr[data-editar-promo] td:last-child .ico { width: 16px; height: 16px; color: var(--texto-suave); }
+.codigo-promo { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; }
+.formulario .check + .check { margin-top: -4px; }

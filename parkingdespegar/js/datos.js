@@ -20,7 +20,7 @@
     return {
       tarifas: { techado: 0, aire: 0, valet: 0, graciaHoras: 0, minimoDias: 1 },
       empresa: { razon: '', rut: '', direccion: '', iva: 22 },
-      lugares: [], reservas: [], pagos: [], facturas: [], usuarios: [], auditoria: [], asistencias: [],
+      lugares: [], reservas: [], pagos: [], facturas: [], usuarios: [], auditoria: [], asistencias: [], extras: [], promociones: [],
       caja: { turnoActual: null, cerrados: [] }
     };
   }
@@ -39,12 +39,15 @@
     var d = Math.ceil(Math.max(0, horas - (t.graciaHoras || 0)) / 24);
     return Math.max(t.minimoDias || 1, d);
   }
+  /* r.descuentoPct (promoción, sobre el estacionamiento) y r.extrasTotal (lavado, service…) son opcionales */
   function precio(r, t) {
     t = t || cache.tarifas;
     var d = dias(r.entrada, r.salida, t);
     var base = d * (r.lugarTipo === 'techado' ? t.techado : t.aire);
     var extra = r.servicio === 'valet' ? t.valet : 0;
-    return { dias: d, base: base, extra: extra, total: base + extra };
+    var descuento = Math.round((base + extra) * (r.descuentoPct || 0) / 100);
+    var extras = r.extrasTotal || 0;
+    return { dias: d, base: base, extra: extra, descuento: descuento, extras: extras, total: base + extra - descuento + extras };
   }
 
   /* ---------- Errores en castellano ---------- */
@@ -74,7 +77,11 @@
     return {
       id: x.id, codigo: x.codigo, creada: x.creada, origen: x.origen,
       cliente: { nombre: x.cliente_nombre, telefono: x.cliente_telefono, email: x.cliente_email },
-      vehiculo: { matricula: x.matricula, modelo: x.modelo, color: x.color },
+      vehiculo: { matricula: x.matricula, modelo: x.modelo, color: x.color, tipo: x.vehiculo_tipo || '' },
+      extras: x.extras || [], extrasTotal: x.extras_total || 0, descuentoPct: x.descuento_pct || 0,
+      promo: x.promo_codigo ? { codigo: x.promo_codigo, pct: x.descuento_pct, descuento: x.descuento } : null,
+      facturaDatos: x.factura_rut ? { rut: x.factura_rut, razon: x.factura_razon } : null,
+      comentarios: x.comentarios || '',
       lugarTipo: x.lugar_tipo, servicio: x.servicio, pasajeros: x.pasajeros,
       entrada: x.entrada, salida: x.salida, vuelo: { ida: x.vuelo_ida, vuelta: x.vuelo_vuelta },
       lugar: x.lugar, checkin: x.checkin, checkout: x.checkout,
@@ -102,10 +109,12 @@
       sb.from('facturas').select('*').order('numero', { ascending: false }),
       sb.from('perfiles').select('*').order('creado'),
       sb.from('auditoria').select('*').order('id', { ascending: false }).limit(300),
-      sb.from('asistencias').select('id,usuario_id,usuario_nombre,entrada,salida').gte('entrada', new Date(Date.now() - 62 * DIA).toISOString()).order('entrada', { ascending: false })
+      sb.from('asistencias').select('id,usuario_id,usuario_nombre,entrada,salida').gte('entrada', new Date(Date.now() - 62 * DIA).toISOString()).order('entrada', { ascending: false }),
+      sb.from('extras').select('*').order('orden'),
+      sb.from('promociones').select('*').order('creada', { ascending: false })
     ]);
-    /* Si la base todavía no tiene la tabla de horarios, el resto anda igual */
-    if (q[10].error) q[10] = { data: [] };
+    /* Si la base todavía no tiene las tablas de horarios, extras o promociones, el resto anda igual */
+    [10, 11, 12].forEach(function (i) { if (q[i].error) q[i] = { data: [] }; });
     var falla = q.filter(function (r) { return r.error; })[0];
     if (falla) throw amigable(falla.error);
     var d = vacio(), t = q[0].data, e = q[1].data;
@@ -135,6 +144,8 @@
     });
     d.usuarios = datosDe(q[8]);
     d.auditoria = datosDe(q[9]).map(function (a) { return { fecha: a.fecha, usuario: a.usuario_nombre, accion: a.accion }; });
+    d.extras = datosDe(q[11]);
+    d.promociones = datosDe(q[12]);
     d.asistencias = datosDe(q[10]).map(function (a) { return { id: a.id, usuarioId: a.usuario_id, nombre: a.usuario_nombre, entrada: a.entrada, salida: a.salida }; });
     cache = d;
     return cache;
@@ -318,6 +329,10 @@
     },
     guardarEmpresa: function (e) { return actualizar('empresa', { razon: e.razon, rut: e.rut, direccion: e.direccion, iva: e.iva }, { id: 1 }); },
     actualizarPerfil: function (id, cambios) { return actualizar('perfiles', cambios, { id: id }); },
+    guardarPromocion: function (p) { return hacer('guardar_promocion', { p: p }); },
+    borrarPromocion: function (id) { return hacer('borrar_promocion', { p_id: id }); },
+    guardarExtra: function (p) { return hacer('guardar_extra', { p: p }); },
+    borrarExtra: function (id) { return hacer('borrar_extra', { p_id: id }); },
 
     /* Asistente de WhatsApp: se lee solo en su sección (si falta correr asistente.sql, el resto sigue andando) */
     asistenteEstado: function () { return rpc('asistente_estado'); },
@@ -338,6 +353,14 @@
       cache.tarifas = { techado: r.data.techado, aire: r.data.aire, valet: r.data.valet, graciaHoras: r.data.gracia_horas, minimoDias: r.data.minimo_dias };
       return cache.tarifas;
     },
+    /* Servicios extra y promociones: si la base todavía no los tiene, la web sigue sin ellos */
+    extrasWeb: async function () {
+      if (!sb) return [];
+      var r = await sb.from('extras').select('id,nombre,detalle,precio').eq('activo', true).order('orden');
+      return r.error ? [] : r.data || [];
+    },
+    promocionesWeb: function () { return rpc('promociones_web').catch(function () { return []; }); },
+    promoWeb: function (codigo) { return rpc('promo_web', { p_codigo: codigo }); },
     disponibilidad: function (entrada, salida) { return rpc('disponibilidad_web', { p_entrada: entrada, p_salida: salida }); },
     reservarWeb: function (p) { return rpc('crear_reserva_web', { p: p }); },
     pagarWeb: function (id, token) { return rpc('pagar_reserva_web', { p_id: id, p_token: token }); },

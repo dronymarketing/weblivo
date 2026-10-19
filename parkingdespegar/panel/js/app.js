@@ -93,7 +93,9 @@
     { id: 'reportes', sector: 'plata', nombre: 'Reportes', ico: 'chart-column', roles: ['admin'],
       desc: 'Cuánto se recaudó, cómo pagan los clientes y por dónde reservan.' },
     { id: 'tarifas', sector: 'plata', nombre: 'Precios', ico: 'calculator', roles: ['admin'],
-      desc: 'Lo que se cobra por día y los datos que salen en la factura. Si cambiás un precio acá, cambia también en la web.' },
+      desc: 'Lo que se cobra por día, los servicios extra (lavado, service…) y los datos que salen en la factura. Si cambiás un precio acá, cambia también en la web.' },
+    { id: 'promociones', sector: 'plata', nombre: 'Promociones', ico: 'tag', roles: ['admin'],
+      desc: 'Códigos de descuento para convenios con empresas y promociones. El cliente escribe el código al reservar en la web y el descuento se aplica solo, sobre el estacionamiento. Las que marques se muestran en el inicio de la web.' },
     { id: 'usuarios', sector: 'ajustes', nombre: 'Equipo', ico: 'user-cog', roles: ['admin'],
       desc: 'Quién entra al sistema y qué puede hacer cada uno.' },
     { id: 'asistente', sector: 'ajustes', nombre: 'Torre', ico: 'message-circle', roles: ['admin'],
@@ -122,6 +124,16 @@
   /* Por dónde entró la reserva, con su color: así no hace falta una leyenda aparte */
   var ORIGEN_LARGO = { web: 'Reserva web', whatsapp: 'Reserva por WhatsApp', mostrador: 'Reserva en mostrador', telefono: 'Reserva por teléfono' };
   function badgeOrigen(r, codigo) { return '<span class="origen origen--' + r.origen + '"><i class="punto punto--' + r.origen + '"></i>' + (ORIGEN_LARGO[r.origen] || r.origen) + (codigo ? ' · ' + codigo : '') + '</span>'; }
+  var VEHICULOS = { auto: 'Auto', suv: 'SUV o camioneta', pickup: 'Pick-up', utilitario: 'Utilitario', moto: 'Moto' };
+  /* Servicios extra: ícono según el nombre y texto con su precio («a cotizar» si se coordina aparte) */
+  function icoExtra(nombre) { return /lava/i.test(nombre) ? 'sparkles' : /service|mec[aá]n/i.test(nombre) ? 'wrench' : 'plus'; }
+  function precioExtra(x) { return x.precio == null ? 'a cotizar' : plata(x.precio); }
+  function nombresExtras(r) { return r.extras.map(function (x) { return esc(x.nombre); }).join(' + '); }
+  /* Promoción vigente por código (la misma regla que usa el servidor) */
+  function promoVigente(codigo) {
+    var c = String(codigo || '').trim().toUpperCase(), hoy = aFecha(Date.now());
+    return D().promociones.filter(function (p) { return p.codigo === c && p.activa && (!p.desde || p.desde <= hoy) && (!p.hasta || p.hasta >= hoy); })[0] || null;
+  }
   var MEDIOS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta (POS)', transferencia: 'Transferencia', online: 'Online', egreso: 'Egreso' };
 
   /* ---------- Traslados derivados de las reservas ---------- */
@@ -330,10 +342,14 @@
       '<p class="ventana__estados">' + badgeEstado(r) + badgePago(r) + '</p>' +
       '<dl class="ficha">' +
         fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono) + (r.cliente.email ? ' · ' + esc(r.cliente.email) : '')) +
-        fila('Auto', esc(r.vehiculo.modelo) + (r.vehiculo.color ? ' · ' + esc(r.vehiculo.color) : '')) +
+        fila('Auto', (r.vehiculo.tipo ? VEHICULOS[r.vehiculo.tipo] + ' · ' : '') + esc(r.vehiculo.modelo) + (r.vehiculo.color ? ' · ' + esc(r.vehiculo.color) : '')) +
         fila('Entrada', fechaHora(r.entrada) + (r.vuelo.ida ? ' · vuelo ' + esc(r.vuelo.ida) : '') + (r.checkin ? '<small>Entró el ' + fechaHora(r.checkin) + '</small>' : '')) +
         fila('Salida', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '') + (r.checkout ? '<small>Salió el ' + fechaHora(r.checkout) + '</small>' : '')) +
         fila('Lugar', TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ' · se asigna en la entrada') + ' · ' + (r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado (' + r.pasajeros + ' pasajeros)')) +
+        (r.extras.length ? fila('Servicios extra', r.extras.map(function (x) { return '<span class="extra-linea">' + ico(icoExtra(x.nombre)) + esc(x.nombre) + ' · ' + precioExtra(x) + '</span>'; }).join('')) : '') +
+        (r.promo ? fila('Promoción', '<span class="extra-linea">' + ico('tag') + esc(r.promo.codigo) + ' · ' + r.promo.pct + '% de descuento (− ' + plata(r.promo.descuento) + ')</span>') : '') +
+        (r.facturaDatos ? fila('Pidió factura', 'e-Factura a ' + esc(r.facturaDatos.razon) + ' · RUT ' + esc(r.facturaDatos.rut)) : '') +
+        (r.comentarios ? fila('Comentarios del cliente', '«' + esc(r.comentarios) + '»') : '') +
         fila('Importe', plata(r.total) + ' · ' + p.dias + ' días' + (r.pago.monto > 0 ? '<small>Pagó ' + plata(r.pago.monto) + ' ' + medioTexto(r) + (r.pago.monto < r.total ? ' · falta ' + plata(r.total - r.pago.monto) : '') + '</small>' : '<small>Todavía no pagó</small>')) +
       '</dl><div class="ventana__acciones">' + acciones + '</div>', 'ancha');
   }
@@ -341,7 +357,7 @@
 
   /* Nueva reserva desde el mostrador o por WhatsApp */
   function formReserva(origen) {
-    var t = D().tarifas;
+    var t = D().tarifas, extrasActivos = D().extras.filter(function (x) { return x.activo; });
     var man = new Date(Date.now() + PD.DIA);
     var caja = abrirVentana(
       '<h2 class="ventana__titulo">Nueva reserva</h2><form class="formulario" data-form-nueva novalidate>' +
@@ -352,6 +368,11 @@
       '<div class="formulario__fila"><label class="campo"><span>Matrícula</span><input name="matricula" required></label><label class="campo"><span>Marca y modelo</span><input name="modelo"></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Nombre</span><input name="nombre" required></label><label class="campo"><span>Teléfono</span><input name="telefono" type="tel" required></label></div>' +
       '<div class="formulario__fila"><label class="campo"><span>Servicio</span><select name="servicio"><option value="traslado">Con traslado</option><option value="valet">Valet (+' + plata(t.valet) + ')</option></select></label><label class="campo"><span>Pasajeros</span><input name="pasajeros" type="number" min="1" max="8" value="2"></label></div>' +
+      (extrasActivos.length ? '<fieldset class="factura-campos"><legend>' + ico('sparkles') + 'Servicios extra</legend><div class="eleccion">' + extrasActivos.map(function (x) {
+        return '<label><input type="checkbox" name="extra" value="' + x.id + '"><span>' + esc(x.nombre) + '<small>' + (x.precio == null ? 'A cotizar' : '+ ' + plata(x.precio)) + '</small></span></label>';
+      }).join('') + '</div></fieldset>' : '') +
+      '<label class="campo campo--corto"><span>Código de promoción <em>(opcional)</em></span><input name="promo" autocomplete="off" spellcheck="false"></label>' +
+      '<p class="ayuda" data-promo-nueva hidden></p>' +
       '<p class="total-linea">Total <strong data-total-nueva></strong><small data-dias-nueva></small></p>' +
       '<fieldset class="factura-campos" data-pago-nueva></fieldset>' +
       '<p class="campo-error" data-error-nueva hidden></p>' +
@@ -375,10 +396,16 @@
             '<label class="campo"><span>Nº de operación <em>(opcional)</em></span><input name="refTransf" autocomplete="off"></label></div>');
       montoTocado = false;
     }
+    function extrasElegidos() { return $$('[name="extra"]:checked', fn).map(function (i) { return extrasActivos.filter(function (x) { return x.id === i.value; })[0]; }).filter(Boolean); }
     function totalNueva() {
-      var p = PD.precio({ entrada: fn.entrada.value, salida: fn.salida.value, lugarTipo: fn.lugarTipo.value, servicio: fn.servicio.value });
+      var promo = promoVigente(fn.promo.value), ayuda = $('[data-promo-nueva]', caja);
+      ayuda.hidden = !fn.promo.value.trim();
+      ayuda.textContent = promo ? (promo.codigo + ': ' + promo.porcentaje + '% de descuento en el estacionamiento' + (promo.empresa ? ' (' + promo.empresa + ')' : '')) : 'Ese código no existe o ya venció.';
+      ayuda.classList.toggle('campo-error', !promo);
+      var p = PD.precio({ entrada: fn.entrada.value, salida: fn.salida.value, lugarTipo: fn.lugarTipo.value, servicio: fn.servicio.value,
+        descuentoPct: promo ? promo.porcentaje : 0, extrasTotal: extrasElegidos().reduce(function (a, x) { return a + (x.precio || 0); }, 0) });
       $('[data-total-nueva]', caja).textContent = plata(p.total);
-      $('[data-dias-nueva]', caja).textContent = p.dias + (p.dias === 1 ? ' día' : ' días');
+      $('[data-dias-nueva]', caja).textContent = p.dias + (p.dias === 1 ? ' día' : ' días') + (p.descuento ? ' · descuento ' + plata(p.descuento) : '') + (p.extras ? ' · extras ' + plata(p.extras) : '');
       if (fn.montoTransf && !montoTocado) fn.montoTransf.value = p.total;
       $('[data-guardar-nueva]', caja).innerHTML = ico('check') + (fn.origen.value === 'mostrador' ? 'Cobrar ' + plata(p.total) + ' y guardar' : 'Guardar reserva');
     }
@@ -397,6 +424,7 @@
       err.hidden = true;
       if (!f.matricula.value.trim() || !f.nombre.value.trim() || !f.telefono.value.trim()) { err.textContent = 'Completá matrícula, nombre y teléfono.'; err.hidden = false; return; }
       if (!(sal > ent)) { err.textContent = 'La salida tiene que ser después de la entrada.'; err.hidden = false; return; }
+      if (f.promo.value.trim() && !promoVigente(f.promo.value)) { err.textContent = 'El código de promoción no existe o ya venció. Borralo o corregilo.'; err.hidden = false; return; }
       var mostrador = f.origen.value === 'mostrador', medio = f.pagoNueva.value;
       var transf = !mostrador && medio === 'transferencia' ? (+f.montoTransf.value || 0) : 0;
       if (!mostrador && medio === 'transferencia' && !(transf > 0)) { err.textContent = 'Escribí cuánto transfirió.'; err.hidden = false; return; }
@@ -404,7 +432,8 @@
         var r = await PD.crearReserva({
           origen: f.origen.value, lugar_tipo: f.lugarTipo.value, servicio: f.servicio.value, pasajeros: +f.pasajeros.value || 1,
           entrada: ent.toISOString(), salida: sal.toISOString(),
-          nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), matricula: f.matricula.value.trim(), modelo: f.modelo.value.trim()
+          nombre: f.nombre.value.trim(), telefono: f.telefono.value.trim(), matricula: f.matricula.value.trim(), modelo: f.modelo.value.trim(),
+          extras: extrasElegidos().map(function (x) { return x.id; }), promo: f.promo.value.trim()
         });
         /* Mostrador: se cobra el total que calculó el servidor */
         var monto = mostrador ? r.total : transf > 0 ? Math.min(transf, r.total) : 0;
@@ -452,13 +481,15 @@
   function panelLlegada(r) {
     var libres = PD.lugaresLibres(r.lugarTipo);
     var saldo = Math.max(0, r.total - (r.pago.monto || 0));
-    var E = D().empresa;
+    var E = D().empresa, fd = r.facturaDatos;
     var pagado = r.pago.monto > 0 ? '<p class="ok">' + ico('circle-check') + '<span>' + (saldo > 0 ? 'Ya pagó ' : 'Pagó ') + plata(r.pago.monto) + ' ' + medioTexto(r) +
       (saldo > 0 ? '. Falta cobrar <strong>' + plata(saldo) + '</strong>.' : '. No hay nada que cobrar.') + '</span></p>' : '';
     return '<header class="bloque__cabeza"><h2>Entrada · <span class="matricula">' + esc(r.vehiculo.matricula) + '</span></h2><span class="estado estado--info">' + r.codigo + '</span></header>' +
       '<dl class="ficha">' + fila('Cliente', esc(r.cliente.nombre) + ' · ' + esc(r.cliente.telefono)) + fila('Auto', esc(r.vehiculo.modelo) + ' ' + esc(r.vehiculo.color)) +
         fila('Salida', fechaHora(r.salida) + (r.vuelo.vuelta ? ' · vuelo ' + esc(r.vuelo.vuelta) : '')) + fila('Servicio', r.servicio === 'valet' ? 'Valet Parking' : 'Con traslado · ' + r.pasajeros + ' pasajeros') +
-        fila('Total de la reserva', plata(r.total) + ' · ' + PD.precio(r).dias + ' días') + '</dl>' +
+        (r.extras.length ? fila('Servicios extra', r.extras.map(function (x) { return '<span class="extra-linea">' + ico(icoExtra(x.nombre)) + esc(x.nombre) + ' · ' + precioExtra(x) + '</span>'; }).join('')) : '') +
+        (r.comentarios ? fila('Comentarios', '«' + esc(r.comentarios) + '»') : '') +
+        fila('Total de la reserva', plata(r.total) + ' · ' + PD.precio(r).dias + ' días' + (r.promo ? ' · promoción ' + esc(r.promo.codigo) + ' (' + r.promo.pct + '%)' : '')) + '</dl>' +
       pagado +
       (saldo > 0 ? '<details class="transferencia"><summary>' + ico('landmark') + '<span><strong>¿Ya pagó por transferencia?</strong><small>Registralo antes de que llegue: queda listo para la entrada.</small></span></summary>' +
         '<div class="transferencia__cuerpo"><div class="formulario__fila"><label class="campo"><span>Monto transferido</span><input name="montoTransf" type="number" min="1" value="' + saldo + '" data-monto-transf></label>' +
@@ -470,10 +501,11 @@
           '<label class="campo"><span>Recibido <em>(efectivo)</em></span><input name="recibido" type="number" min="0" placeholder="' + saldo + '" data-recibido></label></div>' +
           '<p class="vuelto" data-vuelto hidden></p>' : '') +
         '<fieldset class="factura-campos"><legend>' + ico('file-text') + 'Factura</legend>' +
-          '<div class="eleccion"><label><input type="radio" name="tipoFactura" value="eticket" checked><span>e-Ticket<small>Consumidor final</small></span></label>' +
-          '<label><input type="radio" name="tipoFactura" value="efactura"><span>e-Factura<small>Empresa, con RUT</small></span></label></div>' +
-          '<div class="formulario__fila" data-campos-rut hidden><label class="campo"><span>RUT del cliente</span><input name="rut" inputmode="numeric" maxlength="12" placeholder="12 dígitos"></label>' +
-          '<label class="campo"><span>Razón social</span><input name="razon"></label></div>' +
+          '<div class="eleccion"><label><input type="radio" name="tipoFactura" value="eticket"' + (fd ? '' : ' checked') + '><span>e-Ticket<small>Consumidor final</small></span></label>' +
+          '<label><input type="radio" name="tipoFactura" value="efactura"' + (fd ? ' checked' : '') + '><span>e-Factura<small>Empresa, con RUT</small></span></label></div>' +
+          '<div class="formulario__fila" data-campos-rut' + (fd ? '' : ' hidden') + '><label class="campo"><span>RUT del cliente</span><input name="rut" inputmode="numeric" maxlength="12" placeholder="12 dígitos" value="' + (fd ? esc(fd.rut) : '') + '"></label>' +
+          '<label class="campo"><span>Razón social</span><input name="razon" value="' + (fd ? esc(fd.razon) : '') + '"></label></div>' +
+          (fd ? '<p class="ayuda">El cliente pidió factura al reservar: revisá que los datos estén bien.</p>' : '') +
           (E.rut ? '' : '<p class="ayuda">Falta cargar el RUT del parking en Precios → Datos para la factura.</p>') +
         '</fieldset>' +
         '<label class="campo"><span>Lugar (' + TIPO[r.lugarTipo] + ' · ' + libres.length + ' libres)</span><select name="lugar">' + libres.map(function (l, i) { return '<option' + (i === 0 ? ' selected' : '') + '>' + l.id + '</option>'; }).join('') + '</select></label>' +
@@ -530,7 +562,7 @@
         '<div class="factura__partes"><div><p class="factura__rotulo">Emisor</p><p><strong>' + esc(E.razon) + '</strong></p><p>RUT ' + (E.rut ? esc(E.rut) : '—') + '</p><p>' + esc(E.direccion) + '</p></div>' +
           '<div><p class="factura__rotulo">Cliente</p>' + (f.tipo === 'efactura' ? '<p><strong>' + esc(f.cliente.razon) + '</strong></p><p>RUT ' + esc(f.cliente.rut) + '</p>' : '<p><strong>' + esc(f.cliente.nombre) + '</strong></p><p>Consumidor final</p>') + '</div></div>' +
         '<table class="factura__detalle"><thead><tr><th>Detalle</th><th class="num">Importe</th></tr></thead><tbody>' +
-          f.lineas.map(function (l) { return '<tr><td>' + esc(l.concepto) + '</td><td class="num">' + plata(l.monto) + '</td></tr>'; }).join('') + '</tbody></table>' +
+          f.lineas.map(function (l) { return '<tr><td>' + esc(l.concepto) + '</td><td class="num">' + (l.monto < 0 ? '− ' + plata(-l.monto) : plata(l.monto)) + '</td></tr>'; }).join('') + '</tbody></table>' +
         '<dl class="factura__totales"><div><dt>Subtotal sin IVA</dt><dd>' + plata(neto) + '</dd></div><div><dt>IVA ' + f.iva + '%</dt><dd>' + plata(iva) + '</dd></div><div class="factura__total"><dt>Total</dt><dd>' + plata(f.total) + '</dd></div></dl>' +
         '<p class="factura__pie">Reserva ' + f.codigo + (r ? ' · ' + esc(r.vehiculo.matricula) + ' · pagado ' + medioTexto(r) : '') + '</p>' +
       '</div>' +
@@ -914,7 +946,9 @@
       ['user', '<strong>' + esc(r.cliente.nombre) + '</strong>'],
       ['car-front', '<span class="matricula">' + esc(r.vehiculo.matricula) + '</span> ' + esc([r.vehiculo.modelo, r.vehiculo.color].filter(Boolean).join(' '))],
       ['square-parking', TIPO[r.lugarTipo] + (r.lugar ? ' · lugar ' + r.lugar : '') + (r.servicio === 'valet' ? ' · Valet' : '')],
-      vuelo ? [x.cat === 'sale' ? 'plane-landing' : 'plane-takeoff', 'Vuelo ' + esc(vuelo)] : null
+      vuelo ? [x.cat === 'sale' ? 'plane-landing' : 'plane-takeoff', 'Vuelo ' + esc(vuelo)] : null,
+      r.extras.length ? [icoExtra(r.extras[0].nombre), nombresExtras(r)] : null,
+      r.comentarios ? ['message-square', 'Tiene comentarios'] : null
     ].filter(Boolean);
     var attr = porEntrar ? 'data-entrada="' + r.codigo + '"' : porSalir ? 'data-salida="' + r.codigo + '"' : 'data-abrir-reserva="' + r.id + '"';
     var dato = function (i, t, cls) { return '<span class="ev__dato' + (cls ? ' ' + cls : '') + '">' + ico(i) + '<span>' + t + '</span></span>'; };
@@ -1103,6 +1137,13 @@
         '<div class="formulario__fila"><label class="campo"><span>Entrada</span><input type="datetime-local" name="entrada" value="' + local(Date.now()) + '"></label><label class="campo"><span>Salida</span><input type="datetime-local" name="salida" value="' + local(Date.now() + 3 * PD.DIA + 5 * 3600000) + '"></label></div>' +
         '</form><div class="total-grande" data-simulado></div>') +
     '</div>' +
+      bloque('Servicios extra', D().extras.length, '<p class="aviso-tabla">' + ico('info') + 'El cliente los suma al reservar en la web. Si dejás el precio vacío, sale «a cotizar» y se coordina por WhatsApp.</p>' +
+        (D().extras.length ? '<ul class="mini">' + D().extras.map(function (x) {
+          return '<li class="mini__fila" data-editar-extra="' + x.id + '" tabindex="0"><span class="mini__hora extra-ico">' + ico(icoExtra(x.nombre)) + '</span>' +
+            '<span class="mini__texto"><strong>' + esc(x.nombre) + '</strong><small>' + esc(x.detalle || 'Sin descripción') + '</small></span>' +
+            '<span class="mini__accion"><span class="estado estado--' + (x.activo ? 'bien' : 'neutro') + '">' + (x.activo ? precioExtra(x) : 'Pausado') + '</span>' + ico('pencil') + '</span></li>';
+        }).join('') + '</ul>' : '<p class="vacio">Todavía no hay servicios extra.</p>') +
+        '<div class="ventana__acciones"><button class="btn btn--linea" type="button" data-editar-extra="">' + ico('plus') + 'Agregar servicio extra</button></div>') +
       bloque('Datos para la factura', null, (D().empresa.rut ? '' : '<p class="aviso-tabla">' + ico('info') + 'Cargá el RUT del parking: sale en cada e-Ticket y e-Factura.</p>') +
         '<form class="formulario" data-form-empresa>' +
         '<div class="formulario__fila"><label class="campo"><span>Razón social</span><input name="razon" value="' + esc(D().empresa.razon) + '"></label><label class="campo"><span>RUT del parking</span><input name="rut" inputmode="numeric" maxlength="12" value="' + esc(D().empresa.rut) + '"></label></div>' +
@@ -1115,6 +1156,91 @@
         '<p class="campo-error" data-error-lugares hidden></p>' +
         '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar lugares</button></div></form>');
   };
+  /* ---------- PROMOCIONES Y CONVENIOS ---------- */
+  function vigenciaPromo(p) {
+    var hoy = aFecha(Date.now()), f = function (d) { return d.split('-').reverse().slice(0, 2).join('/'); };
+    if (!p.activa) return ['neutro', 'Pausada'];
+    if (p.desde && p.desde > hoy) return ['info', 'Empieza el ' + f(p.desde)];
+    if (p.hasta && p.hasta < hoy) return ['neutro', 'Venció el ' + f(p.hasta)];
+    return ['bien', p.hasta ? 'Vigente hasta el ' + f(p.hasta) : 'Vigente'];
+  }
+  V.promociones = function () {
+    var ps = D().promociones;
+    var usadas = function (p) { return D().reservas.filter(function (r) { return r.promo && r.promo.codigo === p.codigo && r.estado !== 'cancelada'; }); };
+    return '<div class="invitar"><p><strong>Cómo funciona:</strong> creás un código (por ejemplo <strong>EMPRESA15</strong>) y se lo pasás a la empresa del convenio. ' +
+        'El cliente lo escribe al reservar y la web le descuenta el porcentaje del estacionamiento. Los servicios extra se cobran enteros.</p>' +
+        '<button class="btn btn--primario" type="button" data-editar-promo="">' + ico('plus') + 'Nueva promoción</button></div>' +
+      bloque('Promociones', ps.length, ps.length ? '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Código</th><th>Promoción</th><th>Descuento</th><th>Vigencia</th><th>En la web</th><th>Reservas</th><th></th></tr></thead><tbody>' +
+        ps.map(function (p) {
+          var v = vigenciaPromo(p), u = usadas(p);
+          return '<tr data-editar-promo="' + p.id + '" tabindex="0">' +
+            '<td data-et="Código"><strong class="codigo-promo">' + esc(p.codigo) + '</strong></td>' +
+            '<td data-et="Promoción">' + esc(p.titulo) + (p.empresa ? '<small>' + esc(p.empresa) + '</small>' : '') + '</td>' +
+            '<td data-et="Descuento" class="num">' + p.porcentaje + '%</td>' +
+            '<td data-et="Vigencia"><span class="estado estado--' + v[0] + '">' + v[1] + '</span></td>' +
+            '<td data-et="En la web">' + (p.en_web ? 'Se muestra' + (p.publico ? ', con el código' : ', sin el código') : 'No se muestra') + '</td>' +
+            '<td data-et="Reservas" class="num">' + u.length + (u.length ? '<small>− ' + plata(u.reduce(function (a, r) { return a + r.promo.descuento; }, 0)) + '</small>' : '') + '</td>' +
+            '<td>' + ico('pencil') + '</td></tr>';
+        }).join('') + '</tbody></table></div>' : '<p class="vacio">Todavía no hay promociones. Creá la primera con «Nueva promoción».</p>');
+  };
+  function formPromo(id) {
+    var p = D().promociones.filter(function (x) { return x.id === id; })[0] || { activa: true, en_web: true, publico: false, porcentaje: 10 };
+    var c = abrirVentana('<h2 class="ventana__titulo">' + (p.id ? 'Promoción ' + esc(p.codigo) : 'Nueva promoción') + '</h2><form class="formulario" data-form-promo novalidate>' +
+      '<div class="formulario__fila"><label class="campo"><span>Código</span><input name="codigo" required maxlength="20" value="' + esc(p.codigo || '') + '" placeholder="Ej.: EMPRESA15" autocomplete="off" spellcheck="false" style="text-transform:uppercase"></label>' +
+      '<label class="campo"><span>Descuento (%)</span><input name="porcentaje" type="number" min="1" max="90" required value="' + p.porcentaje + '"></label></div>' +
+      '<div class="formulario__fila"><label class="campo"><span>Título</span><input name="titulo" required maxlength="80" value="' + esc(p.titulo || '') + '" placeholder="Ej.: 15% para socios"></label>' +
+      '<label class="campo"><span>Empresa del convenio <em>(opcional)</em></span><input name="empresa" maxlength="60" value="' + esc(p.empresa || '') + '"></label></div>' +
+      '<label class="campo"><span>Cómo se consigue <em>(sale en la web)</em></span><input name="detalle" maxlength="240" value="' + esc(p.detalle || '') + '" placeholder="Ej.: Pedí tu código en la app de la empresa"></label>' +
+      '<div class="formulario__fila"><label class="campo"><span>Desde <em>(opcional)</em></span><input name="desde" type="date" value="' + (p.desde || '') + '"></label>' +
+      '<label class="campo"><span>Hasta <em>(opcional)</em></span><input name="hasta" type="date" value="' + (p.hasta || '') + '"></label></div>' +
+      '<label class="campo"><span>Enlace de la empresa <em>(opcional)</em></span><input name="enlace" type="url" maxlength="300" value="' + esc(p.enlace || '') + '" placeholder="https://"></label>' +
+      '<label class="check"><input type="checkbox" name="activa"' + (p.activa ? ' checked' : '') + '> Activa (el código se puede usar)</label>' +
+      '<label class="check"><input type="checkbox" name="en_web"' + (p.en_web ? ' checked' : '') + '> Mostrarla en «Promociones» del inicio de la web</label>' +
+      '<label class="check"><input type="checkbox" name="publico"' + (p.publico ? ' checked' : '') + '> Mostrar el código en la web (si no, el cliente se lo pide a la empresa)</label>' +
+      '<p class="campo-error" data-error-promo hidden></p>' +
+      '<div class="ventana__acciones">' + (p.id ? '<button class="btn btn--linea btn--peligro" type="button" data-borrar-promo="' + p.id + '">' + ico('trash-2') + 'Borrar</button>' : '') +
+      '<button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar promoción</button></div></form>', 'ancha');
+    $('[data-form-promo]', c).addEventListener('submit', async function (e) {
+      e.preventDefault(); var f = e.target;
+      var res = await ejecutar(f.querySelector('[type=submit]'), function () {
+        return PD.guardarPromocion({ id: p.id || '', codigo: f.codigo.value, porcentaje: f.porcentaje.value, titulo: f.titulo.value, empresa: f.empresa.value,
+          detalle: f.detalle.value, desde: f.desde.value, hasta: f.hasta.value, enlace: f.enlace.value.trim(),
+          activa: f.activa.checked, en_web: f.en_web.checked, publico: f.publico.checked });
+      }, $('[data-error-promo]', c));
+      if (res !== FALLO) { cerrarVentana(); avisar('Promoción guardada'); pintar(); }
+    });
+    var b = $('[data-borrar-promo]', c);
+    if (b) b.addEventListener('click', async function () {
+      if (!confirm('¿Borrar la promoción ' + p.codigo + '? Las reservas que ya la usaron conservan su descuento.')) return;
+      var res = await ejecutar(b, function () { return PD.borrarPromocion(p.id); }, $('[data-error-promo]', c));
+      if (res !== FALLO) { cerrarVentana(); avisar('Promoción borrada', 'info'); pintar(); }
+    });
+  }
+  function formExtra(id) {
+    var x = D().extras.filter(function (e) { return e.id === id; })[0] || { activo: true, precio: null };
+    var c = abrirVentana('<h2 class="ventana__titulo">' + (x.id ? esc(x.nombre) : 'Nuevo servicio extra') + '</h2><form class="formulario" data-form-extra novalidate>' +
+      '<div class="formulario__fila"><label class="campo"><span>Nombre</span><input name="nombre" required maxlength="40" value="' + esc(x.nombre || '') + '" placeholder="Ej.: Lavado"></label>' +
+      '<label class="campo"><span>Precio <em>(vacío = a cotizar)</em></span><input name="precio" type="number" min="0" value="' + (x.precio == null ? '' : x.precio) + '"></label></div>' +
+      '<label class="campo"><span>Descripción <em>(sale en la web)</em></span><input name="detalle" maxlength="160" value="' + esc(x.detalle || '') + '"></label>' +
+      '<label class="check"><input type="checkbox" name="activo"' + (x.activo ? ' checked' : '') + '> Se ofrece en la web</label>' +
+      '<p class="campo-error" data-error-extra hidden></p>' +
+      '<div class="ventana__acciones">' + (x.id ? '<button class="btn btn--linea btn--peligro" type="button" data-borrar-extra>' + ico('trash-2') + 'Borrar</button>' : '') +
+      '<button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar</button></div></form>');
+    $('[data-form-extra]', c).addEventListener('submit', async function (e) {
+      e.preventDefault(); var f = e.target;
+      var res = await ejecutar(f.querySelector('[type=submit]'), function () {
+        return PD.guardarExtra({ id: x.id || '', nombre: f.nombre.value, precio: f.precio.value, detalle: f.detalle.value, activo: f.activo.checked });
+      }, $('[data-error-extra]', c));
+      if (res !== FALLO) { cerrarVentana(); avisar('Servicio extra guardado'); pintar(); }
+    });
+    var b = $('[data-borrar-extra]', c);
+    if (b) b.addEventListener('click', async function () {
+      if (!confirm('¿Borrar ' + x.nombre + '? Las reservas que ya lo pidieron lo conservan.')) return;
+      var res = await ejecutar(b, function () { return PD.borrarExtra(x.id); }, $('[data-error-extra]', c));
+      if (res !== FALLO) { cerrarVentana(); avisar('Servicio extra borrado', 'info'); pintar(); }
+    });
+  }
+
   function simular() {
     var f = $('[data-form-simulador]'); if (!f) return;
     var p = PD.precio({ entrada: f.entrada.value, salida: f.salida.value, lugarTipo: f.lugarTipo.value, servicio: f.servicio.value });
@@ -1348,6 +1474,8 @@
     if ((el = t.closest('[data-salida]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-salida'); return; }
     if ((el = t.closest('[data-elegir-retiro]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-elegir-retiro'); return; }
     if (t.closest('[data-nueva-reserva]')) return formReserva();
+    if ((el = t.closest('[data-editar-promo]'))) return formPromo(el.getAttribute('data-editar-promo'));
+    if ((el = t.closest('[data-editar-extra]'))) return formExtra(el.getAttribute('data-editar-extra'));
     if ((el = t.closest('[data-cambiar-fechas]'))) return formFechas(el.getAttribute('data-cambiar-fechas'));
     if ((el = t.closest('[data-marcar]'))) return marcarJornada(el);
     if ((el = t.closest('[data-guardar-transferencia]'))) return guardarTransferencia(el.getAttribute('data-guardar-transferencia'), el);
@@ -1451,7 +1579,7 @@
     }
   });
   document.addEventListener('keydown', function (e) {
-    var el = e.target.closest && e.target.closest('tr[data-abrir-reserva], tr[data-buscar-cliente]');
+    var el = e.target.closest && e.target.closest('tr[data-abrir-reserva], tr[data-buscar-cliente], tr[data-editar-promo], li[data-editar-extra]');
     if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); }
   });
   document.addEventListener('change', function (e) {

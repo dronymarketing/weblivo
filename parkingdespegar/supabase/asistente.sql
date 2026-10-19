@@ -228,7 +228,9 @@ language sql stable set search_path = public as $$
   select jsonb_build_object('id', r.id, 'codigo', r.codigo, 'cliente', r.cliente_nombre, 'matricula', r.matricula,
     'modelo', r.modelo, 'color', r.color, 'lugar', r.lugar, 'tipo', r.lugar_tipo, 'servicio', r.servicio,
     'pasajeros', r.pasajeros, 'entrada', r.entrada, 'salida', r.salida, 'checkin', r.checkin, 'checkout', r.checkout,
-    'estado', r.estado, 'origen', r.origen, 'total', r.total, 'pagado', r.pagado, 'vuelo', r.vuelo_vuelta)
+    'estado', r.estado, 'origen', r.origen, 'total', r.total, 'pagado', r.pagado, 'vuelo', r.vuelo_vuelta,
+    'extras', (select coalesce(jsonb_agg(x ->> 'nombre'), '[]'::jsonb) from jsonb_array_elements(r.extras) x),
+    'promo', r.promo_codigo, 'descuento_pct', r.descuento_pct, 'comentarios', r.comentarios)
 $$;
 
 -- Busca autos por lugar (A-05), código (PD-1234), matrícula (SBA 1234) o nombre del cliente.
@@ -451,7 +453,8 @@ begin
   return json_build_object('pasarela_id', v_pw.pasarela_id, 'pagada', r.pagado >= r.total and r.total > 0,
     'codigo', r.codigo, 'total', r.total, 'pagado', r.pagado, 'entrada', r.entrada, 'salida', r.salida,
     'lugar_tipo', r.lugar_tipo, 'servicio', r.servicio, 'matricula', r.matricula, 'modelo', r.modelo, 'color', r.color,
-    'nombre', r.cliente_nombre, 'telefono', r.cliente_telefono, 'estado', r.estado);
+    'nombre', r.cliente_nombre, 'telefono', r.cliente_telefono, 'estado', r.estado,
+    'extras', (select coalesce(json_agg(x ->> 'nombre'), '[]'::json) from jsonb_array_elements(r.extras) x), 'promo', r.promo_codigo);
 end $$;
 
 -- dLocal confirmó el pago: se registra (una sola vez) y la reserva queda pagada online.
