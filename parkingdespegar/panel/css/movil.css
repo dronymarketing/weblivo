@@ -741,3 +741,30 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
 /* La agenda dentro de Entrada: sobre el fondo gris para separarla de la tarjeta */
 [data-agenda] .leyenda--agenda, [data-agenda] .horas, [data-agenda] .nav-dias__fecha, [data-agenda] .nav-dias .boton-ico { background: var(--fondo); }
 [data-agenda] .hora-fila { border-top-color: rgba(5, 63, 92, .09); }
+
+/* ---------- Entrada: buscador + agregar reserva arriba, el día abajo ---------- */
+.entrada-barra { gap: 12px; }
+.entrada-barra__fila { display: grid; gap: 10px; }
+.entrada-barra__fila .buscador { max-width: none; }
+.entrada-barra__fila .btn { width: 100%; }
+.entrada-barra__resultados { padding: 4px 12px; border-radius: var(--radio-chico); background: var(--fondo); }
+.entrada-barra__resultados .mini__fila { cursor: pointer; }
+.entrada-barra .ayuda strong { font-weight: 500; color: var(--texto); }
+
+/* Cada cosa de la agenda con toda la reserva */
+.ev { gap: 4px; padding: 10px 12px 10px 14px; }
+.ev__titulo { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 14px; }
+.ev__titulo .matricula { font-size: 12px; }
+.ev__datos { font-size: 12px; color: var(--texto-suave); overflow-wrap: anywhere; }
+.ev__pie { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; }
+.ev__pie .estado { font-size: 11px; padding: 2px 8px; }
+.ev__estado { font-weight: 500; }
+.ev__accion { display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; min-height: 36px; padding: 0 14px; border-radius: var(--radio-capsula); background: #053f5c; color: #fff; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.ev__accion .ico { width: 15px; height: 15px; color: #a0eacf; }
+.ev--atrasada { box-shadow: inset 0 0 0 1px #ff6712; }
+.hora-fila--atrasadas { background: #fff1e8; }
+.hora-fila--atrasadas .hora-fila__h { color: #c4500c; font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; opacity: 1; }
+.ventana-llegada { display: grid; gap: 16px; }
+.hora-fila--atrasadas { grid-template-columns: 1fr; }
+.hora-fila--atrasadas .hora-fila__h { padding-top: 0; }
+.ventana-llegada .bloque__cabeza { padding-right: 44px; }

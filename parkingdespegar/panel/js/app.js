@@ -397,26 +397,29 @@
   function local(ms) { var d = new Date(ms); return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()) + 'T' + PD.pad(d.getHours()) + ':' + PD.pad(d.getMinutes()); }
 
   /* ---------- REGISTRAR LLEGADA ---------- */
+  /* Arriba: buscar (código o matrícula) y agregar una reserva. Abajo: el día hora por hora;
+     cada llegada se toca en su hora y se abre la entrada (cobro, factura y lugar). */
   V.llegada = function (q) {
-    var ahora = Date.now();
-    var pendientes = D().reservas.filter(function (r) { return r.estado === 'confirmada' && new Date(r.entrada) - ahora < 1.5 * PD.DIA; }).sort(porFecha('entrada'));
-    var elegida = q.c ? D().reservas.filter(function (r) { return r.codigo === q.c && r.estado === 'confirmada'; })[0] : null;
-    var ficha = '<section class="bloque bloque--ficha" data-panel-llegada>' + (elegida ? panelLlegada(elegida) : '<p class="vacio vacio--grande">' + ico('log-in') + 'Elegí una reserva para registrar la entrada.</p>') + '</section>';
-    /* Con una reserva elegida, en celular la ficha va primero (en escritorio queda a la derecha) */
-    return '<div class="columnas columnas--llegada">' + (elegida ? ficha : '') +
-      '<section class="bloque"><header class="bloque__cabeza"><h2>Buscar la reserva</h2></header>' +
-        '<label class="buscador buscador--grande">' + ico('scan-line') + '<input type="search" placeholder="Código o matrícula" data-buscar-llegada autofocus></label>' +
-        '<p class="ayuda">Escaneá el código del comprobante o escribí parte de la matrícula.</p>' +
-        '<ul class="mini" data-lista-llegada>' + listaLlegada(pendientes) + '</ul>' +
-        '<button class="btn btn--linea" type="button" data-sin-reserva>' + ico('plus') + 'Entra sin reserva</button>' +
+    var dia = q.d ? deFecha(q.d) : inicioDia();
+    return '<section class="bloque entrada-barra" data-sector="entrada">' +
+        '<div class="entrada-barra__fila">' +
+          '<label class="buscador buscador--grande">' + ico('scan-line') + '<input type="search" placeholder="Buscar por código o matrícula" aria-label="Buscar la reserva por código o matrícula" data-buscar-llegada autofocus></label>' +
+          '<button class="btn btn--primario" type="button" data-sin-reserva>' + ico('plus') + 'Agregar reserva</button>' +
+        '</div>' +
+        '<ul class="mini entrada-barra__resultados" data-lista-llegada hidden></ul>' +
+        '<p class="ayuda">Cuando llega un cliente, tocá su reserva en la hora de abajo (o buscala por código o matrícula). Si llega sin reserva, tocá <strong>Agregar reserva</strong>.</p>' +
       '</section>' +
-      (elegida ? '' : ficha) +
-    '</div>' +
-    '<section class="bloque" data-agenda data-sector="hoy"><header class="bloque__cabeza"><h2>' + ico('clock') + 'El día hora por hora</h2></header>' +
-      navDia('llegada', q.d ? deFecha(q.d) : inicioDia()) + agendaHoras(q.d ? deFecha(q.d) : inicioDia()) + '</section>';
+      '<section class="bloque" data-agenda data-sector="hoy"><header class="bloque__cabeza"><h2>' + ico('clock') + 'El día hora por hora</h2></header>' +
+        navDia('llegada', dia) + agendaHoras(dia) + '</section>';
   };
+  /* La entrada de una reserva, en una ventana */
+  function abrirLlegada(codigo) {
+    var r = D().reservas.filter(function (x) { return x.codigo === codigo && x.estado === 'confirmada'; })[0];
+    if (!r) { avisar('Esa reserva ya entró o no está confirmada', 'alerta'); return; }
+    abrirVentana('<div class="ventana-llegada" data-panel-llegada>' + panelLlegada(r) + '</div>', 'ancha');
+  }
   function listaLlegada(lista) {
-    if (!lista.length) return '<li class="vacio">No hay llegadas pendientes.</li>';
+    if (!lista.length) return '<li class="vacio">No hay ninguna reserva por entrar con ese código o matrícula.</li>';
     return lista.slice(0, 12).map(function (r) {
       return '<li class="mini__fila" data-elegir-llegada="' + r.codigo + '"><span class="mini__hora">' + hora(r.entrada) + '<small>' + fechaCorta(r.entrada) + '</small></span>' +
         '<span class="mini__texto"><strong>' + esc(r.vehiculo.matricula) + '</strong> · ' + esc(r.cliente.nombre) + '<small>' + r.codigo + ' · ' + TIPO[r.lugarTipo] + '</small></span>' +
@@ -479,7 +482,7 @@
     var rr = D().reservas.filter(function (x) { return x.id === id; })[0];
     var fac = D().facturas.filter(function (x) { return x.id === res.factura; })[0];
     avisar('Entrada registrada y ' + (res.tipo === 'efactura' ? 'e-Factura' : 'e-Ticket') + ' A-' + PD.pad4(res.numero) + ' emitido');
-    location.hash = '#/llegada';
+    repintar = false; cerrarVentana();
     pintar();
     if (rr) ticket(rr, 'entrada', fac);
   }
@@ -491,7 +494,7 @@
     var res = await ejecutar(boton, function () { return PD.registrarPago(id, monto, 'transferencia', ref); });
     if (res === FALLO) return;
     avisar('Transferencia de ' + plata(monto) + ' registrada en ' + (r ? r.codigo : 'la reserva'));
-    pintar();
+    if (r && boton.closest('[data-ventana-caja]')) { abrirLlegada(r.codigo); repintar = true; } else pintar();
   }
 
   /* Factura: e-Ticket o e-Factura. Los importes incluyen IVA. */
@@ -859,26 +862,47 @@
       if (mismoDia(sale, dia)) ev.push({ r: r, cat: 'sale', hora: sale, nota: r.estado === 'finalizada' ? 'ya se fue' : (r.vuelo.vuelta ? 'vuelo ' + esc(r.vuelo.vuelta) : 'todavía adentro') });
     });
     trasladosDe(dia).forEach(function (t) { ev.push({ r: t.r, cat: 'traslado', hora: t.hora, nota: (t.tipo === 'ida' ? 'llevar al aeropuerto' : 'buscar en el aeropuerto') + ' · ' + TXT_TRASLADO[t.estado].toLowerCase() }); });
-    var cuenta = {}; ev.forEach(function (x) { cuenta[x.cat] = (cuenta[x.cat] || 0) + 1; });
+    /* Hoy: también las que tenían que llegar antes y todavía no llegaron */
+    var esHoy = dia === inicioDia();
+    var atrasadas = !esHoy ? [] : D().reservas.filter(function (r) { return r.estado === 'confirmada' && new Date(r.entrada) < dia; })
+      .sort(porFecha('entrada')).map(function (r) { return { r: r, cat: 'llega', hora: r.entrada, atrasada: true }; });
+    var cuenta = {}; ev.concat(atrasadas).forEach(function (x) { cuenta[x.cat] = (cuenta[x.cat] || 0) + 1; });
     var porHora = {}; ev.forEach(function (x) { var h = new Date(x.hora).getHours(); (porHora[h] = porHora[h] || []).push(x); });
-    var esHoy = dia === inicioDia(), ahoraH = new Date().getHours();
-    var filas = '';
+    var ahoraH = new Date().getHours();
+    var filas = atrasadas.length ? '<li class="hora-fila hora-fila--atrasadas"><span class="hora-fila__h">Atrasadas</span><div class="hora-fila__eventos">' + atrasadas.map(evento).join('') + '</div></li>' : '';
     for (var h = 0; h < 24; h++) {
       var lista = (porHora[h] || []).sort(function (a, b) { return new Date(a.hora) - new Date(b.hora); });
       filas += '<li class="hora-fila' + (lista.length ? '' : ' hora-fila--vacia') + (esHoy && h === ahoraH ? ' es-ahora' : '') + '"' + (esHoy && h === ahoraH ? ' data-hora-actual' : '') + '>' +
         '<span class="hora-fila__h">' + dosCifras(h) + ':00</span><div class="hora-fila__eventos">' +
-        lista.map(function (x) {
-          var cat = CATEGORIAS.filter(function (c) { return c[0] === x.cat; })[0];
-          return '<button type="button" class="ev ev--' + x.cat + '" data-abrir-reserva="' + x.r.id + '">' +
-            '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + hora(x.hora) + '</span></span>' +
-            '<span class="ev__texto"><strong>' + esc(x.r.vehiculo.matricula) + '</strong> ' + esc(x.r.cliente.nombre) + '<small>' + x.nota + '</small></span></button>';
-        }).join('') + '</div></li>';
+        lista.map(evento).join('') + '</div></li>';
     }
     return '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
         return '<span class="leyenda__item"><i class="punto punto--' + c[0] + '"></i>' + c[1] + ' <strong>' + (cuenta[c[0]] || 0) + '</strong></span>';
       }).join('') + '</div>' +
-      (ev.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas, salidas ni traslados.</p>') +
+      (ev.length || atrasadas.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas, salidas ni traslados.</p>') +
       '<ol class="horas">' + filas + '</ol>';
+  }
+
+  /* Cada cosa de la agenda con toda la reserva a la vista: auto, cliente, lugar, servicio, vuelo y pago.
+     Una llegada pendiente se toca para registrar la entrada; una salida, para registrar la salida. */
+  function evento(x) {
+    var r = x.r, cat = CATEGORIAS.filter(function (c) { return c[0] === x.cat; })[0];
+    var porEntrar = x.cat === 'llega' && r.estado === 'confirmada' && puede('llegada');
+    var porSalir = x.cat === 'sale' && r.estado === 'en_predio' && puede('retiros');
+    var estado = r.estado === 'cancelada' ? 'Cancelada' : x.cat === 'llega' ? (r.estado === 'confirmada' ? (x.atrasada ? 'Era el ' + fechaCorta(r.entrada) + ': todavía no llegó' : 'Todavía no llegó') : 'Ya entró' + (r.checkin ? ' a las ' + hora(r.checkin) : ''))
+      : x.cat === 'sale' ? (r.estado === 'finalizada' ? 'Ya se fue' : r.estado === 'en_predio' ? 'Todavía adentro' : 'Todavía no entró')
+      : x.cat === 'traslado' ? x.nota : 'Reserva para el ' + DIAS_CORTOS[new Date(r.entrada).getDay()] + ' ' + fechaCorta(r.entrada) + ' a las ' + hora(r.entrada);
+    var datos = [esc([r.vehiculo.modelo, r.vehiculo.color].filter(Boolean).join(' ')), TIPO[r.lugarTipo] + (r.lugar ? ' · ' + r.lugar : ''),
+      r.servicio === 'valet' ? 'Valet' : 'Traslado · ' + r.pasajeros + ' pas.', x.cat === 'sale' && r.vuelo.vuelta ? 'Vuelo ' + esc(r.vuelo.vuelta) : x.cat !== 'sale' && r.vuelo.ida ? 'Vuelo ' + esc(r.vuelo.ida) : '', r.codigo]
+      .filter(Boolean).join(' · ');
+    var attr = porEntrar ? 'data-entrada="' + r.codigo + '"' : porSalir ? 'data-salida="' + r.codigo + '"' : 'data-abrir-reserva="' + r.id + '"';
+    return '<button type="button" class="ev ev--' + x.cat + (x.atrasada ? ' ev--atrasada' : '') + '" ' + attr + '>' +
+      '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora) + '</span></span>' +
+      '<span class="ev__titulo"><span class="matricula">' + esc(r.vehiculo.matricula) + '</span><strong>' + esc(r.cliente.nombre) + '</strong></span>' +
+      '<span class="ev__datos">' + datos + '</span>' +
+      '<span class="ev__pie"><span class="ev__estado">' + estado + '</span>' + (r.estado === 'cancelada' ? '' : badgePago(r)) + '</span>' +
+      (porEntrar ? '<span class="ev__accion">' + ico('log-in') + 'Registrar entrada</span>' : porSalir ? '<span class="ev__accion">' + ico('log-out') + 'Registrar salida</span>' : '') +
+    '</button>';
   }
 
   /* ---------- HORARIOS DEL EQUIPO ---------- */
@@ -1219,6 +1243,8 @@
     pintarNav(r.id);
     pintarJornada();
     $('[data-vista]').innerHTML = cabecera(sec) + V[r.id](r.q);
+    /* #/llegada?c=PD-1234 (desde Inicio o el detalle): abre la entrada de esa reserva */
+    if (r.id === 'llegada' && r.q.c) { history.replaceState(null, '', '#/llegada' + (r.q.d ? '?d=' + r.q.d : '')); abrirLlegada(r.q.c); }
     /* Al cambiar de día en la agenda de Entrada, la pantalla se queda en la agenda */
     if (r.id === 'llegada' && r.q.d && !r.q.c) { var ag = $('[data-agenda]'); if (ag) ag.scrollIntoView({ block: 'start', behavior: 'instant' }); }
     if (r.id === 'tarifas') simular();
@@ -1284,7 +1310,9 @@
     var t = e.target;
     var el;
     if ((el = t.closest('[data-abrir-reserva]')) && !t.closest('a, button:not([data-abrir-reserva])')) return abrirReserva(el.getAttribute('data-abrir-reserva'));
-    if ((el = t.closest('[data-elegir-llegada]'))) { location.hash = '#/llegada?c=' + el.getAttribute('data-elegir-llegada'); return; }
+    if ((el = t.closest('[data-elegir-llegada]'))) return abrirLlegada(el.getAttribute('data-elegir-llegada'));
+    if ((el = t.closest('[data-entrada]'))) return abrirLlegada(el.getAttribute('data-entrada'));
+    if ((el = t.closest('[data-salida]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-salida'); return; }
     if ((el = t.closest('[data-elegir-retiro]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-elegir-retiro'); return; }
     if (t.closest('[data-nueva-reserva]')) return formReserva();
     if ((el = t.closest('[data-cambiar-fechas]'))) return formFechas(el.getAttribute('data-cambiar-fechas'));
@@ -1455,7 +1483,7 @@
     if (el.matches('[data-buscar-llegada]')) {
       var b = el.value.toLowerCase().replace(/\s/g, '');
       var lista = D().reservas.filter(function (r) { return r.estado === 'confirmada' && (!b || (r.codigo + r.vehiculo.matricula).toLowerCase().replace(/[\s-]/g, '').indexOf(b.replace('-', '')) >= 0); }).sort(porFecha('entrada'));
-      $('[data-lista-llegada]').innerHTML = listaLlegada(b ? lista : lista.filter(function (r) { return new Date(r.entrada) - Date.now() < 1.5 * PD.DIA; }));
+      var ul = $('[data-lista-llegada]'); ul.hidden = !b; ul.innerHTML = b ? listaLlegada(lista) : '';
     }
     if (el.matches('[data-recibido]')) {
       var f2 = el.form, saldo = +f2.getAttribute('data-saldo'), v2 = $('[data-vuelto]');

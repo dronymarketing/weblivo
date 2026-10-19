@@ -225,6 +225,11 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
       responde «¿quién está trabajando?» con quién marcó entrada.
     · Para aplicarlo en una base que ya funciona: correr `esquema.sql` completo (se puede re-correr).
     · La primera pantalla del menú se llama «Inicio» (antes «Hoy»).
+    · **Entrada rehecha (Santi, 19/10):** arriba un buscador (código o matrícula; los resultados
+      aparecen al escribir, Enter abre el primero) y el botón «Agregar reserva» (mostrador). Abajo el
+      día hora por hora: cada cosa muestra la reserva completa (auto, cliente, lugar, servicio, vuelo,
+      código, estado y pago); las llegadas pendientes tienen «Registrar entrada» y se abren en una
+      ventana (cobro, factura y lugar). Hoy también muestra arriba las llegadas atrasadas.
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de

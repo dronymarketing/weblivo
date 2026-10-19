@@ -102,3 +102,6 @@
 .hora-fila__eventos { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 .jornada-tarjeta { grid-template-columns: 1fr auto; }
 .jornada { margin-left: 0; }
+.entrada-barra__fila { grid-template-columns: 1fr auto; align-items: center; }
+.entrada-barra__fila .btn { width: auto; min-height: 56px; padding: 0 28px; }
+.ev__accion { justify-self: start; }
