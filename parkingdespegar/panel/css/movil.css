@@ -632,3 +632,109 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
 .cajon-mini.cajon--sale { border: 0; }
 [data-panel-llegada], [data-panel-retiro] { scroll-margin-top: calc(var(--superior) + 12px); }
 .bloque > .vacio--grande + .ventana__acciones { justify-content: center; }
+
+/* ============================================================
+   Calendario, agenda por hora, turnos de caja y horarios
+   ============================================================ */
+
+/* Navegación por días y semanas */
+.nav-dias { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.nav-dias__fecha { position: relative; flex: 1 1 180px; min-width: 0; display: flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: var(--radio-capsula); background: var(--superficie); font-size: 14px; cursor: pointer; }
+.nav-dias__fecha span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-dias__fecha span::first-letter { text-transform: uppercase; }
+.nav-dias__fecha input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
+.nav-dias .boton-ico { background: var(--superficie); }
+.nav-dias .btn { flex: 1 1 100%; }
+
+/* Colores de cada cosa: siempre con texto o ícono al lado, nunca el color solo */
+.punto { display: inline-block; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.punto--llega { background: #a0eacf; box-shadow: inset 0 0 0 1px #6cc9a6; }
+.punto--sale { background: #ffa726; }
+.punto--web { background: #47728a; }
+.punto--whatsapp { background: #1d7a55; }
+.punto--mostrador { background: #ff6712; }
+.punto--telefono { background: #7a4fb5; }
+.punto--traslado { background: #053f5c; }
+
+/* Calendario semanal: en celular, un día debajo del otro */
+.semana { display: grid; gap: 10px; }
+.semana__dia { display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: var(--radio); background: var(--superficie); min-width: 0; }
+.semana__dia.es-hoy { box-shadow: inset 0 0 0 2px var(--texto); }
+.semana__dia.es-pasado { opacity: .72; }
+.semana__cabeza { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.semana__cabeza a { display: inline-flex; align-items: baseline; gap: 8px; color: var(--texto); text-decoration: none; font-size: 16px; text-transform: capitalize; }
+.semana__cabeza em { font-style: normal; font-size: 11px; font-weight: 500; letter-spacing: var(--ls-micro); text-transform: uppercase; color: #c4500c; }
+.semana__cabeza small { font-size: 12px; }
+.semana__lista { display: grid; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.semana__vacio { font-size: 13px; color: var(--texto-suave); }
+.evento { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border: 0; border-radius: var(--radio-chico); text-align: left; font: inherit; font-size: 13px; color: #053f5c; cursor: pointer; }
+.evento--llega { background: #a0eacf; }
+.evento--sale { background: #ffd18a; }
+.evento__hora { font-weight: 500; font-variant-numeric: tabular-nums; }
+.evento__texto { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.evento__texto strong { margin-right: 6px; }
+.evento__ico { width: 15px; height: 15px; }
+.evento:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+
+/* Agenda por hora: las horas en vertical */
+.leyenda--agenda { gap: 8px 14px; padding: 12px 14px; border-radius: var(--radio); background: var(--superficie); }
+.leyenda--agenda strong { color: var(--texto); }
+.horas { display: grid; list-style: none; margin: 0; padding: 0; border-radius: var(--radio); background: var(--superficie); overflow: hidden; }
+.hora-fila { display: grid; grid-template-columns: 52px 1fr; gap: 10px; padding: 10px 12px; border-top: 1px solid rgba(5, 63, 92, .07); }
+.hora-fila:first-child { border-top: 0; }
+.hora-fila--vacia { padding-top: 4px; padding-bottom: 4px; }
+.hora-fila__h { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--texto-suave); padding-top: 6px; }
+.hora-fila--vacia .hora-fila__h { padding-top: 0; font-weight: 400; opacity: .6; }
+.hora-fila.es-ahora { background: #fff1e8; box-shadow: inset 3px 0 0 #ff6712; }
+.hora-fila.es-ahora .hora-fila__h { color: #c4500c; opacity: 1; }
+.hora-fila__eventos { display: grid; gap: 6px; min-width: 0; }
+.ev { display: grid; gap: 2px; padding: 8px 10px 8px 12px; border: 0; border-left: 4px solid; border-radius: var(--radio-chico); text-align: left; font: inherit; font-size: 13px; color: #053f5c; cursor: pointer; min-width: 0; }
+.ev__cabeza { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.ev__cabeza .ico { width: 14px; height: 14px; stroke-width: 2; }
+.ev__hora { margin-left: auto; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.ev__texto { overflow-wrap: anywhere; }
+.ev__texto small { display: inline; margin-left: 4px; }
+.ev:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+.ev--web { background: #e4eef3; border-color: #47728a; }
+.ev--whatsapp { background: #e3f6ee; border-color: #1d7a55; }
+.ev--mostrador { background: #fff1e8; border-color: #ff6712; }
+.ev--telefono { background: #f0eaf8; border-color: #7a4fb5; }
+.ev--llega { background: #dcf7ec; border-color: #4fbf95; }
+.ev--sale { background: #fff0d6; border-color: #ffa726; }
+.ev--traslado { background: #e8eef2; border-color: #053f5c; }
+
+/* Turnos de caja: diurno (ámbar) y nocturno (navy) */
+.turno { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radio-capsula); font-size: 12px; font-weight: 500; white-space: nowrap; }
+.turno .ico { width: 14px; height: 14px; stroke-width: 2; }
+.turno--diurno { background: #ffe2b3; color: #053f5c; }
+.turno--nocturno { background: #053f5c; color: #fff; }
+.turno--nocturno .ico { color: #a0eacf; }
+.turno-banda { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radio); font-size: 15px; }
+.turno-banda > .ico { width: 26px; height: 26px; flex-shrink: 0; }
+.turno-banda small { color: inherit; opacity: .8; }
+.turno-banda--diurno { background: #ffe2b3; color: #053f5c; }
+.turno-banda--nocturno { background: #053f5c; color: #fff; }
+.turno-banda--nocturno > .ico { color: #a0eacf; }
+.fila-turno td:first-child small { margin-top: 4px; }
+.eleccion__turno span { grid-template-columns: auto 1fr; column-gap: 8px; align-items: center; }
+.eleccion__turno span .ico { grid-row: span 2; width: 22px; height: 22px; }
+.eleccion__turno--diurno span .ico { color: #c4500c; }
+.eleccion__turno--nocturno span .ico { color: #053f5c; }
+
+/* Cambiar fechas */
+.campo-fecha { display: grid; gap: 8px; }
+.campo-fecha__atajos { display: flex; flex-wrap: wrap; gap: 8px; }
+.campo-fecha__atajos .btn { flex: 1 1 auto; }
+
+/* Jornada: botón de la barra superior y tarjeta de Horarios */
+.jornada { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; margin-left: auto; border: 1px solid rgba(5, 63, 92, .18); border-radius: var(--radio-capsula); background: var(--superficie); color: var(--texto); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.jornada[hidden] { display: none; }
+.jornada__punto { width: 10px; height: 10px; border-radius: 50%; background: #b8c4cb; flex-shrink: 0; }
+.es-trabajando .jornada__punto { background: #1d7a55; box-shadow: 0 0 0 3px #e3f6ee; }
+.jornada.es-trabajando { border-color: #1d7a55; }
+.jornada-tarjeta { grid-template-columns: 1fr; align-items: center; }
+.jornada-tarjeta__estado { display: flex; align-items: center; gap: 12px; }
+.jornada-tarjeta__estado .jornada__punto { width: 14px; height: 14px; }
+.jornada-tarjeta__estado strong { font-size: 17px; }
+.jornada-tarjeta.es-trabajando { box-shadow: inset 4px 0 0 #1d7a55; }
+@media (max-width: 420px) { .jornada { padding: 0 10px; font-size: 12px; } }

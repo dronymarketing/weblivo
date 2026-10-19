@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="../css/tokens-proyecto.css?v=3">
 <link rel="stylesheet" href="../css/fuentes.css?v=1">
 <link rel="stylesheet" href="../css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=19">
-<link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 1024px)">
+<link rel="stylesheet" href="css/movil.css?v=20">
+<link rel="stylesheet" href="css/escritorio.css?v=6" media="(min-width: 1024px)">
 </head>
 <body class="tablero">
 
@@ -63,6 +63,7 @@
 <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" /></symbol>
 <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></symbol>
 <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /></symbol>
 <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14" /> <path d="m19 12-7 7-7-7" /></symbol>
@@ -198,6 +199,7 @@
       <button class="superior__menu" type="button" data-abrir-lateral aria-label="Abrir menú"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></button>
       <a class="superior__logo" href="#/panel" aria-label="Ir a Hoy"><svg viewBox="0 0 954.77 130.0" aria-hidden="true"><use href="#logo-h"/></svg></a>
       <span class="superior__hora" data-reloj></span>
+      <button type="button" class="jornada" data-marcar data-jornada hidden><span class="jornada__punto" aria-hidden="true"></span><span data-jornada-texto>Empezar jornada</span></button>
       <div class="superior__usuario">
         <span class="avatar" data-avatar>DP</span>
         <span class="superior__nombre"><strong data-usuario-nombre></strong><small data-usuario-rol></small></span>
@@ -219,7 +221,7 @@
 <script src="lib/JsBarcode.code128.min.js"></script>
 <script src="../js/supabase.js?v=2.117.3"></script>
 <script src="../js/config.js?v=4"></script>
-<script src="../js/datos.js?v=10"></script>
-<script src="js/app.js?v=23"></script>
+<script src="../js/datos.js?v=11"></script>
+<script src="js/app.js?v=24"></script>
 </body>
 </html>

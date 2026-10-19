@@ -16,6 +16,8 @@ Un solo Worker de Cloudflare (gratis) que hace dos cosas:
    habilitados: «Hola Mariana, acaba de entrar un vehículo nuevo» con la ficha del auto, y ofrece el
    teléfono del cliente (se responde «sí»). `asistente_aviso()` confirma que el aviso es real y
    reciente, y que no se mandó antes.
+   También avisa cuando alguien del equipo marca que **empieza o termina de trabajar**
+   (Horarios del panel): «👷 Juan empezó a trabajar a las 08:02» / «🏁 terminó… trabajó 12 h 03 min».
 
 Ninguna llave vive en la página: todas son **secretos cifrados de Cloudflare**.
 
@@ -100,6 +102,7 @@ traslados pendientes, el equipo y quién entró hoy, y un resumen. Además:
 - **Teléfono:** «sí», o «teléfono de Juan Pérez» → número y enlace a su WhatsApp (queda anotado en
   el registro de cambios del panel).
 - **Mapa:** «¿Qué autos hay?» → lugar por lugar, techado y predio, con los libres.
+- **Equipo:** «¿Quién está trabajando?» → quién marcó entrada y desde qué hora.
 - Saluda según la hora y responde «gracias». Si no entiende, contesta con ejemplos.
 Si la base está en pausa, la despierta y avisa. A números no habilitados no les contesta.
 

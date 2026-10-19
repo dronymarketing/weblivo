@@ -142,6 +142,12 @@ create table if not exists public.caja_movimientos (
   usuario_nombre text not null
 );
 
+-- Turno de cada caja: diurno (8 a 20) o nocturno (20 a 8)
+alter table public.caja_turnos add column if not exists turno text check (turno in ('diurno', 'nocturno'));
+update public.caja_turnos
+   set turno = case when extract(hour from apertura at time zone 'America/Montevideo') between 8 and 19 then 'diurno' else 'nocturno' end
+ where turno is null;
+
 create sequence if not exists public.factura_numero start 1;
 
 create table if not exists public.facturas (
@@ -166,6 +172,19 @@ create table if not exists public.auditoria (
   usuario_nombre text not null,
   accion         text not null check (char_length(accion) <= 300)
 );
+
+-- Control de horario: cada vez que alguien del equipo empieza y termina de trabajar
+create table if not exists public.asistencias (
+  id             uuid primary key default gen_random_uuid(),
+  usuario_id     uuid not null references public.perfiles (id) on delete cascade,
+  usuario_nombre text not null,
+  entrada        timestamptz not null default now(),
+  salida         timestamptz,
+  check (salida is null or salida >= entrada)
+);
+-- Una sola jornada abierta por persona
+create unique index if not exists asistencia_abierta on public.asistencias (usuario_id) where salida is null;
+create index if not exists asistencias_entrada on public.asistencias (entrada);
 
 -- ---------- Quién es quién ----------
 
@@ -496,14 +515,19 @@ end $$;
 
 -- ---------- Caja ----------
 
-create or replace function public.abrir_caja(p_base int) returns void
+-- Abre la caja de un turno: diurno (8 a 20) o nocturno (20 a 8). Si no se elige, va según la hora.
+drop function if exists public.abrir_caja(int);
+create or replace function public.abrir_caja(p_base int, p_turno text default null) returns void
 language plpgsql security definer set search_path = public as $$
+declare
+  v_turno text := coalesce(p_turno, case when extract(hour from now() at time zone 'America/Montevideo') between 8 and 19 then 'diurno' else 'nocturno' end);
 begin
   perform public.exigir_rol('admin', 'personal');
-  if exists (select 1 from public.caja_turnos where cierre is null) then raise exception 'Ya hay una caja abierta.' using errcode = 'P0001'; end if;
+  if exists (select 1 from public.caja_turnos where cierre is null) then raise exception 'Ya hay una caja abierta: primero cerrá la del turno anterior.' using errcode = 'P0001'; end if;
   if p_base is null or p_base < 0 then raise exception 'Escribí con cuánto efectivo se abre.' using errcode = 'P0001'; end if;
-  insert into public.caja_turnos (base, abrio_nombre) values (p_base, public.mi_nombre());
-  perform public.anotar('Abrió caja con $ ' || p_base);
+  if v_turno not in ('diurno', 'nocturno') then raise exception 'Elegí el turno.' using errcode = 'P0001'; end if;
+  insert into public.caja_turnos (base, abrio_nombre, turno) values (p_base, public.mi_nombre(), v_turno);
+  perform public.anotar('Abrió la caja del turno ' || v_turno || ' con $ ' || p_base);
 end $$;
 
 create or replace function public.egreso_caja(p_concepto text, p_monto int) returns void
@@ -532,8 +556,122 @@ begin
     from public.caja_movimientos where turno_id = v_t.id and medio in ('efectivo', 'egreso');
   update public.caja_turnos set cierre = now(), esperado = v_esperado, contado = p_contado, cerro_nombre = public.mi_nombre()
    where id = v_t.id;
-  perform public.anotar('Cerró caja: esperado $ ' || v_esperado || ', contado $ ' || p_contado);
+  perform public.anotar('Cerró la caja del turno ' || coalesce(v_t.turno, '') || ': esperado $ ' || v_esperado || ', contado $ ' || p_contado);
   return json_build_object('esperado', v_esperado, 'contado', p_contado);
+end $$;
+
+-- ---------- Cambio de fechas (vuelo atrasado, se queda más días…) ----------
+
+-- Aplica fechas nuevas a una reserva: controla lugar libre, recalcula el precio
+-- (si todavía no entró) y anota el cambio. La usan el panel y la web.
+create or replace function public.aplicar_fechas(p_res public.reservas, p_entrada timestamptz, p_salida timestamptz) returns json
+language plpgsql security definer set search_path = public as $$
+declare
+  v_total int := p_res.total;
+  v_ocup  int;
+  v_cap   int;
+  f       text := 'DD/MM HH24:MI';
+  z       text := 'America/Montevideo';
+begin
+  if p_res.estado = 'en_predio' then p_entrada := p_res.entrada; end if;   -- ya entró: solo cambia la salida
+  if p_entrada is null or p_salida is null then raise exception 'Completá la entrada y la salida.' using errcode = 'P0001'; end if;
+  if p_salida <= p_entrada then raise exception 'La salida tiene que ser después de la entrada.' using errcode = 'P0001'; end if;
+  if p_salida - p_entrada > interval '120 days' then raise exception 'La estadía no puede superar los 120 días.' using errcode = 'P0001'; end if;
+  if p_entrada > now() + interval '1 year' then raise exception 'Solo se puede reservar con hasta un año de anticipación.' using errcode = 'P0001'; end if;
+  if p_res.estado = 'en_predio' and p_salida < now() - interval '1 hour' then raise exception 'La salida no puede quedar en el pasado.' using errcode = 'P0001'; end if;
+  if p_entrada = p_res.entrada and p_salida = p_res.salida then
+    return json_build_object('total', p_res.total, 'pagado', p_res.pagado, 'sin_cambios', true);
+  end if;
+
+  -- ¿Hay lugar en las fechas nuevas? (sin contar esta misma reserva)
+  select count(*) into v_cap from public.lugares where tipo = p_res.lugar_tipo;
+  select count(*) into v_ocup from public.reservas
+   where id <> p_res.id and lugar_tipo = p_res.lugar_tipo and estado in ('confirmada', 'en_predio')
+     and entrada < p_salida and salida > p_entrada;
+  if v_ocup >= v_cap then raise exception 'No quedan lugares % en esas fechas.', case when p_res.lugar_tipo = 'techado' then 'techados' else 'en el predio' end using errcode = 'P0001'; end if;
+
+  -- Si todavía no entró, el precio se recalcula. Si ya está adentro, la diferencia se cobra al salir.
+  if p_res.estado = 'confirmada' then
+    select total into v_total from public.calcular_precio(p_entrada, p_salida, p_res.lugar_tipo, p_res.servicio);
+  end if;
+  update public.reservas set entrada = p_entrada, salida = p_salida, total = v_total where id = p_res.id;
+  perform public.anotar('Cambió las fechas de ' || p_res.codigo || ' (' || p_res.matricula || '): ' ||
+    case when p_entrada <> p_res.entrada then 'entrada ' || to_char(p_res.entrada at time zone z, f) || ' → ' || to_char(p_entrada at time zone z, f) || '; ' else '' end ||
+    case when p_salida <> p_res.salida then 'salida ' || to_char(p_res.salida at time zone z, f) || ' → ' || to_char(p_salida at time zone z, f) else '' end ||
+    case when v_total <> p_res.total then ' · total $ ' || p_res.total || ' → $ ' || v_total else '' end);
+  return json_build_object('total', v_total, 'pagado', p_res.pagado, 'antes', p_res.total);
+end $$;
+
+-- Desde el panel
+create or replace function public.cambiar_fechas(p_reserva uuid, p_entrada timestamptz, p_salida timestamptz) returns json
+language plpgsql security definer set search_path = public as $$
+declare v_res public.reservas;
+begin
+  perform public.exigir_rol('admin', 'personal');
+  select * into v_res from public.reservas where id = p_reserva for update;
+  if not found or v_res.estado not in ('confirmada', 'en_predio') then
+    raise exception 'Solo se pueden cambiar las fechas de reservas confirmadas o de autos que están en el parking.' using errcode = 'P0001';
+  end if;
+  return public.aplicar_fechas(v_res, p_entrada, p_salida);
+end $$;
+
+-- Desde la web: el cliente se identifica con el código de la reserva y su teléfono
+create or replace function public.reserva_web_buscar(p_codigo text, p_telefono text) returns public.reservas
+language plpgsql stable security definer set search_path = public as $$
+declare
+  v_num text := regexp_replace(coalesce(p_codigo, ''), '\D', '', 'g');
+  v_tel text := regexp_replace(regexp_replace(coalesce(p_telefono, ''), '\D', '', 'g'), '^(598)?0?', '');
+  v_res public.reservas;
+begin
+  if v_num = '' or char_length(v_tel) < 8 then return null; end if;
+  select * into v_res from public.reservas where codigo = 'PD-' || v_num;
+  if not found or regexp_replace(regexp_replace(v_res.cliente_telefono, '\D', '', 'g'), '^(598)?0?', '') <> v_tel then return null; end if;
+  return v_res;
+end $$;
+
+create or replace function public.reserva_web_ver(p_codigo text, p_telefono text) returns json
+language plpgsql stable security definer set search_path = public as $$
+declare v_res public.reservas;
+begin
+  v_res := public.reserva_web_buscar(p_codigo, p_telefono);
+  if v_res.id is null then raise exception 'No encontramos una reserva con ese código y ese teléfono.' using errcode = 'P0001'; end if;
+  return json_build_object('codigo', v_res.codigo, 'nombre', split_part(v_res.cliente_nombre, ' ', 1), 'matricula', v_res.matricula,
+    'entrada', v_res.entrada, 'salida', v_res.salida, 'lugar_tipo', v_res.lugar_tipo, 'servicio', v_res.servicio,
+    'estado', v_res.estado, 'total', v_res.total, 'pagado', v_res.pagado);
+end $$;
+
+create or replace function public.reserva_web_cambiar(p_codigo text, p_telefono text, p_entrada timestamptz, p_salida timestamptz) returns json
+language plpgsql security definer set search_path = public as $$
+declare v_res public.reservas; v_id uuid;
+begin
+  v_id := (public.reserva_web_buscar(p_codigo, p_telefono)).id;
+  if v_id is null then raise exception 'No encontramos una reserva con ese código y ese teléfono.' using errcode = 'P0001'; end if;
+  select * into v_res from public.reservas where id = v_id for update;
+  if v_res.estado not in ('confirmada', 'en_predio') then
+    raise exception 'Esta reserva ya terminó o está cancelada. Escribinos por WhatsApp y te ayudamos.' using errcode = 'P0001';
+  end if;
+  if v_res.estado = 'confirmada' and p_entrada < now() - interval '1 hour' then
+    raise exception 'La fecha de entrada ya pasó.' using errcode = 'P0001';
+  end if;
+  return public.aplicar_fechas(v_res, p_entrada, p_salida);
+end $$;
+
+-- ---------- Control de horario ----------
+
+-- Marca el comienzo o el final de la jornada de quien está usando el sistema
+create or replace function public.marcar_asistencia() returns json
+language plpgsql security definer set search_path = public as $$
+declare v_a public.asistencias;
+begin
+  perform public.exigir_rol('admin', 'personal', 'chofer');
+  update public.asistencias set salida = now() where usuario_id = auth.uid() and salida is null returning * into v_a;
+  if found then
+    perform public.anotar('Terminó de trabajar (' || to_char(v_a.salida - v_a.entrada, 'FMHH24 "h" MI "min"') || ')');
+    return json_build_object('trabajando', false, 'entrada', v_a.entrada, 'salida', v_a.salida);
+  end if;
+  insert into public.asistencias (usuario_id, usuario_nombre) values (auth.uid(), public.mi_nombre()) returning * into v_a;
+  perform public.anotar('Empezó a trabajar');
+  return json_build_object('trabajando', true, 'entrada', v_a.entrada);
 end $$;
 
 -- ---------- Configuración (solo la dueña) ----------
@@ -638,6 +776,7 @@ alter table public.caja_turnos      enable row level security;
 alter table public.caja_movimientos enable row level security;
 alter table public.facturas         enable row level security;
 alter table public.auditoria        enable row level security;
+alter table public.asistencias      enable row level security;
 
 drop policy if exists perfiles_ver on public.perfiles;
 create policy perfiles_ver on public.perfiles for select to authenticated
@@ -678,6 +817,11 @@ create policy facturas_ver on public.facturas for select to authenticated using 
 drop policy if exists auditoria_ver on public.auditoria;
 create policy auditoria_ver on public.auditoria for select to authenticated using ((select public.tiene_rol('admin')));
 
+-- Horarios: la dueña ve los de todos; cada uno, los suyos
+drop policy if exists asistencias_ver on public.asistencias;
+create policy asistencias_ver on public.asistencias for select to authenticated
+  using ((select public.tiene_rol('admin')) or (usuario_id = (select auth.uid()) and (select public.tiene_rol('personal', 'chofer'))));
+
 -- Privilegios: la web anónima solo ve tarifas; el personal solo escribe por las funciones
 -- (No depende de «Automatically expose new tables»: todo se otorga a mano acá abajo.)
 grant usage on schema public to anon, authenticated;
@@ -685,7 +829,7 @@ revoke all on all tables in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
 grant select on public.tarifas to anon;
 grant select on public.perfiles, public.tarifas, public.empresa, public.lugares, public.reservas, public.pagos,
-                public.caja_turnos, public.caja_movimientos, public.facturas, public.auditoria to authenticated;
+                public.caja_turnos, public.caja_movimientos, public.facturas, public.auditoria, public.asistencias to authenticated;
 grant update (techado, aire, valet, gracia_horas, minimo_dias) on public.tarifas to authenticated;
 grant update (razon, rut, direccion, iva) on public.empresa to authenticated;
 grant update (nombre, rol, activo) on public.perfiles to authenticated;
@@ -693,13 +837,15 @@ grant update (nombre, rol, activo) on public.perfiles to authenticated;
 revoke execute on all functions in schema public from public, anon, authenticated;
 grant execute on function public.disponibilidad_web(timestamptz, timestamptz),
                           public.crear_reserva_web(jsonb),
-                          public.pagar_reserva_web(uuid, uuid) to anon, authenticated;
+                          public.pagar_reserva_web(uuid, uuid),
+                          public.reserva_web_ver(text, text), public.reserva_web_cambiar(text, text, timestamptz, timestamptz) to anon, authenticated;
 grant execute on function public.mi_rol(), public.tiene_rol(text[]), public.mi_nombre(),
                           public.crear_reserva(jsonb), public.registrar_pago(uuid, int, text, text),
                           public.registrar_entrada(uuid, text, text, text, text, text, text),
                           public.registrar_salida(uuid, text), public.cancelar_reserva(uuid),
                           public.marcar_traslado(uuid, text, text),
-                          public.abrir_caja(int), public.egreso_caja(text, int), public.cerrar_caja(int),
+                          public.abrir_caja(int, text), public.egreso_caja(text, int), public.cerrar_caja(int),
+                          public.cambiar_fechas(uuid, timestamptz, timestamptz), public.marcar_asistencia(),
                           public.configurar_lugares(int, int), public.auditar(text) to authenticated;
 
 -- ---------- En vivo (Realtime) ----------
@@ -708,7 +854,7 @@ declare t text;
 begin
   if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
     foreach t in array array['perfiles', 'tarifas', 'empresa', 'lugares', 'reservas', 'pagos',
-                             'caja_turnos', 'caja_movimientos', 'facturas', 'auditoria'] loop
+                             'caja_turnos', 'caja_movimientos', 'facturas', 'auditoria', 'asistencias'] loop
       if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
         execute format('alter publication supabase_realtime add table public.%I', t);
       end if;
@@ -726,6 +872,8 @@ end $$;
 -- asistente_consulta(): necesita la clave del asistente (se genera en el
 -- panel, acá solo queda su huella) y un número habilitado por la dueña.
 -- Solo lee: no puede cobrar, borrar ni cambiar nada.
+-- Necesita el esquema del sistema al día (usa las tablas de esquema.sql,
+-- incluida la de horarios del equipo).
 -- ============================================================
 
 create table if not exists public.asistente_telefonos (
@@ -886,6 +1034,8 @@ begin
     'ingresaron_hoy', coalesce((select jsonb_agg(distinct usuario_nombre) from public.auditoria
                                  where accion = 'Ingresó al sistema' and fecha >= v_hoy), '[]'::jsonb),
     'sin_acceso', (select count(*) from public.perfiles where not activo),
+    'trabajando', coalesce((select jsonb_agg(jsonb_build_object('nombre', usuario_nombre, 'desde', entrada) order by entrada)
+                              from public.asistencias where salida is null), '[]'::jsonb),
     'en_predio', coalesce((select jsonb_agg(public.asistente_ficha(r) order by r.lugar_tipo desc, r.lugar)
                              from public.reservas r where r.estado = 'en_predio'), '[]'::jsonb)
   );
@@ -1022,6 +1172,7 @@ language plpgsql security definer set search_path = public as $$
 declare r public.reservas;
 begin
   perform public.asistente_validar(p_clave, null);
+  if p_tipo in ('ingreso', 'egreso') then return public.asistente_aviso_personal(p_reserva, p_tipo); end if;
   select * into r from public.reservas where id = p_reserva;
   if not found then return null; end if;
   if p_tipo not in ('entrada', 'reserva') then return null; end if;
@@ -1070,12 +1221,61 @@ create trigger al_cambiar_reserva_avisar after insert or update on public.reserv
 -- Dirección del servicio de Cloudflare que manda los avisos (vacía = sin avisos)
 update public.asistente_config set aviso_url = 'https://parking-despegar.dronymarketing.workers.dev/aviso' where id = 1 and aviso_url is null;
 
+-- ---------- Torre avisa quién empieza y quién termina de trabajar ----------
+alter table public.asistencias add column if not exists aviso_entrada timestamptz;
+alter table public.asistencias add column if not exists aviso_salida timestamptz;
+
+-- Aviso de jornada (ya validada la clave en asistente_aviso): una sola vez y solo si es reciente
+create or replace function public.asistente_aviso_personal(p_id uuid, p_tipo text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare a public.asistencias;
+begin
+  if p_tipo = 'ingreso' then
+    update public.asistencias set aviso_entrada = now()
+     where id = p_id and aviso_entrada is null and entrada > now() - interval '15 minutes' returning * into a;
+  else
+    update public.asistencias set aviso_salida = now()
+     where id = p_id and aviso_salida is null and salida > now() - interval '15 minutes' returning * into a;
+  end if;
+  if not found then return null; end if;
+  return jsonb_build_object('tipo', p_tipo,
+    'persona', jsonb_build_object('nombre', a.usuario_nombre, 'entrada', a.entrada, 'salida', a.salida,
+                                  'rol', (select rol from public.perfiles where id = a.usuario_id)),
+    'trabajando', coalesce((select jsonb_agg(usuario_nombre order by entrada) from public.asistencias where salida is null), '[]'::jsonb),
+    'destinatarios', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre,
+                                 'ventana', coalesce(ultimo_mensaje > now() - interval '23 hours 50 minutes', false)))
+                                from public.asistente_telefonos), '[]'::jsonb));
+end $$;
+
+create or replace function public.al_marcar_asistencia_avisar() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_tipo text;
+begin
+  select aviso_url into v_url from public.asistente_config where id = 1;
+  if v_url is null then return new; end if;
+  if tg_op = 'INSERT' then v_tipo := 'ingreso';
+  elsif old.salida is null and new.salida is not null then v_tipo := 'egreso';
+  end if;
+  if v_tipo is not null then
+    begin
+      perform net.http_post(url := v_url, body := jsonb_build_object('tipo', v_tipo, 'reserva', new.id),
+                            headers := '{"Content-Type": "application/json"}'::jsonb);
+    exception when others then null;
+    end;
+  end if;
+  return new;
+end $$;
+drop trigger if exists al_marcar_asistencia_avisar on public.asistencias;
+create trigger al_marcar_asistencia_avisar after insert or update of salida on public.asistencias
+  for each row execute function public.al_marcar_asistencia_avisar();
+
 revoke execute on function public.asistente_normalizar(text), public.asistente_estado(), public.asistente_agregar(text, text),
                            public.asistente_quitar(text), public.asistente_nueva_clave(),
                            public.asistente_consulta(text, text, timestamptz, timestamptz),
                            public.asistente_validar(text, text), public.asistente_visto(text, text), public.asistente_ficha(public.reservas), public.unaccent_simple(text),
                            public.asistente_buscar(text, text, text), public.asistente_telefono(text, text, text),
                            public.anotar_sistema(text), public.asistente_aviso(text, uuid, text),
+                           public.asistente_aviso_personal(uuid, text), public.al_marcar_asistencia_avisar(),
                            public.al_cambiar_reserva_avisar() from public, anon, authenticated;
 grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text),
                           public.asistente_nueva_clave() to authenticated;

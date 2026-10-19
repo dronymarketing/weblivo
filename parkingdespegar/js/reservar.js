@@ -244,6 +244,7 @@
     $('.reserva__resumen').hidden = true;
     var c = $('[data-confirmacion]');
     $('[data-codigo]').textContent = r.codigo;
+    var cl = $('[data-cambiar-link]'); if (cl) cl.href = 'mi-reserva.html?codigo=' + encodeURIComponent(r.codigo);
     pintarDetalle($('[data-detalle-final]'), r);
     var texto = 'Hola, hice la reserva ' + r.codigo + ' en Parking Despegar (' + r.vehiculo.matricula + ', ' +
       new Date(r.entrada).toLocaleDateString('es-UY') + ' al ' + new Date(r.salida).toLocaleDateString('es-UY') + ').';

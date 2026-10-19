@@ -307,3 +307,6 @@
 .pasarela { place-items: center; }
 .pasarela__caja { border-radius: var(--radio); padding: 32px; }
 .pagina--reserva .pie { padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom)); }
+
+/* Cambiar mi reserva: la ayuda va al costado */
+.mi-reserva__ayuda { grid-column: 2; grid-row: 1 / span 3; position: sticky; top: calc(var(--nav-alto) + var(--sp-3)); }

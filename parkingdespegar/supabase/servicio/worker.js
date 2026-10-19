@@ -7,8 +7,9 @@
    2) «Torre de Parking Despegar»: asistente de WhatsApp para la dueña («Torre»)
         GET  /whatsapp   → Meta comprueba que el servicio es nuestro
         POST /whatsapp   → llega un mensaje (texto o audio) y se responde
-        POST /aviso      → la base avisa que entró un auto o una reserva nueva,
-                           y Torre se lo cuenta por WhatsApp a los números habilitados
+        POST /aviso      → la base avisa que entró un auto, una reserva nueva o que alguien
+                           del equipo empezó o terminó de trabajar, y Torre se lo cuenta
+                           por WhatsApp a los números habilitados
 
    El asistente no usa IA paga: entiende las preguntas comunes por sus
    palabras clave, pasa los audios a texto con Whisper (Workers AI, gratis
@@ -474,7 +475,9 @@ function responder(p, f, ahora = Date.now()) {
         '🚐 Traslados pendientes de hoy: *' + pend.length + '*\n' + lista(pend, (x) => hora(x.hora) + ' · ' + (x.tipo === 'llevar' ? 'Llevar a ' : 'Buscar a ') + x.cliente +
           ' (' + n(x.pasajeros, 'pasajero', 'pasajeros') + ')' + (x.estado === 'en_camino' ? ' · en camino' : ''), 8));
     } else if (tema === 'equipo') {
-      partes.push('Con acceso al sistema: ' + (f.equipo.map((x) => x.nombre + ' (' + (ROL[x.rol] || x.rol) + ')').join(', ') || 'nadie') + '.' +
+      const trab = f.trabajando || [];
+      partes.push((trab.length ? '👷 Trabajando ahora: ' + trab.map((x) => x.nombre + ' (desde las ' + hora(x.desde) + ')').join(', ') + '.' : '👷 Ahora no hay nadie trabajando (nadie marcó entrada).') + '\n' +
+        'Con acceso al sistema: ' + (f.equipo.map((x) => x.nombre + ' (' + (ROL[x.rol] || x.rol) + ')').join(', ') || 'nadie') + '.' +
         (f.ingresaron_hoy.length ? '\nHoy entraron al sistema: ' + f.ingresaron_hoy.join(', ') + '.' : '\nHoy todavía no entró nadie al sistema.') +
         (f.sin_acceso ? '\n' + n(f.sin_acceso, 'persona espera', 'personas esperan') + ' que le des acceso en Equipo.' : ''));
     } else if (tema === 'mapa') {
@@ -534,7 +537,7 @@ async function recibirAviso(pedido, env, ctx) {
   if (pedido.method !== 'POST') return new Response('No', { status: 405 });
   let b;
   try { b = await pedido.json(); } catch (e) { b = null; }
-  if (!b || !['entrada', 'reserva'].includes(b.tipo) || !/^[0-9a-f-]{36}$/i.test(String(b.reserva || ''))) return new Response('No', { status: 400 });
+  if (!b || !['entrada', 'reserva', 'ingreso', 'egreso'].includes(b.tipo) || !/^[0-9a-f-]{36}$/i.test(String(b.reserva || ''))) return new Response('No', { status: 400 });
   const tarea = avisar(env, b.tipo, b.reserva).catch((e) => console.error('aviso:', e));
   if (ctx && ctx.waitUntil) ctx.waitUntil(tarea); else await tarea;
   return new Response('ok', { status: 200 });
@@ -558,14 +561,33 @@ async function avisar(env, tipo, reserva) {
 }
 
 function textoAviso(a, nombre, ahora = Date.now()) {
-  const f = a.ficha, hola = 'Hola' + (nombre ? ' ' + primero(nombre) : '');
+  const hola = 'Hola' + (nombre ? ' ' + primero(nombre) : '');
+  if (a.tipo === 'ingreso' || a.tipo === 'egreso') return textoJornada(a, hola);
+  const f = a.ficha;
   const titulo = a.tipo === 'entrada' ? '🚗 *' + hola + ', acaba de entrar un vehículo nuevo*'
     : '📋 *' + hola + ', entró una reserva nueva*' + (POR_ORIGEN[f.origen] ? ' (' + POR_ORIGEN[f.origen] + ')' : '');
   const libres = a.tipo === 'entrada' && a.libres ? '\n\nQuedan libres ' + a.libres.techado + ' en techado y ' + a.libres.aire + ' en el predio.' : '';
   return titulo + '\n\n' + ficha(f, ahora) + libres + '\n\n' + oferta(f);
 }
+/* Alguien del equipo empieza o termina de trabajar */
+function duracion(desde, hasta) {
+  const min = Math.max(0, Math.round((new Date(hasta) - new Date(desde)) / 60000));
+  return Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') + ' min';
+}
+function textoJornada(a, hola) {
+  const p = a.persona, quien = '*' + p.nombre + '*' + (ROL[p.rol] ? ' (' + ROL[p.rol] + ')' : '');
+  const otros = (a.trabajando || []).filter((x) => x !== p.nombre);
+  if (a.tipo === 'ingreso') {
+    return '👷 ' + (hola ? hola + ', ' : '') + quien + ' empezó a trabajar a las ' + hora(p.entrada) + '.' +
+      (otros.length ? '\nTambién están trabajando: ' + otros.join(', ') + '.' : '');
+  }
+  return '🏁 ' + (hola ? hola + ', ' : '') + quien + ' terminó de trabajar a las ' + hora(p.salida) + '. Trabajó ' + duracion(p.entrada, p.salida) + '.' +
+    (otros.length ? '\nSiguen trabajando: ' + otros.join(', ') + '.' : '\nAhora no queda nadie trabajando.');
+}
+
 /* Una sola línea (las plantillas de Meta no aceptan saltos de línea en los datos) */
 function lineaAviso(a, ahora = Date.now()) {
+  if (a.tipo === 'ingreso' || a.tipo === 'egreso') return textoJornada(a, '').replace(/[*_]/g, '').replace(/\s+/g, ' ').trim();
   const f = a.ficha;
   return (a.tipo === 'entrada'
     ? 'Acaba de entrar ' + auto(f) + ' (' + f.matricula + ') de ' + f.cliente + (f.lugar ? ', lugar ' + f.lugar : '')

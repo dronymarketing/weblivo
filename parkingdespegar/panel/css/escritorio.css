@@ -87,3 +87,18 @@
 
 .ingreso__caja { padding: 40px 36px; }
 .espera-fila { grid-template-columns: 1fr auto; align-items: center; }
+
+/* Calendario, agenda y horarios */
+.nav-dias .btn { flex: 0 0 auto; margin-left: auto; }
+.nav-dias__fecha { flex: 0 1 auto; }
+.semana { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.semana__dia { padding: 10px; min-height: 240px; }
+.evento { grid-template-columns: 1fr auto; padding: 7px 8px; gap: 2px 6px; font-size: 12px; }
+.evento__hora { grid-column: 1; }
+.evento__ico { grid-column: 2; grid-row: 1; }
+.evento__texto { grid-column: 1 / -1; white-space: normal; }
+.evento__texto strong { display: block; margin: 0; }
+.hora-fila { grid-template-columns: 64px 1fr; padding: 10px 20px; }
+.hora-fila__eventos { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.jornada-tarjeta { grid-template-columns: 1fr auto; }
+.jornada { margin-left: 0; }

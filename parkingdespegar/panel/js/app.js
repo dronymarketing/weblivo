@@ -23,6 +23,18 @@
   var diaLargo = function (d) { return new Date(d).toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'long' }); };
   var inicioDia = function (d) { var x = new Date(d || Date.now()); x.setHours(0, 0, 0, 0); return x.getTime(); };
   var mismoDia = function (a, b) { return inicioDia(a) === inicioDia(b); };
+  var DIAS_CORTOS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  /* «2026-10-19» ↔ medianoche de ese día (hora del navegador) */
+  var aFecha = function (ms) { var d = new Date(ms); return d.getFullYear() + '-' + dosCifras(d.getMonth() + 1) + '-' + dosCifras(d.getDate()); };
+  var deFecha = function (s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]).getTime() : inicioDia(); };
+  var masDias = function (ms, n) { var d = new Date(ms); d.setDate(d.getDate() + n); return d.getTime(); };
+  var lunesDe = function (ms) { var d = inicioDia(ms); return masDias(d, -((new Date(d).getDay() + 6) % 7)); };
+  /* «8 h 05 min» */
+  var duracion = function (desde, hasta) { var m = Math.max(0, Math.round((new Date(hasta) - new Date(desde)) / 60000)); return Math.floor(m / 60) + ' h ' + dosCifras(m % 60) + ' min'; };
+  var TURNOS = { diurno: { nombre: 'Diurno', ico: 'sun', horario: '8:00 a 20:00' }, nocturno: { nombre: 'Nocturno', ico: 'moon', horario: '20:00 a 8:00' } };
+  var turnoDe = function (t) { return t.turno || (new Date(t.apertura).getHours() >= 8 && new Date(t.apertura).getHours() < 20 ? 'diurno' : 'nocturno'); };
+  var turnoPorHora = function () { var h = new Date().getHours(); return h >= 8 && h < 20 ? 'diurno' : 'nocturno'; };
+  var badgeTurno = function (t) { return '<span class="turno turno--' + t + '">' + ico(TURNOS[t].ico) + TURNOS[t].nombre + '</span>'; };
 
   /* ---------- Sesión ---------- */
   var usuario = null;
@@ -57,6 +69,10 @@
   var SECCIONES = [
     { id: 'panel', sector: 'hoy', nombre: 'Hoy', ico: 'sun', roles: ['admin', 'personal'],
       desc: 'Lo que pasa hoy en el parking, de un vistazo.' },
+    { id: 'agenda', sector: 'hoy', nombre: 'Agenda por hora', ico: 'clock', roles: ['admin', 'personal'],
+      desc: 'El día hora por hora: cuándo entró cada reserva y por dónde, quién llega, quién sale y los traslados. Cada cosa tiene su color.' },
+    { id: 'horarios', sector: 'hoy', nombre: 'Horarios', ico: 'timer', roles: ['admin', 'personal', 'chofer'],
+      desc: 'Cuándo empieza y termina cada jornada de trabajo. Marcá tu entrada al llegar y tu salida al irte: Torre le avisa a la dueña.' },
     { id: 'llegada', sector: 'autos', color: 'entrada', nombre: 'Entrada', ico: 'car-front', roles: ['admin', 'personal'],
       desc: 'Cuando llega un cliente: buscás su reserva, cobrás lo que falte, emitís la factura y le das un lugar. Si pagó por transferencia antes, se registra acá.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'confirmada' && mismoDia(r.entrada, Date.now()); }).length; } },
@@ -70,10 +86,12 @@
       desc: 'El mapa del parking: qué lugares están ocupados, cuáles libres y cuáles se liberan hoy.' },
     { id: 'reservas', sector: 'reservas', nombre: 'Reservas', ico: 'calendar-check', roles: ['admin', 'personal'],
       desc: 'Todas las reservas: de la web, de WhatsApp o del mostrador. Tocá una para ver el detalle.' },
+    { id: 'calendario', sector: 'reservas', nombre: 'Calendario', ico: 'calendar', roles: ['admin', 'personal'],
+      desc: 'Las entradas y salidas de cada día de la semana. Si se atrasa un vuelo o el cliente se queda más días, tocá la reserva y cambiale las fechas.' },
     { id: 'clientes', sector: 'reservas', nombre: 'Clientes', ico: 'users', roles: ['admin', 'personal'],
       desc: 'Quién viene, cuántas veces y con qué auto.' },
     { id: 'caja', sector: 'plata', nombre: 'Caja', ico: 'banknote', roles: ['admin', 'personal'],
-      desc: 'La plata del turno: lo que entra, lo que sale y el cierre al final del día.' },
+      desc: 'La plata de cada turno, diurno (8 a 20) y nocturno (20 a 8): lo que entra, lo que sale y el cierre de cada uno.' },
     { id: 'reportes', sector: 'plata', nombre: 'Reportes', ico: 'chart-column', roles: ['admin'],
       desc: 'Cuánto se recaudó, cómo pagan los clientes y por dónde reservan.' },
     { id: 'tarifas', sector: 'plata', nombre: 'Precios', ico: 'calculator', roles: ['admin'],
@@ -192,7 +210,7 @@
             '<span class="por-tipo"><span class="por-tipo__nombre">Buscar</span><strong>' + trasPend.filter(function (t) { return t.tipo === 'vuelta'; }).length + '</strong></span>'
             : tras.length ? 'No queda ninguno: ya se hicieron los de hoy' : 'Hoy no hay traslados', 'autos', '#/traslados', 'Ver los traslados') +
         kpi('banknote', 'Cobrado en el turno', plata(cobrado),
-          d.caja.turnoActual ? 'Desde las ' + hora(d.caja.turnoActual.apertura) + ' · ' + plata(online) + ' se pagó online' : 'La caja está cerrada', 'plata', '#/caja', 'Ver la caja') +
+          d.caja.turnoActual ? 'Turno ' + TURNOS[turnoDe(d.caja.turnoActual)].nombre.toLowerCase() + ' desde las ' + hora(d.caja.turnoActual.apertura) + ' · ' + plata(online) + ' se pagó online' : 'La caja está cerrada', 'plata', '#/caja', 'Ver la caja') +
       '</div>' +
       bloque('Agenda de hoy', agenda.length, listaAgenda(agenda), null, 'hoy') +
       '<div class="columnas">' +
@@ -301,6 +319,7 @@
     var acciones = '';
     if (r.estado === 'confirmada' && puede('llegada')) acciones += '<a class="btn btn--primario" href="#/llegada?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar entrada</a>';
     if (r.estado === 'en_predio' && puede('retiros')) acciones += '<a class="btn btn--primario" href="#/retiros?c=' + r.codigo + '" data-cerrar-ventana>' + ico('car-front') + 'Registrar salida</a>';
+    if ((r.estado === 'confirmada' || r.estado === 'en_predio') && puede('calendario')) acciones += '<button class="btn btn--linea" type="button" data-cambiar-fechas="' + r.id + '">' + ico('calendar') + 'Cambiar fechas</button>';
     if (r.factura) acciones += '<button class="btn btn--linea" type="button" data-ver-factura="' + r.factura + '">' + ico('file-text') + 'Ver factura</button>';
     acciones += '<a class="btn btn--linea" href="' + wa + '" target="_blank" rel="noopener"><svg class="ico-marca" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a>';
     if (r.estado === 'confirmada' && puede('reservas')) acciones += '<button class="btn btn--linea btn--peligro" type="button" data-cancelar="' + r.id + '">' + ico('x') + 'Cancelar reserva</button>';
@@ -576,13 +595,13 @@
      Buscar en el aeropuerto (ámbar) — ~25 min después del aterrizaje, en Arribos. */
   V.traslados = function (q) {
     q = q || {};
-    var dia = q.d === 'manana' ? Date.now() + PD.DIA : Date.now();
+    var hoy = inicioDia(), dia = q.d === 'manana' ? masDias(hoy, 1) : q.d ? deFecha(q.d) : hoy;
     var lista = trasladosDe(dia);
     var llevar = lista.filter(function (t) { return t.tipo === 'ida'; }), buscar = lista.filter(function (t) { return t.tipo === 'vuelta'; });
     var pend = function (l) { return l.filter(function (t) { return t.estado !== 'hecho'; }); };
     /* Primero el que está en curso; si no hay, el próximo pendiente */
-    var proximo = lista.filter(function (t) { return t.estado === 'en_camino'; })[0] || pend(lista).filter(function (t) { return t.hora >= Date.now() - 30 * 60000; })[0];
-    return '<div class="herramientas"><div class="chips"><a class="chip' + (q.d !== 'manana' ? ' es-activo' : '') + '" href="#/traslados">Hoy</a><a class="chip' + (q.d === 'manana' ? ' es-activo' : '') + '" href="#/traslados?d=manana">Mañana</a></div></div>' +
+    var proximo = dia !== hoy ? null : lista.filter(function (t) { return t.estado === 'en_camino'; })[0] || pend(lista).filter(function (t) { return t.hora >= Date.now() - 30 * 60000; })[0];
+    return navDia('traslados', dia) +
       (proximo ? '<div class="proximo" data-sector="' + (proximo.tipo === 'ida' ? 'entrada' : 'salida') + '"><p class="proximo__rotulo">' + (proximo.estado === 'en_camino' ? 'En curso' : 'Próximo traslado') + '</p>' +
         '<p class="proximo__texto"><strong>' + hora(proximo.hora) + '</strong> · ' + (proximo.tipo === 'ida' ? 'Llevar a ' : 'Buscar a ') + esc(proximo.r.cliente.nombre) +
         ' · ' + proximo.r.pasajeros + (proximo.r.pasajeros === 1 ? ' pasajero' : ' pasajeros') + (proximo.tipo === 'vuelta' && proximo.r.vuelo.vuelta ? ' · vuelo ' + esc(proximo.r.vuelo.vuelta) : '') + '</p></div>' : '') +
@@ -669,12 +688,15 @@
   /* ---------- CAJA ---------- */
   V.caja = function () {
     var c = D().caja, t = c.turnoActual;
-    if (!t) return '<section class="bloque"><p class="vacio vacio--grande">' + ico('banknote') + 'No hay un turno abierto.</p><div class="ventana__acciones"><button class="btn btn--primario" type="button" data-abrir-caja>' + ico('plus') + 'Abrir turno</button></div></section>' + historialCajas(c);
+    var sug = turnoPorHora();
+    if (!t) return '<section class="bloque"><p class="vacio vacio--grande">' + ico('banknote') + 'No hay una caja abierta.<small>Ahora corresponde el turno ' + TURNOS[sug].nombre.toLowerCase() + ' (' + TURNOS[sug].horario + ').</small></p><div class="ventana__acciones"><button class="btn btn--primario" type="button" data-abrir-caja>' + ico('plus') + 'Abrir caja del turno ' + TURNOS[sug].nombre.toLowerCase() + '</button></div></section>' + resumenDias(c) + historialCajas(c);
+    var tt = turnoDe(t);
     var por = {}; t.movimientos.forEach(function (m) { por[m.medio] = (por[m.medio] || 0) + m.monto; });
     var cobrado = t.movimientos.filter(function (m) { return m.monto > 0; }).reduce(function (s, m) { return s + m.monto; }, 0);
     var egresos = t.movimientos.filter(function (m) { return m.monto < 0; }).reduce(function (s, m) { return s + m.monto; }, 0);
     var esperado = t.base + (por.efectivo || 0) + egresos;
-    return '<div class="herramientas"><p class="ayuda">Turno abierto el ' + fechaHora(t.apertura) + ' por ' + esc(t.usuario) + '.</p>' +
+    return '<div class="turno-banda turno-banda--' + tt + '">' + ico(TURNOS[tt].ico) + '<span><strong>Turno ' + TURNOS[tt].nombre.toLowerCase() + '</strong> · ' + TURNOS[tt].horario + '<small>Abrió ' + esc(t.usuario) + ' el ' + fechaHora(t.apertura) + '</small></span></div>' +
+      '<div class="herramientas">' +
         '<button class="btn btn--linea" type="button" data-egreso>' + ico('arrow-down') + 'Registrar egreso</button>' +
         '<button class="btn btn--primario" type="button" data-cerrar-caja data-esperado="' + esperado + '">' + ico('lock') + 'Cerrar caja</button></div>' +
       '<div class="kpis">' + kpi('wallet', 'Base inicial', plata(t.base), 'efectivo al abrir') + kpi('circle-dollar-sign', 'Cobrado', plata(cobrado), (function (n) { return n + (n === 1 ? ' cobro' : ' cobros'); })(t.movimientos.filter(function (m) { return m.monto > 0; }).length)) +
@@ -685,16 +707,230 @@
         bloque('Por medio de pago', null, '<ul class="por-medio">' + ['online', 'efectivo', 'tarjeta', 'transferencia', 'egreso'].map(function (k) {
           return '<li><span>' + MEDIOS[k] + (k === 'online' ? '<small>no entra a la caja física</small>' : '') + '</span><strong>' + plata(por[k] || 0) + '</strong></li>';
         }).join('') + '<li class="por-medio__total"><span>Total del turno</span><strong>' + plata(cobrado + egresos) + '</strong></li></ul>') +
-      '</div>' + historialCajas(c);
+      '</div>' + resumenDias(c) + historialCajas(c);
   };
+  /* Lo cobrado por día, separado por turno (el turno cuenta para el día en que abrió) */
+  function resumenDias(c) {
+    var dias = {}, t = c.turnoActual;
+    var sumar = function (x, cobrado, abierta) {
+      var k = aFecha(x.apertura), dia = dias[k] || (dias[k] = { ms: inicioDia(x.apertura), diurno: null, nocturno: null });
+      var tu = turnoDe(x), prev = dia[tu];
+      dia[tu] = { cobrado: (prev ? prev.cobrado : 0) + cobrado, abierta: abierta || (prev && prev.abierta) };
+    };
+    if (t) sumar(t, t.movimientos.filter(function (m) { return m.monto > 0; }).reduce(function (s, m) { return s + m.monto; }, 0), true);
+    c.cerrados.forEach(function (x) { sumar(x, x.cobrado || 0, false); });
+    var lista = Object.keys(dias).sort().reverse().slice(0, 7).map(function (k) { return dias[k]; });
+    if (!lista.length) return '';
+    var celda = function (x) { return x ? plata(x.cobrado) + (x.abierta ? '<small>abierta</small>' : '') : '<span class="ayuda">—</span>'; };
+    return bloque('Cobrado por día', null, '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Día</th><th class="num">' + badgeTurno('diurno') + '</th><th class="num">' + badgeTurno('nocturno') + '</th><th class="num">Total del día</th></tr></thead><tbody>' +
+      lista.map(function (d) {
+        return '<tr><td data-et="Día"><strong>' + DIAS_CORTOS[new Date(d.ms).getDay()] + ' ' + fechaCorta(d.ms) + '</strong></td>' +
+          '<td data-et="Diurno" class="num">' + celda(d.diurno) + '</td><td data-et="Nocturno" class="num">' + celda(d.nocturno) + '</td>' +
+          '<td data-et="Total" class="num"><strong>' + plata((d.diurno ? d.diurno.cobrado : 0) + (d.nocturno ? d.nocturno.cobrado : 0)) + '</strong></td></tr>';
+      }).join('') + '</tbody></table></div>');
+  }
   function historialCajas(c) {
     if (!c.cerrados.length) return '';
-    return bloque('Cierres anteriores', c.cerrados.length, '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Turno</th><th>Cerró</th><th class="num">Esperado</th><th class="num">Contado</th><th>Resultado</th></tr></thead><tbody>' +
-      c.cerrados.slice(0, 10).map(function (x) {
+    return bloque('Cierres anteriores', c.cerrados.length, '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Turno</th><th>Abrió y cerró</th><th class="num">Cobrado</th><th class="num">Esperado</th><th class="num">Contado</th><th>Resultado</th></tr></thead><tbody>' +
+      c.cerrados.slice(0, 14).map(function (x) {
         var dif = x.contado - x.esperado;
-        return '<tr><td data-et="Turno">' + fechaHora(x.apertura) + ' → ' + hora(x.cierre) + '</td><td data-et="Cerró">' + esc(x.cerro) + '</td><td data-et="Esperado" class="num">' + plata(x.esperado) + '</td><td data-et="Contado" class="num">' + plata(x.contado) + '</td><td data-et="Resultado">' +
+        return '<tr class="fila-turno fila-turno--' + turnoDe(x) + '"><td data-et="Turno">' + badgeTurno(turnoDe(x)) + '<small>' + fechaHora(x.apertura) + ' → ' + hora(x.cierre) + '</small></td>' +
+          '<td data-et="Abrió y cerró">' + esc(x.abrio || '—') + '<small>Cerró: <strong>' + esc(x.cerro) + '</strong></small></td>' +
+          '<td data-et="Cobrado" class="num">' + plata(x.cobrado) + '</td><td data-et="Esperado" class="num">' + plata(x.esperado) + '</td><td data-et="Contado" class="num">' + plata(x.contado) + '</td><td data-et="Resultado">' +
           (dif === 0 ? '<span class="estado estado--bien">' + ico('circle-check') + 'Cuadra</span>' : '<span class="estado estado--alerta">' + ico('triangle-alert') + (dif > 0 ? 'Sobran ' : 'Faltan ') + plata(Math.abs(dif)) + '</span>') + '</td></tr>';
       }).join('') + '</tbody></table></div>');
+  }
+
+  /* ---------- Navegación por días (traslados, agenda) ---------- */
+  function navDia(vista, dia) {
+    var hoy = inicioDia(), extra = dia === hoy ? 'Hoy' : dia === masDias(hoy, 1) ? 'Mañana' : dia === masDias(hoy, -1) ? 'Ayer' : '';
+    return '<div class="nav-dias">' +
+      '<a class="boton-ico" href="#/' + vista + '?d=' + aFecha(masDias(dia, -1)) + '" aria-label="Día anterior">' + ico('chevron-left') + '</a>' +
+      '<label class="nav-dias__fecha"><span>' + (extra ? '<strong>' + extra + '</strong> · ' : '') + esc(diaLargo(dia)) + '</span>' +
+        '<input type="date" value="' + aFecha(dia) + '" data-ir-dia="' + vista + '" aria-label="Elegir día"></label>' +
+      '<a class="boton-ico" href="#/' + vista + '?d=' + aFecha(masDias(dia, 1)) + '" aria-label="Día siguiente">' + ico('chevron-right') + '</a>' +
+      (dia !== hoy ? '<a class="chip" href="#/' + vista + '">Volver a hoy</a>' : '') +
+    '</div>';
+  }
+
+  /* ---------- CALENDARIO (semana) ---------- */
+  V.calendario = function (q) {
+    var ini = lunesDe(deFecha(q.s)), hoy = inicioDia(), fin = masDias(ini, 6);
+    var res = D().reservas.filter(function (r) { return r.estado !== 'cancelada'; });
+    var titulo = new Date(ini).getDate() + (new Date(ini).getMonth() !== new Date(fin).getMonth() ? ' de ' + new Date(ini).toLocaleDateString('es-UY', { month: 'long' }) : '') +
+      ' al ' + new Date(fin).toLocaleDateString('es-UY', { day: 'numeric', month: 'long' });
+    var dias = [0, 1, 2, 3, 4, 5, 6].map(function (i) { return masDias(ini, i); });
+    return '<div class="nav-dias">' +
+        '<a class="boton-ico" href="#/calendario?s=' + aFecha(masDias(ini, -7)) + '" aria-label="Semana anterior">' + ico('chevron-left') + '</a>' +
+        '<label class="nav-dias__fecha"><span>Semana del <strong>' + esc(titulo) + '</strong></span><input type="date" value="' + aFecha(ini) + '" data-ir-semana aria-label="Elegir semana"></label>' +
+        '<a class="boton-ico" href="#/calendario?s=' + aFecha(masDias(ini, 7)) + '" aria-label="Semana siguiente">' + ico('chevron-right') + '</a>' +
+        (ini !== lunesDe(hoy) ? '<a class="chip" href="#/calendario">Esta semana</a>' : '') +
+        '<button class="btn btn--primario" type="button" data-nueva-reserva>' + ico('plus') + 'Nueva reserva</button>' +
+      '</div>' +
+      '<div class="leyenda"><span><i class="punto punto--llega"></i>Entrada</span><span><i class="punto punto--sale"></i>Salida</span><span>' + ico('bus') + 'Con traslado</span><span>' + ico('calendar') + 'Tocá una para cambiarle las fechas</span></div>' +
+      '<div class="semana">' + dias.map(function (dia) {
+        var finDia = masDias(dia, 1), ev = [];
+        res.forEach(function (r) {
+          if (mismoDia(r.entrada, dia)) ev.push({ r: r, tipo: 'llega', hora: r.entrada });
+          if (mismoDia(r.salida, dia) && r.estado !== 'finalizada') ev.push({ r: r, tipo: 'sale', hora: r.salida });
+          else if (r.estado === 'finalizada' && r.checkout && mismoDia(r.checkout, dia)) ev.push({ r: r, tipo: 'sale', hora: r.checkout });
+        });
+        ev.sort(function (a, b) { return new Date(a.hora) - new Date(b.hora); });
+        var adentro = res.filter(function (r) { return r.estado !== 'finalizada' && new Date(r.entrada) < finDia && new Date(r.salida) > dia; }).length;
+        return '<section class="semana__dia' + (dia === hoy ? ' es-hoy' : '') + (dia < hoy ? ' es-pasado' : '') + '">' +
+          '<header class="semana__cabeza"><a href="#/agenda?d=' + aFecha(dia) + '"><strong>' + DIAS_CORTOS[new Date(dia).getDay()] + ' ' + new Date(dia).getDate() + '</strong>' + (dia === hoy ? '<em>Hoy</em>' : '') + '</a>' +
+            '<small>' + adentro + (adentro === 1 ? ' auto' : ' autos') + '</small></header>' +
+          (ev.length ? '<ul class="semana__lista">' + ev.map(function (x) {
+            var r = x.r;
+            return '<li><button type="button" class="evento evento--' + x.tipo + '" data-abrir-reserva="' + r.id + '">' +
+              '<span class="evento__hora">' + hora(x.hora) + '</span>' +
+              '<span class="evento__texto"><strong>' + esc(r.vehiculo.matricula) + '</strong>' + esc(r.cliente.nombre) + '</span>' +
+              (r.servicio === 'traslado' ? ico('bus', 'ico evento__ico') : '') + '</button></li>';
+          }).join('') + '</ul>' : '<p class="semana__vacio">Sin entradas ni salidas</p>') +
+        '</section>';
+      }).join('') + '</div>';
+  };
+
+  /* Cambiar las fechas de una reserva (vuelo atrasado, se queda más días…) */
+  function formFechas(id) {
+    var r = D().reservas.filter(function (x) { return x.id === id; })[0];
+    if (!r) return;
+    var adentro = r.estado === 'en_predio';
+    var campo = function (nombre, rotulo, valor) {
+      return '<div class="campo-fecha"><label class="campo"><span>' + rotulo + '</span><input type="datetime-local" name="' + nombre + '" value="' + local(new Date(valor).getTime()) + '" required></label>' +
+        '<div class="campo-fecha__atajos"><button type="button" class="btn btn--chico btn--linea" data-mover="' + nombre + '|-1">' + ico('chevron-left') + '1 día antes</button>' +
+        '<button type="button" class="btn btn--chico btn--linea" data-mover="' + nombre + '|1">1 día después' + ico('chevron-right') + '</button></div></div>';
+    };
+    var caja = abrirVentana('<p class="antetitulo">' + r.codigo + ' · ' + esc(r.vehiculo.matricula) + ' · ' + esc(r.cliente.nombre) + '</p>' +
+      '<h2 class="ventana__titulo">Cambiar fechas</h2>' +
+      '<p class="texto">' + (adentro ? 'El auto ya está en el parking: se cambia la salida. Si se queda más días, la diferencia se cobra al registrar la salida.'
+        : 'Si se atrasa el vuelo o se queda más días, mové la entrada o la salida. El precio se recalcula solo y los traslados se mueven con la reserva.') + '</p>' +
+      '<form class="formulario" data-form-fechas novalidate>' + (adentro ? '' : campo('entrada', 'Entrada', r.entrada)) + campo('salida', 'Salida', r.salida) +
+        '<p class="total-linea" data-resumen-fechas></p><p class="campo-error" data-error-fechas hidden></p>' +
+        '<div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Guardar fechas</button></div></form>', 'ancha');
+    var f = $('[data-form-fechas]', caja);
+    var ent = function () { return adentro ? new Date(r.entrada) : new Date(f.entrada.value); };
+    function resumen() {
+      var sal = new Date(f.salida.value), el = $('[data-resumen-fechas]', caja);
+      if (isNaN(sal) || isNaN(ent()) || sal <= ent()) { el.innerHTML = '<span class="ayuda">La salida tiene que ser después de la entrada.</span>'; return; }
+      if (adentro) {
+        var real = PD.precio({ entrada: r.checkin || r.entrada, salida: sal, lugarTipo: r.lugarTipo, servicio: r.servicio });
+        var dif = real.total - r.total;
+        el.innerHTML = 'Sale el <strong>' + fechaHora(sal) + '</strong><small>' + real.dias + (real.dias === 1 ? ' día' : ' días') + ' en total' + (dif > 0 ? ' · al salir se cobran ' + plata(dif) + ' de diferencia' : '') + '</small>';
+        return;
+      }
+      var p = PD.precio({ entrada: ent(), salida: sal, lugarTipo: r.lugarTipo, servicio: r.servicio }), saldo = p.total - r.pago.monto;
+      el.innerHTML = 'Nuevo total <strong>' + plata(p.total) + '</strong><small>' + p.dias + (p.dias === 1 ? ' día' : ' días') + (p.total !== r.total ? ' · antes ' + plata(r.total) : ' · el precio no cambia') +
+        (r.pago.monto > 0 ? ' · ya pagó ' + plata(r.pago.monto) + (saldo > 0 ? ', falta ' + plata(saldo) : saldo < 0 ? ', queda ' + plata(-saldo) + ' a favor del cliente' : '') : '') + '</small>';
+    }
+    caja.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-mover]'); if (!b) return;
+      var partes = b.getAttribute('data-mover').split('|'), inp = f[partes[0]], v = new Date(inp.value);
+      if (!isNaN(v)) { inp.value = local(masDias(v.getTime(), +partes[1])); resumen(); }
+    });
+    f.addEventListener('input', resumen);
+    resumen();
+    f.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var sal = new Date(f.salida.value), err = $('[data-error-fechas]', caja);
+      if (isNaN(sal) || isNaN(ent()) || sal <= ent()) { err.textContent = 'La salida tiene que ser después de la entrada.'; err.hidden = false; return; }
+      var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.cambiarFechas(r.id, ent().toISOString(), sal.toISOString()); }, err);
+      if (res === FALLO) return;
+      cerrarVentana();
+      avisar(res && res.sin_cambios ? 'Las fechas quedaron igual' : 'Fechas de ' + r.codigo + ' cambiadas' + (res && res.antes != null && res.total !== res.antes ? ' · nuevo total ' + plata(res.total) : ''));
+      pintar();
+    });
+  }
+
+  /* ---------- AGENDA POR HORA ---------- */
+  var CATEGORIAS = [
+    ['web', 'Reserva web', 'calendar-check'], ['whatsapp', 'Reserva por WhatsApp', 'calendar-check'],
+    ['mostrador', 'Reserva en mostrador', 'calendar-check'], ['telefono', 'Reserva por teléfono', 'calendar-check'],
+    ['llega', 'Entrada', 'log-in'], ['sale', 'Salida', 'log-out'], ['traslado', 'Traslado', 'bus']
+  ];
+  V.agenda = function (q) {
+    var dia = q.d ? deFecha(q.d) : inicioDia(), ev = [];
+    D().reservas.forEach(function (r) {
+      if (mismoDia(r.creada, dia)) ev.push({ r: r, cat: r.origen, hora: r.creada, nota: 'para el ' + DIAS_CORTOS[new Date(r.entrada).getDay()] + ' ' + fechaCorta(r.entrada) + (r.estado === 'cancelada' ? ' · cancelada' : '') });
+      if (r.estado === 'cancelada') return;
+      if (mismoDia(r.entrada, dia)) ev.push({ r: r, cat: 'llega', hora: r.checkin && mismoDia(r.checkin, dia) ? r.checkin : r.entrada, nota: r.estado === 'confirmada' ? 'todavía no llegó' : 'ya entró' + (r.lugar ? ' · ' + r.lugar : '') });
+      var sale = r.estado === 'finalizada' && r.checkout ? r.checkout : r.salida;
+      if (mismoDia(sale, dia)) ev.push({ r: r, cat: 'sale', hora: sale, nota: r.estado === 'finalizada' ? 'ya se fue' : (r.vuelo.vuelta ? 'vuelo ' + esc(r.vuelo.vuelta) : 'todavía adentro') });
+    });
+    trasladosDe(dia).forEach(function (t) { ev.push({ r: t.r, cat: 'traslado', hora: t.hora, nota: (t.tipo === 'ida' ? 'llevar al aeropuerto' : 'buscar en el aeropuerto') + ' · ' + TXT_TRASLADO[t.estado].toLowerCase() }); });
+    var cuenta = {}; ev.forEach(function (x) { cuenta[x.cat] = (cuenta[x.cat] || 0) + 1; });
+    var porHora = {}; ev.forEach(function (x) { var h = new Date(x.hora).getHours(); (porHora[h] = porHora[h] || []).push(x); });
+    var esHoy = dia === inicioDia(), ahoraH = new Date().getHours();
+    var filas = '';
+    for (var h = 0; h < 24; h++) {
+      var lista = (porHora[h] || []).sort(function (a, b) { return new Date(a.hora) - new Date(b.hora); });
+      filas += '<li class="hora-fila' + (lista.length ? '' : ' hora-fila--vacia') + (esHoy && h === ahoraH ? ' es-ahora' : '') + '"' + (esHoy && h === ahoraH ? ' data-hora-actual' : '') + '>' +
+        '<span class="hora-fila__h">' + dosCifras(h) + ':00</span><div class="hora-fila__eventos">' +
+        lista.map(function (x) {
+          var cat = CATEGORIAS.filter(function (c) { return c[0] === x.cat; })[0];
+          return '<button type="button" class="ev ev--' + x.cat + '" data-abrir-reserva="' + x.r.id + '">' +
+            '<span class="ev__cabeza">' + ico(cat[2]) + '<span class="ev__tipo">' + cat[1] + '</span><span class="ev__hora">' + hora(x.hora) + '</span></span>' +
+            '<span class="ev__texto"><strong>' + esc(x.r.vehiculo.matricula) + '</strong> ' + esc(x.r.cliente.nombre) + '<small>' + x.nota + '</small></span></button>';
+        }).join('') + '</div></li>';
+    }
+    return navDia('agenda', dia) +
+      '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
+        return '<span class="leyenda__item"><i class="punto punto--' + c[0] + '"></i>' + c[1] + ' <strong>' + (cuenta[c[0]] || 0) + '</strong></span>';
+      }).join('') + '</div>' +
+      (ev.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas, salidas ni traslados.</p>') +
+      '<ol class="horas">' + filas + '</ol>';
+  };
+
+  /* ---------- HORARIOS DEL EQUIPO ---------- */
+  function miJornada() { return usuario ? D().asistencias.filter(function (a) { return a.usuarioId === usuario.id && !a.salida; })[0] : null; }
+  V.horarios = function () {
+    var d = D(), mia = miJornada(), esAdmin = usuario.rol === 'admin', ahora = Date.now();
+    var tarjeta = '<section class="bloque jornada-tarjeta' + (mia ? ' es-trabajando' : '') + '">' +
+      '<div class="jornada-tarjeta__estado"><span class="jornada__punto" aria-hidden="true"></span><p>' + (mia ? '<strong>Estás trabajando desde las ' + hora(mia.entrada) + '</strong><small>Llevás ' + duracion(mia.entrada, ahora) + '</small>'
+        : '<strong>No marcaste tu entrada</strong><small>Marcala al empezar a trabajar y la salida al irte.</small>') + '</p></div>' +
+      '<button class="btn btn--primario" type="button" data-marcar>' + ico(mia ? 'log-out' : 'log-in') + (mia ? 'Terminar mi jornada' : 'Empezar mi jornada') + '</button></section>';
+    var abiertas = d.asistencias.filter(function (a) { return !a.salida; });
+    var trabajando = esAdmin ? bloque('Trabajando ahora', abiertas.length, abiertas.length ? '<ul class="mini">' + abiertas.map(function (a) {
+      return '<li class="mini__fila"><span class="mini__hora">' + hora(a.entrada) + '</span><span class="mini__texto"><strong>' + esc(a.nombre) + '</strong><small>Lleva ' + duracion(a.entrada, ahora) + '</small></span></li>';
+    }).join('') + '</ul>' : '<p class="vacio">Ahora no hay nadie trabajando (nadie marcó entrada).</p>', null, 'hoy') : '';
+    /* Total del mes por persona */
+    var mes = new Date(); mes.setDate(1); mes.setHours(0, 0, 0, 0);
+    var porPersona = {};
+    d.asistencias.forEach(function (a) {
+      if (new Date(a.entrada) < mes) return;
+      var p = porPersona[a.nombre] || (porPersona[a.nombre] = { min: 0, dias: {} });
+      p.min += Math.max(0, (new Date(a.salida || ahora) - new Date(a.entrada)) / 60000); p.dias[aFecha(a.entrada)] = 1;
+    });
+    var nombres = Object.keys(porPersona).sort();
+    var horasMes = function (m) { m = Math.round(m); return Math.floor(m / 60) + ' h ' + dosCifras(m % 60) + ' min'; };
+    var totales = bloque((esAdmin ? 'Horas de ' : 'Mis horas de ') + new Date().toLocaleDateString('es-UY', { month: 'long' }), null, nombres.length ?
+      '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Persona</th><th class="num">Días</th><th class="num">Horas</th></tr></thead><tbody>' +
+      nombres.map(function (n) { return '<tr><td data-et="Persona"><strong>' + esc(n) + '</strong></td><td data-et="Días" class="num">' + Object.keys(porPersona[n].dias).length + '</td><td data-et="Horas" class="num">' + horasMes(porPersona[n].min) + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' : '<p class="vacio">Todavía no hay jornadas este mes.</p>');
+    var hist = d.asistencias.slice(0, 80);
+    var historial = bloque('Últimas jornadas', null, hist.length ? '<div class="tabla-caja"><table class="tabla tabla--compacta"><thead><tr><th>Día</th>' + (esAdmin ? '<th>Persona</th>' : '') + '<th>Entrada</th><th>Salida</th><th class="num">Horas</th></tr></thead><tbody>' +
+      hist.map(function (a) {
+        return '<tr><td data-et="Día"><strong>' + DIAS_CORTOS[new Date(a.entrada).getDay()] + ' ' + fechaCorta(a.entrada) + '</strong></td>' + (esAdmin ? '<td data-et="Persona">' + esc(a.nombre) + '</td>' : '') +
+          '<td data-et="Entrada">' + hora(a.entrada) + '</td><td data-et="Salida">' + (a.salida ? hora(a.salida) + (mismoDia(a.salida, a.entrada) ? '' : '<small>' + fechaCorta(a.salida) + '</small>') : '<span class="estado estado--bien">' + ico('timer') + 'Trabajando</span>') + '</td>' +
+          '<td data-et="Horas" class="num">' + duracion(a.entrada, a.salida || ahora) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' : '<p class="vacio">Todavía no hay jornadas registradas.</p>');
+    return tarjeta + (esAdmin ? '<div class="columnas">' + trabajando + totales + '</div>' : totales) + historial;
+  };
+  async function marcarJornada(el) {
+    var mia = miJornada();
+    if (mia && !confirm('¿Terminar tu jornada? Empezaste a las ' + hora(mia.entrada) + ' (' + duracion(mia.entrada, Date.now()) + ').')) return;
+    var res = await ejecutar(el, function () { return PD.marcarJornada(); });
+    if (res === FALLO) return;
+    avisar(res.trabajando ? 'Jornada empezada a las ' + hora(res.entrada) : 'Jornada terminada: trabajaste ' + duracion(res.entrada, res.salida));
+    pintar();
+  }
+  function pintarJornada() {
+    var b = $('[data-jornada]'); if (!b) return;
+    var mia = miJornada();
+    b.hidden = !usuario;
+    b.classList.toggle('es-trabajando', !!mia);
+    $('[data-jornada-texto]', b).textContent = mia ? 'Terminar jornada' : 'Empezar jornada';
+    b.setAttribute('aria-label', mia ? 'Terminar mi jornada (trabajando desde las ' + hora(mia.entrada) + ')' : 'Empezar mi jornada');
   }
 
   /* ---------- CLIENTES ---------- */
@@ -981,7 +1217,10 @@
     $('[data-usuario-rol]').textContent = ROLES[usuario.rol];
     $('[data-avatar]').textContent = usuario.nombre.split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase();
     pintarNav(r.id);
+    pintarJornada();
     $('[data-vista]').innerHTML = cabecera(sec) + V[r.id](r.q);
+    if (r.id === 'agenda' && !r.q.d && pintar.vista !== 'agenda') { var ah = $('[data-hora-actual]'); if (ah) ah.scrollIntoView({ block: 'center', behavior: 'instant' }); }
+    pintar.vista = r.id;
     if (r.id === 'tarifas') simular();
     if (r.id === 'asistente') cargarAsistente(); else claveNueva = null;
     /* En celular, la ficha elegida queda debajo de la lista: llevarla a la vista */
@@ -1048,6 +1287,8 @@
     if ((el = t.closest('[data-elegir-llegada]'))) { location.hash = '#/llegada?c=' + el.getAttribute('data-elegir-llegada'); return; }
     if ((el = t.closest('[data-elegir-retiro]'))) { location.hash = '#/retiros?c=' + el.getAttribute('data-elegir-retiro'); return; }
     if (t.closest('[data-nueva-reserva]')) return formReserva();
+    if ((el = t.closest('[data-cambiar-fechas]'))) return formFechas(el.getAttribute('data-cambiar-fechas'));
+    if ((el = t.closest('[data-marcar]'))) return marcarJornada(el);
     if ((el = t.closest('[data-guardar-transferencia]'))) return guardarTransferencia(el.getAttribute('data-guardar-transferencia'), el);
     if ((el = t.closest('[data-ver-factura]'))) { var fc = D().facturas.filter(function (x) { return x.id === el.getAttribute('data-ver-factura'); })[0]; if (fc) verFactura(fc); return; }
     if ((el = t.closest('[data-ver-ticket]'))) { var rt = D().reservas.filter(function (x) { return x.id === el.getAttribute('data-ver-ticket'); })[0]; if (rt) ticket(rt, 'entrada'); return; }
@@ -1070,12 +1311,19 @@
     if ((el = t.closest('[data-exportar]'))) return exportarCSV(el.getAttribute('data-exportar'));
     if (t.closest('[data-imprimir-pagina]')) return window.print();
     if (t.closest('[data-abrir-caja]')) {
-      var ca = abrirVentana('<h2 class="ventana__titulo">Abrir caja</h2><form class="formulario" data-form-abrir-caja><label class="campo campo--corto"><span>Efectivo con el que se abre</span><input name="base" type="number" min="0" required></label><p class="campo-error" data-error-caja hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Abrir turno</button></div></form>');
+      var sugerido = turnoPorHora();
+      var ca = abrirVentana('<h2 class="ventana__titulo">Abrir caja</h2><form class="formulario" data-form-abrir-caja>' +
+        '<fieldset class="factura-campos"><legend>' + ico('clock') + 'Turno</legend><div class="eleccion eleccion--turno">' + ['diurno', 'nocturno'].map(function (k) {
+          return '<label class="eleccion__turno eleccion__turno--' + k + '"><input type="radio" name="turno" value="' + k + '"' + (k === sugerido ? ' checked' : '') + '><span>' + ico(TURNOS[k].ico) + 'Turno ' + TURNOS[k].nombre.toLowerCase() + '<small>' + TURNOS[k].horario + '</small></span></label>';
+        }).join('') + '</div></fieldset>' +
+        '<label class="campo campo--corto"><span>Efectivo con el que se abre</span><input name="base" type="number" min="0" value="0" required></label>' +
+        '<p class="ayuda">Si la caja arranca vacía, dejá 0.</p>' +
+        '<p class="campo-error" data-error-caja hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('check') + 'Abrir caja</button></div></form>');
       $('[data-form-abrir-caja]', ca).addEventListener('submit', async function (ev) {
         ev.preventDefault(); var f = ev.target;
         if (f.base.value === '' || +f.base.value < 0) return;
-        var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.abrirCaja(Math.round(+f.base.value)); }, $('[data-error-caja]', ca));
-        if (res !== FALLO) { cerrarVentana(); avisar('Caja abierta'); pintar(); }
+        var res = await ejecutar(f.querySelector('[type=submit]'), function () { return PD.abrirCaja(Math.round(+f.base.value), f.turno.value); }, $('[data-error-caja]', ca));
+        if (res !== FALLO) { cerrarVentana(); avisar('Caja del turno ' + TURNOS[f.turno.value].nombre.toLowerCase() + ' abierta'); pintar(); }
       });
       return;
     }
@@ -1090,7 +1338,8 @@
     }
     if ((el = t.closest('[data-cerrar-caja]'))) {
       var esperado = +el.getAttribute('data-esperado');
-      var cj = abrirVentana('<h2 class="ventana__titulo">Cerrar caja</h2><p class="texto">Contá el efectivo y escribí cuánto hay. El sistema te dice si cuadra. Un cierre no se puede modificar después.</p><form class="formulario" data-form-cierre><label class="campo campo--corto"><span>Efectivo contado</span><input name="contado" type="number" min="0" required></label><p class="vuelto" data-dif hidden></p><p class="campo-error" data-error-cierre hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('lock') + 'Cerrar turno</button></div></form>');
+      var tc = D().caja.turnoActual ? turnoDe(D().caja.turnoActual) : turnoPorHora();
+      var cj = abrirVentana('<h2 class="ventana__titulo">Cerrar caja del turno ' + TURNOS[tc].nombre.toLowerCase() + '</h2><p class="texto">Queda registrado que la cerraste vos (' + esc(nombreUsuario()) + '). Contá el efectivo y escribí cuánto hay. El sistema te dice si cuadra. Un cierre no se puede modificar después.</p><form class="formulario" data-form-cierre><label class="campo campo--corto"><span>Efectivo contado</span><input name="contado" type="number" min="0" required></label><p class="vuelto" data-dif hidden></p><p class="campo-error" data-error-cierre hidden></p><div class="ventana__acciones"><button class="btn btn--primario" type="submit">' + ico('lock') + 'Cerrar turno</button></div></form>');
       var fc = $('[data-form-cierre]', cj);
       fc.contado.addEventListener('input', function () { var dif = +fc.contado.value - esperado, p = $('[data-dif]', cj); p.hidden = fc.contado.value === ''; p.textContent = dif === 0 ? 'Cuadra justo.' : (dif > 0 ? 'Sobran ' : 'Faltan ') + plata(Math.abs(dif)) + ' (esperado ' + plata(esperado) + ').'; p.className = 'vuelto' + (dif === 0 ? '' : ' vuelto--alerta'); });
       fc.addEventListener('submit', async function (ev) {
@@ -1145,6 +1394,8 @@
     if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); }
   });
   document.addEventListener('change', function (e) {
+    if (e.target.matches('[data-ir-dia]') && e.target.value) { location.hash = '#/' + e.target.getAttribute('data-ir-dia') + '?d=' + e.target.value; return; }
+    if (e.target.matches('[data-ir-semana]') && e.target.value) { location.hash = '#/calendario?s=' + aFecha(lunesDe(deFecha(e.target.value))); return; }
     if (e.target.matches('[name="tipoFactura"]')) { var cr = $('[data-campos-rut]'); if (cr) cr.hidden = e.target.value !== 'efactura'; }
     var sel = e.target.closest('[data-rol-usuario]');
     if (sel && sel.closest('.tabla')) {

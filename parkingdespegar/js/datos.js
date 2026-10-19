@@ -20,7 +20,7 @@
     return {
       tarifas: { techado: 0, aire: 0, valet: 0, graciaHoras: 0, minimoDias: 1 },
       empresa: { razon: '', rut: '', direccion: '', iva: 22 },
-      lugares: [], reservas: [], pagos: [], facturas: [], usuarios: [], auditoria: [],
+      lugares: [], reservas: [], pagos: [], facturas: [], usuarios: [], auditoria: [], asistencias: [],
       caja: { turnoActual: null, cerrados: [] }
     };
   }
@@ -57,6 +57,7 @@
     else if (/Password should be at least/i.test(m)) m = 'La contraseña tiene que tener al menos 8 caracteres.';
     else if (/rate limit|too many/i.test(m)) m = 'Demasiados intentos seguidos. Esperá un minuto y probá de nuevo.';
     else if (/permission denied|row-level security|42501/i.test(m) || (e && e.code === '42501')) m = 'No tenés permiso para hacer esto.';
+    else if (e && e.code === 'PGRST202') m = 'Esta función todavía no está activada en la base de datos. Avisale a Livo.';
     var err = new Error(m); err.original = e; return err;
   }
   async function rpc(nombre, args) {
@@ -100,8 +101,11 @@
       sb.from('caja_movimientos').select('*').order('hora', { ascending: false }).limit(1000),
       sb.from('facturas').select('*').order('numero', { ascending: false }),
       sb.from('perfiles').select('*').order('creado'),
-      sb.from('auditoria').select('*').order('id', { ascending: false }).limit(300)
+      sb.from('auditoria').select('*').order('id', { ascending: false }).limit(300),
+      sb.from('asistencias').select('id,usuario_id,usuario_nombre,entrada,salida').gte('entrada', new Date(Date.now() - 62 * DIA).toISOString()).order('entrada', { ascending: false })
     ]);
+    /* Si la base todavía no tiene la tabla de horarios, el resto anda igual */
+    if (q[10].error) q[10] = { data: [] };
     var falla = q.filter(function (r) { return r.error; })[0];
     if (falla) throw amigable(falla.error);
     var d = vacio(), t = q[0].data, e = q[1].data;
@@ -113,15 +117,17 @@
     d.pagos.forEach(function (p) { (porReserva[p.reserva_id] = porReserva[p.reserva_id] || []).push(p); });
     d.reservas = datosDe(q[3]).map(function (x) { return aReserva(x, porReserva); });
     var movs = datosDe(q[6]);
+    var cobradoDe = function (id) { return movs.filter(function (m) { return m.turno_id === id && m.monto > 0; }).reduce(function (s, m) { return s + m.monto; }, 0); };
     datosDe(q[5]).forEach(function (x) {
       if (!x.cierre) {
         d.caja.turnoActual = {
-          id: x.id, apertura: x.apertura, base: x.base, usuario: x.abrio_nombre,
+          id: x.id, apertura: x.apertura, base: x.base, usuario: x.abrio_nombre, turno: x.turno,
           movimientos: movs.filter(function (m) { return m.turno_id === x.id; })
             .map(function (m) { return { id: m.id, hora: m.hora, concepto: m.concepto, medio: m.medio, monto: m.monto, usuario: m.usuario_nombre }; })
         };
       } else {
-        d.caja.cerrados.push({ apertura: x.apertura, cierre: x.cierre, cerro: x.cerro_nombre, esperado: x.esperado, contado: x.contado });
+        d.caja.cerrados.push({ id: x.id, apertura: x.apertura, cierre: x.cierre, turno: x.turno, abrio: x.abrio_nombre, cerro: x.cerro_nombre,
+          base: x.base, esperado: x.esperado, contado: x.contado, cobrado: cobradoDe(x.id) });
       }
     });
     d.facturas = datosDe(q[7]).map(function (f) {
@@ -129,6 +135,7 @@
     });
     d.usuarios = datosDe(q[8]);
     d.auditoria = datosDe(q[9]).map(function (a) { return { fecha: a.fecha, usuario: a.usuario_nombre, accion: a.accion }; });
+    d.asistencias = datosDe(q[10]).map(function (a) { return { id: a.id, usuarioId: a.usuario_id, nombre: a.usuario_nombre, entrada: a.entrada, salida: a.salida }; });
     cache = d;
     return cache;
   }
@@ -295,7 +302,13 @@
     registrarSalida: function (id, medioDif) { return hacer('registrar_salida', { p_reserva: id, p_medio_dif: medioDif || '' }); },
     cancelar: function (id) { return hacer('cancelar_reserva', { p_reserva: id }); },
     traslado: function (id, tipo, estado) { return hacer('marcar_traslado', { p_reserva: id, p_tipo: tipo, p_estado: estado }); },
-    abrirCaja: function (base) { return hacer('abrir_caja', { p_base: base }); },
+    abrirCaja: async function (base, turno) {
+      /* Si la base todavía no tiene los turnos, abre la caja como antes */
+      try { return await hacer('abrir_caja', { p_base: base, p_turno: turno || null }); }
+      catch (e) { if (e.original && e.original.code === 'PGRST202') return hacer('abrir_caja', { p_base: base }); throw e; }
+    },
+    cambiarFechas: function (id, entrada, salida) { return hacer('cambiar_fechas', { p_reserva: id, p_entrada: entrada, p_salida: salida }); },
+    marcarJornada: function () { return hacer('marcar_asistencia'); },
     egreso: function (concepto, monto) { return hacer('egreso_caja', { p_concepto: concepto, p_monto: monto }); },
     cerrarCaja: function (contado) { return hacer('cerrar_caja', { p_contado: contado }); },
     configurarLugares: function (techado, aire) { return hacer('configurar_lugares', { p_techado: techado, p_aire: aire }); },
@@ -327,6 +340,10 @@
     },
     disponibilidad: function (entrada, salida) { return rpc('disponibilidad_web', { p_entrada: entrada, p_salida: salida }); },
     reservarWeb: function (p) { return rpc('crear_reserva_web', { p: p }); },
-    pagarWeb: function (id, token) { return rpc('pagar_reserva_web', { p_id: id, p_token: token }); }
+    pagarWeb: function (id, token) { return rpc('pagar_reserva_web', { p_id: id, p_token: token }); },
+    verReservaWeb: function (codigo, telefono) { return rpc('reserva_web_ver', { p_codigo: codigo, p_telefono: telefono }); },
+    cambiarReservaWeb: function (codigo, telefono, entrada, salida) {
+      return rpc('reserva_web_cambiar', { p_codigo: codigo, p_telefono: telefono, p_entrada: entrada, p_salida: salida });
+    }
   };
 })();

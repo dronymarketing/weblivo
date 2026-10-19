@@ -8,6 +8,8 @@
 -- asistente_consulta(): necesita la clave del asistente (se genera en el
 -- panel, acá solo queda su huella) y un número habilitado por la dueña.
 -- Solo lee: no puede cobrar, borrar ni cambiar nada.
+-- Necesita el esquema del sistema al día (usa las tablas de esquema.sql,
+-- incluida la de horarios del equipo).
 -- ============================================================
 
 create table if not exists public.asistente_telefonos (
@@ -168,6 +170,8 @@ begin
     'ingresaron_hoy', coalesce((select jsonb_agg(distinct usuario_nombre) from public.auditoria
                                  where accion = 'Ingresó al sistema' and fecha >= v_hoy), '[]'::jsonb),
     'sin_acceso', (select count(*) from public.perfiles where not activo),
+    'trabajando', coalesce((select jsonb_agg(jsonb_build_object('nombre', usuario_nombre, 'desde', entrada) order by entrada)
+                              from public.asistencias where salida is null), '[]'::jsonb),
     'en_predio', coalesce((select jsonb_agg(public.asistente_ficha(r) order by r.lugar_tipo desc, r.lugar)
                              from public.reservas r where r.estado = 'en_predio'), '[]'::jsonb)
   );
@@ -304,6 +308,7 @@ language plpgsql security definer set search_path = public as $$
 declare r public.reservas;
 begin
   perform public.asistente_validar(p_clave, null);
+  if p_tipo in ('ingreso', 'egreso') then return public.asistente_aviso_personal(p_reserva, p_tipo); end if;
   select * into r from public.reservas where id = p_reserva;
   if not found then return null; end if;
   if p_tipo not in ('entrada', 'reserva') then return null; end if;
@@ -352,12 +357,61 @@ create trigger al_cambiar_reserva_avisar after insert or update on public.reserv
 -- Dirección del servicio de Cloudflare que manda los avisos (vacía = sin avisos)
 update public.asistente_config set aviso_url = 'https://parking-despegar.dronymarketing.workers.dev/aviso' where id = 1 and aviso_url is null;
 
+-- ---------- Torre avisa quién empieza y quién termina de trabajar ----------
+alter table public.asistencias add column if not exists aviso_entrada timestamptz;
+alter table public.asistencias add column if not exists aviso_salida timestamptz;
+
+-- Aviso de jornada (ya validada la clave en asistente_aviso): una sola vez y solo si es reciente
+create or replace function public.asistente_aviso_personal(p_id uuid, p_tipo text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare a public.asistencias;
+begin
+  if p_tipo = 'ingreso' then
+    update public.asistencias set aviso_entrada = now()
+     where id = p_id and aviso_entrada is null and entrada > now() - interval '15 minutes' returning * into a;
+  else
+    update public.asistencias set aviso_salida = now()
+     where id = p_id and aviso_salida is null and salida > now() - interval '15 minutes' returning * into a;
+  end if;
+  if not found then return null; end if;
+  return jsonb_build_object('tipo', p_tipo,
+    'persona', jsonb_build_object('nombre', a.usuario_nombre, 'entrada', a.entrada, 'salida', a.salida,
+                                  'rol', (select rol from public.perfiles where id = a.usuario_id)),
+    'trabajando', coalesce((select jsonb_agg(usuario_nombre order by entrada) from public.asistencias where salida is null), '[]'::jsonb),
+    'destinatarios', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre,
+                                 'ventana', coalesce(ultimo_mensaje > now() - interval '23 hours 50 minutes', false)))
+                                from public.asistente_telefonos), '[]'::jsonb));
+end $$;
+
+create or replace function public.al_marcar_asistencia_avisar() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_tipo text;
+begin
+  select aviso_url into v_url from public.asistente_config where id = 1;
+  if v_url is null then return new; end if;
+  if tg_op = 'INSERT' then v_tipo := 'ingreso';
+  elsif old.salida is null and new.salida is not null then v_tipo := 'egreso';
+  end if;
+  if v_tipo is not null then
+    begin
+      perform net.http_post(url := v_url, body := jsonb_build_object('tipo', v_tipo, 'reserva', new.id),
+                            headers := '{"Content-Type": "application/json"}'::jsonb);
+    exception when others then null;
+    end;
+  end if;
+  return new;
+end $$;
+drop trigger if exists al_marcar_asistencia_avisar on public.asistencias;
+create trigger al_marcar_asistencia_avisar after insert or update of salida on public.asistencias
+  for each row execute function public.al_marcar_asistencia_avisar();
+
 revoke execute on function public.asistente_normalizar(text), public.asistente_estado(), public.asistente_agregar(text, text),
                            public.asistente_quitar(text), public.asistente_nueva_clave(),
                            public.asistente_consulta(text, text, timestamptz, timestamptz),
                            public.asistente_validar(text, text), public.asistente_visto(text, text), public.asistente_ficha(public.reservas), public.unaccent_simple(text),
                            public.asistente_buscar(text, text, text), public.asistente_telefono(text, text, text),
                            public.anotar_sistema(text), public.asistente_aviso(text, uuid, text),
+                           public.asistente_aviso_personal(uuid, text), public.al_marcar_asistencia_avisar(),
                            public.al_cambiar_reserva_avisar() from public, anon, authenticated;
 grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text),
                           public.asistente_nueva_clave() to authenticated;

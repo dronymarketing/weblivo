@@ -1171,3 +1171,11 @@
 .pasarela__botones { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 /* La barra fija del total no tapa el final del pie */
 .pagina--reserva .pie { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
+
+/* ---------- Cambiar mi reserva ---------- */
+.mi-reserva__precio { padding: 14px 16px; border-radius: var(--radio-chico, 8px); background: var(--fondo-alt, #053f5c); color: #fff; font-size: var(--fs-small); }
+.mi-reserva__precio:empty { display: none; }
+.mi-reserva__precio strong { font-size: 22px; font-weight: 500; }
+.mi-reserva__precio small { display: block; margin-top: 4px; color: var(--menta, #a0eacf); font-size: var(--fs-small); }
+.mi-reserva__ayuda { display: grid; gap: 12px; justify-items: start; padding: var(--sp-3); border-radius: var(--radio, 12px); background: var(--superficie, #fff); box-shadow: inset 0 0 0 1px rgba(5, 63, 92, .1); }
+.mi-reserva__ayuda p { max-width: 36ch; }

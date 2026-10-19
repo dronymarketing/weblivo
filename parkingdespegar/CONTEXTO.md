@@ -206,6 +206,24 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
     (check-in) y las reservas nuevas: del panel al crearlas, las web recién cuando se pagan. Gratis
     dentro de las 24 h del último mensaje de la dueña (`asistente_telefonos.ultimo_mensaje`); fuera,
     plantilla opcional `WHATSAPP_PLANTILLA` (paga). Variable `WHATSAPP_NUMERO_ID` en Cloudflare.
+  - **Ajustes de la clienta (Santi, 19/10)** — el cobro sigue por bloques de 24 h con 3 h de tolerancia
+    (decidido: no se cambia).
+    · **Cambio de fechas:** `aplicar_fechas()` (controla lugar libre, recalcula el total si todavía no
+      entró; si ya está adentro solo cambia la salida y la diferencia se cobra al salir). Panel:
+      detalle de la reserva → «Cambiar fechas» (±1 día). Web: `mi-reserva.html` con código + WhatsApp
+      (`reserva_web_ver/cambiar`, anon), enlazada en el pie y en la confirmación de la reserva.
+    · **Calendario** (Reservas → Calendario): semana con entradas (menta) y salidas (ámbar).
+    · **Agenda por hora** (Hoy → Agenda por hora): 24 h en vertical; colores por categoría (reserva web,
+      WhatsApp, mostrador, teléfono, entrada, salida, traslado) con leyenda y cantidades arriba.
+    · **Traslados:** se navega por días (◀ fecha ▶).
+    · **Caja por turno:** `caja_turnos.turno` diurno (8–20, ámbar) / nocturno (20–8, navy); se abre en
+      $ 0 por defecto; historial con quién abrió y cerró; «Cobrado por día» separado por turno (el
+      turno cuenta para el día en que abrió).
+    · **Horarios:** tabla `asistencias`, `marcar_asistencia()` (botón «Empezar/Terminar jornada» en la
+      barra superior y sección Hoy → Horarios; la dueña ve a todos, cada uno lo suyo). Torre avisa
+      «empezó / terminó de trabajar» (`al_marcar_asistencia_avisar` → `/aviso` tipos ingreso/egreso) y
+      responde «¿quién está trabajando?» con quién marcó entrada.
+    · Para aplicarlo en una base que ya funciona: correr `esquema.sql` completo (se puede re-correr).
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de
