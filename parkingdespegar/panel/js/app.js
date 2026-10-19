@@ -60,21 +60,19 @@
   /* Cinco sectores, cada uno con su color (variantes del azul y del naranja de marca):
      Hoy (navy) · Autos en el parking (azul) · Reservas (celeste) · Plata (naranja) · Ajustes (ámbar) */
   var SECTORES = [
-    { id: 'hoy', nombre: 'Hoy' },
+    { id: 'hoy', nombre: 'Inicio' },
     { id: 'autos', nombre: 'Autos en el parking' },
     { id: 'reservas', nombre: 'Reservas' },
     { id: 'plata', nombre: 'Plata' },
     { id: 'ajustes', nombre: 'Ajustes' }
   ];
   var SECCIONES = [
-    { id: 'panel', sector: 'hoy', nombre: 'Hoy', ico: 'sun', roles: ['admin', 'personal'],
+    { id: 'panel', sector: 'hoy', nombre: 'Inicio', ico: 'sun', roles: ['admin', 'personal'],
       desc: 'Lo que pasa hoy en el parking, de un vistazo.' },
-    { id: 'agenda', sector: 'hoy', nombre: 'Agenda por hora', ico: 'clock', roles: ['admin', 'personal'],
-      desc: 'El día hora por hora: cuándo entró cada reserva y por dónde, quién llega, quién sale y los traslados. Cada cosa tiene su color.' },
     { id: 'horarios', sector: 'hoy', nombre: 'Horarios', ico: 'timer', roles: ['admin', 'personal', 'chofer'],
       desc: 'Cuándo empieza y termina cada jornada de trabajo. Marcá tu entrada al llegar y tu salida al irte: Torre le avisa a la dueña.' },
     { id: 'llegada', sector: 'autos', color: 'entrada', nombre: 'Entrada', ico: 'car-front', roles: ['admin', 'personal'],
-      desc: 'Cuando llega un cliente: buscás su reserva, cobrás lo que falte, emitís la factura y le das un lugar. Si pagó por transferencia antes, se registra acá.',
+      desc: 'Cuando llega un cliente: buscás su reserva, cobrás lo que falte, emitís la factura y le das un lugar. Abajo está el día hora por hora, con un color para cada cosa.',
       cuenta: function () { return D().reservas.filter(function (r) { return r.estado === 'confirmada' && mismoDia(r.entrada, Date.now()); }).length; } },
     { id: 'retiros', sector: 'autos', color: 'salida', nombre: 'Salida', ico: 'car-front', roles: ['admin', 'personal'],
       desc: 'Cuando vuelve un cliente: buscás su auto, entregás las llaves y el lugar queda libre. No se cobra: ya pagó al entrar.',
@@ -413,7 +411,9 @@
         '<button class="btn btn--linea" type="button" data-sin-reserva>' + ico('plus') + 'Entra sin reserva</button>' +
       '</section>' +
       (elegida ? '' : ficha) +
-    '</div>';
+    '</div>' +
+    '<section class="bloque" data-agenda data-sector="hoy"><header class="bloque__cabeza"><h2>' + ico('clock') + 'El día hora por hora</h2></header>' +
+      navDia('llegada', q.d ? deFecha(q.d) : inicioDia()) + agendaHoras(q.d ? deFecha(q.d) : inicioDia()) + '</section>';
   };
   function listaLlegada(lista) {
     if (!lista.length) return '<li class="vacio">No hay llegadas pendientes.</li>';
@@ -778,7 +778,7 @@
         ev.sort(function (a, b) { return new Date(a.hora) - new Date(b.hora); });
         var adentro = res.filter(function (r) { return r.estado !== 'finalizada' && new Date(r.entrada) < finDia && new Date(r.salida) > dia; }).length;
         return '<section class="semana__dia' + (dia === hoy ? ' es-hoy' : '') + (dia < hoy ? ' es-pasado' : '') + '">' +
-          '<header class="semana__cabeza"><a href="#/agenda?d=' + aFecha(dia) + '"><strong>' + DIAS_CORTOS[new Date(dia).getDay()] + ' ' + new Date(dia).getDate() + '</strong>' + (dia === hoy ? '<em>Hoy</em>' : '') + '</a>' +
+          '<header class="semana__cabeza"><a href="#/llegada?d=' + aFecha(dia) + '"><strong>' + DIAS_CORTOS[new Date(dia).getDay()] + ' ' + new Date(dia).getDate() + '</strong>' + (dia === hoy ? '<em>Hoy</em>' : '') + '</a>' +
             '<small>' + adentro + (adentro === 1 ? ' auto' : ' autos') + '</small></header>' +
           (ev.length ? '<ul class="semana__lista">' + ev.map(function (x) {
             var r = x.r;
@@ -848,8 +848,9 @@
     ['mostrador', 'Reserva en mostrador', 'calendar-check'], ['telefono', 'Reserva por teléfono', 'calendar-check'],
     ['llega', 'Entrada', 'log-in'], ['sale', 'Salida', 'log-out'], ['traslado', 'Traslado', 'bus']
   ];
-  V.agenda = function (q) {
-    var dia = q.d ? deFecha(q.d) : inicioDia(), ev = [];
+  /* Cuándo se hizo cada reserva y por dónde, quién llega, quién sale y los traslados (va en Entrada) */
+  function agendaHoras(dia) {
+    var ev = [];
     D().reservas.forEach(function (r) {
       if (mismoDia(r.creada, dia)) ev.push({ r: r, cat: r.origen, hora: r.creada, nota: 'para el ' + DIAS_CORTOS[new Date(r.entrada).getDay()] + ' ' + fechaCorta(r.entrada) + (r.estado === 'cancelada' ? ' · cancelada' : '') });
       if (r.estado === 'cancelada') return;
@@ -873,13 +874,12 @@
             '<span class="ev__texto"><strong>' + esc(x.r.vehiculo.matricula) + '</strong> ' + esc(x.r.cliente.nombre) + '<small>' + x.nota + '</small></span></button>';
         }).join('') + '</div></li>';
     }
-    return navDia('agenda', dia) +
-      '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
+    return '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
         return '<span class="leyenda__item"><i class="punto punto--' + c[0] + '"></i>' + c[1] + ' <strong>' + (cuenta[c[0]] || 0) + '</strong></span>';
       }).join('') + '</div>' +
       (ev.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas, salidas ni traslados.</p>') +
       '<ol class="horas">' + filas + '</ol>';
-  };
+  }
 
   /* ---------- HORARIOS DEL EQUIPO ---------- */
   function miJornada() { return usuario ? D().asistencias.filter(function (a) { return a.usuarioId === usuario.id && !a.salida; })[0] : null; }
@@ -1219,8 +1219,8 @@
     pintarNav(r.id);
     pintarJornada();
     $('[data-vista]').innerHTML = cabecera(sec) + V[r.id](r.q);
-    if (r.id === 'agenda' && !r.q.d && pintar.vista !== 'agenda') { var ah = $('[data-hora-actual]'); if (ah) ah.scrollIntoView({ block: 'center', behavior: 'instant' }); }
-    pintar.vista = r.id;
+    /* Al cambiar de día en la agenda de Entrada, la pantalla se queda en la agenda */
+    if (r.id === 'llegada' && r.q.d && !r.q.c) { var ag = $('[data-agenda]'); if (ag) ag.scrollIntoView({ block: 'start', behavior: 'instant' }); }
     if (r.id === 'tarifas') simular();
     if (r.id === 'asistente') cargarAsistente(); else claveNueva = null;
     /* En celular, la ficha elegida queda debajo de la lista: llevarla a la vista */

@@ -738,3 +738,6 @@ button.cajon:focus-visible { outline: 2px solid var(--acento); outline-offset: 2
 .jornada-tarjeta__estado strong { font-size: 17px; }
 .jornada-tarjeta.es-trabajando { box-shadow: inset 4px 0 0 #1d7a55; }
 @media (max-width: 420px) { .jornada { padding: 0 10px; font-size: 12px; } }
+/* La agenda dentro de Entrada: sobre el fondo gris para separarla de la tarjeta */
+[data-agenda] .leyenda--agenda, [data-agenda] .horas, [data-agenda] .nav-dias__fecha, [data-agenda] .nav-dias .boton-ico { background: var(--fondo); }
+[data-agenda] .hora-fila { border-top-color: rgba(5, 63, 92, .09); }

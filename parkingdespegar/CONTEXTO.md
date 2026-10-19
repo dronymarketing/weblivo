@@ -213,7 +213,7 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
       detalle de la reserva → «Cambiar fechas» (±1 día). Web: `mi-reserva.html` con código + WhatsApp
       (`reserva_web_ver/cambiar`, anon), enlazada en el pie y en la confirmación de la reserva.
     · **Calendario** (Reservas → Calendario): semana con entradas (menta) y salidas (ámbar).
-    · **Agenda por hora** (Hoy → Agenda por hora): 24 h en vertical; colores por categoría (reserva web,
+    · **Agenda por hora** (dentro de Entrada, debajo de la búsqueda): 24 h en vertical; colores por categoría (reserva web,
       WhatsApp, mostrador, teléfono, entrada, salida, traslado) con leyenda y cantidades arriba.
     · **Traslados:** se navega por días (◀ fecha ▶).
     · **Caja por turno:** `caja_turnos.turno` diurno (8–20, ámbar) / nocturno (20–8, navy); se abre en
@@ -224,6 +224,7 @@ pasarela de pago **simulada** y **tarifas de muestra** editables.
       «empezó / terminó de trabajar» (`al_marcar_asistencia_avisar` → `/aviso` tipos ingreso/egreso) y
       responde «¿quién está trabajando?» con quién marcó entrada.
     · Para aplicarlo en una base que ya funciona: correr `esquema.sql` completo (se puede re-correr).
+    · La primera pantalla del menú se llama «Inicio» (antes «Hoy»).
   - El rol de la dueña se llama «Administración» (Santi, 10/10). Logo centrado en el ingreso.
   - **Etapa actual: muestra (Santi, 10/10).** Lo del lunes 12/10 es una presentación desde cero, no la
     instalación definitiva: van a venir cambios y adaptaciones para el equipo. Los datos y cuentas de
