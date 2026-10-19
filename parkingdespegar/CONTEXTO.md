@@ -368,6 +368,15 @@ diseño, los colores y la tipografía de Parking Despegar:
   tarjetas. Faltan más reseñas reales: no se inventan.
 - **Torre** muestra en la ficha del auto los extras, la promoción y los comentarios.
 
+## Dominio propio (20/10)
+
+`parkingdespegar.com` (Cloudflare Registrar, titular la dueña). La web se publica con **Cloudflare Pages**
+conectado a este repositorio (rama `main`, carpeta de salida `parkingdespegar`, sin build): cada push a
+`main` la actualiza sola. `livo.com.uy/parkingdespegar/` (GitHub Pages) queda redirigiendo al dominio nuevo.
+Metadatos (og:url, og:image) y el servicio de Cloudflare (CORS, `SITIO` para la vuelta de dLocal) ya
+apuntan a `https://parkingdespegar.com/`. Supabase → Authentication → URL Configuration: Site URL y
+Redirect URLs con el dominio nuevo. dLocal: la web declarada tiene que ser el dominio nuevo.
+
 ## PENDIENTE
 
 - **Licencia de IT Inktura:** la versión demo es de uso personal y no trae tildes ni números. Hace

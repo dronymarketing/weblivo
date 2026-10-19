@@ -39,7 +39,7 @@
 const PROYECTO = 'ixryfteknrcghmsxyowp';
 const SUPABASE_URL = 'https://' + PROYECTO + '.supabase.co';
 const CLAVE_PUBLICA = 'sb_publishable_FCAsYb80d6t-kyvQqIV9bA_p7Wrsm5o'; // pública por diseño (la misma de la web)
-const ORIGENES = ['https://livo.com.uy'];
+const ORIGENES = ['https://parkingdespegar.com', 'https://www.parkingdespegar.com', 'https://livo.com.uy'];
 const API_SUPABASE = 'https://api.supabase.com/v1/projects/' + PROYECTO;
 const GRAPH = 'https://graph.facebook.com/v23.0/';
 const UY = 3 * 3600000; // Uruguay: UTC−3 todo el año
@@ -650,7 +650,7 @@ async function pagos(pedido, ruta, env) {
   try {
     if (ruta === '/pago/crear') {
       const d = await rpc(env, 'pago_web_preparar', args);
-      const sitio = (env.SITIO || 'https://livo.com.uy/parkingdespegar/').replace(/\/?$/, '/');
+      const sitio = (env.SITIO || 'https://parkingdespegar.com/').replace(/\/?$/, '/');
       const prueba = montoPrueba(env);
       const p = await dlocal(env, 'POST', '/v1/payments', {
         currency: 'UYU', amount: prueba || d.saldo, country: 'UY', order_id: b.reserva,

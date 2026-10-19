@@ -56,7 +56,7 @@ Ninguna llave vive en la página: todas son **secretos cifrados de Cloudflare**.
     `https://parking-despegar.….workers.dev/whatsapp`, Verify token = la palabra del paso 12 →
     **Verify and save** → en *Webhook fields*, suscribir **messages**.
 15. Pasar la app a modo **Live** (Meta pide la dirección de una política de privacidad:
-    `https://livo.com.uy/parkingdespegar/privacidad.html`, también para «eliminación de datos»).
+    `https://parkingdespegar.com/privacidad.html`, también para «eliminación de datos»).
 16. **Enganchar la cuenta de WhatsApp a la app** (Meta no siempre lo hace solo; sin esto no llega
     nada a Cloudflare): developers.facebook.com/tools/explorer → app «Asistente Parking Despegar»,
     permisos `whatsapp_business_management` y `whatsapp_business_messaging` → Generate Access Token →
@@ -100,7 +100,7 @@ con el botón de pago de prueba.
       saldada (se anota «prueba»). **Borrarla** después de probar.
 23. Abrir la dirección del Worker: tiene que decir `"pagos": true`.
 
-Importante: dLocal asocia las claves al sitio declarado en la cuenta (livo.com.uy); usarlas en otro
+Importante: dLocal asocia las claves al sitio declarado en la cuenta (parkingdespegar.com); usarlas en otro
 sitio puede bloquear la cuenta. Con el primer pago real confirmado, el botón de prueba se apaga solo.
 Para retirar la plata y pasar de USD 3.000, completar el Paso 2 de dLocal (documentos y cuenta
 bancaria, idealmente a nombre del parking).
