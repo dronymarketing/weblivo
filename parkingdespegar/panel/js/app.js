@@ -119,6 +119,9 @@
   }
   var TIPO = { techado: 'Techado', aire: 'Predio' };
   var ORIGEN = { web: 'Web', whatsapp: 'WhatsApp', mostrador: 'Mostrador', telefono: 'Teléfono' };
+  /* Por dónde entró la reserva, con su color: así no hace falta una leyenda aparte */
+  var ORIGEN_LARGO = { web: 'Reserva web', whatsapp: 'Reserva por WhatsApp', mostrador: 'Reserva en mostrador', telefono: 'Reserva por teléfono' };
+  function badgeOrigen(r) { return '<span class="origen origen--' + r.origen + '"><i class="punto punto--' + r.origen + '"></i>' + (ORIGEN_LARGO[r.origen] || r.origen) + '</span>'; }
   var MEDIOS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta (POS)', transferencia: 'Transferencia', online: 'Online', egreso: 'Egreso' };
 
   /* ---------- Traslados derivados de las reservas ---------- */
@@ -296,7 +299,7 @@
     return '<div class="tabla-caja"><table class="tabla"><thead><tr><th>Código</th><th>Cliente</th><th>Matrícula</th><th>Entrada</th><th>Salida</th><th>Lugar</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody>' +
       lista.map(function (r) {
         return '<tr data-abrir-reserva="' + r.id + '" tabindex="0">' +
-          '<td data-et="Código"><strong>' + r.codigo + '</strong><small>' + ORIGEN[r.origen] + '</small></td>' +
+          '<td data-et="Código"><strong>' + r.codigo + '</strong>' + badgeOrigen(r) + '</td>' +
           '<td data-et="Cliente">' + esc(r.cliente.nombre) + '<small>' + esc(r.cliente.telefono) + '</small></td>' +
           '<td data-et="Matrícula"><span class="matricula">' + esc(r.vehiculo.matricula) + '</span></td>' +
           '<td data-et="Entrada">' + fechaHora(r.entrada) + '</td>' +
@@ -409,7 +412,7 @@
         return { r: r, monto: monto };
       }, err);
       if (res === FALLO) return;
-      cerrarVentana(); avisar('Reserva ' + res.r.codigo + ' guardada' + (res.monto > 0 ? (mostrador ? ' y cobrada: ' + plata(res.monto) + ' en ' + MEDIOS[medio].toLowerCase() : ' con ' + plata(res.monto) + ' por transferencia') : '')); pintar();
+      cerrarVentana(); avisar('Reserva ' + res.r.codigo + ' guardada' + (res.monto > 0 ? (mostrador ? ' y cobrada: ' + plata(res.monto) + ' en ' + (medio === 'tarjeta' ? 'tarjeta' : MEDIOS[medio].toLowerCase()) : ' con ' + plata(res.monto) + ' por transferencia') : '')); pintar();
     });
   }
   function local(ms) { var d = new Date(ms); return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()) + 'T' + PD.pad(d.getHours()) + ':' + PD.pad(d.getMinutes()); }
@@ -882,7 +885,6 @@
     var esHoy = dia === inicioDia();
     var atrasadas = !esHoy ? [] : D().reservas.filter(function (r) { return r.estado === 'confirmada' && new Date(r.entrada) < dia; })
       .sort(porFecha('entrada')).map(function (r) { return { r: r, cat: 'llega', hora: r.entrada, atrasada: true }; });
-    var cuenta = {}; ev.concat(atrasadas).forEach(function (x) { cuenta[x.cat] = (cuenta[x.cat] || 0) + 1; });
     var porHora = {}; ev.forEach(function (x) { var h = new Date(x.hora).getHours(); (porHora[h] = porHora[h] || []).push(x); });
     var ahoraH = new Date().getHours();
     var filas = atrasadas.length ? '<li class="hora-fila hora-fila--atrasadas"><span class="hora-fila__h">Atrasadas</span><div class="hora-fila__eventos">' + atrasadas.map(evento).join('') + '</div></li>' : '';
@@ -892,10 +894,7 @@
         '<span class="hora-fila__h">' + dosCifras(h) + ':00</span><div class="hora-fila__eventos">' +
         lista.map(evento).join('') + '</div></li>';
     }
-    return '<div class="leyenda leyenda--agenda">' + CATEGORIAS.map(function (c) {
-        return '<span class="leyenda__item"><i class="punto punto--' + c[0] + '"></i>' + c[1] + ' <strong>' + (cuenta[c[0]] || 0) + '</strong></span>';
-      }).join('') + '</div>' +
-      (ev.length || atrasadas.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas ni salidas.</p>') +
+    return (ev.length || atrasadas.length ? '' : '<p class="vacio">Este día no hay reservas nuevas, entradas ni salidas.</p>') +
       '<ol class="horas">' + filas + '</ol>';
   }
 
@@ -926,7 +925,7 @@
       '<span class="ev__fila">' + '<span class="ev__tipo">' + ico(cat[2]) + cat[1] + '</span>' +
         dato('clock', (x.atrasada ? fechaCorta(x.hora) + ' ' : '') + hora(x.hora), 'ev__dato--hora') + dato(lineas[0][0], lineas[0][1]) + dato(lineas[1][0], lineas[1][1]) + '</span>' +
       /* Fila 2: lugar, vuelo, reserva y cómo viene */
-      '<span class="ev__fila ev__fila--2">' + lineas.slice(2).map(function (l) { return dato(l[0], l[1]); }).join('') +
+      '<span class="ev__fila ev__fila--2">' + (x.cat === 'llega' || x.cat === 'sale' ? badgeOrigen(r) : '') + lineas.slice(2).map(function (l) { return dato(l[0], l[1]); }).join('') +
         dato(estado[0], estado[1], 'ev__dato--estado') + '</span>' +
       /* Al costado, bien visible: el pago (y el botón) */
       '<span class="ev__lado">' + pagoGrande(r) + accion + '</span>' +

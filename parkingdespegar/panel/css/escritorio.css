@@ -110,3 +110,4 @@
 .ev { grid-template-columns: 1fr auto; grid-template-areas: "f1 lado" "f2 lado"; gap: 4px 16px; padding: 8px 12px 8px 14px; }
 .ev__lado { flex-wrap: nowrap; justify-content: flex-end; }
 .pago { min-width: 150px; justify-content: center; }
+.tabla td.num { white-space: nowrap; }
