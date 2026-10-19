@@ -351,6 +351,10 @@ diseño, los colores y la tipografía de Parking Despegar:
   `en-ventana` y solo se ve la ventana, que avisa su alto para no dejar espacio de más). Entrando directo,
   la ventana se ve sobre una banda navy. Arriba: logo, «Reservá tu lugar», fechas elegidas y la X; abajo,
   siempre a mano, el total y el botón para seguir. La pasarela de pago se abre en la página entera.
+  Ajustes de Santi (19/10): la ventana tiene medida fija (720 × 720 en la computadora, con borde también en
+  el celular) y el contenido se desplaza adentro; botones de tamaño fijo; el calendario se abre tocando
+  cualquier parte del día; la hora es una lista cada 15 min con flechita; sin tipo de vehículo ni color;
+  **email obligatorio** (también lo exige el servidor): ahí va a llegar el ticket.
 - **Servicios extra** (tabla `extras`, se editan en Precios): de ejemplo Lavado ($ 900) y Service (a
   cotizar: precio vacío, no suma al total). La reserva guarda nombre y precio del momento.
 - **Promociones y convenios** (tabla `promociones`, sección Promociones del panel): código, % de

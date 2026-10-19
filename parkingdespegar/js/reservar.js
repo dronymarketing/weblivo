@@ -40,17 +40,10 @@
     if (e.key === 'Escape' && enVentana && $('[data-pasarela]').hidden) window.parent.postMessage({ pd: 'cerrar-reserva' }, location.origin);
   });
 
-  if (enVentana && window.ResizeObserver) {
-    var medir = function () {
-      var alto = ['.vr__cabeza', '.vr__pasos', '[data-pie]'].reduce(function (t, sel) { var el = $(sel); return t + (el && !el.hidden ? el.offsetHeight : 0); }, 0);
-      var c = $('[data-cuerpo]'), cs = getComputedStyle(c);
-      alto += Array.prototype.reduce.call(c.children, function (t, el) { return t + (el.hidden ? 0 : el.offsetHeight); }, 0) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-      window.parent.postMessage({ pd: 'alto-reserva', alto: Math.ceil(alto) }, location.origin);
-    };
-    var ro = new ResizeObserver(medir);
-    Array.prototype.forEach.call($('[data-cuerpo]').children, function (el) { ro.observe(el); });
-    ['.vr__cabeza', '[data-pie]'].forEach(function (sel) { ro.observe($(sel)); });
-  }
+  /* Tocar cualquier parte de la caja del día abre el calendario (no solo el iconito) */
+  $$('.fecha-caja__dia input').forEach(function (inp) {
+    inp.addEventListener('click', function () { try { if (inp.showPicker) inp.showPicker(); } catch (e) { /* el navegador lo abre solo */ } });
+  });
 
   /* ---------- Fechas por defecto: mañana a la madrugada, vuelta en 7 días ---------- */
   function ymd(d) { return d.getFullYear() + '-' + PD.pad(d.getMonth() + 1) + '-' + PD.pad(d.getDate()); }
@@ -144,7 +137,6 @@
   /* ---------- Precio y resumen en vivo ---------- */
   function etiquetaTipo(t) { return t === 'techado' ? 'Techado' : 'Predio'; }
   function etiquetaServicio(s) { return s === 'valet' ? 'Valet Parking' : 'Con traslado'; }
-  var VEHICULOS = { auto: 'Auto', suv: 'SUV o camioneta', pickup: 'Pick-up', utilitario: 'Utilitario', moto: 'Moto' };
   function fechaLarga(d) {
     return d.toLocaleDateString('es-UY', { weekday: 'short', day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
   }
@@ -235,7 +227,7 @@
     if (n === 3) {
       if (form.nombre.value.trim().length < 3) return error(3, 'Escribí tu nombre y apellido.'), false;
       if (form.telefono.value.replace(/\D/g, '').length < 8) return error(3, 'Revisá el WhatsApp: lo usamos para confirmarte.'), false;
-      if (form.email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.value.trim())) return error(3, 'Revisá el email.'), false;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.value.trim())) return error(3, 'Escribí tu email: ahí te mandamos el ticket de la reserva.'), false;
       if (form.matricula.value.replace(/\s/g, '').length < 5) return error(3, 'Revisá la matrícula.'), false;
       if (!form.modelo.value.trim()) return error(3, 'Contanos la marca y el modelo del auto.'), false;
       if (form.factura.checked) {
@@ -283,7 +275,7 @@
         ex.length ? ['Extras', ex.map(function (x) { return escapar(x.nombre); }).join(', ')] : null,
         promo ? ['Descuento', escapar(promo.codigo) + ' · ' + promo.porcentaje + '%'] : null]) +
       parte('Tus datos', 3, [['A nombre de', escapar(form.nombre.value.trim()) + '<small>' + tel + (mail ? ' · ' + mail : '') + '</small>'],
-        ['Auto', escapar(normalizarMatricula(form.matricula.value)) + ' · ' + escapar(form.modelo.value.trim()) + (form.color.value.trim() ? ' · ' + escapar(form.color.value.trim()) : '') + '<small>' + VEHICULOS[form.vehiculoTipo.value] + '</small>'],
+        ['Auto', escapar(normalizarMatricula(form.matricula.value)) + ' · ' + escapar(form.modelo.value.trim())],
         form.vueloIda.value.trim() || form.vueloVuelta.value.trim() ? ['Vuelos', escapar([form.vueloIda.value.trim() && 'ida ' + form.vueloIda.value.trim(), form.vueloVuelta.value.trim() && 'vuelta ' + form.vueloVuelta.value.trim()].filter(Boolean).join(' · ').toUpperCase())] : null,
         form.factura.checked ? ['Factura', 'e-Factura a ' + escapar(form.facturaRazon.value.trim()) + '<small>RUT ' + escapar(form.facturaRut.value.replace(/\D/g, '')) + '</small>'] : null,
         form.comentarios.value.trim() ? ['Comentarios', escapar(form.comentarios.value.trim())] : null]);
@@ -318,7 +310,7 @@
   form.matricula.addEventListener('blur', function () { form.matricula.value = normalizarMatricula(form.matricula.value); });
 
   /* ---------- Recordar los datos en este dispositivo (solo en este navegador, nunca en el servidor) ---------- */
-  var CAMPOS_RECORDAR = ['nombre', 'telefono', 'email', 'matricula', 'vehiculoTipo', 'modelo', 'color', 'facturaRut', 'facturaRazon'];
+  var CAMPOS_RECORDAR = ['nombre', 'telefono', 'email', 'matricula', 'modelo', 'facturaRut', 'facturaRazon'];
   function recordarDatos() {
     try {
       if (!form.recordar.checked) { localStorage.removeItem('pd-mis-datos'); return; }
@@ -389,8 +381,7 @@
     try {
       var datos = {
         nombre: form.nombre.value.trim(), telefono: form.telefono.value.trim(), email: form.email.value.trim(),
-        matricula: form.matricula.value.trim(), modelo: form.modelo.value.trim(), color: form.color.value.trim(),
-        vehiculo_tipo: form.vehiculoTipo.value,
+        matricula: form.matricula.value.trim(), modelo: form.modelo.value.trim(),
         lugar_tipo: form.lugarTipo.value, servicio: form.servicio.value, pasajeros: form.servicio.value === 'valet' ? 1 : +form.pasajeros.value,
         entrada: b.entrada.toISOString(), salida: b.salida.toISOString(),
         vuelo_ida: form.vueloIda.value.trim(), vuelo_vuelta: form.vueloVuelta.value.trim(),
@@ -416,7 +407,7 @@
       confirmar({
         codigo: r.codigo, entrada: r.entrada, salida: r.salida, total: r.total,
         lugarTipo: datos.lugar_tipo, servicio: datos.servicio,
-        vehiculo: { matricula: normalizarMatricula(datos.matricula), modelo: datos.modelo, color: datos.color },
+        vehiculo: { matricula: normalizarMatricula(datos.matricula), modelo: datos.modelo },
         cliente: { nombre: datos.nombre, telefono: datos.telefono },
         extras: (r.extras || []).map(function (x) { return x.nombre; }), promo: r.promo || ''
       });

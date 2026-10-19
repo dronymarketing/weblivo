@@ -445,6 +445,10 @@ begin
   if (p ->> 'entrada')::timestamptz < now() - interval '1 hour' then
     raise exception 'La fecha de entrada ya pasó.' using errcode = 'P0001';
   end if;
+  -- El email es obligatorio en la web: ahí le llega el ticket
+  if coalesce(btrim(p ->> 'email'), '') !~ '^[^\s@]+@[^\s@]+\.[^\s@]{2,}$' then
+    raise exception 'Escribí tu email: ahí te mandamos el ticket de la reserva.' using errcode = 'P0001';
+  end if;
   v_res := public.insertar_reserva(p, 'web');
   insert into public.pagos_web (reserva_id, token, vence) values (v_res.id, v_token, now() + interval '2 hours');
   insert into public.auditoria (usuario_nombre, accion)

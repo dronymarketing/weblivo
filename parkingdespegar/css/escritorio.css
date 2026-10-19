@@ -332,4 +332,4 @@
 .vr__cuerpo { padding: 22px 28px 26px; }
 .vr__pie { padding: 14px 20px 14px 28px; }
 .vr .detalle div { grid-template-columns: 130px 1fr; }
-.vr-marco { width: min(760px, 100% - 48px); height: min(var(--alto-reserva, 860px), 100% - 48px); transition: transform 260ms var(--ease), height 200ms var(--ease); border-radius: var(--radio); box-shadow: 0 30px 80px -20px rgba(5, 63, 92, .6); }
+.vr-marco { width: min(720px, 100% - 48px); height: min(720px, 100% - 48px); }

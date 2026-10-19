@@ -49,8 +49,6 @@
   window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.pd === 'cerrar-reserva') cerrar();
-    /* La ventana mide lo justo para su contenido (en la computadora; en el celular es pantalla completa) */
-    if (e.data.pd === 'alto-reserva' && capa && e.data.alto > 200) capa.querySelector('.vr-marco').style.setProperty('--alto-reserva', e.data.alto + 'px');
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
 })();
