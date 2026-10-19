@@ -554,7 +554,7 @@
       '<p class="ticket__tipo">' + (tipo === 'salida' ? 'Comprobante de salida' : 'Comprobante de entrada') + '</p>' +
       '<p class="ticket__matricula">' + esc(r.vehiculo.matricula) + '</p>' +
       '<dl>' + fila('Reserva', r.codigo) + fila('Lugar', r.lugar + ' · ' + TIPO[r.lugarTipo]) + fila('Entrada', fechaHora(r.checkin)) +
-        (tipo === 'salida' ? fila('Salida', fechaHora(r.checkout)) : fila('Salida prevista', fechaHora(r.salida)) + fila('Estadía', p.dias + ' días')) +
+        (tipo === 'salida' ? fila('Salida', fechaHora(r.checkout)) : fila('Salida', fechaHora(r.salida)) + fila('Estadía', p.dias + ' días')) +
         fila('Pagado', plata(r.pago.monto) + (r.pago.medio ? ' · ' + MEDIOS[r.pago.medio] : '')) + '</dl>' +
       '<svg class="ticket__barras" data-barras></svg>' +
       '<p class="ticket__pie">Presentá este comprobante para retirar el auto.<br>Atendió: ' + esc(nombreUsuario()) + '</p></div>' +
