@@ -287,7 +287,7 @@ Ver `ajustarSpecsDestacadas` en `sures/js/main.js`.
 **Vista previa al compartir (tarjeta de WhatsApp) en TODAS las páginas**
 (regla, Santi 3/10/2026). Cada web nueva sale con su tarjeta desde el
 primer borrador, sin que haya que pedirla: imagen 1:1 de 1200×1200, fondo
-blanco y el logo de la marca al medio (como `parkingdespegar/img/og-blanco.jpg`),
+blanco y el logo de la marca al medio (como `sitio/img/og-blanco.jpg` del repositorio `parkingdespegar/web`),
 y las etiquetas `og:` en el `<head>` de cada archivo HTML, con URL absoluta
 a livo.com.uy. Receta en `references/construccion.md` → «Vista previa al
 compartir».

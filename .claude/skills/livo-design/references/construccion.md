@@ -355,7 +355,7 @@ relativas y la tarjeta sale vacía.
 WhatsApp guarda la tarjeta en caché un buen rato. Si se cambia la imagen,
 se le sube el `?v=` en la URL de `og:image` para que la vuelva a leer.
 
-Referencias: `parkingdespegar/` (logo naranja) y `aquageo/` (logo a color).
+Referencias: repositorio `parkingdespegar/web`, carpeta `sitio/` (logo naranja) y `aquageo/` (logo a color).
 
 ## Scroll
 
@@ -401,7 +401,7 @@ nav, en una línea, entre el logo y el botón de acción (WhatsApp).
   hover muestra el mismo filete.
 - Si los ítems no entran en una línea a 1024px, se acortan los textos. No se
   vuelve a la hamburguesa.
-- Referencia: `parkingdespegar/` (primera web con esta regla).
+- Referencia: repositorio `parkingdespegar/web`, carpeta `sitio/` (primera web con esta regla).
 
 ### Medidas
 
