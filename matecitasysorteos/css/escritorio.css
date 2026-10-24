@@ -54,7 +54,7 @@
 .funciona__grid, .sorteos__grid { flex-direction: row; align-items: center; gap: var(--sp-7); }
 .funciona__texto, .funciona__mockup, .sorteos__texto, .sorteos__mockup { flex: 1; }
 .sorteos__grid { flex-direction: row-reverse; }
-.mockup-telefono { width: 280px; }
+.mockup-marco { --escala: 0.8; }
 
 .tienda__grid { flex-direction: row; align-items: center; justify-content: space-between; }
 .tienda__icono { align-self: center; order: 2; }
