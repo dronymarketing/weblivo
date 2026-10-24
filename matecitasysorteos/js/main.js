@@ -76,12 +76,11 @@
 
   // ---------- Barras del sistema: theme-color + franja inferior ----------
   var metaTheme = document.getElementById('theme-color-meta');
-  var oscuras = document.querySelectorAll('.seccion--oscura, .hero');
   var COLOR_OSCURO = '#053726';
   var COLOR_CLARO = '#FFFFFF';
   var listaBarras = Array.prototype.slice.call(document.querySelectorAll('.hero, .seccion'));
   function colorDe(el) {
-    return (el.classList.contains('seccion--oscura') || el.classList.contains('hero')) ? COLOR_OSCURO : COLOR_CLARO;
+    return el.classList.contains('seccion--oscura') ? COLOR_OSCURO : COLOR_CLARO;
   }
   var cuadro = false;
   function actualizarBarras() {

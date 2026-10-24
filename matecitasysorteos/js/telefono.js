@@ -17,6 +17,8 @@ try {
   canvas.hidden = true; fallback.hidden = false;
   throw e;
 }
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
 
 const VERDE_PROFUNDO = 0x053726, VERDE = 0x0a5338, LIMA = 0xe3ef26, BLANCO = 0xffffff;
 
@@ -25,15 +27,39 @@ const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
 camera.position.set(0, 0.15, 5.6);
 scene.add(camera);
 
+// ---------- Ambiente: estudio claro generado a mano (sin HDRI) para que el
+// cuerpo del celular tenga reflejos reales, como en una foto de producto ----------
+{
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const estudio = new THREE.Scene();
+  estudio.add(new THREE.Mesh(
+    new THREE.SphereGeometry(10, 32, 16),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      uniforms: { cArriba: { value: new THREE.Color('#ffffff') }, cAbajo: { value: new THREE.Color('#cfd9cf') } },
+      vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'varying vec3 vP; uniform vec3 cArriba, cAbajo; void main(){ gl_FragColor = vec4(mix(cAbajo, cArriba, smoothstep(-0.4, 0.7, vP.y)), 1.0); }',
+    })
+  ));
+  const ventana = new THREE.Mesh(new THREE.PlaneGeometry(7, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+  ventana.position.set(5, 3.5, 3); ventana.lookAt(0, 0, 0);
+  estudio.add(ventana);
+  const ventana2 = new THREE.Mesh(new THREE.PlaneGeometry(5, 7), new THREE.MeshBasicMaterial({ color: new THREE.Color(LIMA).multiplyScalar(0.8) }));
+  ventana2.position.set(-4, -1, 2.5); ventana2.lookAt(0, 0, 0);
+  estudio.add(ventana2);
+  scene.environment = pmrem.fromScene(estudio, 0.035).texture;
+  pmrem.dispose();
+}
+
 // ---------- Luces ----------
-scene.add(new THREE.AmbientLight(0xbfe08c, 0.55));
-const clave = new THREE.DirectionalLight(0xffffff, 1.5);
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+const clave = new THREE.DirectionalLight(0xffffff, 1.1);
 clave.position.set(2.2, 3, 3.5);
 scene.add(clave);
-const rebote = new THREE.DirectionalLight(0xcfffb0, 0.5);
+const rebote = new THREE.DirectionalLight(0xdfffc0, 0.35);
 rebote.position.set(-2.5, -1, -2);
 scene.add(rebote);
-const borde = new THREE.PointLight(LIMA, 6, 10, 2);
+const borde = new THREE.PointLight(LIMA, 2.2, 10, 2);
 borde.position.set(-1.6, 1.4, 2.4);
 scene.add(borde);
 
@@ -42,7 +68,7 @@ scene.add(borde);
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   const gr = g.createRadialGradient(64, 64, 4, 64, 64, 64);
-  gr.addColorStop(0, 'rgba(2,20,13,.45)'); gr.addColorStop(1, 'rgba(2,20,13,0)');
+  gr.addColorStop(0, 'rgba(5,40,28,.28)'); gr.addColorStop(1, 'rgba(5,40,28,0)');
   g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
   const sombra = new THREE.Mesh(
     new THREE.PlaneGeometry(3.4, 3.4),
@@ -70,7 +96,7 @@ partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
 partGeo.setAttribute('aSem', new THREE.BufferAttribute(partSemilla, 2));
 const particulas = new THREE.Points(partGeo, new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uT: { value: 0 }, uColor: { value: new THREE.Color(LIMA) } },
+  uniforms: { uT: { value: 0 }, uColor: { value: new THREE.Color(VERDE) } },
   vertexShader: `attribute vec2 aSem; uniform float uT; varying float vA;
     void main(){
       vec3 p = position;
@@ -86,7 +112,7 @@ const particulas = new THREE.Points(partGeo, new THREE.ShaderMaterial({
     void main(){
       float d = length(gl_PointCoord - 0.5);
       float a = smoothstep(0.5, 0.0, d);
-      gl_FragColor = vec4(uColor, a * a * vA * 0.75);
+      gl_FragColor = vec4(uColor, a * a * vA * 0.85);
     }`,
 }));
 scene.add(particulas);
@@ -111,7 +137,7 @@ scene.add(grupoTelefono);
 
 const cuerpo = new THREE.Mesh(
   new THREE.ExtrudeGeometry(formaRedondeada(ANCHO, ALTO, 0.34), { depth: GROSOR, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 4, curveSegments: 16 }),
-  new THREE.MeshStandardMaterial({ color: VERDE_PROFUNDO, roughness: 0.35, metalness: 0.25 })
+  new THREE.MeshPhysicalMaterial({ color: VERDE_PROFUNDO, roughness: 0.3, metalness: 0.2, clearcoat: 0.65, clearcoatRoughness: 0.22, envMapIntensity: 1.15 })
 );
 cuerpo.position.z = -GROSOR / 2;
 grupoTelefono.add(cuerpo);
@@ -149,7 +175,7 @@ const notch = new THREE.Mesh(new THREE.CircleGeometry(0.035, 24), new THREE.Mesh
 notch.position.set(0, ALTO / 2 - 0.16, Z_PANTALLA + 0.006);
 grupoTelefono.add(notch);
 
-grupoTelefono.scale.setScalar(0.82);
+grupoTelefono.scale.setScalar(0.68);
 
 // ---------- Texturas de pantalla: UI ilustrativa de muestra ----------
 const ANCHO_PX = 540, ALTO_PX = Math.round(ANCHO_PX * (ALTO - 0.12) / (ANCHO - 0.12));
@@ -271,12 +297,39 @@ if (window.gsap && window.ScrollTrigger) {
   ScrollTrigger.create({ trigger: '#inicio', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: (st) => { progreso = st.progress; } });
 }
 
-const fases = [...document.querySelectorAll('.hero__fase')];
+// ---------- Callouts con línea fina, ancladas a un punto del celular ----------
+// (como las etiquetas que apuntan al grabado de la tarjeta en la referencia
+// de video: el punto se proyecta de 3D a pantalla y la etiqueta lo sigue).
+const callouts = [...document.querySelectorAll('.hero__callout')];
+const anclas = [
+  new THREE.Vector3(ANCHO / 2 - 0.05, ALTO * 0.28, Z_PANTALLA),
+  new THREE.Vector3(-(ANCHO / 2 - 0.05), ALTO * 0.02, Z_PANTALLA),
+  new THREE.Vector3(ANCHO / 2 - 0.05, -ALTO * 0.1, Z_PANTALLA),
+  new THREE.Vector3(-(ANCHO / 2 - 0.05), -ALTO * 0.32, Z_PANTALLA),
+];
+const vProy = new THREE.Vector3();
 const cue = document.getElementById('scroll-cue');
+const MARGEN_CALLOUT = 16;
 function actualizarUI() {
   const f = progreso * 4;
   const actual = Math.min(3, Math.floor(f));
-  fases.forEach((el, i) => el.classList.toggle('es-visible', i === actual));
+  const anchoCanvas = canvas.clientWidth;
+  callouts.forEach((el, i) => {
+    vProy.copy(anclas[i]);
+    grupoTelefono.localToWorld(vProy);
+    vProy.project(camera);
+    let x = (vProy.x * 0.5 + 0.5) * anchoCanvas;
+    const y = (-vProy.y * 0.5 + 0.5) * canvas.clientHeight;
+    const ancho = el.offsetWidth;
+    if (el.dataset.lado === 'derecha') {
+      x = Math.min(x, anchoCanvas - ancho - MARGEN_CALLOUT - 10);
+    } else {
+      x = Math.max(x, ancho + MARGEN_CALLOUT + 10);
+    }
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.classList.toggle('es-visible', i === actual && progreso > 0.02);
+  });
   cue.style.opacity = progreso < 0.04 ? 1 : 0;
 }
 
@@ -321,10 +374,10 @@ function bucle() {
   if (!reducido) {
     grupoTelefono.rotation.y = ANG_INICIO + progreso * ANG_RECORRIDO;
     grupoTelefono.rotation.x = Math.sin(progreso * Math.PI * 2) * 0.05;
-    grupoTelefono.position.y = -0.45 + Math.sin(t * 0.6) * 0.05;
+    grupoTelefono.position.y = -0.78 + Math.sin(t * 0.6) * 0.05;
   } else {
     grupoTelefono.rotation.y = ANG_INICIO + 0.35;
-    grupoTelefono.position.y = -0.45;
+    grupoTelefono.position.y = -0.78;
   }
   particulas.material.uniforms.uT.value = t;
 

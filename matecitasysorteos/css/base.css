@@ -68,8 +68,7 @@ h3 { font-size: var(--fs-h3); }
 
 p { max-width: var(--max-lectura); color: var(--texto-suave); }
 
-.seccion--oscura,
-.hero {
+.seccion--oscura {
   background: var(--fondo-alt);
   color: var(--texto-claro);
   --texto: var(--texto-claro);
@@ -84,8 +83,7 @@ p { max-width: var(--max-lectura); color: var(--texto-suave); }
   text-transform: uppercase;
   color: var(--verde);
 }
-.seccion--oscura .antetitulo,
-.hero .antetitulo { color: var(--lima); }
+.seccion--oscura .antetitulo { color: var(--lima); }
 
 .solo-lectores {
   position: absolute;
@@ -210,7 +208,7 @@ p { max-width: var(--max-lectura); color: var(--texto-suave); }
   font-size: var(--fs-micro);
   letter-spacing: var(--ls-micro);
   text-transform: uppercase;
-  color: var(--texto-claro-suave);
+  color: var(--texto-suave);
 }
 .scroll-cue span {
   width: 1px; height: 20px;

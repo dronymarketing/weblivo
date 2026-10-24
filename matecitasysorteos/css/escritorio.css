@@ -13,15 +13,13 @@
   margin-left: auto;
   margin-right: var(--sp-4);
 }
-.nav__links a { position: relative; padding-bottom: 4px; color: var(--blanco); opacity: .85; }
+.nav__links a { position: relative; padding-bottom: 4px; color: var(--verde-profundo); opacity: .7; }
 .nav__links a:hover,
 .nav__links a[aria-current] { opacity: 1; }
 .nav__links a[aria-current]::after,
 .nav__links a:hover::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor;
 }
-.nav--solido .nav__links a,
-.nav--solido .nav__cta { color: var(--blanco); }
 .nav__cta { display: inline-flex; }
 .nav__hamburguesa { display: none; }
 .menu { display: none; }
@@ -36,6 +34,8 @@
   max-width: fit-content; margin-inline: auto;
 }
 .hero__cta .boton { width: auto; }
+.hero__callout { font-size: 14px; }
+.hero__callout-linea { width: 32px; }
 
 /* ---------- Grillas de dos columnas ---------- */
 .que-es__grid { flex-direction: row; align-items: center; gap: var(--sp-6); }
