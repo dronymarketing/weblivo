@@ -60,6 +60,18 @@
   }, { threshold: 0.15 });
   revelables.forEach(function (el) { observador.observe(el); });
 
+  // ---------- Hero: ciclado de pantallas de muestra + callouts ----------
+  var pantallas = document.querySelectorAll('.hero__pantalla');
+  var callouts = document.querySelectorAll('.hero__callout');
+  if (pantallas.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var fase = 0;
+    setInterval(function () {
+      fase = (fase + 1) % pantallas.length;
+      pantallas.forEach(function (el, i) { el.classList.toggle('es-activa', i === fase); });
+      callouts.forEach(function (el, i) { el.classList.toggle('es-activa', i === fase); });
+    }, 3200);
+  }
+
   // ---------- Ítem de nav activo ----------
   var secciones = document.querySelectorAll('main section[id]');
   var links = nav.querySelectorAll('.nav__links a');

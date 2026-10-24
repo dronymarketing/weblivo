@@ -24,14 +24,11 @@
 <link rel="preload" href="fonts/Hellowin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/Montserrat-Variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="vendor/iphone-x.css?v=1">
-<link rel="stylesheet" href="css/tokens.css?v=4">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=4">
-<link rel="stylesheet" href="css/base.css?v=4">
-<link rel="stylesheet" href="css/movil.css?v=4">
-<link rel="stylesheet" href="css/escritorio.css?v=4" media="(min-width: 768px)">
-<script type="importmap">
-{ "imports": { "three": "./vendor/three/three.module.js" } }
-</script>
+<link rel="stylesheet" href="css/tokens.css?v=5">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=5">
+<link rel="stylesheet" href="css/base.css?v=5">
+<link rel="stylesheet" href="css/movil.css?v=5">
+<link rel="stylesheet" href="css/escritorio.css?v=5" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -83,14 +80,11 @@
 
 <main>
 
-  <!-- ===== HERO — celular 3D ===== -->
+  <!-- ===== HERO ===== -->
   <section class="hero" id="inicio">
     <div class="hero__escena">
-      <canvas id="telefono-3d" aria-hidden="true"></canvas>
-      <div class="hero__fallback" id="telefono-fallback" hidden aria-hidden="true">
-        <div class="hero__fallback-telefono"></div>
-      </div>
-
+     <div class="contenedor hero__columnas">
+      <div class="hero__col-texto">
       <div class="hero__marca">
         <img class="hero__logo" src="img/logomate.svg" alt="" aria-hidden="true">
         <h1 class="solo-lectores">Mate · Citas y Sorteos</h1>
@@ -99,17 +93,44 @@
       <div class="hero__cta">
         <a class="boton boton--primario" href="#descarga">Descargá la app<svg class="icon"><use href="#i-arrow-right"/></svg></a>
       </div>
+      </div>
+      <div class="hero__col-mockup">
+      <div class="hero__mockup">
+        <div class="mockup-marco mockup-marco--flotando">
+          <div class="marvel-device iphone-x">
+            <div class="notch"><div class="camera"></div><div class="speaker"></div></div>
+            <div class="top-bar"></div>
+            <div class="sleep"></div>
+            <div class="bottom-bar"></div>
+            <div class="volume"></div>
+            <div class="overflow">
+              <div class="shadow shadow--tr"></div><div class="shadow shadow--tl"></div>
+              <div class="shadow shadow--br"></div><div class="shadow shadow--bl"></div>
+            </div>
+            <div class="inner-shadow"></div>
+            <div class="screen">
+              <!-- PANTALLAS DE MUESTRA — reemplazar por capturas reales de la app -->
+              <img class="hero__pantalla es-activa" src="img/pantalla-ronda.jpg" alt="Pantalla de muestra: ronda diaria de perfiles" data-fase="0">
+              <img class="hero__pantalla" src="img/pantalla-cebar.jpg" alt="Pantalla de muestra: cebar a un perfil" data-fase="1">
+              <img class="hero__pantalla" src="img/pantalla-match.jpg" alt="Pantalla de muestra: match entre dos personas" data-fase="2">
+              <img class="hero__pantalla" src="img/pantalla-ticket.jpg" alt="Pantalla de muestra: ticket del sorteo mensual" data-fase="3">
+            </div>
+          </div>
+        </div>
 
-      <div class="hero__callouts" aria-hidden="true">
-        <p class="hero__callout" data-fase="0" data-lado="derecha"><span class="hero__callout-linea"></span>20 perfiles por día</p>
-        <p class="hero__callout" data-fase="1" data-lado="izquierda"><span class="hero__callout-linea"></span>Cebar es dar like</p>
-        <p class="hero__callout" data-fase="2" data-lado="derecha"><span class="hero__callout-linea"></span>Match al instante</p>
-        <p class="hero__callout" data-fase="3" data-lado="izquierda"><span class="hero__callout-linea"></span>Sorteo verificable</p>
+        <div class="hero__callouts" aria-hidden="true">
+          <p class="hero__callout es-activa" data-fase="0"><span class="hero__callout-linea"></span>20 perfiles por día</p>
+          <p class="hero__callout" data-fase="1"><span class="hero__callout-linea"></span>Cebar es dar like</p>
+          <p class="hero__callout" data-fase="2"><span class="hero__callout-linea"></span>Match al instante</p>
+          <p class="hero__callout" data-fase="3"><span class="hero__callout-linea"></span>Sorteo verificable</p>
+        </div>
       </div>
 
       <p class="hero__muestra">Pantallas de muestra — van las capturas reales de la app.</p>
+      </div>
+     </div>
 
-      <a class="scroll-cue" id="scroll-cue" href="#que-es">EXPLORÁ<span></span></a>
+      <a class="scroll-cue" href="#que-es">EXPLORÁ<span></span></a>
     </div>
   </section>
 
@@ -343,9 +364,6 @@
   <p>© 2026 Mate · Citas & Sorteos</p>
 </footer>
 
-<script src="vendor/gsap.min.js"></script>
-<script src="vendor/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=3"></script>
-<script type="module" src="js/telefono.js?v=3"></script>
+<script src="js/main.js?v=4"></script>
 </body>
 </html>

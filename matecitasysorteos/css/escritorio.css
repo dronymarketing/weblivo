@@ -25,19 +25,13 @@
 .menu { display: none; }
 
 /* ---------- Hero: texto a la izquierda, celular a la derecha ---------- */
-.hero { height: 150svh; }
-.hero__marca {
-  max-width: 440px;
-  text-align: left;
-  margin: calc(var(--nav-alto) + var(--sp-6)) auto 0 calc(50vw - var(--max-contenedor) / 2 + var(--margen-lateral));
-}
+.hero__columnas { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--sp-7); }
+.hero__col-texto { flex: 1; max-width: 460px; }
+.hero__col-mockup { flex-shrink: 0; }
+.hero__marca { text-align: left; }
 .hero__logo { height: 38px; margin-inline: 0; }
 .hero__titulo { font-size: 42px; }
-.hero__cta {
-  flex-direction: row; justify-content: flex-start;
-  max-width: fit-content;
-  margin: var(--sp-4) auto 0 calc(50vw - var(--max-contenedor) / 2 + var(--margen-lateral));
-}
+.hero__cta { justify-content: flex-start; }
 .hero__cta .boton { width: auto; }
 .hero__callout { font-size: 14px; }
 .hero__callout-linea { width: 32px; }
