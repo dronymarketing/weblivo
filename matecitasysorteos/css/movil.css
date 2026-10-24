@@ -183,35 +183,38 @@ body.bloquear-scroll { overflow: hidden; }
   padding: var(--sp-2);
 }
 
-/* ---------- Cómo funciona ---------- */
-.pasos { display: flex; flex-direction: column; gap: var(--sp-3); }
-.paso {
+/* ---------- Mockup de teléfono (capturas de muestra) ---------- */
+.mockup-telefono {
   position: relative;
-  padding: var(--sp-3);
-  border-radius: 16px;
-  border: var(--borde);
-  background: color-mix(in srgb, var(--lima) 5%, var(--blanco));
+  width: min(230px, 62vw);
+  margin-inline: auto;
+  padding: 9px;
+  border-radius: 30px;
+  background: var(--verde-profundo);
+  box-shadow: 0 30px 60px -24px rgba(5, 55, 38, .4);
 }
-.paso__numero {
-  display: block;
-  font-family: 'Hellowin', serif;
-  font-size: 15px;
-  color: var(--verde);
-  margin-bottom: var(--sp-1);
+.mockup-telefono::before {
+  content: '';
+  position: absolute; top: 9px; left: 50%;
+  transform: translateX(-50%);
+  width: 42px; height: 5px; border-radius: 4px;
+  background: rgba(255, 255, 255, .22);
+  z-index: 1;
 }
-.paso h3 { font-size: 19px; margin-bottom: 6px; }
-.paso p { font-size: var(--fs-small); }
+.mockup-telefono img { width: 100%; display: block; border-radius: 21px; }
 
-/* ---------- Tarjetas (sorteos / seguridad) ---------- */
-.tarjetas { display: flex; flex-direction: column; gap: var(--sp-3); }
-.tarjeta {
-  padding: var(--sp-3);
-  border-radius: 16px;
-  border: var(--borde);
+/* ---------- Cómo funciona / Sorteos: texto + mockup alternado ---------- */
+.funciona__grid, .sorteos__grid {
+  display: flex; flex-direction: column; gap: var(--sp-5);
 }
-.tarjeta .icon { stroke: var(--verde); margin-bottom: var(--sp-2); width: 26px; height: 26px; }
-.tarjeta h3 { font-size: 17px; margin-bottom: 6px; }
-.tarjeta p { font-size: var(--fs-small); }
+.checklist {
+  list-style: none;
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.checklist li { display: flex; gap: var(--sp-2); align-items: flex-start; }
+.checklist h3 { font-size: 17px; margin-bottom: 4px; }
+.checklist p { font-size: var(--fs-small); }
 
 .sorteos__premio {
   margin-top: var(--sp-4);
@@ -225,6 +228,17 @@ body.bloquear-scroll { overflow: hidden; }
 }
 .sorteos__premio-nota { font-weight: 400; font-style: italic; color: var(--texto-suave); }
 
+/* ---------- Tarjetas (seguridad) ---------- */
+.tarjetas { display: flex; flex-direction: column; gap: var(--sp-3); }
+.tarjeta {
+  padding: var(--sp-3);
+  border-radius: 16px;
+  border: var(--borde);
+}
+.tarjeta .icono-chip { margin-bottom: var(--sp-2); }
+.tarjeta h3 { font-size: 17px; margin-bottom: 6px; }
+.tarjeta p { font-size: var(--fs-small); }
+
 /* ---------- Tienda ---------- */
 .tienda__grid { display: flex; flex-direction: column; gap: var(--sp-4); align-items: flex-start; }
 .tienda__icono {
@@ -237,9 +251,14 @@ body.bloquear-scroll { overflow: hidden; }
 .tienda__icono .icon { stroke: var(--verde); }
 
 /* ---------- Descargá la app ---------- */
-.descarga__centro { text-align: center; }
-.descarga__centro .encabezado { margin-inline: auto; }
-.tiendas { display: flex; flex-direction: column; gap: var(--sp-2); margin: var(--sp-4) 0; }
+.descarga { position: relative; overflow: hidden; }
+.ola { position: absolute; left: 0; width: 100%; height: 48px; z-index: 1; }
+.ola--arriba { top: -1px; }
+.ola--abajo { bottom: -1px; }
+.descarga__grid { position: relative; z-index: 2; display: flex; flex-direction: column; text-align: center; }
+.descarga__mockup { margin-top: var(--sp-5); }
+.mockup-telefono--inclinado { transform: rotate(-6deg); }
+.tiendas { display: flex; flex-direction: column; gap: var(--sp-2); margin: var(--sp-4) 0; justify-content: center; }
 .boton-tienda {
   display: flex; align-items: center; gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);

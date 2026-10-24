@@ -181,6 +181,20 @@ p { max-width: var(--max-lectura); color: var(--texto-suave); }
   flex-shrink: 0;
 }
 
+.icono-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  background: var(--degrade-boton);
+  flex-shrink: 0;
+}
+.icono-chip .icon {
+  width: 22px; height: 22px;
+  stroke: var(--blanco);
+}
+
 /* ---------- Revelado al scroll ---------- */
 .js .revelar {
   opacity: 0;

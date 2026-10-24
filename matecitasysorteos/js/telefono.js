@@ -347,6 +347,10 @@ function actualizarPantalla() {
 }
 
 // ---------- Tamaño ----------
+// De 1024px para arriba el layout pasa a dos columnas (texto a la
+// izquierda, celular a la derecha, como en la referencia): el grupo se
+// corre en X para quedar del lado derecho del encuadre.
+let offsetX = 0;
 function redimensionar() {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   if (!w || !h) return;
@@ -354,6 +358,7 @@ function redimensionar() {
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
+  offsetX = w >= 1024 ? 1.5 : 0;
 }
 addEventListener('resize', redimensionar);
 redimensionar();
@@ -379,6 +384,7 @@ function bucle() {
     grupoTelefono.rotation.y = ANG_INICIO + 0.35;
     grupoTelefono.position.y = -0.78;
   }
+  grupoTelefono.position.x = offsetX;
   particulas.material.uniforms.uT.value = t;
 
   actualizarPantalla();

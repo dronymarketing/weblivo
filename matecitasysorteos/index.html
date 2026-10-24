@@ -23,11 +23,11 @@
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preload" href="fonts/Hellowin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/Montserrat-Variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/tokens.css?v=2">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=2">
-<link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/movil.css?v=2">
-<link rel="stylesheet" href="css/escritorio.css?v=2" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=3">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=3">
+<link rel="stylesheet" href="css/base.css?v=3">
+<link rel="stylesheet" href="css/movil.css?v=3">
+<link rel="stylesheet" href="css/escritorio.css?v=3" media="(min-width: 768px)">
 <script type="importmap">
 { "imports": { "three": "./vendor/three/three.module.js" } }
 </script>
@@ -37,6 +37,8 @@
 <!-- ===== SPRITE · Lucide (interfaz, ISC) + Simple Icons (marcas, CC0) ===== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
 <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" /></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><path d="M16 3.128a4 4 0 0 1 0 7.744" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><circle cx="9" cy="7" r="4" /></symbol>
 <symbol id="i-store" viewBox="0 0 24 24"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5" /><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244" /><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05" /></symbol>
 <symbol id="i-mail" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /><rect x="2" y="4" width="20" height="16" rx="2" /></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></symbol>
@@ -127,70 +129,70 @@
 
   <!-- ===== CÓMO FUNCIONA ===== -->
   <section class="seccion como-funciona" id="como-funciona">
-    <div class="contenedor">
-      <header class="encabezado">
+    <div class="contenedor funciona__grid">
+      <div class="funciona__texto">
         <p class="antetitulo revelar">LA APP</p>
         <h2 class="revelar">Cómo funciona</h2>
-      </header>
-      <div class="pasos">
-        <article class="paso revelar">
-          <span class="paso__numero">01</span>
-          <h3>La ronda</h3>
-          <p>Cada día te mostramos 20 perfiles cerca tuyo y en tu rango de edad.</p>
-        </article>
-        <article class="paso revelar">
-          <span class="paso__numero">02</span>
-          <h3>Cebá o pasá</h3>
-          <p>Si te gusta un perfil, cebás. Si los dos cebaron, hay match.</p>
-        </article>
-        <article class="paso revelar">
-          <span class="paso__numero">03</span>
-          <h3>Materos afines</h3>
-          <p>Marcamos quién comparte tu yerba, tu momento del mate y con quién lo tomás.</p>
-        </article>
-        <article class="paso revelar">
-          <span class="paso__numero">04</span>
-          <h3>Te cebaron</h3>
-          <p>Mirá quién te cebó y escribile a quien tengas cerca desde el mapa.</p>
-        </article>
+        <ul class="checklist">
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-users"/></svg></span>
+            <div><h3>La ronda</h3><p>Cada día te mostramos 20 perfiles cerca tuyo y en tu rango de edad.</p></div>
+          </li>
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-heart"/></svg></span>
+            <div><h3>Cebá o pasá</h3><p>Si te gusta un perfil, cebás. Si los dos cebaron, hay match.</p></div>
+          </li>
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-map-pin"/></svg></span>
+            <div><h3>Materos afines</h3><p>Marcamos quién comparte tu yerba, tu momento del mate y con quién lo tomás.</p></div>
+          </li>
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-check"/></svg></span>
+            <div><h3>Te cebaron</h3><p>Mirá quién te cebó y escribile a quien tengas cerca desde el mapa.</p></div>
+          </li>
+        </ul>
+      </div>
+      <div class="funciona__mockup revelar">
+        <!-- PANTALLA DE MUESTRA — reemplazar por captura real de la app -->
+        <div class="mockup-telefono">
+          <img src="img/pantalla-ronda.jpg" alt="Pantalla de muestra de la app: ronda diaria de perfiles" loading="lazy">
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ===== SORTEOS ===== -->
   <section class="seccion sorteos" id="sorteos">
-    <div class="contenedor">
-      <header class="encabezado">
+    <div class="contenedor sorteos__grid">
+      <div class="sorteos__texto">
         <p class="antetitulo revelar">SORTEOS MENSUALES</p>
         <h2 class="revelar">Sorteos verificables</h2>
         <p class="revelar">Cumplís tareas del mes y sacás tu ticket. El sorteo sale de drand, un azar público, y cualquiera puede comprobar el resultado.</p>
-      </header>
-      <div class="tarjetas">
-        <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-lock"/></svg>
-          <h3>Lista congelada</h3>
-          <p>Al cerrar el mes se congela la lista de tickets y se publica su huella.</p>
-        </article>
-        <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-ticket"/></svg>
-          <h3>Azar público</h3>
-          <p>El número sale de drand, un sorteo internacional anunciado de antemano.</p>
-        </article>
-        <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-check"/></svg>
-          <h3>Resultado verificable</h3>
-          <p>Cualquiera repite la fórmula pública y comprueba quién ganó el sorteo.</p>
-        </article>
-        <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-eye"/></svg>
-          <h3>Hace falta verificarte</h3>
-          <p>Para participar necesitás el celular y la selfie ya verificados.</p>
-        </article>
+        <ul class="checklist">
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-lock"/></svg></span>
+            <div><h3>Lista congelada</h3><p>Al cerrar el mes se congela la lista de tickets y se publica su huella.</p></div>
+          </li>
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-ticket"/></svg></span>
+            <div><h3>Azar público</h3><p>El número sale de drand, un sorteo internacional anunciado de antemano.</p></div>
+          </li>
+          <li class="revelar">
+            <span class="icono-chip"><svg class="icon"><use href="#i-eye"/></svg></span>
+            <div><h3>Hace falta verificarte</h3><p>Para participar necesitás el celular y la selfie ya verificados.</p></div>
+          </li>
+        </ul>
+        <p class="sorteos__premio revelar">
+          <!-- FOTO PENDIENTE — reemplazar por foto real del premio del mes -->
+          Premio de este mes: kit matero Stanley <span class="sorteos__premio-nota">(foto pendiente)</span>
+        </p>
       </div>
-      <p class="sorteos__premio revelar">
-        <!-- FOTO PENDIENTE — reemplazar por foto real del premio del mes -->
-        Premio de este mes: kit matero Stanley <span class="sorteos__premio-nota">(foto pendiente)</span>
-      </p>
+      <div class="sorteos__mockup revelar">
+        <!-- PANTALLA DE MUESTRA — reemplazar por captura real de la app -->
+        <div class="mockup-telefono">
+          <img src="img/pantalla-ticket.jpg" alt="Pantalla de muestra de la app: ticket del sorteo mensual" loading="lazy">
+        </div>
+      </div>
     </div>
   </section>
 
@@ -203,22 +205,22 @@
       </header>
       <div class="tarjetas">
         <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-shield-check"/></svg>
+          <span class="icono-chip"><svg class="icon"><use href="#i-shield-check"/></svg></span>
           <h3>Solo +18</h3>
           <p>La edad se controla en el servidor, nunca queda librado a la confianza.</p>
         </article>
         <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-map-pin"/></svg>
+          <span class="icono-chip"><svg class="icon"><use href="#i-map-pin"/></svg></span>
           <h3>Ubicación protegida</h3>
           <p>Nunca mostramos tu ubicación exacta: solo una zona y la distancia en rangos.</p>
         </article>
         <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-eye"/></svg>
+          <span class="icono-chip"><svg class="icon"><use href="#i-eye"/></svg></span>
           <h3>Selfie verificada</h3>
           <p>Nuestro equipo revisa cada selfie antes de dejarte usar la app.</p>
         </article>
         <article class="tarjeta revelar">
-          <svg class="icon"><use href="#i-lock"/></svg>
+          <span class="icono-chip"><svg class="icon"><use href="#i-lock"/></svg></span>
           <h3>Bloqueo y denuncia</h3>
           <p>Podés bloquear o denunciar a cualquiera desde su perfil o la charla.</p>
         </article>
@@ -242,25 +244,35 @@
 
   <!-- ===== DESCARGÁ LA APP ===== -->
   <section class="seccion seccion--oscura descarga" id="descarga">
-    <div class="contenedor descarga__centro">
-      <p class="antetitulo revelar">MUY PRONTO</p>
-      <h2 class="revelar">Descargá la app</h2>
-      <p class="revelar">Todavía estamos puliendo los últimos detalles. Vas a poder bajarla muy pronto en Android y iPhone.</p>
-      <div class="tiendas revelar">
-        <!-- Botones reales, listos para activar: al publicar la app, reemplazar href="#" por el link de cada tienda y sacar boton--deshabilitado -->
-        <a class="boton-tienda boton--deshabilitado" href="#" aria-disabled="true">
-          <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-apple"/></svg>
-          <span>App Store<small>Muy pronto</small></span>
-        </a>
-        <a class="boton-tienda boton--deshabilitado" href="#" aria-disabled="true">
-          <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-googleplay"/></svg>
-          <span>Google Play<small>Muy pronto</small></span>
+    <svg class="ola ola--arriba" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0,80 C360,0 1080,0 1440,80 L1440,0 L0,0 Z" fill="var(--blanco)"/></svg>
+    <div class="contenedor descarga__grid">
+      <div class="descarga__texto">
+        <p class="antetitulo revelar">MUY PRONTO</p>
+        <h2 class="revelar">Descargá la app</h2>
+        <p class="revelar">Todavía estamos puliendo los últimos detalles. Vas a poder bajarla muy pronto en Android y iPhone.</p>
+        <div class="tiendas revelar">
+          <!-- Botones reales, listos para activar: al publicar la app, reemplazar href="#" por el link de cada tienda y sacar boton--deshabilitado -->
+          <a class="boton-tienda boton--deshabilitado" href="#" aria-disabled="true">
+            <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-apple"/></svg>
+            <span>App Store<small>Muy pronto</small></span>
+          </a>
+          <a class="boton-tienda boton--deshabilitado" href="#" aria-disabled="true">
+            <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-googleplay"/></svg>
+            <span>Google Play<small>Muy pronto</small></span>
+          </a>
+        </div>
+        <a class="boton boton--fantasma revelar" href="https://www.instagram.com/matecitasysorteos" target="_blank" rel="noopener">
+          <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-instagram"/></svg> Seguinos para el aviso
         </a>
       </div>
-      <a class="boton boton--fantasma revelar" href="https://www.instagram.com/matecitasysorteos" target="_blank" rel="noopener">
-        <svg class="icon-brand" viewBox="0 0 24 24"><use href="#i-instagram"/></svg> Seguinos para el aviso
-      </a>
+      <div class="descarga__mockup revelar">
+        <!-- PANTALLA DE MUESTRA — reemplazar por captura real de la app -->
+        <div class="mockup-telefono mockup-telefono--inclinado">
+          <img src="img/pantalla-match.jpg" alt="Pantalla de muestra de la app: match entre dos personas" loading="lazy">
+        </div>
+      </div>
     </div>
+    <svg class="ola ola--abajo" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 C360,80 1080,80 1440,0 L1440,80 L0,80 Z" fill="var(--blanco)"/></svg>
   </section>
 
   <!-- ===== CONTACTO ===== -->
@@ -296,7 +308,7 @@
 
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
-<script src="js/main.js?v=2"></script>
-<script type="module" src="js/telefono.js?v=2"></script>
+<script src="js/main.js?v=3"></script>
+<script type="module" src="js/telefono.js?v=3"></script>
 </body>
 </html>
