@@ -1,0 +1,57 @@
+/* ============================================================
+   MATE · CITAS & SORTEOS — escritorio
+   Solo lo que cambia desde 768px.
+   ============================================================ */
+
+/* ---------- Nav: sin hamburguesa ---------- */
+.nav__links {
+  display: flex;
+  gap: var(--sp-4);
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-left: auto;
+  margin-right: var(--sp-4);
+}
+.nav__links a { position: relative; padding-bottom: 4px; color: var(--blanco); opacity: .85; }
+.nav__links a:hover,
+.nav__links a[aria-current] { opacity: 1; }
+.nav__links a[aria-current]::after,
+.nav__links a:hover::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor;
+}
+.nav--solido .nav__links a,
+.nav--solido .nav__cta { color: var(--blanco); }
+.nav__cta { display: inline-flex; }
+.nav__hamburguesa { display: none; }
+.menu { display: none; }
+
+/* ---------- Hero ---------- */
+.hero { height: 180svh; }
+.hero__marca { max-width: 560px; margin-inline: auto; }
+.hero__logo { height: 38px; }
+.hero__titulo { font-size: 38px; }
+.hero__cta {
+  flex-direction: row; justify-content: center;
+  max-width: fit-content; margin-inline: auto;
+}
+.hero__cta .boton { width: auto; }
+
+/* ---------- Grillas de dos columnas ---------- */
+.que-es__grid { flex-direction: row; align-items: center; gap: var(--sp-6); }
+.que-es__texto, .que-es__foto { flex: 1; }
+
+.tienda__grid { flex-direction: row; align-items: center; justify-content: space-between; }
+.tienda__icono { align-self: center; order: 2; }
+
+/* ---------- Grillas de cuatro columnas ---------- */
+.pasos, .tarjetas { flex-direction: row; }
+.pasos .paso, .tarjetas .tarjeta { flex: 1; }
+
+.tiendas { flex-direction: row; justify-content: center; }
+
+.correos { flex-direction: row; flex-wrap: wrap; }
+.correos li { flex: 1 1 calc(33.333% - var(--sp-3)); }
+
+.pie__legales { margin-bottom: 0; position: absolute; left: var(--margen-lateral); }
+.pie { position: relative; }

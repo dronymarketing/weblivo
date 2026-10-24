@@ -1,0 +1,238 @@
+/* ============================================================
+   MATE · CITAS & SORTEOS — base
+   Reset, tipografía, utilidades. Compartido entre móvil y escritorio.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Hellowin';
+  src: url('../fonts/Hellowin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hellowin';
+  src: url('../fonts/Hellowin-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hellowin';
+  src: url('../fonts/Hellowin-Oblique.woff2') format('woff2');
+  font-weight: 400;
+  font-style: oblique;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat-Variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--texto);
+  background: var(--fondo);
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+h1, h2, h3 {
+  font-family: 'Hellowin', serif;
+  font-weight: 400;
+  line-height: var(--lh-titulo);
+  letter-spacing: var(--ls-titulo);
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p { max-width: var(--max-lectura); color: var(--texto-suave); }
+
+.seccion--oscura,
+.hero {
+  background: var(--fondo-alt);
+  color: var(--texto-claro);
+  --texto: var(--texto-claro);
+  --texto-suave: var(--texto-claro-suave);
+}
+
+.antetitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--verde);
+}
+.seccion--oscura .antetitulo,
+.hero .antetitulo { color: var(--lima); }
+
+.solo-lectores {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.contenedor {
+  max-width: var(--max-contenedor);
+  margin: 0 auto;
+  padding: 0 var(--margen-lateral);
+}
+
+.seccion {
+  padding-block: var(--sp-seccion);
+}
+
+[id] { scroll-margin-top: calc(var(--nav-alto) + 16px); }
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  min-height: var(--alto-boton);
+  padding: 0 var(--sp-4);
+  border-radius: var(--radio-boton);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: transform var(--dur-micro) var(--ease), opacity var(--dur-micro) var(--ease);
+}
+.boton:active { transform: scale(.97); }
+
+.boton--primario {
+  background: var(--degrade-boton);
+  color: var(--blanco);
+}
+
+.boton--fantasma {
+  border: var(--borde-sobre-oscuro);
+  color: var(--blanco);
+}
+
+.boton--suave {
+  border: 1px solid color-mix(in srgb, var(--verde) 25%, transparent);
+  color: var(--verde-profundo);
+}
+
+.boton--deshabilitado {
+  opacity: .55;
+  pointer-events: none;
+}
+
+.boton--chica {
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  font-size: 13px;
+}
+
+/* ---------- Glass (solo sobre foto / 3D / degradé, nunca sobre color plano) ---------- */
+.vidrio {
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(5, 55, 38, .22);
+  border: var(--borde-sobre-oscuro);
+  color: var(--blanco);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .vidrio { background: rgba(5, 55, 38, .82); }
+}
+
+/* ---------- Rebordes finos (firma Livo) ---------- */
+.reborde {
+  border: var(--borde);
+}
+
+/* ---------- Íconos ---------- */
+.icon {
+  width: 20px; height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-brand {
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+}
+
+/* ---------- Revelado al scroll ---------- */
+.js .revelar {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.js .revelar.es-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--dur-scroll) var(--ease-fundar), transform var(--dur-scroll) var(--ease-fundar);
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .revelar { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Scroll cue ---------- */
+.scroll-cue {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  color: var(--texto-claro-suave);
+}
+.scroll-cue span {
+  width: 1px; height: 20px;
+  background: currentColor;
+  animation: cue 2s ease-in-out infinite;
+}
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: .5; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue span { animation: none; }
+}
+
+/* ---------- Franja inferior (barra del sistema) ---------- */
+body::after {
+  content: '';
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--barra-inferior);
+  z-index: 9999;
+  pointer-events: none;
+  transition: background .25s;
+}

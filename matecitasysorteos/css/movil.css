@@ -1,0 +1,270 @@
+/* ============================================================
+   MATE · CITAS & SORTEOS — móvil
+   Sin media queries. Esto es la web en el celular, nada más.
+   ============================================================ */
+
+/* ---------- Nav ---------- */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-alto);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--margen-lateral);
+  background: transparent;
+  transition: background .3s var(--ease-fundar), box-shadow .3s var(--ease-fundar);
+}
+.nav--solido {
+  background: color-mix(in srgb, var(--verde-profundo) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.nav__logo { display: flex; align-items: center; }
+.nav__logo-img { height: var(--nav-logo-alto); width: auto; }
+.nav__links { display: none; }
+.nav__acciones { display: flex; align-items: center; gap: var(--sp-2); }
+.nav__cta { display: none; }
+
+.nav__hamburguesa {
+  position: relative;
+  width: 44px; height: 44px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.nav__hamburguesa span {
+  width: 20px; height: 1px; background: var(--blanco);
+  transition: transform .3s var(--ease-fundar), opacity .3s var(--ease-fundar);
+}
+.nav__hamburguesa[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav__hamburguesa[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav__hamburguesa[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ---------- Menú: círculo que se expande ---------- */
+.menu {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--verde-profundo);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: var(--margen-lateral);
+  clip-path: circle(0% at calc(100% - 42px) 30px);
+  transition: clip-path .65s var(--ease-fundar);
+}
+.menu--abierto { clip-path: circle(150% at calc(100% - 42px) 30px); }
+.menu__cerrar {
+  position: absolute; top: 14px; right: 14px;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+.menu__cerrar span {
+  position: absolute; width: 20px; height: 1px; background: var(--blanco);
+}
+.menu__cerrar span:nth-child(1) { transform: rotate(45deg); }
+.menu__cerrar span:nth-child(2) { transform: rotate(-45deg); }
+.menu__links {
+  list-style: none;
+  display: flex; flex-direction: column; gap: var(--sp-3);
+}
+.menu--abierto .menu__links a {
+  opacity: 0; transform: translateY(12px);
+  animation: menu-item .4s var(--ease-fundar) forwards;
+}
+.menu--abierto .menu__links li:nth-child(1) a { animation-delay: .18s; }
+.menu--abierto .menu__links li:nth-child(2) a { animation-delay: .24s; }
+.menu--abierto .menu__links li:nth-child(3) a { animation-delay: .30s; }
+.menu--abierto .menu__links li:nth-child(4) a { animation-delay: .36s; }
+.menu--abierto .menu__links li:nth-child(5) a { animation-delay: .42s; }
+.menu--abierto .menu__links li:nth-child(6) a { animation-delay: .48s; }
+@keyframes menu-item { to { opacity: 1; transform: translateY(0); } }
+.menu__links a { color: var(--blanco); font-family: 'Hellowin', serif; font-size: 32px; }
+.menu__instagram {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  margin-top: var(--sp-5);
+  color: var(--texto-claro-suave);
+  font-size: var(--fs-small);
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu { transition: opacity .3s; clip-path: none; opacity: 0; pointer-events: none; }
+  .menu--abierto { opacity: 1; pointer-events: auto; }
+  .menu--abierto .menu__links a { animation: none; opacity: 1; transform: none; }
+}
+
+body.bloquear-scroll { overflow: hidden; }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; height: 240svh; }
+.hero__escena {
+  position: sticky; top: 0;
+  min-height: 100svh; height: 100svh;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 12%, rgba(227, 239, 38, .16), transparent 60%),
+    linear-gradient(175deg, #09432e 0%, #053726 55%, #032016 100%);
+}
+#telefono-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+.hero__fallback { position: absolute; inset: 0; }
+.hero__fallback:not([hidden]) { display: flex; align-items: center; justify-content: center; }
+.hero__fallback-telefono {
+  width: 180px; height: 360px; border-radius: 34px;
+  background: linear-gradient(160deg, var(--verde), var(--lima));
+  border: var(--borde-sobre-oscuro);
+}
+
+.hero__marca {
+  position: relative; z-index: 2; flex-shrink: 0;
+  margin: calc(var(--nav-alto) + var(--sp-3)) var(--margen-lateral) 0;
+  text-align: center;
+}
+.hero__logo { height: 26px; width: auto; margin: 0 auto 10px; filter: brightness(0) invert(1); }
+.hero__titulo {
+  font-family: 'Hellowin', serif;
+  font-size: 23px;
+  line-height: 1.25;
+  color: var(--blanco);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, .35);
+}
+.hero__cta {
+  position: relative; z-index: 2; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
+  margin: var(--sp-2) var(--margen-lateral) 0;
+  padding: 14px;
+  border-radius: 20px;
+}
+.hero__cta .boton { width: 100%; max-width: 280px; }
+
+.hero__fase {
+  position: absolute; left: 0; right: 0; bottom: calc(76px + env(safe-area-inset-bottom));
+  z-index: 2;
+  max-width: none;
+  text-align: center;
+  font-family: 'Hellowin', serif;
+  font-size: 20px;
+  color: var(--lima);
+  opacity: 0;
+  transition: opacity .4s var(--ease-fundar);
+  pointer-events: none;
+}
+.hero__fase.es-visible { opacity: 1; }
+
+.hero__muestra {
+  position: absolute; left: 0; right: 0; bottom: calc(44px + env(safe-area-inset-bottom));
+  z-index: 2;
+  max-width: none;
+  text-align: center;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--texto-claro-suave);
+}
+
+.hero .scroll-cue { z-index: 2; }
+
+/* ---------- Secciones genéricas ---------- */
+.encabezado { margin-bottom: var(--sp-4); max-width: var(--max-lectura); }
+.encabezado p:last-child { margin-top: var(--sp-2); }
+
+/* ---------- Qué es Mate ---------- */
+.que-es__grid { display: flex; flex-direction: column; gap: var(--sp-4); }
+.que-es__foto {
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--verde) 18%, white), color-mix(in srgb, var(--lima) 22%, white));
+  display: flex; align-items: center; justify-content: center;
+}
+.que-es__pendiente {
+  font-size: var(--fs-small);
+  color: var(--texto-suave);
+  font-style: italic;
+  margin: 0;
+  text-align: center;
+  padding: var(--sp-2);
+}
+
+/* ---------- Cómo funciona ---------- */
+.pasos { display: flex; flex-direction: column; gap: var(--sp-3); }
+.paso {
+  position: relative;
+  padding: var(--sp-3);
+  border-radius: 16px;
+  border: var(--borde-sobre-oscuro);
+}
+.paso__numero {
+  display: block;
+  font-family: 'Hellowin', serif;
+  font-size: 15px;
+  color: var(--lima);
+  margin-bottom: var(--sp-1);
+}
+.paso h3 { font-size: 19px; margin-bottom: 6px; }
+.paso p { font-size: var(--fs-small); }
+
+/* ---------- Tarjetas (sorteos / seguridad) ---------- */
+.tarjetas { display: flex; flex-direction: column; gap: var(--sp-3); }
+.tarjeta {
+  padding: var(--sp-3);
+  border-radius: 16px;
+  border: var(--borde);
+}
+.tarjeta .icon { stroke: var(--verde); margin-bottom: var(--sp-2); width: 26px; height: 26px; }
+.tarjeta h3 { font-size: 17px; margin-bottom: 6px; }
+.tarjeta p { font-size: var(--fs-small); }
+.tarjeta--oscura {
+  border: var(--borde-sobre-oscuro);
+  background: color-mix(in srgb, var(--blanco) 6%, transparent);
+}
+.tarjeta--oscura .icon { stroke: var(--lima); }
+
+.sorteos__premio {
+  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 999px;
+  border: var(--borde);
+  display: inline-block;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--verde-profundo);
+}
+.sorteos__premio-nota { font-weight: 400; font-style: italic; color: var(--texto-suave); }
+
+/* ---------- Tienda ---------- */
+.tienda__grid { display: flex; flex-direction: column; gap: var(--sp-4); align-items: flex-start; }
+.tienda__icono {
+  align-self: center;
+  width: 96px; height: 96px;
+  border-radius: 999px;
+  background: var(--velo);
+  display: flex; align-items: center; justify-content: center;
+}
+.tienda__icono .icon { stroke: var(--verde); }
+
+/* ---------- Descargá la app ---------- */
+.descarga__centro { text-align: center; }
+.descarga__centro .encabezado { margin-inline: auto; }
+.tiendas { display: flex; flex-direction: column; gap: var(--sp-2); margin: var(--sp-4) 0; }
+.boton-tienda {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 14px;
+  border: var(--borde-sobre-oscuro);
+  color: var(--blanco);
+}
+.boton-tienda .icon-brand { width: 28px; height: 28px; fill: var(--blanco); }
+.boton-tienda span { display: flex; flex-direction: column; text-align: left; font-weight: 700; font-size: 15px; }
+.boton-tienda small { font-weight: 500; font-size: 11px; opacity: .75; text-transform: uppercase; letter-spacing: .08em; }
+
+/* ---------- Contacto ---------- */
+.correos { list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+.correos li { display: flex; align-items: flex-start; gap: var(--sp-2); }
+.correos .icon { stroke: var(--verde); margin-top: 3px; }
+.correos strong { display: block; font-size: var(--fs-small); margin-bottom: 2px; }
+.correos a { font-size: var(--fs-small); color: var(--texto-suave); word-break: break-all; }
+
+/* ---------- Pie ---------- */
+.pie {
+  padding: var(--sp-4) var(--margen-lateral) calc(var(--sp-4) + env(safe-area-inset-bottom));
+  background: var(--verde-profundo);
+  color: var(--texto-claro-suave);
+  text-align: center;
+}
+.pie__legales { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-3); }
+.pie__legal-pendiente { font-size: 12px; opacity: .6; }
+.pie p { margin: 0 auto; font-size: var(--fs-small); }

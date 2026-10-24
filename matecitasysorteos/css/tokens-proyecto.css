@@ -1,0 +1,40 @@
+/* ============================================================
+   MATE · CITAS & SORTEOS — paleta del proyecto
+   Pisa a css/tokens.css. Dos colores madre: verde y lima.
+   ============================================================ */
+
+:root {
+
+  /* ---------- Marca ---------- */
+  --verde-profundo: #053726;
+  --verde:          #0A5338;
+  --lima:           #E3EF26;
+  --blanco:         #FFFFFF;
+
+  /* ---------- Rol (nombres del estándar) ---------- */
+  --fondo:        var(--blanco);
+  --fondo-alt:    var(--verde-profundo);
+  --acento:       var(--lima);
+  --acento-claro: #EEF776;
+  --neutro:       #6E8A7C;
+  --texto:        var(--verde-profundo);
+  --texto-suave:  rgba(5, 55, 38, .70);
+  --velo:         rgba(227, 239, 38, .10);
+
+  /* sobre fondo oscuro (hero, secciones --fondo-alt) */
+  --texto-claro:       var(--blanco);
+  --texto-claro-suave: rgba(255, 255, 255, .78);
+
+  /* botón: degradé verde → lima, pero el texto siempre cae sobre la parte verde */
+  --degrade-boton: linear-gradient(120deg, var(--verde-profundo) 0%, var(--verde) 58%, var(--lima) 100%);
+
+  /* este proyecto es registro tech/innovación: cápsula completa */
+  --radio-boton: var(--radio-capsula);
+
+  --borde-sobre-oscuro: 1px solid rgba(255, 255, 255, .18);
+
+  /* paquete de movimiento «Fundar»: reveals livianos de 0.3s, nada de GSAP */
+  --dur-scroll: 300ms;
+  --ease-fundar: cubic-bezier(.4, 0, .2, 1);
+  --stagger: 60ms;
+}
