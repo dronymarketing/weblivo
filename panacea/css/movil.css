@@ -249,6 +249,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  min-height: 44px;     /* misma altura en Servicios y Productos (títulos y pestañas) */
   margin-bottom: 24px;
 }
 .bloque h2 {
@@ -270,12 +271,12 @@
 }
 
 /* ---------- Pestañas (productos) ---------- */
-.bloque__cabecera--tabs { margin-bottom: 20px; }
-.tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px 7px; }
 .tab {
   font-family: var(--fuente-titulo);
-  font-size: 22px;
-  line-height: 1.2;
+  font-size: min(var(--fs-h2), 7.4vw);  /* igual que el título "Servicios"; achica solo en pantallas angostas para no partirse */
+  letter-spacing: var(--ls-titulo);
+  line-height: var(--lh-titulo);
   min-height: 44px;
   color: var(--gris-calido);
   transition: color var(--dur-micro) var(--ease);
@@ -283,7 +284,7 @@
 .tab sup {
   font-family: var(--fuente-texto);
   font-size: 11px;
-  margin-left: 3px;
+  margin-left: 2px;
   vertical-align: super;
   color: var(--gris-calido);
 }
@@ -313,11 +314,14 @@
 }
 
 /* ---------- Producto ---------- */
+/* Misma altura de tarjeta en Servicios y Productos (crece sola si el texto es más largo) */
+.producto, .servicio { min-height: var(--alto-tarjeta, 504px); }
+
 .producto {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 10px 10px 12px;
+  padding: 10px 10px 16px;
   background: var(--pieza);
   border: var(--borde);
   border-radius: var(--radio-pieza);
@@ -354,7 +358,7 @@
   transition: opacity var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
 }
 .producto__puntos span.activo { opacity: 1; transform: scale(1.25); }
-.producto__datos { padding-inline: 6px; }
+.producto__datos { padding-inline: 8px; }
 .producto__cat {
   font-size: var(--fs-micro);
   font-weight: 500;
@@ -379,7 +383,7 @@
 }
 .producto__pie {
   margin-top: auto;
-  padding-inline: 6px 2px;
+  padding-inline: 8px 4px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .producto__precio { font-size: 17px; font-weight: 500; }
@@ -402,8 +406,8 @@
 .servicio {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 10px 10px 20px;
+  gap: 14px;
+  padding: 10px 10px 16px;
   background: var(--pieza);
   border: var(--borde);
   border-radius: var(--radio-pieza);
