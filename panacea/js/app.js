@@ -33,7 +33,9 @@
      Arriba: <meta theme-color>. Abajo: la franja body::after (--barra-inferior).
      Cada una toma el color de lo que tiene pegado (hero, tarjeta o marco). */
   var tema = document.querySelector('meta[name="theme-color"]');
-  var colores = { marco: "#E2D8C3", hero: "#8F4327", bloque: "#FAF3E7", pie: "#33473A" };
+  /* Las tarjetas son crema (#FAF3E7), que en la barra del celular se ve como blanco:
+     por eso, sobre las tarjetas las barras toman el color del marco (arena). */
+  var colores = { marco: "#E2D8C3", hero: "#8F4327", bloque: "#E2D8C3", pie: "#33473A" };
 
   function aHex(css, respaldo) {
     try {
@@ -59,7 +61,7 @@
     colores = {
       marco: leer("--marco", colores.marco),
       hero: leer("--terracota", colores.hero),
-      bloque: leer("--crema", colores.bloque),
+      bloque: leer("--marco", colores.bloque),
       pie: leer("--verde", colores.pie)
     };
     document.body.removeChild(sonda);
