@@ -35,10 +35,10 @@
 </script>
 <link rel="preload" href="fonts/linowrite.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/tokens.css?v=5">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=9">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=10">
 <link rel="stylesheet" href="css/base.css?v=6">
-<link rel="stylesheet" href="css/movil.css?v=37">
-<link rel="stylesheet" href="css/escritorio.css?v=32" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=39">
+<link rel="stylesheet" href="css/escritorio.css?v=34" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -131,7 +131,7 @@
   </section>
 
   <!-- ===== SERVICIOS ===== -->
-  <section class="bloque seccion--pantalla" id="servicios">
+  <section class="bloque bloque--plano seccion--pantalla" id="servicios">
     <header class="bloque__cabecera reveal">
       <h2>Servicios</h2>
       <p class="bloque__bajada">Consultas de naturopatía y fórmulas herbales para acompañar tu bienestar.</p>
@@ -193,10 +193,14 @@
   </section>
 
   <!-- ===== PRODUCTOS ===== -->
-  <section class="bloque seccion--pantalla" id="productos">
+  <section class="bloque bloque--plano seccion--pantalla" id="productos" aria-labelledby="t-productos">
     <header class="bloque__cabecera reveal">
-      <h2>Productos</h2>
-      <p class="bloque__bajada">Cosmética herbal, tisanas y tinturas madre, preparadas por Paola.</p>
+      <h2 class="solo-lectores" id="t-productos">Productos</h2>
+      <div class="tabs" role="tablist" aria-label="Categorías de productos">
+        <button class="tab" type="button" role="tab" data-cat="piel" aria-selected="true">Piel<sup>3</sup></button>
+        <button class="tab" type="button" role="tab" data-cat="tes" aria-selected="false">Infusiones<sup>2</sup></button>
+        <button class="tab" type="button" role="tab" data-cat="tinturas" aria-selected="false">Tinturas<sup>1</sup></button>
+      </div>
       <p class="bloque__pista">Deslizá <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></p>
     </header>
 
@@ -257,6 +261,60 @@
         <div class="producto__pie">
           <span class="producto__precio">$250</span>
           <button class="btn-mas" type="button" aria-label="Agregar Té Relax de Manzanilla y Melisa al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        </div>
+      </article>
+
+      <article class="producto reveal" role="listitem" data-cat="piel" data-id="protector-solar" data-nombre="Protector Solar Natural" style="--i:2">
+        <a class="producto__enlace" href="producto.html?id=protector-solar" tabindex="-1" aria-hidden="true">
+          <div class="producto__foto">
+            <!-- FOTO DE MUESTRA — reemplazar por el producto en PNG -->
+            <img src="img/producto-5.jpg" alt="Protector solar natural con base de aloe" loading="lazy">
+          </div>
+        </a>
+        <div class="producto__datos">
+          <p class="producto__cat">Protector solar</p>
+          <h3><a href="producto.html?id=protector-solar">Protector Solar Natural</a></h3>
+          <p class="producto__desc">Fórmula con base de aloe para uso diario.</p>
+        </div>
+        <div class="producto__pie">
+          <span class="producto__precio">$890</span>
+          <button class="btn-mas" type="button" aria-label="Agregar Protector Solar Natural al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        </div>
+      </article>
+
+      <article class="producto reveal" role="listitem" data-cat="tes" data-id="te-digestivo" data-nombre="Té Digestivo de Boldo y Menta" style="--i:1">
+        <a class="producto__enlace" href="producto.html?id=te-digestivo" tabindex="-1" aria-hidden="true">
+          <div class="producto__foto">
+            <!-- FOTO DE MUESTRA — reemplazar por el producto en PNG -->
+            <img src="img/producto-2.jpg" alt="Té orgánico digestivo de boldo y menta" loading="lazy">
+          </div>
+        </a>
+        <div class="producto__datos">
+          <p class="producto__cat">Té orgánico</p>
+          <h3><a href="producto.html?id=te-digestivo">Té Digestivo de Boldo y Menta</a></h3>
+          <p class="producto__desc">Hierbas secas seleccionadas para después de comer.</p>
+        </div>
+        <div class="producto__pie">
+          <span class="producto__precio">$250</span>
+          <button class="btn-mas" type="button" aria-label="Agregar Té Digestivo de Boldo y Menta al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        </div>
+      </article>
+
+      <article class="producto reveal" role="listitem" data-cat="tinturas" data-id="tintura-calendula" data-nombre="Tintura Madre de Caléndula" style="--i:0">
+        <a class="producto__enlace" href="producto.html?id=tintura-calendula" tabindex="-1" aria-hidden="true">
+          <div class="producto__foto">
+            <!-- FOTO DE MUESTRA — reemplazar por el producto en PNG -->
+            <img src="img/producto-3.jpg" alt="Tintura madre de caléndula en frasco ámbar" loading="lazy">
+          </div>
+        </a>
+        <div class="producto__datos">
+          <p class="producto__cat">Tintura madre</p>
+          <h3><a href="producto.html?id=tintura-calendula">Tintura Madre de Caléndula</a></h3>
+          <p class="producto__desc">Extracto en base alcohólica, uso según indicación.</p>
+        </div>
+        <div class="producto__pie">
+          <span class="producto__precio">$480</span>
+          <button class="btn-mas" type="button" aria-label="Agregar Tintura Madre de Caléndula al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
         </div>
       </article>
 
@@ -420,6 +478,6 @@
 <script src="js/comun.js?v=6"></script>
 <script src="js/productos.js?v=3"></script>
 <script src="js/carrito.js?v=4"></script>
-<script src="js/inicio.js?v=3"></script>
+<script src="js/inicio.js?v=4"></script>
 </body>
 </html>

@@ -390,8 +390,8 @@
   flex-direction: column;
   gap: 14px;
   padding: 10px 10px 16px;
-  background: var(--pieza);
-  border: var(--borde);
+  background: var(--fondo-producto);   /* el mismo fondo que las fotos del sérum */
+  border: 0;
   border-radius: var(--radio-pieza);
 }
 .producto[hidden] { display: none; }
@@ -402,9 +402,16 @@
   aspect-ratio: 4 / 5;
   border-radius: var(--radio-foto);
   overflow: hidden;
-  background: color-mix(in srgb, var(--arena) 30%, var(--crema));
+  background: transparent;   /* se ve el fondo de la tarjeta: el producto flota sobre él */
 }
 .producto__foto img { width: 100%; height: 100%; object-fit: cover; }
+/* Productos en PNG (sin fondo): enteros y centrados sobre el fondo de la tarjeta */
+.producto__foto img[src$=".png"] { object-fit: contain; padding: 8%; }
+/* Las fotos del sérum tienen el mismo gris de fondo: el borde de abajo se funde con la tarjeta */
+.producto__foto img[src*="img/serum-"] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 100%);
+}
 
 /* Producto con varias fotos: se apilan y rotan con fundido (lo maneja app.js) */
 .producto__foto--rotativa { position: relative; }
@@ -424,8 +431,8 @@
 .producto__puntos span {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--blanco);
-  opacity: .55;
+  background: var(--gris-calido);
+  opacity: .45;
   transition: opacity var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
 }
 .producto__puntos span.activo { opacity: 1; transform: scale(1.25); }
@@ -457,7 +464,7 @@
   padding-inline: 8px 4px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.producto__precio { font-size: 17px; font-weight: 500; }
+.producto__precio { font-size: 20px; font-weight: 500; }
 
 .btn-mas {
   width: 44px; height: 44px;
@@ -465,7 +472,7 @@
   border-radius: 50%;
   background: var(--blanco);
   color: var(--terracota);
-  border: var(--borde);
+  border: 0;
   transition:
     background var(--dur-micro) var(--ease),
     color var(--dur-micro) var(--ease);
@@ -1360,6 +1367,15 @@ body::after {
   padding-top: calc(var(--bajo-nav) + var(--aire-seccion));
   padding-bottom: var(--aire-seccion);
 }
+
+/* Secciones planas (Servicios y Productos del inicio): sin tarjeta de fondo, como el hero.
+   Las demás secciones siguen siendo tarjeta. */
+.bloque--plano { background: transparent; border-color: transparent; }
+#productos .producto__cat,
+#productos .producto__desc { display: none; }   /* en el inicio la tarjeta es solo nombre y precio */
+#productos .producto { min-height: 0; }
+#productos .tab { font-size: min(var(--fs-h2), 5.7vw); }   /* las tres pestañas en una sola línea */
+#productos .tabs { gap: 4px 14px; flex-wrap: nowrap; }
 
 /* Páginas con hero (Servicios y Contacto): arrancan con la foto, como el inicio */
 .pagina--con-hero { padding-top: var(--marco-gap); }
