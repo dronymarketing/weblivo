@@ -28,7 +28,8 @@
   transform-origin: left;
   transition: transform var(--dur-micro) var(--ease);
 }
-.nav__links a:hover::after { transform: scaleX(1); }
+.nav__links a:hover::after,
+.nav__links a[aria-current]::after { transform: scaleX(1); }
 .nav__wsp {
   justify-self: end;
   display: inline-flex; align-items: center; gap: 10px;
@@ -42,8 +43,8 @@
   transition: background var(--dur-micro) var(--ease), color var(--dur-micro) var(--ease);
 }
 .nav__wsp:hover { background: var(--blanco); }
-.nav.solido .nav__wsp { background: var(--terracota); color: var(--crema); }
-.nav.solido .nav__wsp:hover { background: color-mix(in srgb, var(--terracota) 82%, var(--negro)); }
+.nav.es-solido .nav__wsp { background: var(--terracota); color: var(--crema); }
+.nav.es-solido .nav__wsp:hover { background: color-mix(in srgb, var(--terracota) 82%, var(--negro)); }
 .nav__burger, .menu { display: none; }
 
 /* ---------- Hero ---------- */

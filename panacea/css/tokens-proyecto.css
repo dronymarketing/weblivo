@@ -73,6 +73,7 @@
   --radio-foto:    16px;
   --marco-gap:     12px;   /* aire entre tarjetas grandes y contra el borde */
   --max-pagina:    1280px;
+  --borde-vidrio:  rgba(255, 255, 255, .18);   /* borde del header de vidrio sobre la foto */
 }
 
 @media (min-width: 768px) {

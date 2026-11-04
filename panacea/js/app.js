@@ -5,16 +5,28 @@
   var html = document.documentElement;
   window.__panaceaListo = true; /* avisa al head que el script cargó */
 
-  /* ---------- Header: sólido a partir de 80px de scroll ---------- */
+  var reducido = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Header con tres estados ----------
+     es-tope:   arriba del todo, transparente sobre la foto.
+     es-glass:  ya se scrolleó, pero el hero sigue debajo: vidrio sobre la foto.
+     es-solido: el hero ya pasó por detrás del header: sólido sobre las tarjetas. */
   var nav = document.getElementById("nav");
+  var heroEl = document.querySelector(".hero");
   var ticking = false;
   function estadoNav() {
-    nav.classList.toggle("solido", window.scrollY > 80);
     ticking = false;
+    var solido = heroEl ? heroEl.getBoundingClientRect().bottom <= nav.getBoundingClientRect().bottom : window.scrollY > 80;
+    var tope = !solido && window.scrollY < 80;
+    nav.classList.toggle("es-solido", solido);
+    nav.classList.toggle("es-tope", tope);
+    nav.classList.toggle("es-glass", !solido && !tope);
   }
   window.addEventListener("scroll", function () {
     if (!ticking) { ticking = true; window.requestAnimationFrame(estadoNav); }
   }, { passive: true });
+  window.addEventListener("resize", estadoNav);
+  window.addEventListener("load", estadoNav);
   estadoNav();
 
   /* ---------- Barras del celular ----------
@@ -102,12 +114,54 @@
   btn.addEventListener("click", function () {
     if (menu.classList.contains("abierto")) { cerrarMenu(true); } else { abrirMenu(); }
   });
+  /* Un ancla del menú: el menú se cierra ANTES de que arranque el scroll
+     (si no, se ve el scroll a través del panel abierto). */
+  var DUR_CIERRE = reducido ? 0 : 350;
   menu.addEventListener("click", function (e) {
-    if (e.target.closest("a")) { cerrarMenu(false); }
+    var a = e.target.closest("a");
+    if (!a) { return; }
+    var hash = a.getAttribute("href");
+    var destino = hash && hash.charAt(0) === "#" && hash.length > 1 ? document.querySelector(hash) : null;
+    if (!destino) { cerrarMenu(false); return; }
+    e.preventDefault();
+    cerrarMenu(false);
+    setTimeout(function () {
+      destino.scrollIntoView({ behavior: reducido ? "auto" : "smooth" });
+      history.pushState(null, "", hash);
+    }, DUR_CIERRE);
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && menu.classList.contains("abierto")) { cerrarMenu(true); }
+    if (!menu.classList.contains("abierto")) { return; }
+    if (e.key === "Escape") { cerrarMenu(true); return; }
+    if (e.key !== "Tab") { return; }
+    /* El foco no se sale del menú: Tab cicla entre el botón y los links */
+    var lista = [btn].concat(Array.prototype.slice.call(menu.querySelectorAll("a[href], button")));
+    var i = lista.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); lista[lista.length - 1].focus(); }
+    else if (!e.shiftKey && i === lista.length - 1) { e.preventDefault(); lista[0].focus(); }
   });
+
+  /* ---------- Ítem activo del nav y del menú ----------
+     Se marca el de la sección que está realmente al medio de la pantalla. */
+  var linksNav = Array.prototype.slice.call(document.querySelectorAll(".nav__links a, .menu__items a"));
+  var enNav = {};
+  linksNav.forEach(function (a) { enNav[a.getAttribute("href").slice(1)] = true; });
+  function marcarActivo(id) {
+    linksNav.forEach(function (a) {
+      if (a.getAttribute("href") === "#" + id) { a.setAttribute("aria-current", "location"); }
+      else { a.removeAttribute("aria-current"); }
+    });
+  }
+  if ("IntersectionObserver" in window) {
+    var ioNav = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        var id = en.target.id === "pie" ? "contacto" : en.target.id;
+        marcarActivo(enNav[id] ? id : "");
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    document.querySelectorAll("main > section[id], footer[id]").forEach(function (s) { ioNav.observe(s); });
+  }
   window.addEventListener("resize", function () {
     if (window.innerWidth >= 768 && menu.classList.contains("abierto")) { cerrarMenu(false); }
   });

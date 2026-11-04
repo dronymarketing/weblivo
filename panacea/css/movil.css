@@ -60,7 +60,19 @@
     color var(--dur-micro) var(--ease),
     border-color var(--dur-micro) var(--ease);
 }
-.nav.solido {
+/* es-tope: transparente (es el estado base).
+   es-glass: vidrio, solo mientras el header está sobre la foto del hero. */
+.nav.es-glass {
+  background: color-mix(in srgb, var(--terracota) 16%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border-color: var(--borde-vidrio);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav.es-glass { background: color-mix(in srgb, var(--terracota) 88%, transparent); }
+}
+/* es-solido: el hero ya pasó; el header va sólido sobre las tarjetas. */
+.nav.es-solido {
   background: var(--crema);
   color: var(--terracota);
   border-color: color-mix(in srgb, currentColor 15%, transparent);
@@ -75,11 +87,15 @@
 .nav__logo { display: block; }
 .nav__logo img { height: 34px; width: auto; }
 .nav__logo-oscuro { display: none; }
-.nav.solido .nav__logo-claro { display: none; }
-.nav.solido .nav__logo-oscuro { display: block; }
-.menu-abierto .nav { background: transparent; color: var(--crema); border-color: transparent; }
+.nav.es-solido .nav__logo-claro { display: none; }
+.nav.es-solido .nav__logo-oscuro { display: block; }
+.menu-abierto .nav.nav {
+  background: transparent; color: var(--crema); border-color: transparent;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
 .menu-abierto .nav .nav__logo-claro { display: block; }
 .menu-abierto .nav .nav__logo-oscuro { display: none; }
+.menu__items a[aria-current] { color: var(--arena); }
 
 .nav__links, .nav__wsp { display: none; }
 
