@@ -1,7 +1,11 @@
+/* ============================================================
+   PANACEA — lo que comparten TODAS las páginas: header con tres
+   estados, barras del celular, menú móvil, ítem activo y aparición
+   al scroll. Lo propio de cada página va en su propio archivo.
+   ============================================================ */
 (function () {
   "use strict";
 
-  var NUMERO = "59898611582";
   var html = document.documentElement;
   window.__panaceaListo = true; /* avisa al head que el script cargó */
 
@@ -10,13 +14,13 @@
   /* ---------- Header con tres estados ----------
      es-tope:   arriba del todo, transparente sobre la foto.
      es-glass:  ya se scrolleó, pero el hero sigue debajo: vidrio sobre la foto.
-     es-solido: el hero ya pasó por detrás del header: sólido sobre las tarjetas. */
+     es-solido: el hero ya pasó por detrás del header, o la página no tiene hero. */
   var nav = document.getElementById("nav");
   var heroEl = document.querySelector(".hero");
   var ticking = false;
   function estadoNav() {
     ticking = false;
-    var solido = heroEl ? heroEl.getBoundingClientRect().bottom <= nav.getBoundingClientRect().bottom : window.scrollY > 80;
+    var solido = heroEl ? heroEl.getBoundingClientRect().bottom <= nav.getBoundingClientRect().bottom : true;
     var tope = !solido && window.scrollY < 80;
     nav.classList.toggle("es-solido", solido);
     nav.classList.toggle("es-tope", tope);
@@ -98,6 +102,10 @@
   window.addEventListener("load", pintarBarras);
   pintarBarras();
 
+  /* ¿El link apunta a esta misma página? (para anclas como index.html#servicios) */
+  function sinIndex(ruta) { return ruta.replace(/index\.html$/, ""); }
+  function esDeEstaPagina(a) { return sinIndex(a.pathname) === sinIndex(location.pathname); }
+
   /* ---------- Menú móvil ---------- */
   var btn = document.getElementById("btn-menu");
   var menu = document.getElementById("menu");
@@ -128,14 +136,13 @@
   menu.addEventListener("click", function (e) {
     var a = e.target.closest("a");
     if (!a) { return; }
-    var hash = a.getAttribute("href");
-    var destino = hash && hash.charAt(0) === "#" && hash.length > 1 ? document.querySelector(hash) : null;
+    var destino = a.hash && a.hash.length > 1 && esDeEstaPagina(a) ? document.querySelector(a.hash) : null;
     if (!destino) { cerrarMenu(false); return; }
     e.preventDefault();
     cerrarMenu(false);
     setTimeout(function () {
       destino.scrollIntoView({ behavior: reducido ? "auto" : "smooth" });
-      history.pushState(null, "", hash);
+      history.pushState(null, "", a.hash);
     }, DUR_CIERRE);
   });
   document.addEventListener("keydown", function (e) {
@@ -148,19 +155,24 @@
     if (e.shiftKey && i <= 0) { e.preventDefault(); lista[lista.length - 1].focus(); }
     else if (!e.shiftKey && i === lista.length - 1) { e.preventDefault(); lista[0].focus(); }
   });
+  window.addEventListener("resize", function () {
+    if (window.innerWidth >= 768 && menu.classList.contains("abierto")) { cerrarMenu(false); }
+  });
 
   /* ---------- Ítem activo del nav y del menú ----------
-     Se marca el de la sección que está realmente al medio de la pantalla. */
-  var linksNav = Array.prototype.slice.call(document.querySelectorAll(".nav__links a, .menu__items a"));
+     Se marca el de la sección que está realmente al medio de la pantalla.
+     Solo en páginas que tienen esas secciones (la home). */
+  var linksNav = Array.prototype.slice.call(document.querySelectorAll(".nav__links a, .menu__items a"))
+    .filter(function (a) { return a.hash && esDeEstaPagina(a); });
   var enNav = {};
-  linksNav.forEach(function (a) { enNav[a.getAttribute("href").slice(1)] = true; });
+  linksNav.forEach(function (a) { enNav[a.hash.slice(1)] = true; });
   function marcarActivo(id) {
     linksNav.forEach(function (a) {
-      if (a.getAttribute("href") === "#" + id) { a.setAttribute("aria-current", "location"); }
+      if (a.hash === "#" + id) { a.setAttribute("aria-current", "location"); }
       else { a.removeAttribute("aria-current"); }
     });
   }
-  if ("IntersectionObserver" in window) {
+  if ("IntersectionObserver" in window && linksNav.length) {
     var ioNav = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (en) {
         if (!en.isIntersecting) { return; }
@@ -170,127 +182,6 @@
     }, { rootMargin: "-40% 0px -55% 0px" });
     document.querySelectorAll("main > section[id], footer[id]").forEach(function (s) { ioNav.observe(s); });
   }
-  window.addEventListener("resize", function () {
-    if (window.innerWidth >= 768 && menu.classList.contains("abierto")) { cerrarMenu(false); }
-  });
-
-  /* ---------- Pestañas de productos ---------- */
-  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
-  var productos = Array.prototype.slice.call(document.querySelectorAll(".producto"));
-  var lista = document.getElementById("lista-productos");
-
-  function mostrarCategoria(cat) {
-    tabs.forEach(function (t) {
-      t.setAttribute("aria-selected", String(t.getAttribute("data-cat") === cat));
-    });
-    var n = 0;
-    productos.forEach(function (p) {
-      var coincide = p.getAttribute("data-cat") === cat;
-      p.hidden = !coincide;
-      if (coincide) {
-        p.style.setProperty("--i", n++);
-        p.classList.add("visto");
-      }
-    });
-    lista.scrollLeft = 0;
-  }
-  tabs.forEach(function (t) {
-    t.addEventListener("click", function () { mostrarCategoria(t.getAttribute("data-cat")); });
-  });
-  if (tabs.length) { mostrarCategoria("piel"); }
-
-  /* ---------- Pedido por WhatsApp ---------- */
-  var pedido = document.getElementById("pedido");
-  var pedidoN = document.getElementById("pedido-n");
-  var pedidoTxt = document.getElementById("pedido-txt");
-  var CLAVE = "panacea-pedido";
-  var elegidos = []; /* ids de producto, en el orden en que se agregaron */
-
-  var porId = {};
-  productos.forEach(function (p) { porId[p.getAttribute("data-id")] = p; });
-
-  function leerGuardado() {
-    try {
-      var g = JSON.parse(window.localStorage.getItem(CLAVE) || "[]");
-      return Array.isArray(g) ? g.filter(function (id) { return porId[id]; }) : [];
-    } catch (err) { return []; }
-  }
-  function guardar() {
-    try { window.localStorage.setItem(CLAVE, JSON.stringify(elegidos)); } catch (err) { /* sigue en memoria */ }
-  }
-
-  function pintarBoton(id) {
-    var b = porId[id].querySelector(".btn-mas");
-    var activo = elegidos.indexOf(id) !== -1;
-    b.setAttribute("aria-pressed", String(activo));
-    b.querySelector("use").setAttribute("href", activo ? "#i-check" : "#i-plus");
-  }
-
-  function actualizarPedido() {
-    pedido.hidden = elegidos.length === 0;
-    pedidoN.textContent = String(elegidos.length);
-    pedidoTxt.textContent = elegidos.length === 1 ? "producto" : "productos";
-    var nombres = elegidos.map(function (id) { return porId[id].getAttribute("data-nombre"); });
-    var texto = "Hola Paola, quiero comprar los productos " + nombres.join(", ");
-    pedido.href = "https://wa.me/" + NUMERO + "?text=" + encodeURIComponent(texto);
-  }
-
-  document.querySelectorAll(".btn-mas").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var id = b.closest(".producto").getAttribute("data-id");
-      var i = elegidos.indexOf(id);
-      if (i === -1) { elegidos.push(id); } else { elegidos.splice(i, 1); }
-      pintarBoton(id);
-      guardar();
-      actualizarPedido();
-    });
-  });
-
-  elegidos = leerGuardado();
-  elegidos.forEach(pintarBoton);
-  actualizarPedido();
-
-  /* ---------- Fotos que rotan (producto con varias fotos) ----------
-     Cambian solas cada data-rotar ms, con fundido. Se pausan si la tarjeta
-     no está a la vista o la pestaña está en segundo plano. */
-  var sinMovimiento = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.querySelectorAll(".producto__foto--rotativa").forEach(function (caja) {
-    var fotos = Array.prototype.slice.call(caja.querySelectorAll("img"));
-    if (fotos.length < 2 || sinMovimiento) { return; }
-
-    var ms = parseInt(caja.getAttribute("data-rotar"), 10) || 3500;
-    var actual = 0;
-    var visible = true;
-    var puntos = document.createElement("div");
-    puntos.className = "producto__puntos";
-    puntos.setAttribute("aria-hidden", "true");
-    fotos.forEach(function () { puntos.appendChild(document.createElement("span")); });
-    caja.appendChild(puntos);
-
-    function mostrar(i) {
-      actual = i;
-      fotos.forEach(function (f, n) {
-        f.classList.toggle("activa", n === i);
-        f.setAttribute("aria-hidden", String(n !== i));
-      });
-      Array.prototype.forEach.call(puntos.children, function (p, n) {
-        p.classList.toggle("activo", n === i);
-      });
-    }
-
-    caja.classList.add("js-rot");
-    mostrar(0);
-
-    setInterval(function () {
-      if (visible && !document.hidden) { mostrar((actual + 1) % fotos.length); }
-    }, ms);
-
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entradas) {
-        visible = entradas[0].isIntersecting;
-      }).observe(caja);
-    }
-  });
 
   /* ---------- Aparición al scroll ----------
      La clase js-reveal (estado inicial opacity 0) la pone el <head>. */
