@@ -621,3 +621,18 @@
   white-space: nowrap;
 }
 .pedido[hidden] { display: none; }
+
+/* ============================================================
+   BARRA INFERIOR DEL SISTEMA — toma el color de lo que tiene pegado
+   (la barra de arriba es el <meta theme-color>). Lo pinta app.js.
+   ============================================================ */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--barra-inferior);
+  z-index: 9999;
+  pointer-events: none;
+  transition: background .25s;
+}

@@ -3,6 +3,7 @@
 
   var NUMERO = "59898611582";
   var html = document.documentElement;
+  window.__panaceaListo = true; /* avisa al head que el script cargó */
 
   /* ---------- Header: sólido a partir de 80px de scroll ---------- */
   var nav = document.getElementById("nav");
@@ -15,6 +16,67 @@
     if (!ticking) { ticking = true; window.requestAnimationFrame(estadoNav); }
   }, { passive: true });
   estadoNav();
+
+  /* ---------- Barras del celular ----------
+     Arriba: <meta theme-color>. Abajo: la franja body::after (--barra-inferior).
+     Cada una toma el color de lo que tiene pegado (hero, tarjeta o marco). */
+  var tema = document.querySelector('meta[name="theme-color"]');
+  var colores = { marco: "#E2D8C3", hero: "#8F4327", bloque: "#FAF3E7", pie: "#33473A" };
+
+  function aHex(css, respaldo) {
+    try {
+      var c = document.createElement("canvas");
+      c.width = c.height = 1;
+      var x = c.getContext("2d");
+      x.fillStyle = "#000000";
+      x.fillStyle = css;
+      x.fillRect(0, 0, 1, 1);
+      var d = x.getImageData(0, 0, 1, 1).data;
+      var hex = "#" + [d[0], d[1], d[2]].map(function (n) { return ("0" + n.toString(16)).slice(-2); }).join("");
+      return hex === "#000000" && !/^rgba?\(0,\s*0,\s*0/.test(css) ? respaldo : hex;
+    } catch (err) { return respaldo; }
+  }
+  function leerColores() {
+    var sonda = document.createElement("div");
+    sonda.style.display = "none";
+    document.body.appendChild(sonda);
+    function leer(variable, respaldo) {
+      sonda.style.backgroundColor = "var(" + variable + ")";
+      return aHex(getComputedStyle(sonda).backgroundColor, respaldo);
+    }
+    colores = {
+      marco: leer("--marco", colores.marco),
+      hero: leer("--terracota", colores.hero),
+      bloque: leer("--crema", colores.bloque),
+      pie: leer("--verde", colores.pie)
+    };
+    document.body.removeChild(sonda);
+  }
+  leerColores();
+
+  var zonas = [];
+  document.querySelectorAll(".hero, .bloque, .pie__tarjeta").forEach(function (el) {
+    zonas.push({ el: el, color: el.classList.contains("hero") ? "hero" : el.classList.contains("bloque") ? "bloque" : "pie" });
+  });
+  function colorEn(y) {
+    for (var i = 0; i < zonas.length; i++) {
+      var r = zonas[i].el.getBoundingClientRect();
+      if (r.top <= y && y < r.bottom) { return colores[zonas[i].color]; }
+    }
+    return colores.marco;
+  }
+  var barrasPendiente = false;
+  function pintarBarras() {
+    barrasPendiente = false;
+    if (tema) { tema.setAttribute("content", colorEn(0)); }
+    html.style.setProperty("--barra-inferior", colorEn(window.innerHeight - 1));
+  }
+  window.addEventListener("scroll", function () {
+    if (!barrasPendiente) { barrasPendiente = true; window.requestAnimationFrame(pintarBarras); }
+  }, { passive: true });
+  window.addEventListener("resize", pintarBarras);
+  window.addEventListener("load", pintarBarras);
+  pintarBarras();
 
   /* ---------- Menú móvil ---------- */
   var btn = document.getElementById("btn-menu");
@@ -169,10 +231,8 @@
   });
 
   /* ---------- Aparición al scroll ----------
-     El estado inicial (opacity 0) solo existe si este JS corre. */
-  var reducido = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if ("IntersectionObserver" in window && !reducido) {
-    html.classList.add("js-reveal");
+     La clase js-reveal (estado inicial opacity 0) la pone el <head>. */
+  if (html.classList.contains("js-reveal")) {
     var io = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (en) {
         if (en.isIntersecting) {
