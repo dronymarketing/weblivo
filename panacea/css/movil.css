@@ -81,7 +81,7 @@
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .nav.es-solido {
-    background: color-mix(in srgb, var(--crema) 74%, transparent);
+    background: color-mix(in srgb, var(--crema) 86%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     backdrop-filter: blur(16px) saturate(140%);
   }
