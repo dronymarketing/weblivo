@@ -56,6 +56,7 @@
   --marron:    color-mix(in srgb, var(--terracota) 78%, var(--negro));   /* marrón de la marca, para los textos */
   --texto:     var(--marron);
   --texto-suave: var(--gris-calido);                                   /* solo texto grande (3:1) */
+  --texto-parrafo: var(--gris-calido);                                 /* párrafos: #7D7A74 de la paleta */
   --texto-medio: color-mix(in srgb, var(--marron) 85%, var(--crema));  /* texto chico sobre crema (≥4.5:1) */
 
   --marco:      color-mix(in srgb, var(--arena) 38%, var(--crema)); /* fondo de la página */

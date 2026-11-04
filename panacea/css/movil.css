@@ -286,7 +286,7 @@
 .aviso {
   margin-top: 20px;
   font-size: 13px;
-  color: var(--texto-medio);
+  color: var(--texto-parrafo);
 }
 
 /* ---------- Pestañas (productos) ---------- */
@@ -397,7 +397,7 @@
   font-size: 13px;
   line-height: 1.45;
   min-height: calc(2 * 1.45em);
-  color: var(--texto-medio);
+  color: var(--texto-parrafo);
   margin-top: 6px;
 }
 .producto__pie {
@@ -452,7 +452,7 @@
 }
 .servicio p {
   font-size: 14px;
-  color: var(--texto-medio);
+  color: var(--texto-parrafo);
   margin-bottom: 6px;
 }
 .servicio .boton { margin-top: auto; }
@@ -474,7 +474,7 @@
   line-height: 1.4;
   margin-bottom: 14px;
 }
-.sobre__texto p:not(.antetitulo):not(.sobre__lead) { color: var(--texto-medio); }
+.sobre__texto p:not(.antetitulo):not(.sobre__lead) { color: var(--texto-parrafo); }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .etiquetas li {
   padding: 8px 14px;
