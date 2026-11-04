@@ -51,6 +51,7 @@
 .hero {
   padding: calc(var(--nav-alto) + 48px) 56px 112px;
 }
+.hero { --foto-subida: 0px; }   /* en escritorio la foto no sube */
 .hero__foto { object-position: 50% 58%; }
 .hero__velo {
   background:
