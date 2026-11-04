@@ -117,8 +117,8 @@
   --alto-pantalla: calc(100svh - var(--nav-alto) - 3 * var(--marco-gap));
   /* Tarjeta a pantalla completa, igual que el hero: toda la pantalla menos el margen de arriba y de abajo.
      El nav flota encima de la tarjeta (como sobre la foto del hero), así que el contenido arranca debajo de él. */
-  --alto-tarjeta: calc(100vh - 2 * var(--marco-gap));
-  --alto-tarjeta: calc(100svh - 2 * var(--marco-gap));
+  --alto-seccion: calc(100vh - 2 * var(--marco-gap));
+  --alto-seccion: calc(100svh - 2 * var(--marco-gap));
   --bajo-nav: calc(var(--nav-alto) + var(--marco-gap));
   --aire-seccion: clamp(40px, 6vh, 104px);
 }
@@ -130,7 +130,7 @@
 }
 /* Las tarjetas (bloques) del inicio y de las páginas miden lo mismo que el hero */
 .bloque.seccion--pantalla {
-  min-height: var(--alto-tarjeta);
+  min-height: var(--alto-seccion);
   padding-top: calc(var(--bajo-nav) + var(--aire-seccion));   /* gana sobre el padding de .bloque */
   padding-bottom: var(--aire-seccion);
 }
@@ -216,7 +216,7 @@
   align-items: center;
 }
 .sobre__lead { font-size: clamp(22px, 1.8vw, 30px); }
-.sobre__foto img { max-height: calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px)); }
+.sobre__foto img { aspect-ratio: 4 / 5; height: auto; max-height: calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px)); }
 .opinion { padding: 32px 28px 26px; }
 .contacto {
   grid-template-columns: 1.1fr 1fr;
@@ -342,31 +342,23 @@
 .servicio-pag.seccion--pantalla .servicio-pag__cuerpo { align-self: center; }
 
 /* Reservas y tienda: las dos tarjetas juntas en una pantalla */
-.reservas-fila.seccion--pantalla { grid-template-columns: 1fr 1fr; gap: 16px; align-content: stretch; min-height: var(--alto-tarjeta); padding-top: var(--bajo-nav); }
+.reservas-fila.seccion--pantalla { grid-template-columns: 1fr 1fr; gap: 16px; align-content: stretch; min-height: var(--alto-seccion); padding-top: var(--bajo-nav); }
 .reservas-fila .bloque { align-content: center; }
 
 /* Contacto: las cuatro tarjetas llenan la pantalla, y el mapa ocupa la suya */
-.contacto-cards.seccion--pantalla { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; align-content: stretch; min-height: var(--alto-tarjeta); padding-top: var(--bajo-nav); }
+.contacto-cards.seccion--pantalla { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; align-content: stretch; min-height: var(--alto-seccion); padding-top: var(--bajo-nav); }
 .reservas-fila.seccion--pantalla[id], .contacto-cards.seccion--pantalla[id] { scroll-margin-top: var(--marco-gap); }
 .contacto-card { justify-content: center; }
-.contacto-card .boton { margin-top: 12px; }
+.contacto-cards.seccion--pantalla .contacto-card { padding: 24px; gap: 10px; }
+.contacto-cards.seccion--pantalla .contacto-card > .icon,
+.contacto-cards.seccion--pantalla .contacto-card > .icon-brand { width: 28px; height: 28px; }
+.contacto-cards.seccion--pantalla .contacto-card .boton { margin-top: 12px; min-height: var(--alto-boton); }
 .mapa-grande__marco {
   aspect-ratio: auto;
-  height: clamp(300px, calc(var(--alto-tarjeta) - var(--bajo-nav) - 2 * var(--aire-seccion) - 150px), 820px);
+  height: clamp(300px, calc(var(--alto-seccion) - var(--bajo-nav) - 2 * var(--aire-seccion) - 150px), 820px);
 }
 
-/* ---------- Cada pantalla encaja sola al hacer scroll ----------
-   Cuando el nav llega arriba de la tarjeta, el borde de abajo llega al fondo de la pantalla;
-   seguir con el scroll entra directo en la sección siguiente (hero y tarjetas del inicio,
-   Servicios y Contacto). Solo en las páginas que tienen secciones a pantalla completa. */
-html:has(.seccion--pantalla) { scroll-snap-type: y mandatory; }
-html:has(.seccion--pantalla) .hero,
-html:has(.seccion--pantalla) .seccion--pantalla {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;   /* un gesto de scroll fuerte no se salta una pantalla */
-  scroll-margin-top: var(--marco-gap);
-}
-html:has(.seccion--pantalla) .pie { scroll-snap-align: end; }   /* para poder llegar al pie */
+/* El encaje al scroll de cada pantalla está en movil.css (vale para celular y escritorio). */
 /* Las tarjetas de los carruseles (Servicios, Productos, Opiniones) encajan solo en el celular, de costado;
    en escritorio son una grilla y no tienen que frenar el scroll vertical a mitad de sección. */
 .carrusel > * { scroll-snap-align: none; }

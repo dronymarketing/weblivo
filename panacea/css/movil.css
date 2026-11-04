@@ -513,7 +513,8 @@
 .sobre { display: grid; gap: 28px; }
 .sobre__foto img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: auto;
+  height: clamp(150px, 24svh, 300px);   /* baja con la pantalla para que la sección entre en una sola */
   object-fit: cover;
   object-position: 50% 30%;
   border-radius: var(--radio-pieza);
@@ -1333,5 +1334,56 @@ body::after {
 .mapa-grande__marco iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* ---------- Páginas con hero (Servicios y Contacto) ---------- */
-.hero--pagina { display: none; }   /* el hero de página solo va en escritorio; en el celular queda el título de siempre */
 .reservas-fila { display: grid; gap: var(--marco-gap); }
+
+/* ============================================================
+   PANTALLA COMPLETA (celular y escritorio)
+   Cada sección es una tarjeta del alto de la pantalla, igual que el hero: mismo margen
+   arriba y abajo, y el nav flotando encima (el contenido arranca debajo de él).
+   min-height, nunca height: si el contenido no entra, la tarjeta crece en vez de cortarse.
+   Al hacer scroll cada pantalla encaja sola: cuando el nav llega arriba de la tarjeta, el
+   borde de abajo llega al fondo, y seguir con el scroll entra en la sección siguiente.
+   ============================================================ */
+:root {
+  --alto-seccion: calc(100vh - 2 * var(--marco-gap));
+  --alto-seccion: calc(100svh - 2 * var(--marco-gap));
+  --bajo-nav: calc(var(--nav-alto) + var(--marco-gap));
+  --aire-seccion: clamp(20px, 3.5vh, 40px);
+}
+.seccion--pantalla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+}
+.bloque.seccion--pantalla {
+  min-height: var(--alto-seccion);
+  padding-top: calc(var(--bajo-nav) + var(--aire-seccion));
+  padding-bottom: var(--aire-seccion);
+}
+
+/* Páginas con hero (Servicios y Contacto): arrancan con la foto, como el inicio */
+.pagina--con-hero { padding-top: var(--marco-gap); }
+.hero--pagina { display: flex; }
+.pagina__titulo.pagina__titulo--con-hero { display: none; }   /* el título va dentro del hero */
+
+/* Cada servicio: una pantalla, con la foto y el texto centrados */
+.servicio-pag.seccion--pantalla { padding: calc(var(--bajo-nav) + 12px) 12px 16px; }
+.reservas-fila.seccion--pantalla,
+.contacto-cards.seccion--pantalla { min-height: var(--alto-seccion); padding-top: var(--bajo-nav); align-content: stretch; grid-auto-rows: 1fr; }
+.reservas-fila .bloque { align-content: center; }
+.contacto-card { justify-content: center; }
+/* las 4 tarjetas tienen que entrar juntas en una pantalla: más compactas en el celular */
+.contacto-cards.seccion--pantalla .contacto-card { padding: 14px 20px; gap: 4px; }
+.contacto-cards.seccion--pantalla .contacto-card > .icon,
+.contacto-cards.seccion--pantalla .contacto-card > .icon-brand { width: 24px; height: 24px; }
+.contacto-cards.seccion--pantalla .contacto-card .boton { margin-top: 6px; min-height: 44px; }
+
+/* Encaje al scroll: solo en las páginas que tienen pantallas completas */
+html:has(.seccion--pantalla) { scroll-snap-type: y mandatory; }
+html:has(.seccion--pantalla) .hero,
+html:has(.seccion--pantalla) .seccion--pantalla {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;   /* un gesto fuerte no se salta una pantalla */
+  scroll-margin-top: var(--marco-gap);
+}
+html:has(.seccion--pantalla) .pie { scroll-snap-align: end; }   /* para poder llegar al pie */
