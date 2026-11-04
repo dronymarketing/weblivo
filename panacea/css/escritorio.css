@@ -100,6 +100,22 @@
 .servicio__cuerpo { padding-inline: 10px; }
 .servicio h3 { font-size: 21px; }
 
+.producto__desc { font-size: 14px; }
+
+/* ---------- Sobre Panacea y contacto ---------- */
+.sobre {
+  grid-template-columns: 1fr 1.1fr;
+  gap: 64px;
+  align-items: center;
+}
+.sobre__lead { font-size: 22px; }
+.opinion { padding: 32px 28px 26px; }
+.contacto {
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
 /* ---------- Instagram ---------- */
 .muro {
   grid-template-columns: repeat(4, 1fr);

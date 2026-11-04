@@ -79,26 +79,52 @@
   var pedido = document.getElementById("pedido");
   var pedidoN = document.getElementById("pedido-n");
   var pedidoTxt = document.getElementById("pedido-txt");
-  var elegidos = [];
+  var CLAVE = "panacea-pedido";
+  var elegidos = []; /* ids de producto, en el orden en que se agregaron */
+
+  var porId = {};
+  productos.forEach(function (p) { porId[p.getAttribute("data-id")] = p; });
+
+  function leerGuardado() {
+    try {
+      var g = JSON.parse(window.localStorage.getItem(CLAVE) || "[]");
+      return Array.isArray(g) ? g.filter(function (id) { return porId[id]; }) : [];
+    } catch (err) { return []; }
+  }
+  function guardar() {
+    try { window.localStorage.setItem(CLAVE, JSON.stringify(elegidos)); } catch (err) { /* sigue en memoria */ }
+  }
+
+  function pintarBoton(id) {
+    var b = porId[id].querySelector(".btn-mas");
+    var activo = elegidos.indexOf(id) !== -1;
+    b.setAttribute("aria-pressed", String(activo));
+    b.querySelector("use").setAttribute("href", activo ? "#i-check" : "#i-plus");
+  }
 
   function actualizarPedido() {
     pedido.hidden = elegidos.length === 0;
     pedidoN.textContent = String(elegidos.length);
     pedidoTxt.textContent = elegidos.length === 1 ? "producto" : "productos";
-    var texto = "Hola Paola, quiero consultar por: " + elegidos.join(", ");
+    var nombres = elegidos.map(function (id) { return porId[id].getAttribute("data-nombre"); });
+    var texto = "Hola Paola, quiero comprar los productos " + nombres.join(", ");
     pedido.href = "https://wa.me/" + NUMERO + "?text=" + encodeURIComponent(texto);
   }
+
   document.querySelectorAll(".btn-mas").forEach(function (b) {
     b.addEventListener("click", function () {
-      var nombre = b.closest(".producto").getAttribute("data-nombre");
-      var i = elegidos.indexOf(nombre);
-      var activo = i === -1;
-      if (activo) { elegidos.push(nombre); } else { elegidos.splice(i, 1); }
-      b.setAttribute("aria-pressed", String(activo));
-      b.querySelector("use").setAttribute("href", activo ? "#i-check" : "#i-plus");
+      var id = b.closest(".producto").getAttribute("data-id");
+      var i = elegidos.indexOf(id);
+      if (i === -1) { elegidos.push(id); } else { elegidos.splice(i, 1); }
+      pintarBoton(id);
+      guardar();
       actualizarPedido();
     });
   });
+
+  elegidos = leerGuardado();
+  elegidos.forEach(pintarBoton);
+  actualizarPedido();
 
   /* ---------- Aparición al scroll ----------
      El estado inicial (opacity 0) solo existe si este JS corre. */
