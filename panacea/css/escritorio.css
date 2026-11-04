@@ -52,6 +52,9 @@
   padding: calc(var(--nav-alto) + 48px) 56px 112px;
 }
 .hero { --foto-subida: 0px; }   /* en escritorio la foto no sube */
+.scroll-cue__texto { font-size: 13px; }
+.scroll-cue__circulo { width: 40px; height: 40px; }
+.scroll-cue .icon { width: 16px; height: 16px; }
 .hero__foto { object-position: 50% 58%; }
 .hero__velo {
   background:

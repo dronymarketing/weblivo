@@ -60,7 +60,7 @@ h1, h2, h3 {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .scroll-cue { animation: none !important; }
+  .scroll-cue .icon { animation: none !important; }
 }
 
 /* ---------- Aparición al scroll (la clase la pone el JS) ---------- */
