@@ -341,3 +341,78 @@
   aspect-ratio: auto;
   height: clamp(300px, calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px) - 150px), 820px);
 }
+
+/* ============================================================
+   ESCRITORIO COMO RHODIUM — nav de barra y secciones planas de borde a borde
+   Inicio, Servicios y Contacto (<main class="pagina--plana">).
+   · El nav es una barra pegada arriba, de punta a punta (sin píldora flotante).
+   · Cada sección es plana: sin marco, sin tarjeta, sin beige entre una y otra.
+     Mide exactamente una pantalla debajo del nav y alterna crema / beige.
+   · El contenido sigue contenido en --max-pagina, centrado.
+   Las páginas de tienda (productos, producto, carrito, pago) no cambian.
+   ============================================================ */
+:root {
+  --alto-pantalla: calc(100vh - var(--nav-alto));
+  --alto-pantalla: calc(100svh - var(--nav-alto));
+  --ancho-contenido: max(var(--margen-lateral), calc((100% - var(--max-pagina)) / 2 + var(--margen-lateral)));
+}
+
+/* ---------- Nav: barra de borde a borde ---------- */
+.nav {
+  top: 0; left: 0; right: 0;
+  max-width: none;
+  border-radius: 0;
+  border-width: 0 0 1px;
+}
+.nav__barra { padding-inline: var(--ancho-contenido) calc(var(--ancho-contenido) - 14px); }
+
+/* ---------- Páginas planas ---------- */
+.pagina--plana { max-width: none; padding: 0; gap: 0; }
+.pagina--plana .hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  border-radius: 0;
+  clip-path: none;
+}
+.pagina--plana .hero { padding-inline: var(--ancho-contenido); }
+
+.pagina--plana .bloque {
+  border: 0;
+  border-radius: 0;
+  background: var(--superficie);
+  padding-inline: var(--ancho-contenido);
+}
+.pagina--plana > section.bloque:nth-of-type(even),
+.pagina--plana .servicios-lista > .bloque:nth-child(even) { background: var(--marco); }
+.pagina--plana .seccion--pantalla[id] { scroll-margin-top: var(--nav-alto); }
+.pagina--plana .reveal.seccion--pantalla,
+.pagina--plana .seccion--pantalla .reveal { transform: none; }   /* una sección plana no sube con el scroll: solo aparece */
+
+/* Servicios y Contacto: no hay aire arriba (el hero llega hasta el nav) ni entre bloques */
+.pagina--plana.pagina--interna { padding-top: 0; }
+.pagina--plana .servicios-lista { gap: 0; }
+
+/* Cada servicio: foto grande a un lado, texto al otro, a todo el ancho */
+.pagina--plana .servicio-pag.seccion--pantalla {
+  padding-block: clamp(24px, 4vh, 56px);
+  padding-inline: var(--ancho-contenido);
+  gap: clamp(40px, 4vw, 72px);
+}
+.pagina--plana .servicio-pag.seccion--pantalla .servicio-pag__cuerpo { padding-inline: 0 24px; }
+
+/* Reservas y tienda: una sola sección crema con las dos columnas */
+.pagina--plana .reservas-fila.seccion--pantalla {
+  background: var(--superficie);
+  padding-inline: var(--ancho-contenido);
+  gap: clamp(40px, 5vw, 96px);
+  align-content: center;
+}
+.pagina--plana .reservas-fila .bloque { background: none; padding: 0; }
+
+/* Contacto: las cuatro tarjetas sobre fondo beige, ocupando la pantalla */
+.pagina--plana .contacto-cards.seccion--pantalla {
+  background: var(--marco);
+  padding: clamp(24px, 4vh, 56px) var(--ancho-contenido);
+  gap: clamp(12px, 1.2vw, 20px);
+}
+.pagina--plana .mapa-grande.seccion--pantalla { background: var(--superficie); }
