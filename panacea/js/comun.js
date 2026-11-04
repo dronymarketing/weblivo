@@ -39,7 +39,7 @@
   var tema = document.querySelector('meta[name="theme-color"]');
   /* Las barras toman el color de lo que tienen pegado: el fondo blanco que rodea a las tarjetas (marco),
      la franja crema que rodea al hero (franja), el hero, el pie y su tarjeta verde. */
-  var colores = { marco: "#FFFFFF", franja: "#FAF3E7", hero: "#8F4327", bloque: "#FFFFFF", pie: "#687871", tarjeta: "#33473A" };
+  var colores = { marco: "#FAF3E7", franja: "#FAF3E7", hero: "#8F4327", bloque: "#FAF3E7", pie: "#687871", tarjeta: "#33473A" };
 
   function aHex(css, respaldo) {
     try {
