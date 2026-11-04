@@ -103,5 +103,13 @@
   C.alCambiar(pintarEstado);
   pintarEstado();
 
+  /* ---------- Te puede interesar: primero lo de la misma categoría ---------- */
+  var relacionados = P.sugeridos(id, p.cat, 4);
+  if (relacionados.length) {
+    $("rel-lista").innerHTML = relacionados.map(window.Tarjetas.html).join("");
+    window.Tarjetas.enlazar($("rel-lista"));
+    $("relacionados").hidden = false;
+  }
+
   $("pp").hidden = false;
 })();

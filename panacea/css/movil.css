@@ -1175,3 +1175,146 @@ body::after {
   color: var(--texto-parrafo);
 }
 .medios__nota .icon { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+
+/* ============================================================
+   PÁGINAS: TIENDA, SERVICIOS Y CONTACTO
+   ============================================================ */
+
+/* "Ver más" al final de un adelanto de la home */
+.bloque__ver { display: flex; justify-content: center; margin-top: 28px; }
+
+.pagina__bajada { margin-top: 12px; max-width: 46ch; color: var(--texto-parrafo); }
+
+/* ---------- Tienda: barra de búsqueda, categorías y orden ---------- */
+.tienda-cuenta { font-size: 14px; color: var(--texto-parrafo); }
+.tienda-barra { display: grid; gap: 14px; margin-bottom: 20px; }
+.buscador { position: relative; }
+.buscador .icon {
+  position: absolute; left: 16px; top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  color: var(--texto-parrafo);
+  pointer-events: none;
+}
+.buscador input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px 0 44px;
+  border: var(--borde);
+  border-radius: var(--radio-capsula);
+  background: var(--blanco);
+  font: inherit;
+  font-size: 16px;
+  color: var(--texto);
+}
+.buscador input::placeholder { color: var(--texto-parrafo); }
+.buscador input:focus-visible { border-color: var(--terracota); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  min-height: 44px;
+  padding: 0 18px;
+  border: var(--borde);
+  border-radius: var(--radio-capsula);
+  background: var(--pieza);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texto);
+  transition: background var(--dur-micro) var(--ease), color var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease);
+}
+.chip sup { margin-left: 3px; font-size: 10px; color: var(--texto-parrafo); }
+.chip:hover { border-color: color-mix(in srgb, var(--terracota) 40%, transparent); }
+.chip[aria-pressed="true"] { background: var(--terracota); border-color: var(--terracota); color: var(--crema); }
+.chip[aria-pressed="true"] sup { color: color-mix(in srgb, var(--crema) 75%, transparent); }
+.ordenar { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--texto-parrafo); }
+.ordenar label { white-space: nowrap; }
+.ordenar select { flex: 1; min-width: 0; }
+.ordenar select {
+  min-height: 44px;
+  padding: 0 14px;
+  border: var(--borde);
+  border-radius: var(--radio-capsula);
+  background: var(--blanco);
+  font: inherit;
+  font-size: 15px;
+  color: var(--texto);
+}
+.tienda-limpiar { margin: -8px 0 8px; }
+.tienda-limpiar__btn { min-height: 44px; font-size: 14px; color: var(--terracota); text-decoration: underline; }
+.tienda-limpiar__btn[hidden] { display: none; }
+
+/* ---------- Tienda: grilla de productos ---------- */
+.catalogo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.catalogo[hidden] { display: none; }
+.catalogo .producto,
+.sugeridos .producto { min-height: 0; }
+.catalogo .producto { padding: 8px 8px 12px; gap: 10px; }
+.catalogo .producto__datos { padding-inline: 4px; }
+.catalogo .producto__desc { display: none; }
+.catalogo .producto h3 { font-size: 14px; min-height: calc(3 * 1.35em); }
+.catalogo .producto__pie { padding-inline: 4px 0; }
+.catalogo .producto__precio { font-size: 15px; }
+
+/* ---------- Servicios ---------- */
+.servicios-lista { display: grid; gap: var(--marco-gap); }
+.servicio-pag { display: grid; gap: 20px; padding: 12px 12px 24px; }
+.servicio-pag__foto img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radio-pieza);
+}
+.servicio-pag__cuerpo { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-inline: 12px; }
+.servicio-pag__num { font-family: var(--fuente-titulo); font-size: 34px; line-height: 1; color: var(--terracota-claro); }
+.bloque .servicio-pag__titulo {
+  font-family: var(--fuente-texto);   /* nombres con tilde: Linowrite no las trae */
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+.servicio-pag__desc { color: var(--texto-parrafo); }
+.servicio-pag__nota,
+.reservas__nota,
+.mapa-grande__nota {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px;
+  color: var(--texto-parrafo);
+}
+.servicio-pag__nota .icon,
+.reservas__nota .icon,
+.mapa-grande__nota .icon { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.reservas { display: grid; justify-items: start; gap: 14px; }
+.reservas p { color: var(--texto-parrafo); }
+.reservas .reservas__nota { font-size: 13px; }
+
+/* ---------- Contacto ---------- */
+.contacto-cards { display: grid; gap: var(--marco-gap); }
+.contacto-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  padding: 24px;
+  border: var(--borde);
+  border-radius: var(--radio-seccion);
+  background: var(--superficie);
+}
+.contacto-card > .icon,
+.contacto-card > .icon-brand { width: 28px; height: 28px; color: var(--terracota); }
+.contacto-card h2 { font-size: 22px; letter-spacing: var(--ls-titulo); color: var(--terracota); }
+.contacto-card__dato { font-size: 17px; font-weight: 500; overflow-wrap: anywhere; }
+.contacto-card__nota { font-size: 13px; color: var(--texto-parrafo); }
+.contacto-card .boton { margin-top: auto; }
+.contacto-card--destacada { background: var(--verde); border-color: transparent; color: var(--crema); }
+.contacto-card--destacada > .icon-brand,
+.contacto-card--destacada h2 { color: var(--crema); }
+.mapa-grande__marco {
+  aspect-ratio: 4 / 3;
+  margin: 16px 0;
+  border: var(--borde);
+  border-radius: var(--radio-pieza);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--arena) 30%, var(--crema));
+}
+.mapa-grande__marco iframe { display: block; width: 100%; height: 100%; border: 0; }

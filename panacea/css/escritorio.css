@@ -164,3 +164,34 @@
 .medios__lista { grid-template-columns: repeat(3, 1fr); }
 .paso__acciones .boton { flex: 0 1 auto; min-width: 200px; }
 .paso__acciones .boton:last-child { margin-left: auto; }
+
+/* ---------- Tienda, servicios y contacto ---------- */
+.tienda-barra {
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "buscar ordenar" "chips chips";
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.buscador { grid-area: buscar; max-width: 460px; }
+.chips { grid-area: chips; }
+.ordenar { grid-area: ordenar; }
+.catalogo { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.catalogo .producto { padding: 12px 12px 16px; gap: 14px; }
+.catalogo .producto__datos { padding-inline: 8px; }
+.catalogo .producto__desc { display: block; font-size: 13px; }
+.catalogo .producto h3 { font-size: 15px; min-height: calc(2 * 1.35em); }
+.catalogo .producto__pie { padding-inline: 8px 4px; }
+.catalogo .producto__precio { font-size: 17px; }
+.catalogo .producto,
+.sugeridos .producto { min-height: 0; }
+.sugeridos { grid-template-columns: repeat(4, 1fr); }
+.sugeridos--3 { grid-template-columns: repeat(3, 1fr); }
+
+.servicio-pag { grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 16px; }
+.servicio-pag:nth-child(even) .servicio-pag__foto { order: 2; }
+.servicio-pag__foto img { aspect-ratio: 5 / 4; }
+.servicio-pag__cuerpo { padding-inline: 8px 24px; }
+
+.contacto-cards { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.mapa-grande__marco { aspect-ratio: 21 / 9; }

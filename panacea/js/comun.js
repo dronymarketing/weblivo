@@ -159,29 +159,7 @@
     if (window.innerWidth >= 768 && menu.classList.contains("abierto")) { cerrarMenu(false); }
   });
 
-  /* ---------- Ítem activo del nav y del menú ----------
-     Se marca el de la sección que está realmente al medio de la pantalla.
-     Solo en páginas que tienen esas secciones (la home). */
-  var linksNav = Array.prototype.slice.call(document.querySelectorAll(".nav__links a, .menu__items a"))
-    .filter(function (a) { return a.hash && esDeEstaPagina(a); });
-  var enNav = {};
-  linksNav.forEach(function (a) { enNav[a.hash.slice(1)] = true; });
-  function marcarActivo(id) {
-    linksNav.forEach(function (a) {
-      if (a.hash === "#" + id) { a.setAttribute("aria-current", "location"); }
-      else { a.removeAttribute("aria-current"); }
-    });
-  }
-  if ("IntersectionObserver" in window && linksNav.length) {
-    var ioNav = new IntersectionObserver(function (entradas) {
-      entradas.forEach(function (en) {
-        if (!en.isIntersecting) { return; }
-        var id = en.target.id === "pie" ? "contacto" : en.target.id;
-        marcarActivo(enNav[id] ? id : "");
-      });
-    }, { rootMargin: "-40% 0px -55% 0px" });
-    document.querySelectorAll("main > section[id], footer[id]").forEach(function (s) { ioNav.observe(s); });
-  }
+  /* El ítem activo del nav y del menú (aria-current="page") va escrito a mano en cada página. */
 
   /* ---------- Aparición al scroll ----------
      La clase js-reveal (estado inicial opacity 0) la pone el <head>. */

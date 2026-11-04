@@ -37,8 +37,8 @@
 <link rel="stylesheet" href="css/tokens.css?v=5">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=8">
 <link rel="stylesheet" href="css/base.css?v=6">
-<link rel="stylesheet" href="css/movil.css?v=27">
-<link rel="stylesheet" href="css/escritorio.css?v=14" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=29">
+<link rel="stylesheet" href="css/escritorio.css?v=15" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -63,10 +63,10 @@
     </a>
 
     <nav class="nav__links" aria-label="Principal">
-      <a href="#inicio">Inicio</a>
-      <a href="#servicios">Servicios</a>
-      <a href="#productos">Productos</a>
-      <a href="#contacto">Contacto</a>
+      <a href="#inicio" aria-current="page">Inicio</a>
+      <a href="servicios.html">Servicios</a>
+      <a href="productos.html">Productos</a>
+      <a href="contacto.html">Contacto</a>
     </nav>
 
     <a class="nav__wsp" href="https://wa.me/59898611582?text=Hola%20Paola%2C%20quiero%20hacerte%20una%20consulta" target="_blank" rel="noopener">
@@ -83,10 +83,10 @@
 <!-- Menú móvil: cortina desde arriba -->
 <div class="menu" id="menu" aria-hidden="true">
   <nav class="menu__items" aria-label="Menú">
-    <a href="#inicio" style="--i:0">Inicio</a>
-    <a href="#servicios" style="--i:1">Servicios</a>
-    <a href="#productos" style="--i:2">Productos</a>
-    <a href="#contacto" style="--i:3">Contacto</a>
+    <a href="#inicio" aria-current="page" style="--i:0">Inicio</a>
+    <a href="servicios.html" style="--i:1">Servicios</a>
+    <a href="productos.html" style="--i:2">Productos</a>
+    <a href="contacto.html" style="--i:3">Contacto</a>
   </nav>
   <a class="boton boton--claro menu__wsp" href="https://wa.me/59898611582?text=Hola%20Paola%2C%20quiero%20hacerte%20una%20consulta" target="_blank" rel="noopener" style="--i:4">
     <svg class="icon-brand" aria-hidden="true"><use href="#i-whatsapp"/></svg>
@@ -107,8 +107,8 @@
       <h1>Paola <span>Areosa</span></h1>
       <p class="hero__texto">Consultas de naturopatía y productos para tu bienestar. Te espero para ayudarte a sentirte mejor.</p>
       <div class="hero__botones">
-        <a class="boton boton--claro" href="#servicios">Servicios</a>
-        <a class="boton boton--contorno" href="#productos">
+        <a class="boton boton--claro" href="servicios.html">Servicios</a>
+        <a class="boton boton--contorno" href="productos.html">
           Productos
           <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
         </a>
@@ -178,17 +178,17 @@
       </article>
 
     </div>
+
+    <p class="bloque__ver reveal">
+      <a class="boton boton--borde" href="servicios.html">Ver servicios<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+    </p>
   </section>
 
   <!-- ===== PRODUCTOS ===== -->
   <section class="bloque" id="productos">
-    <header class="bloque__cabecera bloque__cabecera--tabs reveal">
-      <h2 class="solo-lectores">Productos</h2>
-      <div class="tabs" role="tablist" aria-label="Categorías de productos">
-        <button class="tab" role="tab" type="button" data-cat="piel" aria-selected="true">Piel<sup>4</sup></button>
-        <button class="tab" role="tab" type="button" data-cat="tes" aria-selected="false">Tisanas<sup>2</sup></button>
-        <button class="tab" role="tab" type="button" data-cat="tinturas" aria-selected="false">Tinturas<sup>1</sup></button>
-      </div>
+    <header class="bloque__cabecera reveal">
+      <h2>Productos</h2>
+      <p class="bloque__pista">Deslizá <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></p>
     </header>
 
     <div class="carrusel productos" id="lista-productos" role="list">
@@ -233,42 +233,6 @@
         </div>
       </article>
 
-      <article class="producto reveal" role="listitem" data-cat="piel" data-id="protector-solar" data-nombre="Protector Solar Natural" style="--i:2">
-        <a class="producto__enlace" href="producto.html?id=protector-solar" tabindex="-1" aria-hidden="true">
-  <div class="producto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto real del producto -->
-            <img src="img/producto-5.jpg" alt="Protector solar natural con base de aloe" loading="lazy">
-          </div>
-        </a>
-        <div class="producto__datos">
-          <p class="producto__cat">Protector solar</p>
-          <h3><a href="producto.html?id=protector-solar">Protector Solar Natural</a></h3>
-          <p class="producto__desc">Fórmula con base de aloe para uso diario.</p>
-        </div>
-        <div class="producto__pie">
-          <span class="producto__precio">$890</span>
-          <button class="btn-mas" type="button" aria-label="Agregar Protector Solar Natural al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
-        </div>
-      </article>
-
-      <article class="producto reveal" role="listitem" data-cat="piel" data-id="gel-post-solar" data-nombre="Gel Post-Solar de Aloe Vera" style="--i:3">
-        <a class="producto__enlace" href="producto.html?id=gel-post-solar" tabindex="-1" aria-hidden="true">
-  <div class="producto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto real del producto -->
-            <img src="img/producto-6.jpg" alt="Gel post-solar de aloe vera en frasco spray" loading="lazy">
-          </div>
-        </a>
-        <div class="producto__datos">
-          <p class="producto__cat">Gel post-solar</p>
-          <h3><a href="producto.html?id=gel-post-solar">Gel Post-Solar de Aloe Vera</a></h3>
-          <p class="producto__desc">Para después de la exposición al sol.</p>
-        </div>
-        <div class="producto__pie">
-          <span class="producto__precio">$550</span>
-          <button class="btn-mas" type="button" aria-label="Agregar Gel Post-Solar de Aloe Vera al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
-        </div>
-      </article>
-
       <article class="producto reveal" role="listitem" data-cat="tes" data-id="te-manzanilla" data-nombre="Té Relax de Manzanilla y Melisa" style="--i:0">
         <a class="producto__enlace" href="producto.html?id=te-manzanilla" tabindex="-1" aria-hidden="true">
   <div class="producto__foto">
@@ -287,43 +251,11 @@
         </div>
       </article>
 
-      <article class="producto reveal" role="listitem" data-cat="tes" data-id="te-digestivo" data-nombre="Té Digestivo de Boldo y Menta" style="--i:1">
-        <a class="producto__enlace" href="producto.html?id=te-digestivo" tabindex="-1" aria-hidden="true">
-  <div class="producto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto real del producto -->
-            <img src="img/producto-2.jpg" alt="Té orgánico digestivo de boldo y menta" loading="lazy">
-          </div>
-        </a>
-        <div class="producto__datos">
-          <p class="producto__cat">Té orgánico</p>
-          <h3><a href="producto.html?id=te-digestivo">Té Digestivo de Boldo y Menta</a></h3>
-          <p class="producto__desc">Hierbas secas seleccionadas para después de comer.</p>
-        </div>
-        <div class="producto__pie">
-          <span class="producto__precio">$250</span>
-          <button class="btn-mas" type="button" aria-label="Agregar Té Digestivo de Boldo y Menta al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
-        </div>
-      </article>
-
-      <article class="producto reveal" role="listitem" data-cat="tinturas" data-id="tintura-calendula" data-nombre="Tintura Madre de Caléndula" style="--i:0">
-        <a class="producto__enlace" href="producto.html?id=tintura-calendula" tabindex="-1" aria-hidden="true">
-  <div class="producto__foto">
-            <!-- FOTO DE MUESTRA — reemplazar por foto real del producto -->
-            <img src="img/producto-3.jpg" alt="Tintura madre de caléndula en frasco ámbar" loading="lazy">
-          </div>
-        </a>
-        <div class="producto__datos">
-          <p class="producto__cat">Tintura madre</p>
-          <h3><a href="producto.html?id=tintura-calendula">Tintura Madre de Caléndula</a></h3>
-          <p class="producto__desc">Extracto en base alcohólica, uso según indicación.</p>
-        </div>
-        <div class="producto__pie">
-          <span class="producto__precio">$480</span>
-          <button class="btn-mas" type="button" aria-label="Agregar Tintura Madre de Caléndula al pedido"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
-        </div>
-      </article>
-
     </div>
+
+    <p class="bloque__ver reveal">
+      <a class="boton boton--borde" href="productos.html">Ver todos los productos<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+    </p>
   </section>
 
   <!-- ===== SOBRE PANACEA — datos reales de la bio de Instagram ===== -->
@@ -409,8 +341,8 @@
           <svg class="icon-brand" aria-hidden="true"><use href="#i-whatsapp"/></svg>
           Escribinos
         </a>
-        <a class="boton boton--borde" href="https://www.google.com/maps/search/?api=1&query=Pinamar%2C%20Canelones%2C%20Uruguay" target="_blank" rel="noopener">
-          Ver en el mapa
+        <a class="boton boton--borde" href="contacto.html">
+          Ver contacto
           <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
         </a>
       </div>
@@ -434,10 +366,10 @@
           <h3>Páginas</h3>
           <ul>
             <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#servicios">Servicios</a></li>
-            <li><a href="#productos">Productos</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
+            <li><a href="productos.html">Productos</a></li>
             <li><a href="#sobre">Sobre Panacea</a></li>
-            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
           </ul>
         </div>
         <div class="pie__contacto">
@@ -476,9 +408,9 @@
 </footer>
 
 
-<script src="js/comun.js?v=2"></script>
-<script src="js/productos.js?v=2"></script>
-<script src="js/carrito.js?v=2"></script>
-<script src="js/inicio.js?v=2"></script>
+<script src="js/comun.js?v=3"></script>
+<script src="js/productos.js?v=3"></script>
+<script src="js/carrito.js?v=3"></script>
+<script src="js/inicio.js?v=3"></script>
 </body>
 </html>

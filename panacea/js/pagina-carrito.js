@@ -10,7 +10,7 @@
   var $ = function (s) { return document.getElementById(s); };
 
   var lista = $("lineas");
-  var dibujados = ""; /* ids que están dibujados, para saber si hay que redibujar */
+  var dibujados = null; /* ids que están dibujados, para saber si hay que redibujar */
 
   function esc(t) {
     return String(t).replace(/[&<>"']/g, function (c) {
@@ -67,13 +67,23 @@
     });
   }
 
+  /* Te puede interesar: productos que todavía no están en el pedido */
+  function dibujarSugeridos() {
+    var items = C.items();
+    var enPedido = items.map(function (it) { return it.id; });
+    var sugeridos = items.length ? P.sugeridos(enPedido, items[0].producto.cat, 4) : P.sugeridos([], "todos", 4);
+    $("sug-lista").innerHTML = sugeridos.map(window.Tarjetas.html).join("");
+    window.Tarjetas.enlazar($("sug-lista"));
+    $("sugeridos").hidden = sugeridos.length === 0;
+  }
+
   function pintar() {
     var ids = C.items().map(function (it) { return it.id; }).join(",");
     var hayItems = C.lineas() > 0;
     $("vacio").hidden = hayItems;
     $("resumen").hidden = !hayItems;
     lista.hidden = !hayItems;
-    if (ids !== dibujados) { dibujarLineas(); }
+    if (ids !== dibujados) { dibujarLineas(); dibujarSugeridos(); }
     if (hayItems) { actualizarTotales(); }
   }
 

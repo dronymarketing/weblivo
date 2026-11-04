@@ -3,6 +3,7 @@
    producto, el carrito y el pago). Es la fuente única: para cambiar un
    precio o una descripción se cambia acá y en la tarjeta de index.html.
 
+   destacado: true  →  aparece en "Destacados" de la tienda (selección provisoria).
    Los precios, las fotos y las fichas de los productos con muestra: true
    son de muestra; el sérum tiene precioMuestra: true (su precio es
    provisorio). Todo se reemplaza por el catálogo real.
@@ -13,6 +14,7 @@
   var productos = [
     {
       id: "serum-rosas",
+      destacado: true,
       nombre: "Sérum de Rosas y Aloe Vera",
       cat: "piel",
       categoria: "Sérum · 50 ml",
@@ -35,6 +37,7 @@
     },
     {
       id: "crema-calendula",
+      destacado: true,
       nombre: "Crema de Caléndula y Rosa Mosqueta",
       cat: "piel",
       categoria: "Pomadas y cremas",
@@ -80,6 +83,7 @@
     },
     {
       id: "te-manzanilla",
+      destacado: true,
       nombre: "Té Relax de Manzanilla y Melisa",
       cat: "tes",
       categoria: "Té orgánico",
@@ -135,6 +139,15 @@
     porId: porId,
     /* "$1.240" — con punto de miles, como se escribe en Uruguay */
     dinero: function (n) { return "$" + Math.round(n).toLocaleString("es-UY"); },
-    enlaceProducto: function (id) { return "producto.html?id=" + encodeURIComponent(id); }
+    enlaceProducto: function (id) { return "producto.html?id=" + encodeURIComponent(id); },
+    /* Productos para sugerir: primero los de la misma categoría, después el resto.
+       excluir: un id o una lista de ids (el que se está mirando, los que ya están en el pedido). */
+    sugeridos: function (excluir, cat, n) {
+      var ex = Array.isArray(excluir) ? excluir : [excluir];
+      var libres = productos.filter(function (p) { return ex.indexOf(p.id) === -1; });
+      var mismos = libres.filter(function (p) { return p.cat === cat; });
+      var otros = libres.filter(function (p) { return p.cat !== cat; });
+      return mismos.concat(otros).slice(0, n);
+    }
   };
 })();
