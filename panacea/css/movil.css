@@ -587,7 +587,7 @@
    ============================================================ */
 .pie {
   background: var(--verde-gris);   /* #687871 — lo que rodea a la tarjeta del pie, a todo el ancho */
-  padding: 0 var(--marco-gap) var(--marco-gap);
+  padding: var(--marco-gap);   /* mismo margen arriba, abajo y a los costados de la tarjeta */
 }
 .pie__tarjeta {
   max-width: calc(var(--max-pagina) - 2 * var(--marco-gap));
