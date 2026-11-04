@@ -1340,8 +1340,6 @@ body::after {
    Cada sección es una tarjeta del alto de la pantalla, igual que el hero: mismo margen
    arriba y abajo, y el nav flotando encima (el contenido arranca debajo de él).
    min-height, nunca height: si el contenido no entra, la tarjeta crece en vez de cortarse.
-   Al hacer scroll cada pantalla encaja sola: cuando el nav llega arriba de la tarjeta, el
-   borde de abajo llega al fondo, y seguir con el scroll entra en la sección siguiente.
    ============================================================ */
 :root {
   --alto-seccion: calc(100vh - 2 * var(--marco-gap));
@@ -1390,12 +1388,3 @@ body:has(main > .hero) { background: linear-gradient(var(--marco-hero) 100svh, v
 .contacto-cards.seccion--pantalla .contacto-card > .icon-brand { width: 24px; height: 24px; }
 .contacto-cards.seccion--pantalla .contacto-card .boton { margin-top: 6px; min-height: 44px; }
 
-/* Encaje al scroll: solo en las páginas que tienen pantallas completas */
-/* proximity: el scroll es libre y solo se acomoda cuando se frena cerca del punto (no es obligatorio) */
-html:has(.seccion--pantalla) { scroll-snap-type: y proximity; }
-html:has(.seccion--pantalla) .hero,
-html:has(.seccion--pantalla) .seccion--pantalla {
-  scroll-snap-align: start;
-  scroll-margin-top: var(--marco-gap);
-}
-html:has(.seccion--pantalla) .pie { scroll-snap-align: end; }   /* para poder llegar al pie */
