@@ -60,7 +60,7 @@
   --texto-medio: color-mix(in srgb, var(--marron) 85%, var(--crema));  /* texto chico sobre crema (≥4.5:1) */
 
   --marco:      #FAF3E7; /* fondo de la página */
-  --superficie: var(--crema);                                       /* tarjetas grandes */
+  --superficie: var(--blanco);                                      /* tarjetas grandes */
   --pieza:      color-mix(in srgb, var(--blanco) 55%, var(--crema)); /* tarjetas internas */
   --fondo-producto: #E1DCD9;   /* el gris cálido de fondo de las fotos del sérum: todas las tarjetas de producto lo usan */
   --fondo:      var(--marco);
