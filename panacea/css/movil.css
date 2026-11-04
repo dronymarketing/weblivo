@@ -100,6 +100,41 @@
 
 .nav__links, .nav__wsp { display: none; }
 
+.nav__acciones { display: flex; align-items: center; gap: 2px; }
+
+/* Carrito del nav (como en las tiendas): ícono con el número de productos */
+.nav__carrito {
+  position: relative;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: inherit;
+  transition: background var(--dur-micro) var(--ease);
+}
+.nav__carrito:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+.nav__carrito .icon { width: 24px; height: 24px; }
+.nav__carrito-n {
+  position: absolute; top: 5px; right: 3px;
+  min-width: 19px; height: 19px;
+  padding: 0 5px;
+  display: grid; place-items: center;
+  border-radius: var(--radio-capsula);
+  background: var(--terracota);
+  color: var(--crema);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+.nav__carrito-n[hidden] { display: none; }
+/* sobre la foto (o con el menú abierto) el número va en crema para que se lea */
+.nav:not(.es-solido) .nav__carrito-n { background: var(--crema); color: var(--terracota); }
+.nav__carrito-n.salta { animation: salta-carrito 450ms var(--ease); }
+@keyframes salta-carrito {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
 .nav__burger {
   width: 48px; height: 48px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -647,29 +682,6 @@
 }
 
 /* ============================================================
-   PEDIDO flotante
-   ============================================================ */
-.pedido {
-  position: fixed;
-  left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 70;
-  display: inline-flex; align-items: center; gap: 10px;
-  min-height: 52px;
-  max-width: calc(100% - 32px);
-  padding: 0 22px;
-  background: var(--terracota);
-  color: var(--crema);
-  border: var(--borde-claro);
-  border-radius: var(--radio-capsula);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.pedido[hidden] { display: none; }
-
-/* ============================================================
    BARRA INFERIOR DEL SISTEMA — toma el color de lo que tiene pegado
    (la barra de arriba es el <meta theme-color>). Lo pinta app.js.
    ============================================================ */
@@ -1182,6 +1194,7 @@ body::after {
 
 /* "Ver más" al final de un adelanto de la home */
 .bloque__ver { display: flex; justify-content: center; margin-top: 28px; }
+.bloque__bajada { display: none; }   /* la bajada de los adelantos solo va en escritorio */
 
 .pagina__bajada { margin-top: 12px; max-width: 46ch; color: var(--texto-parrafo); }
 

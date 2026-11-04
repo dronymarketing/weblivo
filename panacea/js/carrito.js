@@ -1,7 +1,7 @@
 /* ============================================================
    PANACEA — carrito compartido por todas las páginas.
    Guarda { idProducto: cantidad } en localStorage ("panacea-carrito")
-   y dibuja el botón flotante "N productos · Ver mi pedido".
+   y mantiene al día el número del carrito del nav.
    Necesita js/productos.js cargado antes.
    ============================================================ */
 (function () {
@@ -84,30 +84,29 @@
   };
   window.Carrito = Carrito;
 
-  /* ---------- Botón flotante del pedido ---------- */
-  var boton = null;
-  function crearBoton() {
-    if (document.body.hasAttribute("data-sin-pedido")) { return; }
-    boton = document.createElement("a");
-    boton.className = "pedido";
-    boton.id = "pedido";
-    boton.href = "carrito.html";
-    boton.hidden = true;
-    boton.innerHTML =
-      '<svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>' +
-      '<span><strong data-n>0</strong> <span data-txt>producto</span> · Ver mi pedido</span>';
-    document.body.appendChild(boton);
-  }
+  /* ---------- Carrito del nav: el número de productos ----------
+     Está en el header de todas las páginas ([data-carrito-n]). Se muestra solo si
+     hay productos y da un saltito cuando se agrega uno. */
+  var ultimo = null;
   function pintarBoton() {
-    if (!boton) { return; }
     var n = Carrito.unidades();
-    boton.hidden = n === 0;
-    boton.querySelector("[data-n]").textContent = String(n);
-    boton.querySelector("[data-txt]").textContent = n === 1 ? "producto" : "productos";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-carrito-n]"), function (el) {
+      el.textContent = String(n);
+      el.hidden = n === 0;
+      var enlace = el.closest("a");
+      if (enlace) {
+        enlace.setAttribute("aria-label", n === 0 ? "Carrito, vacío" : "Carrito, " + n + (n === 1 ? " producto" : " productos"));
+      }
+      if (ultimo !== null && n > ultimo) {
+        el.classList.remove("salta");
+        void el.offsetWidth; /* reinicia la animación */
+        el.classList.add("salta");
+      }
+    });
+    ultimo = n;
   }
 
   cargar();
-  crearBoton();
   pintarBoton();
 
   /* Si el carrito cambia en otra pestaña, esta se actualiza */
