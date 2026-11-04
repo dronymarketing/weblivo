@@ -1379,11 +1379,11 @@ body::after {
 .contacto-cards.seccion--pantalla .contacto-card .boton { margin-top: 6px; min-height: 44px; }
 
 /* Encaje al scroll: solo en las páginas que tienen pantallas completas */
-html:has(.seccion--pantalla) { scroll-snap-type: y mandatory; }
+/* proximity: el scroll es libre y solo se acomoda cuando se frena cerca del punto (no es obligatorio) */
+html:has(.seccion--pantalla) { scroll-snap-type: y proximity; }
 html:has(.seccion--pantalla) .hero,
 html:has(.seccion--pantalla) .seccion--pantalla {
   scroll-snap-align: start;
-  scroll-snap-stop: always;   /* un gesto fuerte no se salta una pantalla */
   scroll-margin-top: var(--marco-gap);
 }
 html:has(.seccion--pantalla) .pie { scroll-snap-align: end; }   /* para poder llegar al pie */
