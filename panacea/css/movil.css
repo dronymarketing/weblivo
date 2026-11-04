@@ -1368,9 +1368,7 @@ body::after {
   padding-bottom: var(--aire-seccion);
 }
 
-/* Secciones planas (Servicios y Productos del inicio): sin tarjeta de fondo, como el hero.
-   Las demás secciones siguen siendo tarjeta. */
-.bloque--plano { background: transparent; border-color: transparent; }
+/* Productos del inicio: la tarjeta de producto es solo nombre y precio */
 #productos .producto__cat,
 #productos .producto__desc { display: none; }   /* en el inicio la tarjeta es solo nombre y precio */
 #productos .producto { min-height: 0; }
