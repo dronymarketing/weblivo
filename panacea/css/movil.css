@@ -589,6 +589,22 @@
   border-color: color-mix(in srgb, var(--terracota) 40%, transparent);
 }
 .boton--borde:hover { background: color-mix(in srgb, var(--terracota) 8%, transparent); }
+/* Llamadas a la acción ("Ver servicios", "Ver productos"): del mismo blanco que el fondo de "Consulta naturopática",
+   sin reborde y con una sombra marrón (#8F4327) suave */
+.boton--blanco {
+  background: var(--pieza);
+  color: var(--terracota);
+  border-color: transparent;
+  box-shadow:
+    0 0 12px 1px rgba(143, 67, 39, .059),
+    0 0 20px 2px rgba(143, 67, 39, .031);
+  transition: box-shadow var(--dur-micro) var(--ease), background var(--dur-micro) var(--ease), color var(--dur-micro) var(--ease);
+}
+.boton--blanco:hover {
+  box-shadow:
+    0 0 12px 1px rgba(143, 67, 39, .12),
+    0 0 20px 2px rgba(143, 67, 39, .07);
+}
 
 /* ---------- Instagram ---------- */
 .bloque--instagram { padding-bottom: 0; }
