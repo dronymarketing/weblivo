@@ -354,3 +354,19 @@
   aspect-ratio: auto;
   height: clamp(300px, calc(var(--alto-tarjeta) - var(--bajo-nav) - 2 * var(--aire-seccion) - 150px), 820px);
 }
+
+/* ---------- Cada pantalla encaja sola al hacer scroll ----------
+   Cuando el nav llega arriba de la tarjeta, el borde de abajo llega al fondo de la pantalla;
+   seguir con el scroll entra directo en la sección siguiente (hero y tarjetas del inicio,
+   Servicios y Contacto). Solo en las páginas que tienen secciones a pantalla completa. */
+html:has(.seccion--pantalla) { scroll-snap-type: y mandatory; }
+html:has(.seccion--pantalla) .hero,
+html:has(.seccion--pantalla) .seccion--pantalla {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;   /* un gesto de scroll fuerte no se salta una pantalla */
+  scroll-margin-top: var(--marco-gap);
+}
+html:has(.seccion--pantalla) .pie { scroll-snap-align: end; }   /* para poder llegar al pie */
+/* Las tarjetas de los carruseles (Servicios, Productos, Opiniones) encajan solo en el celular, de costado;
+   en escritorio son una grilla y no tienen que frenar el scroll vertical a mitad de sección. */
+.carrusel > * { scroll-snap-align: none; }
