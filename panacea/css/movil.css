@@ -476,8 +476,13 @@
     background var(--dur-micro) var(--ease),
     color var(--dur-micro) var(--ease);
 }
-/* sobre la tarjeta blanca el botón "+" va en crema para que se vea */
-.producto .btn-mas { background: var(--marco-hero); }
+/* botón "+": del mismo blanco que los botones de llamada a la acción y con la misma sombra marrón (sin reborde, así se ve sobre la tarjeta blanca) */
+.producto .btn-mas {
+  background: var(--pieza);
+  box-shadow:
+    0 0 12px 1px rgba(143, 67, 39, .059),
+    0 0 20px 2px rgba(143, 67, 39, .031);
+}
 .btn-mas:hover { background: var(--terracota); color: var(--crema); }
 .btn-mas[aria-pressed="true"] { background: var(--terracota); color: var(--crema); }
 
