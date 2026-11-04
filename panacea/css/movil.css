@@ -586,11 +586,12 @@
    PIE — tarjeta verde
    ============================================================ */
 .pie {
-  max-width: var(--max-pagina);
-  margin-inline: auto;
+  background: var(--verde-gris);   /* #687871 — lo que rodea a la tarjeta del pie, a todo el ancho */
   padding: 0 var(--marco-gap) var(--marco-gap);
 }
 .pie__tarjeta {
+  max-width: calc(var(--max-pagina) - 2 * var(--marco-gap));
+  margin-inline: auto;
   background: var(--verde-gris);   /* #687871 */
   color: var(--crema);
   border-radius: var(--radio-seccion);

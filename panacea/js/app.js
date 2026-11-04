@@ -69,7 +69,7 @@
   leerColores();
 
   var zonas = [];
-  document.querySelectorAll(".hero, .bloque, .pie__tarjeta").forEach(function (el) {
+  document.querySelectorAll(".hero, .bloque, .pie").forEach(function (el) {
     zonas.push({ el: el, color: el.classList.contains("hero") ? "hero" : el.classList.contains("bloque") ? "bloque" : "pie" });
   });
   function colorEn(y) {
