@@ -1,0 +1,28 @@
+# Servidor de pagos de Panacea — Cloudflare Worker.
+# Los pasos para desplegarlo están en README.md.
+
+name = "panacea-pagos"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# "stage" = ambiente de pruebas de Bamboo (no cobra de verdad). "prod" = cobra de verdad.
+BAMBOO_ENTORNO = "stage"
+# Dirección de la web (sin barra final). A ella vuelve el cliente después de pagar.
+SITIO = "https://livo.com.uy/panacea"
+# Páginas autorizadas a pedirle pagos a este servidor (separadas por coma).
+ORIGENES = "https://livo.com.uy,http://localhost:5173"
+# Emails (opcional, ver README): remitente verificado en Resend y mail de Paola.
+EMAIL_DESDE = ""
+EMAIL_PAOLA = ""
+
+# Dónde se guardan los pedidos. El id se obtiene con:  npx wrangler kv namespace create PEDIDOS
+[[kv_namespaces]]
+binding = "PEDIDOS"
+id = "REEMPLAZAR_POR_EL_ID_DEL_KV"
+
+# Los secretos NO van acá. Se cargan con:  npx wrangler secret put NOMBRE
+#   BAMBOO_PRIVATE_KEY   la clave privada del comercio en Bamboo
+#   WEBHOOK_CLAVE        una clave larga inventada por vos, va en la URL del aviso de Bamboo
+#   ADMIN_CLAVE          clave para ver los pedidos en /api/admin/pedidos
+#   RESEND_API_KEY       (opcional) para mandar los emails

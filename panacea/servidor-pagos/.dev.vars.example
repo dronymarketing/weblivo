@@ -1,0 +1,6 @@
+# Copiá este archivo como ".dev.vars" para probar en tu PC con `npx wrangler dev`.
+# ".dev.vars" NO se sube a GitHub (está en .gitignore).
+BAMBOO_PRIVATE_KEY=poné-acá-la-clave-privada-de-stage
+WEBHOOK_CLAVE=inventá-una-clave-larga-al-azar
+ADMIN_CLAVE=otra-clave-larga-al-azar
+# RESEND_API_KEY=

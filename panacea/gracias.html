@@ -38,7 +38,7 @@
 <link rel="stylesheet" href="css/tokens.css?v=5">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=8">
 <link rel="stylesheet" href="css/base.css?v=6">
-<link rel="stylesheet" href="css/movil.css?v=29">
+<link rel="stylesheet" href="css/movil.css?v=28">
 <link rel="stylesheet" href="css/escritorio.css?v=15" media="(min-width: 768px)">
 </head>
 <body data-sin-pedido>
@@ -119,9 +119,9 @@
 
   <section class="bloque gracias" id="gracias" hidden>
     <div class="gracias__cabecera">
-      <svg class="icon" aria-hidden="true"><use href="#i-circle-check"/></svg>
-      <p class="antetitulo">Compra confirmada</p>
-      <h1>Gracias</h1>
+      <svg class="icon" aria-hidden="true"><use id="g-icono" href="#i-circle-check"/></svg>
+      <p class="antetitulo" id="g-kicker">Compra confirmada</p>
+      <h1 id="g-titulo">Gracias</h1>
       <p class="gracias__numero">Pedido <strong id="g-numero"></strong></p>
     </div>
 
@@ -130,17 +130,20 @@
       <span><strong>Modo prueba.</strong> No se cobró nada ni se registró el pedido.</span>
     </p>
 
-    <p class="gracias__texto" id="g-texto"></p>
+    <p class="gracias__texto" id="g-texto" role="status" aria-live="polite"></p>
 
     <h2 class="gracias__subtitulo">Tu pedido</h2>
     <ul class="mini-lineas" id="g-lineas"></ul>
     <p class="resumen__total"><span>Total</span><strong id="g-total">$0</strong></p>
 
-    <h2 class="gracias__subtitulo">Tus datos</h2>
-    <dl class="datos" id="g-datos"></dl>
+    <div id="g-datos-bloque">
+      <h2 class="gracias__subtitulo">Tus datos</h2>
+      <dl class="datos" id="g-datos"></dl>
+    </div>
 
     <div class="paso__acciones">
-      <a class="boton boton--oscuro" href="index.html#productos">Volver a la tienda</a>
+      <a class="boton boton--oscuro" id="g-reintentar" href="pago.html" hidden>Volver a intentar</a>
+      <a class="boton boton--borde" href="index.html#productos">Volver a la tienda</a>
     </div>
   </section>
 
@@ -200,9 +203,10 @@
   </div>
 </footer>
 
-<script src="js/comun.js?v=3"></script>
-<script src="js/productos.js?v=3"></script>
-<script src="js/carrito.js?v=3"></script>
-<script src="js/gracias.js?v=3"></script>
+<script src="js/comun.js?v=4"></script>
+<script src="js/productos.js?v=4"></script>
+<script src="js/carrito.js?v=4"></script>
+<script src="js/config.js?v=4"></script>
+<script src="js/gracias.js?v=4"></script>
 </body>
 </html>

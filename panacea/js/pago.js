@@ -6,10 +6,10 @@
    "Pagar", que lleva a la pasarela del proveedor de pagos y vuelve a
    gracias.html con la confirmación.
 
-   PUNTO DE CONEXIÓN DEL PROVEEDOR DE PAGOS (Bamboo u otro):
-   definir window.PANACEA.pagoOnline = function (pedido) { ... }
-   que devuelva una promesa con { url } (la página segura del proveedor).
-   El pedido trae: datos del cliente, medio elegido, total e items.
+   CONEXIÓN CON EL PROVEEDOR DE PAGOS (Bamboo): la define js/pagos.js cuando
+   config.js tiene la dirección del servidor (window.PANACEA_API). Es
+   window.PANACEA.pagoOnline(pedido) → promesa con { url } (la página segura
+   del proveedor). El servidor (servidor-pagos/) recalcula los precios.
    MIENTRAS NO ESTÉ DEFINIDA, la página corre en MODO PRUEBA: muestra el
    aviso, no cobra nada y lleva igual a gracias.html?prueba=1.
    Necesita productos.js y carrito.js cargados antes.
@@ -176,7 +176,8 @@
       /* Con pasarela: se crea la compra en el proveedor y se va a su página segura */
       P.pagoOnline(ped).then(function (r) {
         if (r && r.url) { window.location.href = r.url; } else { throw new Error("El proveedor no devolvió la URL de pago"); }
-      }).catch(function () {
+      }).catch(function (err) {
+        $("c-error").textContent = (err && err.message) || "No pudimos iniciar el pago. Probá de nuevo en unos minutos.";
         $("c-error").hidden = false;
         liberarBoton();
       });
