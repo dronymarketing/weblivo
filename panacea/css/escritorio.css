@@ -115,6 +115,12 @@
 :root {
   --alto-pantalla: calc(100vh - var(--nav-alto) - 3 * var(--marco-gap));
   --alto-pantalla: calc(100svh - var(--nav-alto) - 3 * var(--marco-gap));
+  /* Tarjeta a pantalla completa, igual que el hero: toda la pantalla menos el margen de arriba y de abajo.
+     El nav flota encima de la tarjeta (como sobre la foto del hero), así que el contenido arranca debajo de él. */
+  --alto-tarjeta: calc(100vh - 2 * var(--marco-gap));
+  --alto-tarjeta: calc(100svh - 2 * var(--marco-gap));
+  --bajo-nav: calc(var(--nav-alto) + var(--marco-gap));
+  --aire-seccion: clamp(40px, 6vh, 104px);
 }
 .seccion--pantalla {
   display: grid;
@@ -122,10 +128,16 @@
   align-content: center;
   min-height: var(--alto-pantalla);
 }
-.bloque.seccion--pantalla { padding-block: clamp(40px, 6vh, 104px); }   /* gana sobre el padding de .bloque */
+/* Las tarjetas (bloques) del inicio y de las páginas miden lo mismo que el hero */
+.bloque.seccion--pantalla {
+  min-height: var(--alto-tarjeta);
+  padding-top: calc(var(--bajo-nav) + var(--aire-seccion));   /* gana sobre el padding de .bloque */
+  padding-bottom: var(--aire-seccion);
+}
 .seccion--pantalla[id] { scroll-margin-top: calc(var(--nav-alto) + 2 * var(--marco-gap)); }
+.bloque.seccion--pantalla[id] { scroll-margin-top: var(--marco-gap); }   /* la tarjeta queda con el mismo margen que el hero */
 @media (max-height: 760px) {
-  .bloque.seccion--pantalla { padding-block: 32px; }
+  .bloque.seccion--pantalla { --aire-seccion: 32px; }
   .seccion--pantalla .bloque__cabecera { margin-bottom: 28px; }
 }
 
@@ -320,7 +332,7 @@
 .pagina__titulo.pagina__titulo--con-hero { display: none; }   /* en escritorio el título va dentro del hero */
 
 /* Cada servicio: foto grande a un lado, texto centrado al otro */
-.servicio-pag.seccion--pantalla { padding: 16px; grid-template-columns: 1fr 1fr; align-content: stretch; align-items: stretch; }
+.servicio-pag.seccion--pantalla { padding: calc(var(--bajo-nav) + 16px) 16px 16px; grid-template-columns: 1fr 1fr; align-content: stretch; align-items: stretch; }
 .servicio-pag.seccion--pantalla .servicio-pag__foto { position: relative; min-height: 0; }
 .servicio-pag.seccion--pantalla .servicio-pag__foto img {
   position: absolute; inset: 0;          /* la foto no agranda la sección: llena el espacio que hay */
@@ -330,14 +342,15 @@
 .servicio-pag.seccion--pantalla .servicio-pag__cuerpo { align-self: center; }
 
 /* Reservas y tienda: las dos tarjetas juntas en una pantalla */
-.reservas-fila.seccion--pantalla { grid-template-columns: 1fr 1fr; gap: 16px; align-content: stretch; }
+.reservas-fila.seccion--pantalla { grid-template-columns: 1fr 1fr; gap: 16px; align-content: stretch; min-height: var(--alto-tarjeta); padding-top: var(--bajo-nav); }
 .reservas-fila .bloque { align-content: center; }
 
 /* Contacto: las cuatro tarjetas llenan la pantalla, y el mapa ocupa la suya */
-.contacto-cards.seccion--pantalla { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; align-content: stretch; }
+.contacto-cards.seccion--pantalla { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; align-content: stretch; min-height: var(--alto-tarjeta); padding-top: var(--bajo-nav); }
+.reservas-fila.seccion--pantalla[id], .contacto-cards.seccion--pantalla[id] { scroll-margin-top: var(--marco-gap); }
 .contacto-card { justify-content: center; }
 .contacto-card .boton { margin-top: 12px; }
 .mapa-grande__marco {
   aspect-ratio: auto;
-  height: clamp(300px, calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px) - 150px), 820px);
+  height: clamp(300px, calc(var(--alto-tarjeta) - var(--bajo-nav) - 2 * var(--aire-seccion) - 150px), 820px);
 }
