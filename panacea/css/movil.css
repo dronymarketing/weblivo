@@ -517,12 +517,14 @@
 .contacto__insta { font-weight: 500; }
 .contacto__insta:hover { color: var(--terracota); }
 .contacto__botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-.contacto__foto img {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
+.contacto__mapa {
+  aspect-ratio: 4 / 3;
+  border: var(--borde);
   border-radius: var(--radio-pieza);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--arena) 30%, var(--crema));
 }
+.contacto__mapa iframe { display: block; width: 100%; height: 100%; border: 0; }
 .boton--borde {
   color: var(--terracota);
   border-color: color-mix(in srgb, var(--terracota) 40%, transparent);
@@ -554,12 +556,15 @@
   mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
 }
 .muro li:nth-child(even) { margin-top: 36px; }
+.muro a { display: block; border-radius: var(--radio-foto); }
 .muro img {
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radio-foto);
+  transition: opacity var(--dur-micro) var(--ease);
 }
+.muro a:hover img { opacity: .86; }
 
 /* ============================================================
    PIE — tarjeta verde
@@ -575,23 +580,28 @@
   border-radius: var(--radio-seccion);
   padding: 40px var(--margen-lateral) 24px;
   display: grid;
-  gap: 36px;
+  gap: 40px;
 }
-.pie__isotipo { width: 88px; height: 88px; }
+.pie__arriba { display: grid; gap: 40px; }
 .pie__frase {
   font-family: var(--fuente-titulo);
   font-size: 30px;
   line-height: 1.15;
   letter-spacing: var(--ls-titulo);
   max-width: 16ch;
-  margin-bottom: 40px;
 }
-.pie__columnas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px 16px;
+.pie__columnas { display: grid; gap: 32px; }
+.pie__mapa {
+  display: block;
+  height: 140px;
+  margin-top: 14px;
+  border: var(--borde-claro);
+  border-radius: var(--radio-foto);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--crema) 10%, transparent);
 }
-.pie__columnas > :last-child { grid-column: 1 / -1; }
+.pie__mapa iframe { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
+.pie__logo { width: min(72%, 320px); height: auto; justify-self: center; }
 .pie h3 {
   font-family: var(--fuente-texto);
   font-size: var(--fs-micro);

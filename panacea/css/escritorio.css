@@ -124,16 +124,12 @@
 .muro li:nth-child(even) { margin-top: 48px; }
 
 /* ---------- Pie ---------- */
-.pie__tarjeta {
-  grid-template-columns: 1fr 2fr;
-  gap: 48px 40px;
-  padding: 64px 56px 32px;
-}
-.pie__isotipo { width: 120px; height: 120px; }
-.pie__frase { font-size: var(--fs-h2); max-width: 22ch; margin-bottom: 72px; }
-.pie__columnas { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.pie__columnas > :last-child { grid-column: auto; }
-.pie__legal { grid-column: 1 / -1; }
+.pie__tarjeta { gap: 64px; padding: 64px 56px 32px; }
+.pie__arriba { grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: start; }
+.pie__frase { font-size: var(--fs-h2); max-width: 20ch; }
+.pie__columnas { grid-template-columns: 1fr 1.5fr; gap: 40px; }
+.pie__mapa { height: 160px; }
+.pie__logo { width: min(40%, 460px); }
 
 /* ---------- Pedido flotante ---------- */
 .pedido { font-size: 15px; }
