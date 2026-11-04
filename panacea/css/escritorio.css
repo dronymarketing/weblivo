@@ -50,7 +50,7 @@
 .hero {
   padding: calc(var(--nav-alto) + 48px) 56px 112px;
 }
-.hero__foto { object-position: 50% 24%; }
+.hero__foto { object-position: 50% 58%; }
 .hero__velo {
   background:
     linear-gradient(180deg,
