@@ -59,7 +59,7 @@
   --texto-parrafo: var(--gris-calido);                                 /* párrafos: #7D7A74 de la paleta */
   --texto-medio: color-mix(in srgb, var(--marron) 85%, var(--crema));  /* texto chico sobre crema (≥4.5:1) */
 
-  --marco:      color-mix(in srgb, var(--arena) 38%, var(--crema)); /* fondo de la página */
+  --marco:      #FAF3E7; /* fondo de la página */
   --superficie: var(--crema);                                       /* tarjetas grandes */
   --pieza:      color-mix(in srgb, var(--blanco) 55%, var(--crema)); /* tarjetas internas */
   --fondo:      var(--marco);
