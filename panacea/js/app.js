@@ -126,6 +126,48 @@
   elegidos.forEach(pintarBoton);
   actualizarPedido();
 
+  /* ---------- Fotos que rotan (producto con varias fotos) ----------
+     Cambian solas cada data-rotar ms, con fundido. Se pausan si la tarjeta
+     no está a la vista o la pestaña está en segundo plano. */
+  var sinMovimiento = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll(".producto__foto--rotativa").forEach(function (caja) {
+    var fotos = Array.prototype.slice.call(caja.querySelectorAll("img"));
+    if (fotos.length < 2 || sinMovimiento) { return; }
+
+    var ms = parseInt(caja.getAttribute("data-rotar"), 10) || 3500;
+    var actual = 0;
+    var visible = true;
+    var puntos = document.createElement("div");
+    puntos.className = "producto__puntos";
+    puntos.setAttribute("aria-hidden", "true");
+    fotos.forEach(function () { puntos.appendChild(document.createElement("span")); });
+    caja.appendChild(puntos);
+
+    function mostrar(i) {
+      actual = i;
+      fotos.forEach(function (f, n) {
+        f.classList.toggle("activa", n === i);
+        f.setAttribute("aria-hidden", String(n !== i));
+      });
+      Array.prototype.forEach.call(puntos.children, function (p, n) {
+        p.classList.toggle("activo", n === i);
+      });
+    }
+
+    caja.classList.add("js-rot");
+    mostrar(0);
+
+    setInterval(function () {
+      if (visible && !document.hidden) { mostrar((actual + 1) % fotos.length); }
+    }, ms);
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entradas) {
+        visible = entradas[0].isIntersecting;
+      }).observe(caja);
+    }
+  });
+
   /* ---------- Aparición al scroll ----------
      El estado inicial (opacity 0) solo existe si este JS corre. */
   var reducido = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

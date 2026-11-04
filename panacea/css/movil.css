@@ -295,9 +295,11 @@
   display: flex;
   gap: 12px;
   overflow-x: auto;
+  overflow-y: hidden;               /* solo scroll horizontal: sin barra vertical */
   scroll-snap-type: x mandatory;
   margin-inline: calc(-1 * var(--margen-lateral));
-  padding: 0 var(--margen-lateral) 4px;
+  margin-bottom: -16px;             /* compensa el padding de abajo */
+  padding: 0 var(--margen-lateral) 20px; /* lugar para el desplazamiento de 16px al aparecer */
   scroll-padding-inline: var(--margen-lateral);
   overscroll-behavior-x: contain;
   scrollbar-width: none;
@@ -328,6 +330,30 @@
   background: color-mix(in srgb, var(--arena) 30%, var(--crema));
 }
 .producto__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Producto con varias fotos: se apilan y rotan con fundido (lo maneja app.js) */
+.producto__foto--rotativa { position: relative; }
+.producto__foto--rotativa img {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 800ms var(--ease);
+}
+.producto__foto--rotativa img:first-child { opacity: 1; }
+.producto__foto--rotativa.js-rot img { opacity: 0; }
+.producto__foto--rotativa.js-rot img.activa { opacity: 1; }
+.producto__puntos {
+  position: absolute; left: 0; right: 0; bottom: 10px;
+  display: flex; justify-content: center; gap: 6px;
+  pointer-events: none;
+}
+.producto__puntos span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--blanco);
+  opacity: .55;
+  transition: opacity var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
+}
+.producto__puntos span.activo { opacity: 1; transform: scale(1.25); }
 .producto__datos { padding-inline: 6px; }
 .producto__cat {
   font-size: var(--fs-micro);

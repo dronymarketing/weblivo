@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="css/tokens.css?v=5">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=5">
 <link rel="stylesheet" href="css/base.css?v=5">
-<link rel="stylesheet" href="css/movil.css?v=6">
-<link rel="stylesheet" href="css/escritorio.css?v=6" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=7">
+<link rel="stylesheet" href="css/escritorio.css?v=7" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -165,9 +165,13 @@
     <div class="carrusel productos" id="lista-productos" role="list">
 
       <article class="producto reveal" role="listitem" data-cat="piel" data-id="serum-rosas" data-nombre="Sérum de Rosas y Aloe Vera" style="--i:0">
-        <div class="producto__foto">
-          <!-- FOTO DE MARCA — render del sérum del branding -->
+        <div class="producto__foto producto__foto--rotativa" data-rotar="3500">
+          <!-- FOTOS DE MARCA — renders del sérum del branding, rotan solas -->
           <img src="img/serum-1.jpg" alt="Frasco de sérum Panacea con gotero sobre fondo claro" loading="lazy">
+          <img src="img/serum-2.jpg" alt="Frasco de sérum Panacea inclinado" loading="lazy">
+          <img src="img/serum-3.jpg" alt="Frasco de sérum Panacea apoyado en diagonal" loading="lazy">
+          <img src="img/serum-4.jpg" alt="Frasco de sérum Panacea acostado" loading="lazy">
+          <img src="img/serum-5.jpg" alt="Frasco de sérum Panacea visto desde arriba" loading="lazy">
         </div>
         <div class="producto__datos">
           <p class="producto__cat">Sérum · 50 ml</p>
@@ -427,6 +431,6 @@
   <span><strong id="pedido-n">0</strong> <span id="pedido-txt">producto</span> · Pedir por WhatsApp</span>
 </a>
 
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
