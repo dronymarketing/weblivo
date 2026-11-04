@@ -102,6 +102,28 @@
 .hero__texto { max-width: 40ch; font-size: clamp(18px, 1.4vw, 24px); line-height: 1.5; margin-bottom: 40px; }
 .hero__botones { gap: 12px; }
 
+/* ---------- Secciones a pantalla completa ----------
+   Cada sección del inicio ocupa una pantalla (como en Rhodium y Parking Despegar):
+   alto = pantalla − header − márgenes, con el contenido centrado. Es min-height, no
+   height: si el contenido no entra, la sección crece en vez de cortarse.
+   Se llega a ellas con scroll-margin-top, así quedan debajo del header. */
+:root {
+  --alto-pantalla: calc(100vh - var(--nav-alto) - 3 * var(--marco-gap));
+  --alto-pantalla: calc(100svh - var(--nav-alto) - 3 * var(--marco-gap));
+}
+.seccion--pantalla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  min-height: var(--alto-pantalla);
+}
+.bloque.seccion--pantalla { padding-block: clamp(40px, 6vh, 104px); }   /* gana sobre el padding de .bloque */
+.seccion--pantalla[id] { scroll-margin-top: calc(var(--nav-alto) + 2 * var(--marco-gap)); }
+@media (max-height: 760px) {
+  .bloque.seccion--pantalla { padding-block: 32px; }
+  .seccion--pantalla .bloque__cabecera { margin-bottom: 28px; }
+}
+
 /* ---------- Bloques ---------- */
 .bloque { padding: var(--sp-seccion) var(--margen-lateral); }
 .bloque__cabecera { margin-bottom: 48px; }
@@ -150,7 +172,8 @@
 .pagina > #productos {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto;
+  align-content: center;
   column-gap: clamp(40px, 5vw, 96px);
   row-gap: 32px;
   align-items: start;
@@ -174,6 +197,7 @@
   align-items: center;
 }
 .sobre__lead { font-size: clamp(22px, 1.8vw, 30px); }
+.sobre__foto img { max-height: calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px)); }
 .opinion { padding: 32px 28px 26px; }
 .contacto {
   grid-template-columns: 1.1fr 1fr;
@@ -185,7 +209,7 @@
 .muro {
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  max-height: clamp(560px, 46vw, 780px);
+  max-height: clamp(380px, calc(100svh - 380px), 780px);
 }
 .muro li:nth-child(even) { margin-top: 48px; }
 
