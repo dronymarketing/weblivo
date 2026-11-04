@@ -76,7 +76,10 @@
 .nav__burger, .menu { display: none; }
 
 /* ---------- Hero ---------- */
-.hero { padding: calc(var(--nav-alto) + 48px) var(--margen-lateral) 136px; }
+/* El hero tiene que entrar SIEMPRE en una pantalla, también en notebooks bajas (con la escala
+   de Windows al 125%, un monitor de 1920×1080 se ve como 1536×730): el título y el aire
+   dependen del alto además del ancho. */
+.hero { padding: calc(var(--nav-alto) + clamp(16px, 4vh, 48px)) var(--margen-lateral) clamp(88px, 13vh, 136px); }
 .hero { --foto-subida: 0px; }   /* en escritorio la foto no sube */
 .scroll-cue { bottom: 32px; }
 .scroll-cue__texto { font-size: 13px; }
@@ -95,11 +98,13 @@
 }
 .hero__contenido { justify-content: flex-end; gap: 0; }
 .hero h1 {
-  font-size: clamp(96px, 12vw, 190px);
+  font-size: clamp(80px, 12vw, 190px);
+  font-size: clamp(80px, min(12vw, 19vh), 190px);
+  font-size: clamp(80px, min(12vw, 19svh), 190px);
   line-height: .9;
-  margin: 18px 0 26px;
+  margin: clamp(10px, 2vh, 18px) 0 clamp(14px, 3vh, 26px);
 }
-.hero__texto { max-width: 40ch; font-size: clamp(18px, 1.4vw, 24px); line-height: 1.5; margin-bottom: 40px; }
+.hero__texto { max-width: 40ch; font-size: clamp(18px, 1.4vw, 24px); line-height: 1.5; margin-bottom: clamp(20px, 4vh, 40px); }
 .hero__botones { gap: 12px; }
 
 /* ---------- Secciones a pantalla completa ----------
@@ -187,6 +192,8 @@
 }
 #servicios > .carrusel,
 #productos > .carrusel { grid-column: 2; grid-row: 1 / span 2; }
+#servicios .servicio__foto,
+#productos .producto__foto { aspect-ratio: auto; height: clamp(190px, 36vh, 420px); height: clamp(190px, 36svh, 420px); }
 #servicios > .bloque__ver,
 #productos > .bloque__ver { grid-column: 1; grid-row: 2; justify-content: flex-start; margin-top: 0; }
 
@@ -296,3 +303,11 @@
 
 .contacto-cards { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .mapa-grande__marco { aspect-ratio: 21 / 9; }
+
+/* ---------- Pantallas bajas (notebooks): las secciones del inicio se compactan para seguir entrando ----------
+   Va al final para ganarle a las reglas de arriba. */
+@media (max-height: 760px) {
+  #servicios .servicio__foto,
+  #productos .producto__foto { height: clamp(140px, 27svh, 300px); }
+  .muro { max-height: clamp(260px, calc(100svh - 330px), 780px); }
+}
