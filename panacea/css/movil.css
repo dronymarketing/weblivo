@@ -76,7 +76,7 @@
 .nav.es-solido {
   background: var(--crema);
   color: var(--terracota);
-  border-color: color-mix(in srgb, currentColor 15%, transparent);
+  border-color: transparent;
 }
 .nav__barra {
   height: var(--nav-alto);
@@ -306,7 +306,6 @@
    ============================================================ */
 .bloque {
   background: var(--superficie);
-  border: var(--borde);
   border-radius: var(--radio-seccion);
   padding: var(--sp-5) var(--margen-lateral) var(--sp-5);
   min-width: 0;
@@ -487,7 +486,6 @@
   gap: 14px;
   padding: 10px 10px 16px;
   background: var(--pieza);
-  border: var(--borde);
   border-radius: var(--radio-pieza);
 }
 .servicio__foto {
@@ -553,7 +551,6 @@
   gap: 24px;
   padding: 26px 22px 22px;
   background: var(--pieza);
-  border: var(--borde);
   border-radius: var(--radio-pieza);
 }
 .opinion blockquote { margin: 0; font-size: 16px; line-height: 1.55; }
@@ -582,7 +579,6 @@
 .contacto__botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .contacto__mapa {
   aspect-ratio: 4 / 3;
-  border: var(--borde);
   border-radius: var(--radio-pieza);
   overflow: hidden;
   background: color-mix(in srgb, var(--arena) 30%, var(--crema));
@@ -876,7 +872,6 @@ body::after {
 .pp__nota {
   display: flex; align-items: flex-start; gap: 10px;
   padding: 14px 16px;
-  border: var(--borde);
   border-radius: var(--radio-pieza);
   background: var(--pieza);
   font-size: 13px;
@@ -889,7 +884,6 @@ body::after {
 .info3__tarjeta {
   display: flex; flex-direction: column; gap: 10px;
   padding: 24px;
-  border: var(--borde);
   border-radius: var(--radio-seccion);
   background: var(--pieza);
   color: var(--texto);
@@ -1317,7 +1311,6 @@ body::after {
 .contacto-card {
   display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
   padding: 24px;
-  border: var(--borde);
   border-radius: var(--radio-seccion);
   background: var(--superficie);
 }
@@ -1333,7 +1326,6 @@ body::after {
 .mapa-grande__marco {
   aspect-ratio: 4 / 3;
   margin: 16px 0;
-  border: var(--borde);
   border-radius: var(--radio-pieza);
   overflow: hidden;
   background: color-mix(in srgb, var(--arena) 30%, var(--crema));
