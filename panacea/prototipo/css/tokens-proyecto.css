@@ -1,0 +1,85 @@
+/* ============================================================
+   PANACEA — paleta y tipografía del branding (Branding C.pdf)
+   Pisa a tokens.css. Colores y fuentes salen SIEMPRE de acá.
+   ============================================================ */
+
+@font-face {
+  font-family: "Linowrite";
+  src: url("../fonts/linowrite.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  /* El archivo de Linowrite recibido trae VACÍOS los glifos con tilde
+     (á é í ó ú ñ Ó Ú ·). Solo se usa para ASCII; lo demás cae a Monoglyphic. */
+  unicode-range: U+0020-007E;
+}
+@font-face {
+  font-family: "Monoglyphic";
+  src: url("../fonts/monoglyphic-300.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Monoglyphic";
+  src: url("../fonts/monoglyphic-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Monoglyphic";
+  src: url("../fonts/monoglyphic-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Monoglyphic";
+  src: url("../fonts/monoglyphic-600.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Paleta del branding (hex exactos del PDF) ---------- */
+  --terracota:       #8F4327;
+  --terracota-claro: #BB825C;
+  --crema:           #FAF3E7;
+  --gris-calido:     #7D7A74;
+  --verde:           #33473A;
+  --verde-gris:      #687871;
+  --oliva:           #8C7F4E;
+  --arena:           #BBAB87;
+  --negro:           #1A1A1A;
+  --blanco:          #FFFFFF;
+
+  /* ---------- Roles (una dominante, un fondo, un acento) ---------- */
+  --dominante: var(--terracota);
+  --acento:    var(--verde);
+  --texto:     var(--negro);
+  --texto-suave: var(--gris-calido);                                   /* solo texto grande (3:1) */
+  --texto-medio: color-mix(in srgb, var(--negro) 72%, var(--crema));   /* texto chico sobre crema (≥4.5:1) */
+
+  --marco:      color-mix(in srgb, var(--arena) 38%, var(--crema)); /* fondo de la página */
+  --superficie: var(--crema);                                       /* tarjetas grandes */
+  --pieza:      color-mix(in srgb, var(--blanco) 55%, var(--crema)); /* tarjetas internas */
+  --fondo:      var(--marco);
+  --barra-inferior: var(--marco);
+
+  /* ---------- Tipografía ---------- */
+  --fuente-titulo: "Linowrite", "Monoglyphic", "Courier New", Courier, monospace;
+  --fuente-texto:  "Monoglyphic", "Courier New", Courier, monospace;
+
+  /* ---------- Forma ---------- */
+  --radio-seccion: 28px;
+  --radio-pieza:   22px;
+  --radio-foto:    16px;
+  --marco-gap:     12px;   /* aire entre tarjetas grandes y contra el borde */
+  --max-pagina:    1280px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --radio-seccion: 36px;
+    --radio-pieza:   26px;
+    --radio-foto:    20px;
+    --marco-gap:     16px;
+  }
+}

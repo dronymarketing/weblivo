@@ -1,0 +1,124 @@
+/* ============================================================
+   ESCRITORIO (≥768px) — solo lo que cambia respecto al móvil.
+   Se carga por el atributo media del <link>.
+   ============================================================ */
+
+/* ---------- Header: links al centro, WhatsApp a la derecha ---------- */
+.nav__barra {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  padding-inline: calc(var(--margen-lateral) - 1px) 12px;
+}
+.nav__logo img { height: var(--nav-logo-alto); }
+.nav__links {
+  display: flex;
+  gap: 36px;
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-micro);
+}
+.nav__links a { padding: 12px 0; position: relative; }
+.nav__links a::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 8px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease);
+}
+.nav__links a:hover::after { transform: scaleX(1); }
+.nav__wsp {
+  justify-self: end;
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: var(--radio-capsula);
+  background: var(--crema);
+  color: var(--terracota);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background var(--dur-micro) var(--ease), color var(--dur-micro) var(--ease);
+}
+.nav__wsp:hover { background: var(--blanco); }
+.nav.solido .nav__wsp { background: var(--terracota); color: var(--crema); }
+.nav.solido .nav__wsp:hover { background: color-mix(in srgb, var(--terracota) 82%, var(--negro)); }
+.nav__burger, .menu { display: none; }
+
+/* ---------- Hero ---------- */
+.hero {
+  padding: calc(var(--nav-alto) + 48px) 56px 112px;
+}
+.hero__foto { object-position: 50% 24%; }
+.hero__velo {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--negro) 45%, transparent) 0%,
+      transparent 24%),
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--terracota) 88%, var(--negro)) 0%,
+      color-mix(in srgb, var(--terracota) 55%, transparent) 38%,
+      transparent 68%);
+}
+.hero h1 {
+  font-size: clamp(88px, 11vw, 168px);
+  margin: 18px 0 22px;
+}
+.hero__texto { font-size: 18px; margin-bottom: 36px; }
+.hero__botones { gap: 12px; }
+
+/* ---------- Bloques ---------- */
+.bloque { padding: var(--sp-6) 56px; }
+.bloque__cabecera { margin-bottom: 40px; }
+.bloque__pista { display: none; }
+.aviso { margin-top: 28px; }
+
+.tabs { gap: 4px 40px; }
+.tab { font-size: var(--fs-h2); }
+.tab sup { font-size: 13px; }
+
+/* El carrusel pasa a grilla */
+.carrusel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  overflow: visible;
+  scroll-snap-type: none;
+  margin-inline: 0;
+  padding: 0;
+}
+.carrusel > * { max-width: none; }
+
+.producto { padding: 12px 12px 16px; gap: 18px; }
+.producto__datos { padding-inline: 8px; }
+.producto__pie { padding-inline: 8px 4px; }
+.producto h3 { font-size: 16px; }
+
+.servicio { padding: 12px 12px 28px; }
+.servicio__foto { aspect-ratio: 1 / 1; }
+.servicio__cuerpo { padding-inline: 10px; }
+.servicio h3 { font-size: 21px; }
+
+/* ---------- Instagram ---------- */
+.muro {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-height: 640px;
+}
+.muro li:nth-child(even) { margin-top: 48px; }
+
+/* ---------- Pie ---------- */
+.pie__tarjeta {
+  grid-template-columns: 1fr 2fr;
+  gap: 48px 40px;
+  padding: 64px 56px 32px;
+}
+.pie__isotipo { width: 120px; height: 120px; }
+.pie__frase { font-size: var(--fs-h2); max-width: 22ch; margin-bottom: 72px; }
+.pie__columnas { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pie__columnas > :last-child { grid-column: auto; }
+.pie__legal { grid-column: 1 / -1; }
+
+/* ---------- Pedido flotante ---------- */
+.pedido { font-size: 15px; }

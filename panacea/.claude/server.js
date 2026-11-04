@@ -12,12 +12,13 @@ const types = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
-  ".svg": "image/svg+xml"
+  ".svg": "image/svg+xml",
+  ".woff2": "font/woff2"
 };
 
 http.createServer((req, res) => {
   let filePath = decodeURIComponent(req.url.split("?")[0]);
-  if (filePath === "/") filePath = "/index.html";
+  if (filePath.endsWith("/")) filePath += "index.html";
   const full = path.join(root, filePath);
 
   fs.readFile(full, (err, data) => {
