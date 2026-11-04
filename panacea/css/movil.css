@@ -71,20 +71,11 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .nav.es-glass { background: color-mix(in srgb, var(--terracota) 88%, transparent); }
 }
-/* es-solido: el hero ya pasó; el header va en beige (crema) sobre las tarjetas.
-   Con vidrio: beige translúcido que desenfoca lo que pasa por detrás.
-   Sin soporte de vidrio: beige opaco. */
+/* es-solido: el hero ya pasó; el header va sólido en beige (crema) sobre las tarjetas. */
 .nav.es-solido {
   background: var(--crema);
   color: var(--terracota);
   border-color: color-mix(in srgb, currentColor 15%, transparent);
-}
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .nav.es-solido {
-    background: color-mix(in srgb, var(--crema) 86%, transparent);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
-  }
 }
 .nav__barra {
   height: var(--nav-alto);
