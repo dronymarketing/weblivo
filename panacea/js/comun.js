@@ -37,9 +37,9 @@
      Arriba: <meta theme-color>. Abajo: la franja body::after (--barra-inferior).
      Cada una toma el color de lo que tiene pegado (hero, tarjeta o marco). */
   var tema = document.querySelector('meta[name="theme-color"]');
-  /* Las tarjetas son crema (#FAF3E7), que en la barra del celular se ve como blanco:
-     por eso, sobre las tarjetas las barras toman el color del marco (arena). */
-  var colores = { marco: "#FAF3E7", hero: "#8F4327", bloque: "#FAF3E7", pie: "#687871", tarjeta: "#33473A" };
+  /* Las barras toman el color de lo que tienen pegado: el fondo blanco que rodea a las tarjetas (marco),
+     la franja crema que rodea al hero (franja), el hero, el pie y su tarjeta verde. */
+  var colores = { marco: "#FFFFFF", franja: "#FAF3E7", hero: "#8F4327", bloque: "#FFFFFF", pie: "#687871", tarjeta: "#33473A" };
 
   function aHex(css, respaldo) {
     try {
@@ -64,6 +64,7 @@
     }
     colores = {
       marco: leer("--marco", colores.marco),
+      franja: leer("--marco-hero", colores.franja),
       hero: leer("--terracota", colores.hero),
       bloque: leer("--marco", colores.bloque),
       pie: leer("--verde-gris", colores.pie),
@@ -87,6 +88,9 @@
       var r = zonas[i].el.getBoundingClientRect();
       if (r.top <= y && y < r.bottom) { return colores[zonas[i].color]; }
     }
+    /* la franja crema de la primera pantalla: arriba del hero y el margen de abajo */
+    var hero = document.querySelector("main > .hero");
+    if (hero && y < hero.getBoundingClientRect().bottom + 16) { return colores.franja; }
     return colores.marco;
   }
   var barrasPendiente = false;

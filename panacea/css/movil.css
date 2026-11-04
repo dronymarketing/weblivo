@@ -1368,6 +1368,12 @@ body::after {
   padding-bottom: var(--aire-seccion);
 }
 
+/* Fondo de la primera pantalla: el hero y su margen forman una franja crema de una pantalla;
+   alrededor de las demás tarjetas el fondo es blanco (--marco). */
+body:has(main > .hero) { background: linear-gradient(var(--marco-hero) 100vh, var(--marco) 0); }
+body:has(main > .hero) { background: linear-gradient(var(--marco-hero) 100svh, var(--marco) 0); }
+.hero { margin-bottom: var(--marco-gap); }
+
 /* Productos del inicio: la tarjeta de producto es solo nombre y precio */
 #productos .producto__cat,
 #productos .producto__desc { display: none; }   /* en el inicio la tarjeta es solo nombre y precio */
