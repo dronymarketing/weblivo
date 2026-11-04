@@ -37,8 +37,8 @@
 <link rel="stylesheet" href="css/tokens.css?v=5">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=8">
 <link rel="stylesheet" href="css/base.css?v=6">
-<link rel="stylesheet" href="css/movil.css?v=30">
-<link rel="stylesheet" href="css/escritorio.css?v=22" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/movil.css?v=31">
+<link rel="stylesheet" href="css/escritorio.css?v=24" media="(min-width: 768px)">
 </head>
 <body>
 
@@ -121,16 +121,36 @@
 </div>
 
 
-<main class="pagina pagina--interna">
+<main class="pagina pagina--interna pagina--con-hero">
 
-  <header class="pagina__titulo reveal">
+  <section class="hero hero--pagina" aria-labelledby="t-hero">
+    <img class="hero__foto" src="img/hero-artesanal.jpg" alt="Manos preparando una fórmula herbal artesanal con mortero">
+    <div class="hero__velo" aria-hidden="true"></div>
+    <div class="hero__contenido">
+      <div class="hero__titulo">
+        <p class="antetitulo">Naturopatía y herbolaria</p>
+        <h1 id="t-hero">Servicios</h1>
+      </div>
+      <div class="hero__pie">
+        <p class="hero__texto">Consultas y fórmulas herbales para acompañar tu bienestar.</p>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#primera" aria-label="Ver más">
+      <span class="scroll-cue__texto">Ver más</span>
+      <span class="scroll-cue__circulo" aria-hidden="true">
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-down"/></svg>
+      </span>
+    </a>
+  </section>
+
+  <header class="pagina__titulo pagina__titulo--con-hero reveal">
     <p class="antetitulo">Naturopatía y herbolaria</p>
     <h1>Servicios</h1>
     <p class="pagina__bajada">Consultas y fórmulas herbales para acompañar tu bienestar.</p>
   </header>
 
   <div class="servicios-lista">
-    <article class="bloque servicio-pag reveal">
+    <article class="bloque servicio-pag seccion--pantalla reveal" id="primera">
       <div class="servicio-pag__foto"><img src="img/paola-2.jpg" alt="Paola Areosa sonriendo, apoyada en una mesa de madera" loading="lazy"></div>
       <div class="servicio-pag__cuerpo">
         <p class="servicio-pag__num">01</p>
@@ -143,7 +163,7 @@
         </a>
       </div>
     </article>
-    <article class="bloque servicio-pag reveal">
+    <article class="bloque servicio-pag seccion--pantalla reveal">
       <div class="servicio-pag__foto"><img src="img/hero-artesanal.jpg" alt="Manos preparando una fórmula herbal artesanal con mortero" loading="lazy"></div>
       <div class="servicio-pag__cuerpo">
         <p class="servicio-pag__num">02</p>
@@ -156,7 +176,7 @@
         </a>
       </div>
     </article>
-    <article class="bloque servicio-pag reveal">
+    <article class="bloque servicio-pag seccion--pantalla reveal">
       <div class="servicio-pag__foto"><img src="img/servicio-asesoramiento.jpg" alt="Ramo de romero sobre libros y revistas de herbología" loading="lazy"></div>
       <div class="servicio-pag__cuerpo">
         <p class="servicio-pag__num">03</p>
@@ -171,6 +191,7 @@
     </article>
   </div>
 
+  <div class="reservas-fila seccion--pantalla">
   <section class="bloque reservas reveal" aria-labelledby="t-reservas">
     <h2 id="t-reservas">Reservas</h2>
     <p>Para reservar escribinos por WhatsApp y coordinamos el día y el horario.</p>
@@ -186,6 +207,7 @@
     <p>Además de las consultas, preparamos cosmética herbal, tisanas y tinturas madre.</p>
     <a class="boton boton--borde" href="productos.html">Ver productos<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
   </section>
+  </div>
 
 </main>
 

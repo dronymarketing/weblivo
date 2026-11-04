@@ -311,3 +311,33 @@
   #productos .producto__foto { height: clamp(140px, 27svh, 300px); }
   .muro { max-height: clamp(260px, calc(100svh - 330px), 780px); }
 }
+
+/* ---------- Servicios y Contacto: primera pantalla con foto y cada bloque a pantalla completa ---------- */
+.pagina--con-hero { padding-top: var(--marco-gap); }
+.hero--pagina { display: flex; }
+.hero--pagina .hero__foto { object-position: 50% 50%; }
+.hero--pagina .hero__texto { max-width: 34ch; }
+.pagina__titulo.pagina__titulo--con-hero { display: none; }   /* en escritorio el título va dentro del hero */
+
+/* Cada servicio: foto grande a un lado, texto centrado al otro */
+.servicio-pag.seccion--pantalla { padding: 16px; grid-template-columns: 1fr 1fr; align-content: stretch; align-items: stretch; }
+.servicio-pag.seccion--pantalla .servicio-pag__foto { position: relative; min-height: 0; }
+.servicio-pag.seccion--pantalla .servicio-pag__foto img {
+  position: absolute; inset: 0;          /* la foto no agranda la sección: llena el espacio que hay */
+  width: 100%; height: 100%;
+  aspect-ratio: auto;
+}
+.servicio-pag.seccion--pantalla .servicio-pag__cuerpo { align-self: center; }
+
+/* Reservas y tienda: las dos tarjetas juntas en una pantalla */
+.reservas-fila.seccion--pantalla { grid-template-columns: 1fr 1fr; gap: 16px; align-content: stretch; }
+.reservas-fila .bloque { align-content: center; }
+
+/* Contacto: las cuatro tarjetas llenan la pantalla, y el mapa ocupa la suya */
+.contacto-cards.seccion--pantalla { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 16px; align-content: stretch; }
+.contacto-card { justify-content: center; }
+.contacto-card .boton { margin-top: 12px; }
+.mapa-grande__marco {
+  aspect-ratio: auto;
+  height: clamp(300px, calc(var(--alto-pantalla) - 2 * clamp(40px, 6vh, 104px) - 150px), 820px);
+}
