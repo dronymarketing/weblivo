@@ -18,7 +18,7 @@
     });
   }
   function textoPrecio(prod, n) {
-    return prod.precio ? P.dinero(prod.precio * n) : "Consultar";
+    return P.dinero(prod.precio * n);
   }
 
   function dibujarLineas() {
@@ -34,7 +34,7 @@
         '<div class="linea__datos">' +
           '<p class="linea__cat">' + esc(p.categoria) + "</p>" +
           '<h3><a href="' + href + '">' + esc(p.nombre) + "</a></h3>" +
-          '<p class="linea__unit">' + (p.precio ? P.dinero(p.precio) + " c/u" : "Precio a consultar") + "</p>" +
+          '<p class="linea__unit">' + P.dinero(p.precio) + " c/u" + "</p>" +
         "</div>" +
         '<div class="cantidad" data-cantidad>' +
           '<button class="cantidad__btn" type="button" data-menos aria-label="Quitar una unidad de ' + esc(p.nombre) + '"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>' +
@@ -57,25 +57,6 @@
     $("r-subtotal").textContent = P.dinero(C.total());
     $("r-total").textContent = P.dinero(C.total());
 
-    var aviso = $("r-aviso");
-    var consultar = C.aConsultar();
-    if (consultar) {
-      aviso.querySelector("span").textContent =
-        (consultar === 1 ? "1 producto es a consultar" : consultar + " productos son a consultar") +
-        ": no suma al total y se confirma por WhatsApp. El pago online queda para cuando el pedido tenga solo productos con precio.";
-      aviso.hidden = false;
-    } else {
-      aviso.hidden = true;
-    }
-
-    var pagar = $("r-pagar");
-    var bloqueado = consultar > 0 || C.total() === 0;
-    pagar.setAttribute("aria-disabled", String(bloqueado));
-    pagar.classList.toggle("boton--apagado", bloqueado);
-    pagar.tabIndex = bloqueado ? -1 : 0;
-
-    $("r-wsp").href = C.enlaceWhatsApp();
-
     /* Subtotales de cada línea, sin redibujar (así no se pierde el foco) */
     items.forEach(function (it) {
       var li = lista.querySelector('[data-id="' + it.id + '"]');
@@ -95,11 +76,6 @@
     if (ids !== dibujados) { dibujarLineas(); }
     if (hayItems) { actualizarTotales(); }
   }
-
-  /* El botón de pago apagado no debe navegar */
-  $("r-pagar").addEventListener("click", function (e) {
-    if ($("r-pagar").getAttribute("aria-disabled") === "true") { e.preventDefault(); }
-  });
 
   C.alCambiar(pintar);
   pintar();

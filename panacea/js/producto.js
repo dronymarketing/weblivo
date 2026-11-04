@@ -58,7 +58,7 @@
   $("pp-cat").textContent = p.categoria;
   $("pp-nombre").textContent = p.nombre;
   $("pp-desc").textContent = p.desc;
-  $("pp-precio").textContent = p.precio ? P.dinero(p.precio) : "Consultar";
+  $("pp-precio").textContent = P.dinero(p.precio);
 
   /* ---------- Características ---------- */
   var ficha = $("pp-ficha");
@@ -78,8 +78,8 @@
   if (p.muestra) {
     nota.querySelector("span").textContent = "Producto de muestra: el precio, la foto y las características se reemplazan por los del catálogo real.";
     nota.hidden = false;
-  } else if (!p.precio) {
-    nota.querySelector("span").textContent = "El precio de este producto se consulta por WhatsApp.";
+  } else if (p.precioMuestra) {
+    nota.querySelector("span").textContent = "El precio es de muestra: se confirma con Paola.";
     nota.hidden = false;
   }
 
@@ -98,20 +98,10 @@
   $("pp-agregar").addEventListener("click", function () {
     C.agregar(id, cantidad.leer());
   });
+  /* "Comprar ahora": suma lo elegido y sigue al pago */
+  $("pp-comprar").addEventListener("click", function () { C.agregar(id, cantidad.leer()); });
   C.alCambiar(pintarEstado);
   pintarEstado();
-
-  if (p.precio) {
-    /* "Comprar ahora": suma lo elegido y sigue al pago */
-    $("pp-comprar").addEventListener("click", function () { C.agregar(id, cantidad.leer()); });
-  } else {
-    /* Sin precio: no se paga online, se consulta por WhatsApp */
-    $("pp-comprar").hidden = true;
-    var wsp = $("pp-consultar");
-    wsp.hidden = false;
-    wsp.href = "https://wa.me/" + P.whatsapp + "?text=" +
-      encodeURIComponent("Hola Paola, quiero consultar por: " + p.nombre);
-  }
 
   $("pp").hidden = false;
 })();

@@ -3,9 +3,9 @@
    producto, el carrito y el pago). Es la fuente única: para cambiar un
    precio o una descripción se cambia acá y en la tarjeta de index.html.
 
-   precio: null  →  "Consultar" (no se puede pagar online, se consulta
-   por WhatsApp). Los precios, las fotos y las fichas de los productos de
-   muestra son de muestra y se reemplazan por el catálogo real.
+   Los precios, las fotos y las fichas de los productos con muestra: true
+   son de muestra; el sérum tiene precioMuestra: true (su precio es
+   provisorio). Todo se reemplaza por el catálogo real.
    ============================================================ */
 (function () {
   "use strict";
@@ -16,7 +16,8 @@
       nombre: "Sérum de Rosas y Aloe Vera",
       cat: "piel",
       categoria: "Sérum · 50 ml",
-      precio: null,
+      precio: 780,
+      precioMuestra: true,
       muestra: false,
       desc: "Con rosas, aloe vera y vitamina F, en frasco con gotero.",
       fotos: [

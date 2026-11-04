@@ -52,16 +52,10 @@
       return Object.keys(estado).reduce(function (s, id) { return s + estado[id]; }, 0);
     },
     lineas: function () { return Object.keys(estado).length; },
-    /* Suma solo los productos con precio */
     total: function () {
       return Object.keys(estado).reduce(function (s, id) {
-        var p = P.porId[id];
-        return s + (p.precio ? p.precio * estado[id] : 0);
+        return s + P.porId[id].precio * estado[id];
       }, 0);
-    },
-    /* Cuántos productos del pedido hay que consultar (sin precio) */
-    aConsultar: function () {
-      return Object.keys(estado).filter(function (id) { return !P.porId[id].precio; }).length;
     },
     fijar: function (id, n) {
       if (!P.porId[id]) { return; }
@@ -72,21 +66,7 @@
     agregar: function (id, n) { Carrito.fijar(id, Carrito.cantidad(id) + (n || 1)); },
     quitar: function (id) { Carrito.fijar(id, 0); },
     vaciar: function () { estado = {}; guardar(); avisar(); },
-    alCambiar: function (fn) { oyentes.push(fn); },
-    /* Texto del pedido para WhatsApp. extra: líneas opcionales (datos, medio de pago…) */
-    mensajeWhatsApp: function (extra) {
-      var lineas = Carrito.items().map(function (it) {
-        var precio = it.producto.precio ? " (" + P.dinero(it.producto.precio * it.cantidad) + ")" : " (a consultar)";
-        return "• " + it.cantidad + " × " + it.producto.nombre + precio;
-      });
-      var partes = ["Hola Paola, quiero comprar estos productos:"].concat(lineas);
-      if (Carrito.total() > 0) { partes.push("Total: " + P.dinero(Carrito.total()) + (Carrito.aConsultar() ? " + productos a consultar" : "")); }
-      if (extra && extra.length) { partes.push(""); partes = partes.concat(extra); }
-      return partes.join("\n");
-    },
-    enlaceWhatsApp: function (extra) {
-      return "https://wa.me/" + P.whatsapp + "?text=" + encodeURIComponent(Carrito.mensajeWhatsApp(extra));
-    }
+    alCambiar: function (fn) { oyentes.push(fn); }
   };
   /* Selector de cantidad  [−] [ 1 ] [+]
      caja: el contenedor con [data-menos], [data-mas] y un <input>. fn(n) se llama al cambiar. */
