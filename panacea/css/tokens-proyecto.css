@@ -72,7 +72,7 @@
   --fuente-texto:  "Monoglyphic", "Courier New", Courier, monospace;
 
   /* ---------- Forma ---------- */
-  --radio-seccion: 28px;
+  --radio-seccion: calc(var(--nav-alto) / 2 + 1px);   /* igual al radio del nav (una cápsula): el nav y las tarjetas se funden */
   --radio-pieza:   22px;
   --radio-foto:    16px;
   --marco-gap:     12px;   /* aire entre tarjetas grandes y contra el borde */
@@ -82,7 +82,6 @@
 
 @media (min-width: 768px) {
   :root {
-    --radio-seccion: 36px;
     --radio-pieza:   26px;
     --radio-foto:    20px;
     --marco-gap:     16px;
