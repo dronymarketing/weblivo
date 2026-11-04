@@ -62,7 +62,7 @@
   --marco:      #FAF3E7; /* fondo que rodea a las tarjetas (como el verde-gris que rodea a la tarjeta del pie) */
   --marco-hero: #FAF3E7; /* fondo que rodea al hero: la primera pantalla */
   --superficie: #FDFAF4;                                             /* tarjetas grandes */
-  --pieza:      #FFFDFA;   /* tarjetas internas (Consulta naturopática, opiniones…): un poco más blancas que la tarjeta grande */
+  --pieza:      #FFFFFF;   /* tarjetas internas (Consulta naturopática, opiniones…): un poco más blancas que la tarjeta grande */
   --fondo-producto: #E1DCD9;   /* el gris cálido de fondo de las fotos del sérum: todas las tarjetas de producto lo usan */
   --fondo:      var(--marco);
   --barra-inferior: var(--marco);
