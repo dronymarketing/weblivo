@@ -35,7 +35,7 @@
   var tema = document.querySelector('meta[name="theme-color"]');
   /* Las tarjetas son crema (#FAF3E7), que en la barra del celular se ve como blanco:
      por eso, sobre las tarjetas las barras toman el color del marco (arena). */
-  var colores = { marco: "#E2D8C3", hero: "#8F4327", bloque: "#E2D8C3", pie: "#687871" };
+  var colores = { marco: "#E2D8C3", hero: "#8F4327", bloque: "#E2D8C3", pie: "#687871", tarjeta: "#33473A" };
 
   function aHex(css, respaldo) {
     try {
@@ -62,18 +62,24 @@
       marco: leer("--marco", colores.marco),
       hero: leer("--terracota", colores.hero),
       bloque: leer("--marco", colores.bloque),
-      pie: leer("--verde-gris", colores.pie)
+      pie: leer("--verde-gris", colores.pie),
+      tarjeta: leer("--verde", colores.tarjeta)
     };
     document.body.removeChild(sonda);
   }
   leerColores();
 
   var zonas = [];
-  document.querySelectorAll(".hero, .bloque, .pie").forEach(function (el) {
-    zonas.push({ el: el, color: el.classList.contains("hero") ? "hero" : el.classList.contains("bloque") ? "bloque" : "pie" });
+  /* En orden de documento: .pie (el fondo gris verdoso) va antes que .pie__tarjeta
+     (el verde oscuro de adentro); colorEn recorre al revés para que gane lo de adentro. */
+  document.querySelectorAll(".hero, .bloque, .pie, .pie__tarjeta").forEach(function (el) {
+    var tipo = el.classList.contains("hero") ? "hero"
+      : el.classList.contains("bloque") ? "bloque"
+      : el.classList.contains("pie__tarjeta") ? "tarjeta" : "pie";
+    zonas.push({ el: el, color: tipo });
   });
   function colorEn(y) {
-    for (var i = 0; i < zonas.length; i++) {
+    for (var i = zonas.length - 1; i >= 0; i--) {
       var r = zonas[i].el.getBoundingClientRect();
       if (r.top <= y && y < r.bottom) { return colores[zonas[i].color]; }
     }

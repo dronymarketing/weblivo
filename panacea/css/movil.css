@@ -592,7 +592,7 @@
 .pie__tarjeta {
   max-width: calc(var(--max-pagina) - 2 * var(--marco-gap));
   margin-inline: auto;
-  background: var(--verde-gris);   /* #687871 */
+  background: var(--verde);   /* #33473A, el verde oscuro de la tarjeta */
   color: var(--crema);
   border-radius: var(--radio-seccion);
   padding: 40px var(--margen-lateral) 24px;
