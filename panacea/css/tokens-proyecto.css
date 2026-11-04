@@ -63,7 +63,7 @@
   --marco-hero: #FAF3E7; /* fondo que rodea al hero: la primera pantalla */
   --superficie: #FDFAF4;                                             /* tarjetas grandes */
   --pieza:      #FFFFFF;   /* tarjetas internas (Consulta naturopática, opiniones…): un poco más blancas que la tarjeta grande */
-  --fondo-producto: #E1DCD9;   /* el gris cálido de fondo de las fotos del sérum: todas las tarjetas de producto lo usan */
+  --fondo-producto: #FFFFFF;   /* fondo de las tarjetas de producto: el mismo blanco que el fondo de "Consulta naturopática" (antes #E1DCD9, el gris de las fotos del sérum) */
   --fondo:      var(--marco);
   --barra-inferior: var(--marco);
 

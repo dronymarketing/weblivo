@@ -476,6 +476,8 @@
     background var(--dur-micro) var(--ease),
     color var(--dur-micro) var(--ease);
 }
+/* sobre la tarjeta blanca el botón "+" va en crema para que se vea */
+.producto .btn-mas { background: var(--marco-hero); }
 .btn-mas:hover { background: var(--terracota); color: var(--crema); }
 .btn-mas[aria-pressed="true"] { background: var(--terracota); color: var(--crema); }
 
