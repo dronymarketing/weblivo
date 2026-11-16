@@ -21,24 +21,27 @@
 <link rel="icon" type="image/png" href="img/favicon.png?v=4">
 <link rel="apple-touch-icon" href="img/favicon.png?v=4">
 <meta name="theme-color" content="#FFFFFF">
-<link rel="stylesheet" href="css/tokens.css?v=13">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=13">
-<link rel="stylesheet" href="css/base.css?v=13">
-<link rel="stylesheet" href="css/movil.css?v=13">
-<link rel="stylesheet" href="css/escritorio.css?v=13" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/tokens.css?v=14">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=14">
+<link rel="stylesheet" href="css/base.css?v=14">
+<link rel="stylesheet" href="css/movil.css?v=14">
+<link rel="stylesheet" href="css/escritorio.css?v=14" media="(min-width: 768px)">
 </head>
 <body>
 <div class="ingreso">
-  <main class="ingreso__cuerpo">
-    <span class="marca"><span class="marca__estrella"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>La Estrella</span>
-    <h1>¿Quién ingresa?</h1>
-    <p class="ingreso__sub">Tocá tu nombre y escribí tu PIN de 4 números.</p>
-    <div class="usuarios" id="usuarios"></div>
-    <div class="ingreso__pie">
-      <p><strong>Administración</strong> ve y controla todo: productos, precios, stock, compras, equipo, caja y reportes.<br><strong>Caja</strong> cobra y maneja su turno: no ve costos ni puede anular ventas.</p>
-      <p id="nota-primera" hidden style="margin-top:12px">La primera cuenta que se crea queda como administración. Las demás esperan su aprobación.</p>
-    </div>
-  </main>
+  <div class="ingreso__izq">
+    <header class="ingreso__cab">
+      <span class="marca"><span class="marca__estrella"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>La Estrella</span>
+      <h1>¿Quién ingresa?</h1>
+      <p class="ingreso__sub">Tocá tu nombre y escribí tu PIN de 4 números.</p>
+      <p class="ingreso__nota" id="nota-primera" hidden>La primera cuenta que se crea queda como administración. Las demás esperan su aprobación.</p>
+    </header>
+    <section class="ingreso__roles" aria-label="Qué puede hacer cada rol">
+      <div class="rol"><span class="rol__ic rol__ic--admin"><svg class="icon" aria-hidden="true"><use href="#i-chart-column"/></svg></span><div><strong>Administración</strong><p>Ve y controla todo: productos, precios, stock, compras, equipo, caja y reportes.</p></div></div>
+      <div class="rol"><span class="rol__ic rol__ic--caja"><svg class="icon" aria-hidden="true"><use href="#i-shopping-cart"/></svg></span><div><strong>Caja</strong><p>Cobra y maneja su turno. No ve costos ni puede anular ventas.</p></div></div>
+    </section>
+  </div>
+  <main class="ingreso__panel"><div class="usuarios" id="usuarios"></div></main>
 </div>
 <script src="js/iconos.js?v=7"></script>
 <script src="js/config.js?v=1"></script>
@@ -46,6 +49,6 @@
 <script src="js/datos.js?v=5"></script>
 <script src="js/nube.js?v=1"></script>
 <script src="js/ui.js?v=5"></script>
-<script src="js/login.js?v=5"></script>
+<script src="js/login.js?v=6"></script>
 </body>
 </html>

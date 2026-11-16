@@ -47,6 +47,9 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     con separadores finos, total grande, «En espera», «Anular» y «Cobrar» con nombre; Cobrar en violeta es lo único que
     llama). La última línea escaneada destella en rosa suave (el rosa solo marca lo recién pasado y los tickets en espera).
     La categoría elegida va en violeta suave. En el celular el ticket ocupa todo y los productos se eligen en una hoja.
+  - **Ingreso**, mismo método: en escritorio son dos zonas sin scroll (a la izquierda marca, título grande y qué hace cada rol
+    en dos tarjetas; a la derecha el panel blanco con los usuarios o con email/contraseña). En el celular se apila: título,
+    usuarios y, al final, los roles. Cada usuario es una fila clickeable con flecha; al pasar el mouse se marca en violeta.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

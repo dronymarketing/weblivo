@@ -16,8 +16,19 @@
 .barra .marca__texto, .barra__chips .txt-red { display: inline; }
 .menu-inline { display: flex; align-items: center; gap: 8px; }
 
-/* ---------- Ingreso ---------- */
-.ingreso__cuerpo { max-width: 520px; padding-top: 72px; }
+/* ---------- Ingreso: dos zonas, presentación a la izquierda y acceso a la derecha ---------- */
+.ingreso { display: grid; grid-template-columns: minmax(0, 1fr) minmax(440px, 38vw); padding: 0; background: var(--marco); }
+.ingreso__izq { display: flex; flex-direction: column; justify-content: center; gap: 56px; padding: 48px clamp(40px, 7vw, 120px); }
+.ingreso h1 { margin: 56px 0 12px; font-size: clamp(44px, 4.4vw, 60px); letter-spacing: -.045em; line-height: 1.04; }
+.ingreso__sub { font-size: 18px; margin-bottom: 0; max-width: 30ch; }
+.ingreso__nota { margin: 18px 0 0; max-width: 46ch; }
+.ingreso__roles { grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 0; max-width: 620px; }
+.rol { background: var(--superficie); padding: 16px; border-radius: var(--radio); box-shadow: var(--sombra); }
+.ingreso__panel { background: var(--superficie); box-shadow: -1px 0 0 var(--linea), -28px 0 56px -36px rgba(30, 40, 66, .16); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 48px clamp(32px, 4vw, 72px); }
+.ingreso__panel > * { width: 100%; max-width: 400px; }
+.usuario { background: var(--superficie-2); box-shadow: 0 0 0 1px var(--linea); }
+.usuario:not([disabled]):hover { background: var(--superficie); box-shadow: 0 0 0 1.5px var(--acento), 0 10px 24px -14px rgba(122, 83, 201, .5); }
+.usuario:not([disabled]):hover .usuario__ir { color: var(--acento); transform: translateX(3px); }
 
 /* ---------- Caja (POS): una pantalla sin scroll; el ticket es una tarjeta a la derecha ---------- */
 .txt-pos { display: inline; }

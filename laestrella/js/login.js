@@ -9,7 +9,7 @@
   function montarNube() {
     $('.ingreso h1').textContent = 'Ingresá'; $('.ingreso__sub').textContent = 'Con tu email y contraseña.';
     var perfil = LE.nube.perfil(), registro = false; var np = $('#nota-primera'); if (np) np.hidden = false;
-    lista.innerHTML = (perfil && perfil.activo ? '<a class="usuario" href="' + destinoPerfil(perfil) + '" style="background:var(--acento-suave);margin-bottom:14px"><span class="avatar avatar--acento">' + esc(UI.iniciales(perfil.nombre)) + '</span><span><span class="usuario__nombre">Seguir como ' + esc(perfil.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span></a>' : '') +
+    lista.innerHTML = (perfil && perfil.activo ? '<a class="usuario" href="' + destinoPerfil(perfil) + '" style="background:var(--acento-suave);margin-bottom:14px"><span class="avatar avatar--acento">' + esc(UI.iniciales(perfil.nombre)) + '</span><span><span class="usuario__nombre">Seguir como ' + esc(perfil.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span>' + UI.ico('chevron-right', 'usuario__ir') + '</a>' : '') +
       '<form id="acceso" novalidate>' +
       '<label class="campo" id="campo-nombre" hidden><span>Tu nombre y apellido</span><input name="nombre" class="entrada" autocomplete="name" maxlength="60"></label>' +
       '<label class="campo"><span>Email</span><input name="email" type="email" class="entrada" autocomplete="username" inputmode="email" autocapitalize="off"></label>' +
@@ -39,13 +39,13 @@
     var actual = LE.usuario(), html = '';
     if (actual) {
       html += '<a class="usuario" href="' + destino(actual) + '" style="background:var(--acento-suave)"><span class="avatar avatar--acento">' + esc(UI.iniciales(actual.nombre)) + '</span>' +
-        '<span><span class="usuario__nombre">Seguir como ' + esc(actual.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span></a>';
+        '<span><span class="usuario__nombre">Seguir como ' + esc(actual.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span>' + UI.ico('chevron-right', 'usuario__ir') + '</a>';
     }
     LE.usuarios().slice().sort(function (a, b) { return (b.activo - a.activo) || (a.rol === 'admin' ? -1 : 1); }).forEach(function (u) {
       html += '<button type="button" class="usuario" data-id="' + esc(u.id) + '"' + (u.activo ? '' : ' disabled') + '>' +
         '<span class="avatar' + (u.rol === 'admin' ? ' avatar--acento' : '') + '">' + esc(UI.iniciales(u.nombre)) + '</span>' +
         '<span><span class="usuario__nombre">' + esc(u.nombre) + '</span>' +
-        '<span class="usuario__rol">' + UI.rolNombre(u.rol) + (u.activo ? '' : ' · sin acceso') + '</span></span></button>';
+        '<span class="usuario__rol">' + UI.rolNombre(u.rol) + (u.activo ? '' : ' · sin acceso') + '</span></span>' + UI.ico('chevron-right', 'usuario__ir') + '</button>';
     });
     lista.innerHTML = html;
   }
