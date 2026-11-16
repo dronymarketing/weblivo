@@ -47,9 +47,9 @@
   }
   function accion(id) {
     ({
-      retiro: abrirRetiro, cerrar: abrirCierre, salir: function () { LE.salir(); location.href = '../index.html'; },
+      retiro: abrirRetiro, cerrar: abrirCierre, salir: function () { UI.hacer(function () { return LE.salir(); }).then(function (r) { if (r.ok) location.href = '../index.html'; }); },
       panel: function () { location.href = '../panel/'; },
-      jornada: function () { var r = UI.intentar(function () { return LE.marcarAsistencia(); }); if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada. Trabajaste ' + F.dur(r.valor.a.salida - r.valor.a.entrada) + '.', 'ok'); pintarBarra(); } },
+      jornada: function () { UI.hacer(function () { return LE.marcarAsistencia(); }).then(function (r) { if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada. Trabajaste ' + F.dur(r.valor.a.salida - r.valor.a.entrada) + '.', 'ok'); pintarBarra(); } }); },
       cliente: function () { S.cliente = !S.cliente; guardarEstado(); pintarCliente(); pintarBarra(); },
       reimprimir: function () { var v = LE.ultimaVenta(); if (!v) return UI.toast('Todavía no hay ventas.', 'error'); mostrarTicket(v, true); }
     })[id]();
@@ -60,7 +60,9 @@
   }
 
   /* ---------- Montaje ---------- */
+  var montadaAbierta = false;
   function montar() {
+    montadaAbierta = !!LE.turnoAbierto();
     pintarBarra();
     if (!LE.turnoAbierto()) return montarCerrada();
     pos.className = 'pos';
@@ -267,7 +269,7 @@
   /* ---------- Caja: abrir, retiro, cierre ---------- */
   function abrirCaja() {
     var base = UI.aCentavos($('#base').value);
-    var r = UI.intentar(function () { return LE.abrirCaja(base); }, 'Caja abierta. ¡Buen turno!'); if (r.ok) montar();
+    UI.hacer(function () { return LE.abrirCaja(base); }, 'Caja abierta. ¡Buen turno!').then(function (r) { if (r.ok) montar(); });
   }
   function abrirRetiro() {
     var t = LE.turnoAbierto(); if (!t) return;
@@ -292,8 +294,8 @@
         '<label class="campo"><span>Efectivo que hay en el cajón (contalo ahora)</span><input name="c" class="entrada" inputmode="decimal" autocomplete="off" placeholder="0"><small>Contá billetes y monedas. El sistema compara con lo que tendría que haber.</small></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Cerrar caja', clase: 'btn--tinta', cerrar: false, accion: function () {
         var v = UI.valores(ctl); if (v.c === '') { UI.toast('Escribí cuánto efectivo contaste.', 'error'); return false; }
-        var rr = UI.intentar(function () { return LE.cerrarCaja(UI.aCentavos(v.c)); }); if (!rr.ok) return false;
-        ctl.cerrar(); mostrarCierre(rr.valor); return false; } }]
+        UI.hacer(function () { return LE.cerrarCaja(UI.aCentavos(v.c)); }).then(function (rr) { if (rr.ok) { ctl.cerrar(); mostrarCierre(rr.valor); } });
+        return false; } }]
     });
   }
   function mostrarCierre(c) {
@@ -320,7 +322,7 @@
   /* ---------- Conexión ---------- */
   function conexion(offline) {
     LE.red.offline = offline;
-    if (!offline) { var r = UI.intentar(function () { return LE.sincronizar(); }); if (r.ok && r.valor) UI.toast('Volvió internet: se enviaron ' + r.valor + ' ventas guardadas.', 'ok'); else UI.toast('Conectado.', 'ok'); }
+    if (!offline) { UI.hacer(function () { return LE.sincronizar(); }).then(function (r) { if (r.ok && r.valor) UI.toast('Volvió internet: se enviaron ' + r.valor + ' ventas guardadas.', 'ok'); else if (r.ok) UI.toast('Conectado.', 'ok'); pintarBarra(); }); }
     else UI.toast('Sin internet: seguís vendiendo, las ventas quedan guardadas en la caja.', 'ok');
     pintarBarra();
   }
@@ -362,6 +364,14 @@
     if (e.target.id !== 'scan') return;
     var v = e.target.value.trim(); filtro.q = /^\d*$/.test(v) ? '' : v; if ($('#grilla')) pintarGrilla();
   });
+
+  /* ---------- Modo conectado: los datos nuevos del servidor refrescan la pantalla ---------- */
+  document.addEventListener('le:datos', function () {
+    if (UI.hayModal()) return;
+    var ab = !!LE.turnoAbierto(); if (ab !== montadaAbierta) { montar(); return; }
+    pintarBarra(); if ($('#grilla')) { pintarGrilla(); pintarTicket(); }
+  });
+  document.addEventListener('le:rechazo', function (e) { UI.toast('El servidor no aceptó una venta o retiro: ' + e.detail.error, 'error'); });
 
   /* ---------- Arranque ---------- */
   $('#nombre-usuario').textContent = usuario.nombre.split(' ')[0];

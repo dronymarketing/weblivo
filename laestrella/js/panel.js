@@ -298,7 +298,7 @@
         titulo: 'Anular ticket ' + F.num(v.num),
         cuerpo: '<div class="nota" style="margin-bottom:14px">' + ico('triangle-alert') + '<span>El stock vuelve a sumarse y el cobro deja de contar en los reportes. Queda anotado a tu nombre.</span></div>' +
           '<label class="campo"><span>Motivo</span><select name="m" class="entrada"><option>Error de cobro</option><option>Devolución del cliente</option><option>Producto equivocado</option><option>Otro</option></select></label><label class="campo"><span>Detalle (opcional)</span><input name="d" class="entrada" maxlength="80"></label>',
-        acciones: [{ texto: 'Volver', clase: 'btn--linea' }, { texto: 'Anular venta', clase: 'btn--peligro', cerrar: false, accion: function () { var x = UI.valores(ctl); var r = UI.intentar(function () { LE.anularVenta(id, x.m + (x.d ? ': ' + x.d : '')); }, 'Venta anulada.'); if (r.ok) { ctl.cerrar(); P.refrescar(); } return false; } }]
+        acciones: [{ texto: 'Volver', clase: 'btn--linea' }, { texto: 'Anular venta', clase: 'btn--peligro', cerrar: false, accion: function () { var x = UI.valores(ctl); UI.hacer(function () { return LE.anularVenta(id, x.m + (x.d ? ': ' + x.d : '')); }, 'Venta anulada.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
       });
     },
     csv: function () {
@@ -344,8 +344,9 @@
       var ctl = UI.modal({
         titulo: nuevo ? 'Nuevo producto' : 'Editar producto', ancha: true,
         cuerpo: (p.foto ? '<div class="foto-form">' + UI.foto(p, 'foto--grande') + '<small class="suave">Foto de ejemplo del producto</small></div>' : '') + '<label class="campo"><span>Nombre (máx. 28 letras, para que entre en el ticket)</span><input name="nombre" class="entrada" maxlength="28" value="' + esc(p.nombre) + '"></label>' +
-          '<div class="fila-campos"><label class="campo"><span>Categoría</span><select name="cat" class="entrada">' + UI.opciones(LE.categorias(), p.cat) + '</select></label>' +
+          '<div class="fila-campos"><label class="campo"><span>Categoría</span><select name="cat" class="entrada">' + UI.opciones(LE.categorias(), p.cat) + '<option value="__nueva"' + (LE.categorias().length ? '' : ' selected') + '>Otra categoría…</option></select></label>' +
           '<label class="campo"><span>Se vende por</span><select name="unidad" class="entrada"><option value="u"' + (p.unidad === 'u' ? ' selected' : '') + '>Unidad</option><option value="kg"' + (p.unidad === 'kg' ? ' selected' : '') + '>Peso (kg)</option></select></label></div>' +
+          '<label class="campo" id="f-catnueva" hidden><span>Nombre de la categoría nueva</span><input name="catNueva" class="entrada" maxlength="40" placeholder="Ej.: Almacén"></label>' +
           '<div id="f-codigo"><label class="campo"><span>Código de barras</span><input name="codigo" class="entrada" inputmode="numeric" autocomplete="off" value="' + esc(p.codigo) + '" placeholder="Escaneálo con el lector"><small>Poné el cursor acá y pasá el producto por el lector: el código se escribe solo.</small></label></div>' +
           '<div id="f-plu" hidden><label class="campo"><span>Código de balanza (PLU, 5 números)</span><input name="plu" class="entrada" inputmode="numeric" maxlength="5" value="' + esc(p.plu) + '"><small id="f-ejemplo"></small></label></div>' +
           '<div class="fila-campos"><label class="campo"><span>Costo</span><input name="costo" class="entrada" inputmode="decimal" value="' + UI.deCentavos(p.costo) + '"></label><label class="campo"><span>Precio de venta</span><input name="precio" class="entrada" inputmode="decimal" value="' + UI.deCentavos(p.precio) + '"></label></div>' +
@@ -354,15 +355,15 @@
           '<label class="campo"><span>' + (nuevo ? 'Stock inicial' : 'Stock actual') + '</span><input name="stockInicial" class="entrada" inputmode="decimal" value="' + p.stock + '"' + (nuevo ? '' : ' disabled') + '>' + (nuevo ? '' : '<small>Se cambia desde Stock → Ajustar.</small>') + '</label></div>' +
           '<div class="fila-campos"><label class="campo"><span>Proveedor</span><select name="prov" class="entrada">' + UI.opciones(LE.proveedores(), p.prov, 'Sin proveedor') + '</select></label>' +
           '<label class="campo"><span>IVA' + (regimen === 'monotributo' ? ' (hoy no se cobra: monotributo)' : '') + '</span><select name="iva" class="entrada">' + [22, 10, 0].map(function (x) { return '<option value="' + x + '"' + (p.iva === x ? ' selected' : '') + '>' + (x ? x + ' %' : 'Exento') + '</option>'; }).join('') + '</select></label></div>',
-        acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }].concat(nuevo ? [] : [{ texto: p.activo ? 'Dar de baja' : 'Reactivar', clase: 'btn--linea', cerrar: false, accion: function (c) { var r = UI.intentar(function () { LE.activarProducto(id, !p.activo); }, p.activo ? 'Producto dado de baja.' : 'Producto reactivado.'); if (r.ok) { c.cerrar(); P.refrescar(); } return false; } }]).concat([{ texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: guardar }])
+        acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }].concat(nuevo ? [] : [{ texto: p.activo ? 'Dar de baja' : 'Reactivar', clase: 'btn--linea', cerrar: false, accion: function (c) { UI.hacer(function () { return LE.activarProducto(id, !p.activo); }, p.activo ? 'Producto dado de baja.' : 'Producto reactivado.').then(function (r) { if (r.ok) { c.cerrar(); P.refrescar(); } }); return false; } }]).concat([{ texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: guardar }])
       });
       function guardar() {
         var v = UI.valores(ctl);
-        var r = UI.intentar(function () { return LE.guardarProducto({ id: id, nombre: v.nombre, cat: v.cat, unidad: v.unidad, codigo: v.codigo, plu: v.plu, costo: UI.aCentavos(v.costo), precio: UI.aCentavos(v.precio), iva: v.iva, minimo: UI.aNumero(v.minimo), prov: v.prov, stockInicial: UI.aNumero(v.stockInicial) }); }, 'Producto guardado.');
-        if (r.ok) { ctl.cerrar(); P.refrescar(); } return false;
+        UI.hacer(function () { return LE.guardarProducto({ id: id, nombre: v.nombre, cat: v.cat === '__nueva' ? String(v.catNueva || '').trim() : v.cat, unidad: v.unidad, codigo: v.codigo, plu: v.plu, costo: UI.aCentavos(v.costo), precio: UI.aCentavos(v.precio), iva: v.iva, minimo: UI.aNumero(v.minimo), prov: v.prov, stockInicial: UI.aNumero(v.stockInicial) }); }, 'Producto guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } });
+        return false;
       }
       function ver() {
-        var v = UI.valores(ctl), kg = v.unidad === 'kg'; ctl.$('#f-codigo').hidden = kg; ctl.$('#f-plu').hidden = !kg;
+        var v = UI.valores(ctl), kg = v.unidad === 'kg'; ctl.$('#f-codigo').hidden = kg; ctl.$('#f-plu').hidden = !kg; ctl.$('#f-catnueva').hidden = v.cat !== '__nueva';
         var c = UI.aCentavos(v.costo), pr = UI.aCentavos(v.precio);
         ctl.$('#f-margen').textContent = pr ? 'Ganancia por ' + (kg ? 'kilo' : 'unidad') + ': ' + F.din(pr - c) + ' (' + Math.round((pr - c) * 100 / pr) + ' % del precio)' : '';
         var pl = ctl.$('#f-ejemplo'); pl.textContent = kg && /^\d{5}$/.test(v.plu) ? 'Etiqueta de 350 g: ' + LE.ean13(LE.negocio().balanza.prefijo + v.plu + '00350') : 'La balanza imprime este PLU dentro del código de la etiqueta.';
@@ -378,6 +379,7 @@
   function ir() {
     var k = (location.hash.replace(/^#\/?/, '') || 'inicio').split('?')[0]; if (!P.rutas[k]) k = 'inicio';
     P.actual = k; P.rutas[k].entrar(); $('#miga').textContent = P.rutas[k].titulo;
+    if (LE.nubeActiva && LE.nube) LE.nube.cargar().catch(function () { });   // datos frescos del servidor al cambiar de sección
     UI.$$('.menu__link[data-vista]').forEach(function (a) { if (a.dataset.vista === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     cerrarMenu(); document.title = P.rutas[k].titulo + ' — La Estrella'; window.scrollTo(0, 0);
   }
@@ -388,7 +390,7 @@
     var t = e.target;
     if (t.closest('#btn-menu')) { $('#menu').classList.add('menu--abierto'); $('#btn-menu').setAttribute('aria-expanded', 'true'); return; }
     if (t.closest('#menu-cerrar')) return cerrarMenu();
-    if (t.closest('#salir')) { LE.salir(); location.href = '../index.html'; return; }
+    if (t.closest('#salir')) { UI.hacer(function () { return LE.salir(); }).then(function (r) { if (r.ok) location.href = '../index.html'; }); return; }
     var rg = t.closest('[data-rango]');
     if (rg) { var S = P.est(P.actual); S.rango = rg.dataset.rango; UI.$$('[data-rango]').forEach(function (c) { c.setAttribute('aria-pressed', c === rg ? 'true' : 'false'); }); P.refrescar(); return; }
     var fc = t.closest('button[data-filtro]');
@@ -407,6 +409,7 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('#menu').classList.contains('menu--abierto') && !UI.hayModal()) cerrarMenu(); });
 
+  document.addEventListener('le:datos', function () { if (!UI.hayModal() && P.actual) P.refrescar(); });
   $('#bar-avatar').textContent = UI.iniciales(usuario.nombre); $('#bar-nombre').textContent = usuario.nombre; $('#pie-nombre').textContent = usuario.nombre; $('#pie-rol').textContent = 'Administración · control total';
   P.acciones = P.acciones || {}; P.iniciar = ir;
   P.acciones.registro = function () { P.est('equipo', { tab: 'personas', rango: '7', q: '' }).tab = 'registro'; };

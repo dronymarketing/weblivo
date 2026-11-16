@@ -59,7 +59,7 @@
         '<label class="campo"><span>Motivo</span><select name="motivo" class="entrada"><option>Conteo de inventario</option><option>Vencido o en mal estado</option><option>Rotura</option><option>Merma</option><option>Faltante sin explicar</option><option>Error de carga</option></select></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar ajuste', clase: 'btn--tinta', cerrar: false, accion: function () {
         var v = UI.valores(ctl), delta = Math.round((UI.aNumero(v.real) - p.stock) * 1000) / 1000;
-        var r = UI.intentar(function () { LE.ajustarStock(id, delta, v.motivo); }, 'Stock ajustado.'); if (r.ok) { ctl.cerrar(); P.refrescar(); } return false; } }]
+        UI.hacer(function () { return LE.ajustarStock(id, delta, v.motivo); }, 'Stock ajustado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
     });
     function dif() { var d = Math.round((UI.aNumero(ctl.$('[name=real]').value) - p.stock) * 1000) / 1000; ctl.$('#aj-dif').textContent = d ? 'Diferencia: ' + (d > 0 ? '+' : '−') + (kg ? F.kg(Math.abs(d)) : F.cant(Math.abs(d))) : 'Sin diferencia'; }
     ctl.$('[name=real]').addEventListener('input', dif); dif(); ctl.$('[name=real]').select();
@@ -103,9 +103,9 @@
   };
   P.acciones.recibir = function (id) {
     var c = LE.compras().filter(function (x) { return x.id === id; })[0];
-    UI.confirmar('Recibir la compra', 'Llegaron los ' + c.items.length + ' productos de C-' + LE.pad(c.num, 4) + '. El stock sube y el costo de cada producto se actualiza.', { ok: 'Sí, recibir' }).then(function (si) { if (si) { var r = UI.intentar(function () { LE.recibirCompra(id); }, 'Compra recibida: el stock subió.'); if (r.ok) P.refrescar(); } });
+    UI.confirmar('Recibir la compra', 'Llegaron los ' + c.items.length + ' productos de C-' + LE.pad(c.num, 4) + '. El stock sube y el costo de cada producto se actualiza.', { ok: 'Sí, recibir' }).then(function (si) { if (si) { UI.hacer(function () { return LE.recibirCompra(id); }, 'Compra recibida: el stock subió.').then(function (r) { if (r.ok) P.refrescar(); }); } });
   };
-  P.acciones.pagar = function (id) { var r = UI.intentar(function () { LE.pagarCompra(id); }, 'Compra marcada como paga.'); if (r.ok) P.refrescar(); };
+  P.acciones.pagar = function (id) { UI.hacer(function () { return LE.pagarCompra(id); }, 'Compra marcada como paga.').then(function (r) { if (r.ok) P.refrescar(); }); };
   P.acciones['compra-nueva'] = function () {
     var ps = LE.productos(true).slice().sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); });
     var lineas = [{ p: '', c: '', k: '' }];
@@ -115,7 +115,7 @@
         '<button type="button" class="btn btn--chico btn--linea" id="lc-mas">' + ico('plus') + 'Agregar producto</button><p class="resumen-pago"><span>Total</span><strong id="lc-tot">$ 0</strong></p>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Registrar pedido', clase: 'btn--tinta', cerrar: false, accion: function () {
         var prov = ctl.$('[name=prov]').value;
-        var r = UI.intentar(function () { return LE.guardarCompra({ prov: prov, items: lineas.map(function (l) { return { p: l.p, c: UI.aNumero(l.c), k: UI.aCentavos(l.k) }; }) }); }, 'Pedido registrado. Cuando llegue, tocá “Recibir”.'); if (r.ok) { ctl.cerrar(); P.refrescar(); } return false; } }]
+        UI.hacer(function () { return LE.guardarCompra({ prov: prov, items: lineas.map(function (l) { return { p: l.p, c: UI.aNumero(l.c), k: UI.aCentavos(l.k) }; }) }); }, 'Pedido registrado. Cuando llegue, tocá “Recibir”.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
     });
     function pintar() {
       ctl.$('#lc').innerHTML = lineas.map(function (l, i) {
@@ -133,7 +133,7 @@
     var ctl = UI.modal({
       titulo: id ? 'Editar proveedor' : 'Nuevo proveedor',
       cuerpo: ['nombre|Nombre', 'contacto|Persona de contacto', 'telefono|Teléfono', 'email|Email', 'rubro|Qué nos vende'].map(function (x) { var k = x.split('|'); return '<label class="campo"><span>' + k[1] + '</span><input name="' + k[0] + '" class="entrada" value="' + esc(v[k[0]]) + '"></label>'; }).join(''),
-      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () { var d = UI.valores(ctl); d.id = id; var r = UI.intentar(function () { LE.guardarProveedor(d); }, 'Proveedor guardado.'); if (r.ok) { ctl.cerrar(); P.refrescar(); } return false; } }]
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () { var d = UI.valores(ctl); d.id = id; UI.hacer(function () { return LE.guardarProveedor(d); }, 'Proveedor guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
     });
   }
   P.acciones['prov-nuevo'] = function () { formProv(); }; P.acciones.prov = function (id) { formProv(id); };
@@ -253,21 +253,24 @@
           ['y', 'Abre y cierra su turno de caja'], ['y', 'Escanea, cobra e imprime tickets'], ['y', 'Hace retiros de efectivo (quedan anotados)'], ['y', 'Marca su entrada y salida'], ['n', 'No ve costos ni ganancias'], ['n', 'No cambia precios ni stock'], ['n', 'No anula ventas ya cobradas'], ['n', 'No ve los reportes ni al resto del equipo']].map(function (x) { return '<li><span class="' + (x[0] === 'y' ? 'si' : 'no') + '">' + ico(x[0] === 'y' ? 'circle-check' : 'ban') + '</span><span>' + x[1] + '</span></li>'; }).join('') + '</ul></section></div>');
     }
   };
-  P.acciones['mi-jornada'] = function () { var r = UI.intentar(function () { return LE.marcarAsistencia(); }, null); if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada.', 'ok'); P.rutas.equipo.entrar(); } };
+  P.acciones['mi-jornada'] = function () { UI.hacer(function () { return LE.marcarAsistencia(); }).then(function (r) { if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada.', 'ok'); P.rutas.equipo.entrar(); } }); };
   function formPersona(id) {
     var u = id ? LE.usuarios().filter(function (x) { return x.id === id; })[0] : { nombre: '', email: '', rol: 'caja', pin: '', activo: true }, yo = id === usuario.id;
     var ctl = UI.modal({
       titulo: id ? 'Editar persona' : 'Nueva persona',
-      cuerpo: '<label class="campo"><span>Nombre y apellido</span><input name="nombre" class="entrada" maxlength="60" value="' + esc(u.nombre) + '"></label><label class="campo"><span>Email</span><input name="email" class="entrada" type="email" value="' + esc(u.email) + '"></label>' +
+      cuerpo: '<label class="campo"><span>Nombre y apellido</span><input name="nombre" class="entrada" maxlength="60" value="' + esc(u.nombre) + '"></label><label class="campo"><span>Email</span><input name="email" class="entrada" type="email" value="' + esc(u.email) + '"' + (LE.nubeActiva ? ' readonly' : '') + '></label>' +
         '<div class="fila-campos"><label class="campo"><span>Rol</span><select name="rol" class="entrada"' + (yo ? ' disabled' : '') + '><option value="caja"' + (u.rol === 'caja' ? ' selected' : '') + '>Caja</option><option value="admin"' + (u.rol === 'admin' ? ' selected' : '') + '>Administración</option></select>' + (yo ? '<small>No podés cambiar tu propio rol.</small>' : '') + '</label>' +
-        '<label class="campo"><span>PIN (4 números)</span><input name="pin" class="entrada" inputmode="numeric" maxlength="4" autocomplete="off" value="' + esc(u.pin) + '"></label></div>' +
+        (LE.nubeActiva ? '' : '<label class="campo"><span>PIN (4 números)</span><input name="pin" class="entrada" inputmode="numeric" maxlength="4" autocomplete="off" value="' + esc(u.pin) + '"></label>') + '</div>' +
         '<label class="interruptor"><span>Tiene acceso al sistema' + (yo ? ' (no podés desactivarte)' : '') + '</span><input type="checkbox" name="activo"' + (u.activo ? ' checked' : '') + (yo ? ' disabled' : '') + '></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () {
         var v = UI.valores(ctl); if (yo) { v.rol = u.rol; v.activo = u.activo; } v.id = id;
-        var r = UI.intentar(function () { LE.guardarUsuario(v); }, 'Cambios guardados.'); if (r.ok) { ctl.cerrar(); P.refrescar(); } return false; } }]
+        UI.hacer(function () { return LE.guardarUsuario(v); }, 'Cambios guardados.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
     });
   }
-  P.acciones['persona-nueva'] = function () { formPersona(); }; P.acciones.persona = function (id) { formPersona(id); };
+  P.acciones['persona-nueva'] = function () {
+    if (!LE.nubeActiva) return formPersona();
+    UI.modal({ titulo: 'Sumar a una persona', cuerpo: '<p>Cada persona crea su propia cuenta desde la pantalla de ingreso, tocando <strong>Crear cuenta nueva</strong> (con su email y una contraseña).</p><p style="margin-top:10px">Después aparece acá como <strong>Sin acceso</strong>: la editás, le elegís el rol (Caja o Administración) y la activás.</p>', acciones: [{ texto: 'Entendido', clase: 'btn--tinta' }] });
+  }; P.acciones.persona = function (id) { formPersona(id); };
 
   /* ============================ AJUSTES ============================ */
   P.rutas.ajustes = {
@@ -285,11 +288,11 @@
         '<p class="suave" style="font-size:14px;margin-bottom:12px">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div></div>' +
         '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>Factura electrónica</h3><p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
         '<section class="tarjeta"><h3>Créditos de las fotos</h3><p class="suave" style="font-size:14px;line-height:1.5">Las fotos de los envases vienen de <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>, Open Products Facts y Open Beauty Facts (licencia <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.es" target="_blank" rel="noopener">CC BY-SA 3.0</a>), y las de productos frescos de <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>, cada una con su autor y licencia. La lista completa está en <span class="mono">img/productos/CREDITOS.md</span>.</p></section>' +
-        '<section class="tarjeta"><h3>Datos del sistema</h3><p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section></div>');
+        (LE.nubeActiva ? '<section class="tarjeta"><h3>Base de datos</h3><p class="suave">Conectada a Supabase. Los cambios se guardan en la nube y los ven todas las terminales. Las ventas hechas sin internet se envían solas cuando vuelve la conexión.</p></section>' : '<section class="tarjeta"><h3>Datos del sistema</h3><p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section>') + '</div>');
     }
   };
-  P.acciones['guardar-negocio'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-neg')); } }); var r = UI.intentar(function () { LE.guardarNegocio(v); }, 'Datos guardados.'); if (r.ok) P.refrescar(); };
-  P.acciones['guardar-medios'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-med')); } }); if (!Object.keys(v).some(function (k) { return v[k]; })) return UI.toast('Dejá al menos un medio de pago.', 'error'); var r = UI.intentar(function () { LE.guardarNegocio({ medios: v }); }, 'Medios de pago guardados.'); if (r.ok) P.refrescar(); };
-  P.acciones['guardar-balanza'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-bal')); } }); var r = UI.intentar(function () { LE.guardarNegocio({ balanza: { prefijo: v.prefijo, modo: v.modo } }); }, 'Balanza guardada.'); if (r.ok) P.refrescar(); };
+  P.acciones['guardar-negocio'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-neg')); } }); UI.hacer(function () { return LE.guardarNegocio(v); }, 'Datos guardados.').then(function (r) { if (r.ok) P.refrescar(); }); };
+  P.acciones['guardar-medios'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-med')); } }); if (!Object.keys(v).some(function (k) { return v[k]; })) return UI.toast('Dejá al menos un medio de pago.', 'error'); UI.hacer(function () { return LE.guardarNegocio({ medios: v }); }, 'Medios de pago guardados.').then(function (r) { if (r.ok) P.refrescar(); }); };
+  P.acciones['guardar-balanza'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-bal')); } }); UI.hacer(function () { return LE.guardarNegocio({ balanza: { prefijo: v.prefijo, modo: v.modo } }); }, 'Balanza guardada.').then(function (r) { if (r.ok) P.refrescar(); }); };
   P.acciones.reset = function () { UI.confirmar('Restablecer los datos', 'Se borra todo lo que cargaste y se vuelven a generar los datos iniciales.', { ok: 'Restablecer', peligro: true }).then(function (si) { if (si) { LE.reset(); location.href = '../index.html'; } }); };
 })();

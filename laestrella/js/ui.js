@@ -82,6 +82,20 @@
     catch (e) { UI.toast(e.message || 'No se pudo hacer.', 'error'); UI.beep(false); return { ok: false, error: e }; }
   };
 
+  /* Ejecuta una acción que puede ser inmediata (modo de ejemplo) o ir al servidor (modo conectado).
+     Siempre devuelve una promesa {ok, valor|error}. Mientras espera, no deja mandar la orden dos veces. */
+  var enCurso = false;
+  UI.hacer = function (fn, okMsg) {
+    if (enCurso) return Promise.resolve({ ok: false, ignorado: true });
+    enCurso = true; document.body.classList.add('ocupado');
+    var fin = function () { enCurso = false; document.body.classList.remove('ocupado'); };
+    return new Promise(function (res) {
+      var bien = function (v) { fin(); if (okMsg) UI.toast(okMsg, 'ok'); res({ ok: true, valor: v }); };
+      var mal = function (e) { fin(); if (!(e && e.aviso)) { UI.toast((e && e.message) || 'No se pudo hacer.', 'error'); UI.beep(false); } res({ ok: false, error: e }); };
+      try { var r = fn(); if (r && typeof r.then === 'function') r.then(bien, mal); else bien(r); } catch (e) { mal(e); }
+    });
+  };
+
   /* ---------- Sonido del lector ---------- */
   var audio;
   UI.beep = function (ok) {

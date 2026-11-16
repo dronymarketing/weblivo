@@ -10,13 +10,19 @@
 (function () {
   'use strict';
 
-  var KEY = 'laestrella_v2';
+  // Modo conectado: si js/config.js tiene la dirección y la clave de Supabase, los datos viven en la nube
+  var NUBE = !!(window.LE_CONFIG && window.LE_CONFIG.url && window.LE_CONFIG.clave);
+  var KEY = NUBE ? 'laestrella_nube_v1' : 'laestrella_v2';
   var KEY_SESION = 'laestrella_sesion_v2';
+  var KEY_PERFIL = 'laestrella_perfil_v1';
   var DIA = 86400000, HORA = 3600000;
 
   /* ---------- utilidades ---------- */
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function uid(p) { return (p || 'id') + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function uid(p) {
+    if (NUBE && window.crypto && crypto.randomUUID) return crypto.randomUUID(); // la base exige identificadores únicos universales
+    return (p || 'id') + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
   function inicioDia(ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
   function r2(n) { return Math.round(n); }
   function ean13Digito(d12) { var s = 0; for (var i = 0; i < 12; i++) s += (+d12[i]) * (i % 2 ? 3 : 1); return String((10 - s % 10) % 10); }
@@ -125,6 +131,13 @@
       productos: [], ventas: [], turnos: [], movCaja: [], movStock: [], compras: [], asistencias: [], auditoria: [],
       contador: { venta: 0, compra: 0 }
     };
+  }
+
+  // Modo conectado: arranca sin nada; todo lo trae el servidor
+  function estadoVacio() {
+    var e = nuevoEstado();
+    e.usuarios = []; e.categorias = []; e.proveedores = []; e.outbox = []; e.rechazadas = []; e.mensual = []; e.ultAct = null; e.offline = false;
+    return e;
   }
 
   /* ---------- siembra de datos de muestra ---------- */
@@ -273,9 +286,16 @@
     } catch (e) { }
     return null;
   }
-  function iniciar() { E = cargar(); if (!E) { E = sembrar(); guardar(); } LE.estado = E; return E; }
+  function iniciar() {
+    E = cargar();
+    if (!E) { E = NUBE ? estadoVacio() : sembrar(); guardar(); }
+    if (NUBE) { E.offline = false; E.outbox = E.outbox || []; E.rechazadas = E.rechazadas || []; }
+    LE.estado = E; return E;
+  }
 
-  function yo() { try { var id = localStorage.getItem(KEY_SESION); if (!id) return null; var u = E.usuarios.filter(function (x) { return x.id === id && x.activo; })[0]; return u || null; } catch (e) { return null; } }
+  function yo() {
+    if (NUBE) { try { var pf = JSON.parse(localStorage.getItem(KEY_PERFIL)); return pf && pf.activo ? pf : null; } catch (e) { return null; } }
+    try { var id = localStorage.getItem(KEY_SESION); if (!id) return null; var u = E.usuarios.filter(function (x) { return x.id === id && x.activo; })[0]; return u || null; } catch (e) { return null; } }
   function exigir() { var roles = [].slice.call(arguments), u = yo(); if (!u || roles.indexOf(u.rol) < 0) throw new Error('No tenés permiso para hacer esto.'); return u; }
   function anotar(accion, nombre) { var u = yo(); E.auditoria.push({ id: uid('x'), ts: Date.now(), usuario: nombre || (u ? u.nombre : 'Sistema'), accion: String(accion).slice(0, 300) }); }
   function porId(lista, id) { for (var i = 0; i < lista.length; i++) if (lista[i].id === id) return lista[i]; return null; }
@@ -285,9 +305,9 @@
 
   /* ---------- API ---------- */
   var LE = {
-    estado: null, fmt: fmt, MEDIOS: MEDIOS, ean13: ean13, eanValido: eanValido, uid: uid, inicioDia: inicioDia, pad: pad,
+    estado: null, nubeActiva: NUBE, KEY_PERFIL: KEY_PERFIL, fmt: fmt, MEDIOS: MEDIOS, ean13: ean13, eanValido: eanValido, uid: uid, inicioDia: inicioDia, pad: pad,
     init: iniciar,
-    reset: function () { E = sembrar(); LE.estado = E; guardar(); try { localStorage.removeItem(KEY_SESION); } catch (e) { } },
+    reset: function () { if (NUBE) return; E = sembrar(); LE.estado = E; guardar(); try { localStorage.removeItem(KEY_SESION); } catch (e) { } },
     guardar: guardar,
     red: { get offline() { return !!E.offline; }, set offline(v) { E.offline = !!v; guardar(); } },
 

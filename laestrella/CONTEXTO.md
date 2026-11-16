@@ -42,26 +42,49 @@ laestrella/
   js/panel.js           panel: núcleo, Inicio, Ventas, Productos, gráficos
   js/panel-gestion.js   panel: Stock, Compras, Caja, Reportes, Equipo, Ajustes
   js/iconos.js          sprite Lucide generado desde lucide-static (no hay paths a mano)
+  js/config.js          dirección y clave pública del proyecto de Supabase (vacío = datos de ejemplo)
+  js/nube.js            modo conectado: ingreso, copia local, cola de ventas sin internet
+  lib/supabase.min.js   cliente oficial de Supabase (v2.119), guardado en el proyecto
+  supabase/esquema.sql  la base real (tablas, reglas, funciones)  ·  LEEME.md: cómo conectar
+  supabase/semilla-ejemplo.sql  87 productos de ejemplo (opcional, solo para probar)
 ```
 
-## Cómo está pensada la "base" (para pasarla a Supabase)
+## Conexión con Supabase
 
-`js/datos.js` hace lo que después harán funciones del servidor, igual que `crear_reserva` o `cerrar_caja`
-en Parking: **controlan el rol, calculan los importes y anotan en la auditoría**. La pantalla nunca manda
-un precio: manda producto y cantidad, y el servidor pone el precio.
+**Estado:** el código y el esquema están hechos y probados, pero **no hay un proyecto de Supabase conectado todavía**.
+`js/config.js` está vacío, así que el sistema sigue en modo de ejemplo. Para conectar: `supabase/LEEME.md`.
 
-| Función de datos.js | Equivalente en Supabase |
+- **Mismo criterio que Parking Despegar:** RLS en todas las tablas y **ninguna política**; toda lectura y escritura pasa
+  por funciones del servidor (`security definer`) que controlan el rol, calculan los importes y anotan en `auditoria`.
+  La primera cuenta es administración (`admin`); las demás quedan «sin acceso» hasta que se aprueban.
+- **Login:** email y contraseña de Supabase Auth. **No hay PIN en el modo conectado** (la contraseña mínima de Supabase
+  es de 6 caracteres). Un PIN rápido para cambiar de cajera queda para después.
+- **Lectura:** `snap_base()` y `snap_ventas()` devuelven los datos según el rol (caja no recibe costos, compras,
+  proveedores ni auditoría). El navegador guarda una copia local y la refresca al entrar, al cambiar de sección,
+  después de cada cambio y cada 45 s.
+- **Venta y retiro de efectivo:** se registran al instante en la terminal y viajan en cola (`E.outbox`). Cada venta lleva
+  un UUID que genera la caja: `crear_venta` es idempotente. Sin internet se sigue vendiendo; no se puede cerrar la caja
+  ni salir con ventas sin enviar. Si el servidor rechaza una venta por una regla (p. ej. producto dado de baja mientras
+  la caja estaba sin conexión), queda en `E.rechazadas` y se avisa; no traba la cola.
+- **El precio lo pone el servidor** a partir de la tabla `productos`; el número de ticket lo propone la caja (una sola caja).
+- **Pruebas hechas** contra un Postgres 16 local (con un reemplazo mínimo de `auth` y de la API): 63 del esquema,
+  46 del módulo de conexión y 25 recorriendo la pantalla real en un navegador (alta de cuentas, aprobación, venta,
+  corte y vuelta de internet). **Sin probar contra un Supabase real**: puede haber diferencias menores.
+- **Pendiente:** copias de seguridad propias (como en Parking), importar productos desde CSV, PIN rápido,
+  múltiples cajas (hoy el número de ticket asume una sola).
+
+## Cómo mapea cada función (modo de ejemplo → servidor)
+
+| Modo de ejemplo (`datos.js`) | Servidor (`esquema.sql`) |
 |---|---|
-| `crearVenta` (idempotente por `id`) | `crear_venta()`; el `id` lo genera la caja para no duplicar al reenviar |
-| `abrirCaja` / `egresoCaja` / `cerrarCaja` | funciones con `exigir_rol('admin','caja')`; una sola caja abierta (índice único) |
-| `anularVenta`, `guardarProducto`, `guardarUsuario`, `ajustarStock`, compras | solo `admin` |
-| `guardarUsuario` | nadie cambia su propio rol ni se desactiva; siempre queda una cuenta de administración activa |
-| `marcarAsistencia` | igual que Parking (`asistencias`) |
+| `crearVenta` | `crear_venta(p)`, idempotente por `id`; precios de la base |
+| `abrirCaja` / `egresoCaja` / `cerrarCaja` | `abrir_caja` / `egreso_caja` / `cerrar_caja`; una sola caja abierta (índice único) |
+| `anularVenta`, `guardarProducto`, `ajustarStock`, compras | solo `admin` |
+| `guardarUsuario` | `guardar_usuario`: nadie cambia su propio rol; siempre queda una administración activa |
+| `marcarAsistencia` | `marcar_asistencia` |
 | `auditoria` | tabla `auditoria` escrita solo por el servidor |
 
-Montos en **centavos** (enteros); cantidades por peso en kg con 3 decimales. Tablas previstas: `perfiles`,
-`productos`, `categorias`, `proveedores`, `compras`, `compra_items`, `ventas`, `venta_items`, `venta_pagos`,
-`caja_turnos`, `caja_movimientos`, `stock_movimientos`, `asistencias`, `auditoria`, `negocio`. RLS en todas.
+Montos en **centavos** (enteros); cantidades por peso en kg con 3 decimales.
 
 ## Lector y balanza
 
