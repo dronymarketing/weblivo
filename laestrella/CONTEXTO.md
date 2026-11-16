@@ -66,7 +66,11 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     existe, se sigue a mano). Después solo falta el precio; «Guardar y escanear otro» deja listo el siguiente. En la **caja**, si
     Administración escanea un código que no está cargado se abre el alta rápida (nombre sugerido, precio, costo, categoría) y el
     producto se agrega al ticket; la próxima vez se escanea y ya se sabe qué es y cuánto sale. Si el que escanea es Caja, ve el
-    aviso «Avisale a Administración». Pendiente: lista de «códigos sin cargar» que dejó la caja para que Administración los resuelva.
+    aviso. Todo código desconocido que se escanea en la caja (por Caja o por Administración) se anota en la **lista de códigos sin cargar**
+    (`LE.registrarCodigo`; en modo conectado va en una cola propia que no traba el cierre de caja y se envía sola con internet, a la tabla
+    `codigos_sin_cargar` por la función `registrar_codigo`). Administración la ve en Productos → solapa «Sin cargar · N» (más pedidos primero,
+    con cuántas veces y quién escaneó), y en el Inicio como aviso. «Cargar» abre el alta con el código y el nombre ya sugeridos; al guardar el
+    producto el código sale solo de la lista; «Descartar» lo saca (si se vuelve a escanear, reaparece). Máximo 500 códigos pendientes.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

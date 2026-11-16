@@ -136,7 +136,7 @@
   // Modo conectado: arranca sin nada; todo lo trae el servidor
   function estadoVacio() {
     var e = nuevoEstado();
-    e.usuarios = []; e.categorias = []; e.proveedores = []; e.outbox = []; e.rechazadas = []; e.mensual = []; e.ultAct = null; e.offline = false;
+    e.usuarios = []; e.categorias = []; e.proveedores = []; e.outbox = []; e.rechazadas = []; e.mensual = []; e.sinCargar = []; e.codigosCola = []; e.ultAct = null; e.offline = false;
     return e;
   }
 
@@ -289,6 +289,7 @@
   function iniciar() {
     E = cargar();
     if (!E) { E = NUBE ? estadoVacio() : sembrar(); guardar(); }
+    E.sinCargar = E.sinCargar || []; E.codigosCola = E.codigosCola || [];
     if (NUBE) { E.offline = false; E.outbox = E.outbox || []; E.rechazadas = E.rechazadas || []; }
     LE.estado = E; return E;
   }
@@ -379,8 +380,20 @@
       p.nombre = nombre; p.cat = d.cat; p.unidad = d.unidad; p.codigo = d.unidad === 'kg' ? '' : cod; p.plu = d.unidad === 'kg' ? plu : '';
       p.precio = precio; p.costo = costo; p.iva = +d.iva; p.minimo = +d.minimo || 0; p.prov = d.prov || '';
       if (d.stockInicial != null && !d.id) p.stock = +d.stockInicial || 0;
+      if (p.codigo) E.sinCargar = (E.sinCargar || []).filter(function (x) { return x.codigo !== p.codigo; });
       guardar(); return p;
     },
+    /* Códigos escaneados en la caja que no están cargados: se anotan para que Administración los cargue. */
+    registrarCodigo: function (codigo, ts) {
+      var c = String(codigo || '').trim(); if (!/^\d{8,14}$/.test(c)) return null;
+      if (E.productos.some(function (x) { return x.codigo === c; })) return null;
+      var t = ts || Date.now(), u = (LE.usuario() || {}).nombre || '', f = E.sinCargar.filter(function (x) { return x.codigo === c; })[0];
+      if (f) { f.veces++; f.ultima = Math.max(f.ultima, t); f.por = u; }
+      else if (E.sinCargar.length < 500) { f = { codigo: c, veces: 1, primera: t, ultima: t, por: u }; E.sinCargar.push(f); }
+      guardar(); return f || null;
+    },
+    codigosSinCargar: function () { exigir('admin'); return E.sinCargar.slice().sort(function (a, b) { return b.ultima - a.ultima; }); },
+    descartarCodigo: function (codigo) { exigir('admin'); E.sinCargar = E.sinCargar.filter(function (x) { return x.codigo !== codigo; }); guardar(); },
     ajustarMinimo: function (id, minimo) {
       exigir('admin'); var p = porId(E.productos, id), m = Math.round((+minimo || 0) * 1000) / 1000;
       if (!(m >= 0)) throw new Error('El mínimo no puede ser negativo.');

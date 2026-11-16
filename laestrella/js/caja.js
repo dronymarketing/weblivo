@@ -162,9 +162,9 @@
       var cand = LE.buscar(texto);
       if (cand.length === 1) { var q = cand[0]; if (q.unidad === 'kg') pedirPeso(q); else agregar(q, 1); }
       else if (/^\d{8,14}$/.test(texto) && e.tipo === 'desconocido' && !/^Código de balanza/.test(e.motivo || '')) {
-        UI.beep(false);
+        UI.beep(false); LE.registrarCodigo(texto);
         if (usuario.rol === 'admin') altaRapida(texto);
-        else UI.toast('Ese producto todavía no está cargado. Avisale a Administración: lo carga escaneándolo una vez.', 'error');
+        else UI.toast('Ese producto todavía no está cargado. Quedó anotado para que Administración lo cargue.', 'error');
       }
       else { UI.beep(false); UI.toast((e.motivo || 'Código no encontrado') + ': ' + texto, 'error'); }
     }

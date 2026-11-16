@@ -52,7 +52,7 @@
     var completo = !E.ultAct;
     cargando = Promise.all([rpc('snap_base'), rpc('snap_ventas', { p_desde: completo ? null : E.ultAct, p_dias: 35 })]).then(function (r) {
       var b = r[0];
-      ['negocio', 'categorias', 'productos', 'usuarios', 'proveedores', 'compras', 'turnos', 'movCaja', 'asistencias', 'movStock', 'auditoria', 'mensual'].forEach(function (k) { if (b[k] != null) E[k] = b[k]; });
+      ['negocio', 'categorias', 'productos', 'usuarios', 'proveedores', 'compras', 'turnos', 'movCaja', 'asistencias', 'movStock', 'auditoria', 'mensual', 'sinCargar'].forEach(function (k) { if (b[k] != null) E[k] = b[k]; });
       var local = (E.ventas || []).reduce(function (a, v) { return Math.max(a, v.num || 0); }, 0);
       E.contador = { venta: Math.max(b.contador.venta, local), compra: b.contador.compra };
       aplicarVentas(r[1], completo);
@@ -106,6 +106,18 @@
     E.outbox.push({ tipo: 'egreso', id: mv.id, payload: { id: mv.id, concepto: mv.concepto, monto: -mv.monto, ts: mv.ts } });
     LE.guardar(); setTimeout(function () { vaciarCola().then(function () { }, function () { }); }, 0);
   };
+  /* ---------- Códigos sin cargar: se anotan en la terminal y se envían cuando hay internet (sin trabar el cierre de caja) ---------- */
+  function enviarCodigos() {
+    var it = (E.codigosCola || [])[0]; if (!it || !enLinea()) return Promise.resolve();
+    return rpc('registrar_codigo', { p_codigo: it.codigo, p_ts: it.ts }).then(function () { E.codigosCola.shift(); LE.guardar(); return enviarCodigos(); },
+      function (e) { if (e && (e.red || e.sesion)) return; E.codigosCola.shift(); LE.guardar(); return enviarCodigos(); });
+  }
+  LE.registrarCodigo = function (codigo, ts) {
+    var c = String(codigo || '').trim(); if (!/^\d{8,14}$/.test(c) || E.productos.some(function (x) { return x.codigo === c; })) return null;
+    (E.codigosCola = E.codigosCola || []).push({ codigo: c, ts: ts || Date.now() }); LE.guardar(); setTimeout(function () { enviarCodigos().then(function () { }, function () { }); }, 0); return { codigo: c };
+  };
+  LE.codigosSinCargar = function () { return (E.sinCargar || []).slice().sort(function (a, b) { return b.ultima - a.ultima; }); };
+  LE.descartarCodigo = function (codigo) { return hacer('descartar_codigo', { p_codigo: codigo }); };
   LE.pendientes = function () { return (E.ventas || []).filter(function (v) { return v.sync === false; }); };
 
   /* ---------- Todo lo demás: en el servidor, y se refresca la copia ---------- */
@@ -191,6 +203,7 @@
   }
   function ciclo() {
     if (enLogin || document.hidden || !enLinea() || !LE.usuario()) return;
+    enviarCodigos().then(function () { }, function () { });
     vaciarCola().then(function () { if (!(E.outbox || []).length) return cargar(); }).catch(function (e) { if (e && e.sesion) { limpiarPerfil(); location.replace('../index.html'); } });
   }
   setInterval(ciclo, 45000);

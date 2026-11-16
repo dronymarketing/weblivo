@@ -68,6 +68,9 @@ de GitHub, deja un resumen legible de cada copia y permite **volver atrás** con
 También mantiene viva la base del plan gratis. Las instrucciones están en `supabase/kit-respaldos/README.md`
 (crear el repositorio privado, copiar el kit y pegar la dirección de la base como secreto de GitHub).
 
+> **Si ya habías corrido `esquema.sql` en tu proyecto:** volvé a correrlo entero cuando se actualice este archivo (se puede repetir sin
+> romper nada). La última actualización suma la lista de «códigos sin cargar» y corrige la sincronización incremental de ventas.
+
 ## Cómo se comporta
 
 - **La caja sigue vendiendo sin internet.** Las ventas y los retiros de efectivo se guardan en la terminal y se envían solos cuando vuelve la conexión.
@@ -79,6 +82,6 @@ También mantiene viva la base del plan gratis. Las instrucciones están en `sup
 
 ## Qué falta (a propósito)
 
-- **Cargar los productos reales:** se cargan escaneando cada uno (Productos → Nuevo producto, o directo desde la caja si Administración escanea un código desconocido). El nombre sale de bases públicas cuando existe; el precio se escribe una sola vez. Una importación desde Excel/CSV y una lista de «códigos sin cargar» que deje la caja serían lo siguiente.
+- **Cargar los productos reales:** se cargan escaneando cada uno (Productos → Nuevo producto, o directo desde la caja si Administración escanea un código desconocido). El nombre sale de bases públicas cuando existe; el precio se escribe una sola vez. Lo que la caja escanea y no está cargado queda en Productos → «Sin cargar» para que Administración lo cargue. Una importación desde Excel/CSV sería lo siguiente.
 - **PIN rápido** para cambiar de cajera sin escribir email y contraseña.
 - **Factura electrónica (e-Ticket):** sigue pendiente de confirmar con el contador.

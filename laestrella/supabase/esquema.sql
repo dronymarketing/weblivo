@@ -192,6 +192,16 @@ create table if not exists public.auditoria (
 );
 create index if not exists auditoria_ts on public.auditoria (ts desc);
 
+-- Códigos de barras que se escanearon en la caja y todavía no están cargados como producto.
+-- Administración los ve en una lista y los carga; al cargar el producto, el código sale de la lista.
+create table if not exists public.codigos_sin_cargar (
+  codigo  text primary key check (codigo ~ '^[0-9]{8,14}$'),
+  veces   int not null default 1 check (veces > 0),
+  primera timestamptz not null default now(),
+  ultima  timestamptz not null default now(),
+  por     text not null default ''
+);
+
 -- ---------- Seguridad: RLS sin políticas = nadie toca las tablas directo ----------
 
 alter table public.perfiles          enable row level security;
@@ -209,6 +219,7 @@ alter table public.venta_pagos       enable row level security;
 alter table public.stock_movimientos enable row level security;
 alter table public.asistencias       enable row level security;
 alter table public.auditoria         enable row level security;
+alter table public.codigos_sin_cargar enable row level security;
 
 revoke all on all tables    in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
@@ -366,9 +377,11 @@ begin
                       from public.ventas v where v.estado = 'ok'
                        and v.ts >= date_trunc('month', now() at time zone 'America/Montevideo') at time zone 'America/Montevideo' - interval '12 months'
                        and v.ts <  date_trunc('month', now() at time zone 'America/Montevideo') at time zone 'America/Montevideo'
-                     group by 1) m), '[]'::jsonb));
+                     group by 1) m), '[]'::jsonb),
+      'sinCargar', coalesce((select jsonb_agg(jsonb_build_object('codigo', codigo, 'veces', veces, 'primera', public.ms(primera), 'ultima', public.ms(ultima), 'por', por) order by ultima desc)
+                  from public.codigos_sin_cargar), '[]'::jsonb));
   else
-    r := r || jsonb_build_object('proveedores', '[]'::jsonb, 'compras', '[]'::jsonb, 'movStock', '[]'::jsonb, 'auditoria', '[]'::jsonb, 'mensual', '[]'::jsonb);
+    r := r || jsonb_build_object('proveedores', '[]'::jsonb, 'compras', '[]'::jsonb, 'movStock', '[]'::jsonb, 'auditoria', '[]'::jsonb, 'mensual', '[]'::jsonb, 'sinCargar', '[]'::jsonb);
   end if;
   return r;
 end $$;
@@ -387,7 +400,7 @@ begin
   select id into v_abierto from public.caja_turnos where cierre is null;
   return coalesce((select jsonb_agg(public.venta_json(v.id, v_admin) order by v.num)
                      from public.ventas v
-                    where (case when p_desde is null then true else v.actualizado > to_timestamp(p_desde / 1000.0) end)
+                    where (case when p_desde is null then true else public.ms(v.actualizado) > p_desde end)
                       and ((v_admin and v.ts >= v_ini) or (not v_admin and v.turno = v_abierto))), '[]'::jsonb);
 end $$;
 
@@ -556,7 +569,30 @@ begin
     returning id into v_id;
     perform public.anotar('Creó el producto ' || v_nombre);
   end if;
+  if v_cod <> '' then delete from public.codigos_sin_cargar where codigo = v_cod; end if;
   return jsonb_build_object('id', v_id);
+end $$;
+
+-- La caja (o administración) escaneó un código que no está cargado: se anota para que administración lo cargue.
+create or replace function public.registrar_codigo(p_codigo text, p_ts bigint default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  v_cod text := btrim(coalesce(p_codigo, ''));
+  v_ts timestamptz := case when p_ts is null then now() else least(to_timestamp(p_ts / 1000.0), now()) end;
+begin
+  perform public.exigir_rol('admin', 'caja');
+  if v_cod !~ '^[0-9]{8,14}$' then raise exception 'Código de barras inválido.' using errcode = 'P0001'; end if;
+  if exists (select 1 from public.productos where codigo = v_cod) then return; end if;
+  if (select count(*) from public.codigos_sin_cargar) >= 500 and not exists (select 1 from public.codigos_sin_cargar where codigo = v_cod) then return; end if;
+  insert into public.codigos_sin_cargar (codigo, veces, primera, ultima, por) values (v_cod, 1, v_ts, v_ts, public.mi_nombre())
+  on conflict (codigo) do update set veces = public.codigos_sin_cargar.veces + 1, ultima = greatest(public.codigos_sin_cargar.ultima, excluded.ultima), por = excluded.por;
+end $$;
+
+create or replace function public.descartar_codigo(p_codigo text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.exigir_rol('admin');
+  delete from public.codigos_sin_cargar where codigo = btrim(coalesce(p_codigo, ''));
 end $$;
 
 create or replace function public.activar_producto(p_id uuid, p_activo boolean) returns void
@@ -707,6 +743,7 @@ grant execute on function
   public.abrir_caja(int), public.egreso_caja(text, int, uuid, bigint), public.cerrar_caja(int),
   public.crear_venta(jsonb), public.anular_venta(uuid, text),
   public.guardar_producto(jsonb), public.activar_producto(uuid, boolean), public.ajustar_stock(uuid, numeric, text),
+  public.registrar_codigo(text, bigint), public.descartar_codigo(text),
   public.guardar_proveedor(jsonb), public.guardar_compra(jsonb), public.recibir_compra(uuid), public.pagar_compra(uuid),
   public.guardar_usuario(jsonb), public.marcar_asistencia(), public.guardar_negocio(jsonb)
   to authenticated;

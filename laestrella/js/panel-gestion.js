@@ -11,6 +11,7 @@
   function tabs(lista, sel) {
     return '<div class="pestanas" role="tablist">' + lista.map(function (t) { return '<button type="button" class="pestana" role="tab" data-acc="tab" data-id="' + t[0] + '" aria-selected="' + (sel === t[0]) + '">' + esc(t[1]) + '</button>'; }).join('') + '</div>';
   }
+  P.tabs = tabs;
   P.acciones.tab = function (id) { P.est(P.actual).tab = id; P.rutas[P.actual].entrar(); };
   function cant(p, n) { return p.unidad === 'kg' ? F.kg(n) : F.cant(n) + ' u'; }
   /* Barra de nivel: tres zonas sobre el recorrido (rojo = no hay, amarillo = alerta, hasta el mínimo; verde = por encima del mínimo).

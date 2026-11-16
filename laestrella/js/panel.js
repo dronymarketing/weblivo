@@ -189,6 +189,8 @@
       if (pend) avisos.push('<span class="aviso aviso--alerta">' + ico('wifi-off') + pend + (pend === 1 ? ' venta sin enviar' : ' ventas sin enviar') + '</span>');
       if (cp.length) avisos.push('<a class="aviso aviso--alerta" href="#/compras">' + ico('truck') + cp.length + (cp.length === 1 ? ' compra por recibir' : ' compras por recibir') + '</a>');
       if (dif) avisos.push('<a class="aviso aviso--alerta" href="#/caja">' + ico('triangle-alert') + 'Diferencia ' + F.din(dif.contado - dif.esperado, true) + '</a>');
+      var sinc = LE.codigosSinCargar().length;
+      if (sinc) avisos.push('<a class="aviso aviso--alerta" href="#/productos" data-acc="ver-sin-cargar">' + ico('scan-barcode') + sinc + (sinc === 1 ? ' código sin cargar' : ' códigos sin cargar') + '</a>');
       if (R7.anuladas) avisos.push('<a class="aviso" href="#/ventas">' + ico('ban') + R7.anuladas + (R7.anuladas === 1 ? ' anulada' : ' anuladas') + '</a>');
 
       $('#vista').innerHTML =
@@ -218,6 +220,11 @@
     }
   };
   P.acciones = P.acciones || {};
+  P.acciones['cargar-codigo'] = function (codigo) { P.rutas.productos.form(null, { codigo: codigo }); };
+  P.acciones['descartar-codigo'] = function (codigo) {
+    UI.confirmar('Descartar el código', 'Se saca de la lista. Si la caja lo vuelve a escanear, vuelve a aparecer.', { ok: 'Descartar', peligro: true }).then(function (si) { if (si) UI.hacer(function () { return LE.descartarCodigo(codigo); }, 'Código descartado.').then(function (r) { if (r.ok) P.rutas.productos.entrar(); }); });
+  };
+  P.acciones['ver-sin-cargar'] = function () { P.est('productos', { q: '', cat: '', est: '', tab: 'productos' }).tab = 'sin'; };
 
   /* ============================ VENTAS ============================ */
   P.rutas.ventas = {
@@ -283,14 +290,28 @@
   P.rutas.productos = {
     titulo: 'Productos',
     entrar: function () {
-      var S = P.est('productos', { q: '', cat: '', est: '' });
+      var S = P.est('productos', { q: '', cat: '', est: '', tab: 'productos' }), pend = LE.codigosSinCargar().length;
       P.cab('Productos', 'Precios, costos y códigos de barras. Los cambios de precio quedan en el registro.', '<button type="button" class="btn btn--acento" data-acc="producto-nuevo">' + ico('plus') + 'Nuevo producto</button>',
+        P.tabs([['productos', 'Productos'], ['sin', 'Sin cargar' + (pend ? ' · ' + pend : '')]], S.tab) + (S.tab === 'sin' ? '' :
         '<input class="entrada" data-filtro="q" placeholder="Buscar por nombre o código" value="' + esc(S.q) + '" aria-label="Buscar producto">' +
         '<select class="entrada" data-filtro="cat" aria-label="Categoría">' + UI.opciones(LE.categorias(), S.cat, 'Todas las categorías') + '</select>' +
-        '<select class="entrada" data-filtro="est" aria-label="Estado"><option value="">Todos</option><option value="baja"' + (S.est === 'baja' ? ' selected' : '') + '>Dados de baja</option><option value="bajo"' + (S.est === 'bajo' ? ' selected' : '') + '>Stock bajo</option></select>');
+        '<select class="entrada" data-filtro="est" aria-label="Estado"><option value="">Todos</option><option value="baja"' + (S.est === 'baja' ? ' selected' : '') + '>Dados de baja</option><option value="bajo"' + (S.est === 'bajo' ? ' selected' : '') + '>Stock bajo</option></select>'));
       P.rutas.productos.pintar();
     },
+    /* Códigos que la caja escaneó y todavía no están cargados */
+    pintarSinCargar: function () {
+      var lista = LE.codigosSinCargar().sort(function (a, b) { return (b.veces - a.veces) || (b.ultima - a.ultima); });
+      if (!lista.length) return P.zona('<div class="tarjeta"><p class="vacio">No hay códigos pendientes.<br>Cuando la caja escanee un producto que no está cargado, aparece acá con las veces que se pidió.</p></div>');
+      P.zona('<p class="resumen"><strong>' + lista.length + (lista.length === 1 ? ' código' : ' códigos') + '</strong> escaneados en la caja que todavía no están cargados. Los más pedidos van primero.</p>' + P.tabla([
+        { t: 'Código', c: 't-titulo', f: function (c) { return '<span class="mono">' + esc(c.codigo) + '</span><small>primera vez ' + F.fechaCorta(c.primera) + '</small>'; } },
+        { t: 'Escaneos', f: function (c) { return '<strong>' + c.veces + '</strong> ' + (c.veces === 1 ? 'vez' : 'veces'); } },
+        { t: 'Último', f: function (c) { return F.fechaCorta(c.ultima) + ' · ' + F.hora(c.ultima) + '<small>' + esc(c.por || '') + '</small>'; } },
+        { t: '', c: 't-acciones', f: function (c) { return '<button type="button" class="btn btn--chico btn--acento" data-acc="cargar-codigo" data-id="' + esc(c.codigo) + '">' + ico('plus') + 'Cargar</button><button type="button" class="btn btn--chico btn--linea" data-acc="descartar-codigo" data-id="' + esc(c.codigo) + '">Descartar</button>'; } }
+      ], lista));
+    },
     pintar: function () {
+      var tsc = document.querySelector('.pestana[data-id="sin"]'), nsc = LE.codigosSinCargar().length; if (tsc) tsc.textContent = 'Sin cargar' + (nsc ? ' · ' + nsc : '');
+      if (P.est('productos').tab === 'sin') return P.rutas.productos.pintarSinCargar();
       var S = P.est('productos'), q = S.q.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
       var ps = LE.productos().filter(function (p) {
         if (S.cat && p.cat !== S.cat) return false;
@@ -309,8 +330,8 @@
         { t: '', c: 't-acciones', f: function (p) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="producto" data-id="' + p.id + '">' + ico('pencil') + 'Editar</button>'; } }
       ], ps.slice(0, 150), { clase: function (p) { return p.activo ? '' : 'is-baja'; } }) + (ps.length > 150 ? '<p class="suave" style="margin-top:10px">Se muestran 150: afiná la búsqueda para ver el resto.</p>' : ''));
     },
-    form: function (id) {
-      var nuevo = !id, p = id ? LE.producto(id) : { nombre: '', cat: LE.categorias()[0], unidad: 'u', codigo: '', plu: '', costo: 0, precio: 0, iva: 22, minimo: 0, prov: '', stock: 0, activo: true };
+    form: function (id, pre) {
+      var nuevo = !id, p = id ? LE.producto(id) : { nombre: '', cat: LE.categorias()[0], unidad: 'u', codigo: (pre && pre.codigo) || '', plu: '', costo: 0, precio: 0, iva: 22, minimo: 0, prov: '', stock: 0, activo: true };
       var regimen = LE.negocio().regimen;
       var ctl = UI.modal({
         titulo: nuevo ? 'Nuevo producto' : 'Editar producto', ancha: true,
@@ -355,7 +376,7 @@
       }
       var tdeb; ctl.cuerpo.addEventListener('input', function (e) { if (e.target.name === 'codigo') { clearTimeout(tdeb); tdeb = setTimeout(revisar, 700); } });
       ctl.cuerpo.addEventListener('change', function (e) { if (e.target.name === 'codigo') revisar(); });
-      if (nuevo) { var cc = ctl.$('[name=codigo]'); if (cc) setTimeout(function () { cc.focus(); }, 60); }
+      if (nuevo && p.codigo) setTimeout(revisar, 80);   // el cursor ya arranca en el código: lo pone la ventana al abrirse
       function ver() {
         var v = UI.valores(ctl), kg = v.unidad === 'kg'; ctl.$('#f-codigo').hidden = kg; ctl.$('#f-plu').hidden = !kg; ctl.$('#f-catnueva').hidden = v.cat !== '__nueva';
         var c = UI.aCentavos(v.costo), pr = UI.aCentavos(v.precio);
