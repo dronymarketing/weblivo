@@ -42,6 +42,11 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     alto, con lo que más se usa y todo clickeable. Encabezado con saludo y avisos (links) · 4 tarjetas (Ventas de hoy, Caja,
     Para reponer, Ganancia bruta) que llevan a su sección · gráfico de 7 días y últimas ventas, cada uno con su «Ver …».
     En el celular se apila y se desplaza. Lo demás (actividad, lo más vendido, cómo se cobró) vive en Reportes y Equipo.
+  - **Caja (POS)**, mismo método: una pantalla sin scroll. A la izquierda el escaneo (con el panel «Lector» para probar el
+    lector y cortar internet), las categorías y los productos; a la derecha el ticket como tarjeta («Ticket actual», líneas
+    con separadores finos, total grande, «En espera», «Anular» y «Cobrar» con nombre; Cobrar en violeta es lo único que
+    llama). La última línea escaneada destella en rosa suave (el rosa solo marca lo recién pasado y los tickets en espera).
+    La categoría elegida va en violeta suave. En el celular el ticket ocupa todo y los productos se eligen en una hoja.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

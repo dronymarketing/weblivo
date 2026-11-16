@@ -67,24 +67,24 @@
     if (!LE.turnoAbierto()) return montarCerrada();
     pos.className = 'pos';
     pos.innerHTML =
-      '<div class="scan"><div class="scan__campo">' + ico('scan-barcode', 'icon--g') + '<input id="scan" class="entrada" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escaneá o buscá un producto" aria-label="Código de barras o nombre del producto"></div></div>' +
-      '<details class="demo" id="demo"><summary>' + ico('scan-barcode') + ' Lector y conexión</summary><div class="demo__chips" id="demo-chips"></div>' +
-      '<div class="demo__ajustes"><button type="button" class="chip" id="demo-red" aria-pressed="false"></button></div></details>' +
+      '<div class="scan"><div class="scan__campo">' + ico('scan-barcode', 'icon--g') + '<input id="scan" class="entrada" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escaneá o buscá un producto" aria-label="Código de barras o nombre del producto"></div>' +
+      '<details class="demo demo--pop demo--lector" id="demo"><summary class="btn btn--linea" aria-label="Lector y conexión">' + ico('scan-barcode') + '<span class="txt-pos">Lector</span></summary><div class="demo__pop"><p class="demo__tit">Probar el lector y la conexión</p><div class="demo__chips" id="demo-chips"></div>' +
+      '<div class="demo__ajustes"><button type="button" class="chip" id="demo-red" aria-pressed="false"></button></div></div></details></div>' +
       '<div class="pos__cuerpo">' +
       '<section class="pos__catalogo" id="catalogo" aria-label="Productos"><div class="cat__cab"><h2>Productos</h2><button type="button" class="btn btn--chico btn--tinta" id="cat-cerrar">Listo</button></div><div class="cats" id="cats"></div><div class="grilla" id="grilla"></div></section>' +
-      '<section class="pos__ticket" aria-label="Ticket"><div class="lineas" id="lineas" aria-live="polite"></div>' +
+      '<section class="pos__ticket" aria-label="Ticket"><div class="ticket__cab"><h3>Ticket actual</h3><span id="tk-espera"></span></div><div class="lineas" id="lineas" aria-live="polite"></div>' +
       '<div class="pos__pie"><div class="totales"><span class="totales__rotulo" id="tot-rotulo"></span><span class="totales__monto" id="tot">$ 0</span></div>' +
       '<div class="pos__botones"><button type="button" class="btn btn--icono btn--linea pos__catalogo-btn" id="btn-productos" aria-label="Elegir productos de la lista">' + ico('layers') + '</button>' +
       '<button type="button" class="btn btn--icono btn--linea" id="btn-espera" aria-label="Poner en espera o ver tickets en espera"></button>' +
-      '<button type="button" class="btn btn--icono btn--peligro" id="btn-anular" aria-label="Anular ticket">' + ico('trash-2') + '</button>' +
+      '<button type="button" class="btn btn--icono btn--peligro" id="btn-anular" aria-label="Anular ticket">' + ico('trash-2') + '<span class="txt-pos">Anular</span></button>' +
       '<button type="button" class="btn btn--acento btn--grande" id="btn-cobrar">Cobrar</button></div></div></section></div>';
     pintarDemo(); pintarCats(); pintarGrilla(); pintarTicket(); pintarBarra(); pintarCliente();
     $('#scan').focus({ preventScroll: true });
   }
   function montarCerrada() {
-    pos.className = 'pos';
+    pos.className = 'pos pos--cerrada';
     var ult = LE.turnos().filter(function (t) { return t.cierre; })[0];
-    pos.innerHTML = '<div class="cerrada">' + ico('lock', 'icon--xl') + '<h1>La caja está cerrada</h1><p>Contá el efectivo del cajón y abrí el turno para empezar a cobrar.</p>' +
+    pos.innerHTML = '<div class="cerrada"><span class="cerrada__ic">' + ico('lock', 'icon--g') + '</span><h1>La caja está cerrada</h1><p>Contá el efectivo del cajón y abrí el turno para empezar a cobrar.</p>' +
       '<label class="campo"><span>Efectivo con el que se abre</span><input id="base" class="entrada" inputmode="decimal" autocomplete="off" value="2500"></label>' +
       '<button type="button" class="btn btn--acento btn--grande btn--bloque" id="btn-abrir">Abrir caja</button>' +
       (ult ? '<p style="margin-top:18px;font-size:14px">Último cierre: ' + esc(F.fechaHora(ult.cierre)) + ' · ' + esc(ult.cerro) + '</p>' : '') + '</div>';
@@ -131,7 +131,8 @@
     $('#tot').textContent = F.din(tot); $('#tot-rotulo').textContent = n ? (n % 1 ? Math.round(n) : n) + (n === 1 ? ' artículo' : ' artículos') : 'Total';
     $('#btn-cobrar').disabled = !t.items.length; $('#btn-cobrar').textContent = 'Cobrar';
     $('#btn-anular').disabled = !t.items.length;
-    var e = $('#btn-espera'); e.innerHTML = ico('pause') + (S.espera.length ? '<span class="badge badge--acento" style="margin-left:4px">' + S.espera.length + '</span>' : ''); e.style.width = S.espera.length ? 'auto' : ''; e.style.padding = S.espera.length ? '0 14px' : '';
+    var e = $('#btn-espera'); e.innerHTML = ico('pause') + '<span class="txt-pos">En espera</span>' + (S.espera.length ? '<span class="badge badge--rosa">' + S.espera.length + '</span>' : ''); e.classList.toggle('btn--ancho', !!S.espera.length);
+    $('#tk-espera').innerHTML = S.espera.length ? '<span class="badge badge--rosa">' + S.espera.length + (S.espera.length === 1 ? ' en espera' : ' en espera') + '</span>' : '';
     e.disabled = !t.items.length && !S.espera.length;
     if (nuevoId) { var el = l.querySelector('.is-nueva'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' }); setTimeout(function () { var x = l.querySelector('.is-nueva'); if (x) x.classList.remove('is-nueva'); }, 1200); }
     guardarEstado(); pintarCliente();
