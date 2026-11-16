@@ -70,6 +70,22 @@
 .nota .icon { margin-top: 1px; color: var(--texto-suave); }
 .nota--error { background: var(--error-suave); color: var(--error-texto); }
 .nota--error .icon { color: var(--error-texto); }
+.nota--ok { background: var(--ok-suave); color: var(--ok-texto); }
+.nota--ok .icon { color: var(--ok-texto); }
+.nota--alerta { background: var(--alerta-suave); color: var(--alerta-texto); }
+.nota--alerta .icon { color: var(--alerta-texto); }
+.nota .btn { margin-left: 6px; vertical-align: middle; }
+.nota[hidden] { display: none; }
+#f-aviso, #ar-aviso { margin-bottom: 14px; }
+.escanear { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 14px; border-radius: var(--radio-chico); background: var(--acento-suave); color: var(--acento); }
+.escanear strong { display: block; font-size: 15px; font-weight: 680; }
+.escanear small { display: block; margin-top: 2px; font-size: 13px; line-height: 1.4; color: var(--texto-2); font-weight: 450; }
+.escanear .icon { margin-top: 2px; }
+.campo--escaneo input { border-color: var(--acento); box-shadow: 0 0 0 4px var(--acento-suave); font-size: 18px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.ajuste-prod { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ajuste-prod strong { display: block; font-size: 17px; font-weight: 680; }
+.ajuste-prod small { display: block; margin-top: 2px; font-size: 13px; }
+.ajuste-nivel .nivel { width: 100%; height: 10px; }
 .vacio { text-align: center; padding: 32px 16px; color: var(--texto-suave); }
 
 /* ---------- Ingreso ---------- */
@@ -409,6 +425,18 @@ a.aviso:active { background: var(--superficie-2); }
 .ult__n small { display: block; font-size: 12.5px; font-weight: 450; color: var(--texto-suave); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ult__t { font-size: 17px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .panel .vacio { margin: auto; }
+.panel__lista { flex: 1; min-height: 0; margin: 0 -16px; }
+.panel__pad { padding: 4px 16px 18px; }
+.panel__lista .tabla td { white-space: nowrap; }
+.panel__lista .tabla td.t-titulo { white-space: normal; }
+.panel__cab--tabs { margin: -6px -16px 0; padding: 0 16px; }
+.panel__cab--tabs .pestanas { margin: 0; flex: 1; }
+.panel.panel--form { padding-bottom: 20px; }
+.panel--form .papel-marco { padding: 0; justify-content: flex-start; }
+.panel--form > .btn { align-self: flex-start; }
+.panel-col { display: grid; gap: 14px; align-content: start; }
+.campos-2 { display: grid; grid-template-columns: 1fr; }
+.panel--form .interruptor:first-of-type { padding-top: 4px; }
 .grafico--llenar { flex: 1; min-height: 220px; }
 .panel__ref { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; position: relative; }
 .demo.demo--pop { margin: 0; padding: 0; border: 0; }

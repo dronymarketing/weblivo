@@ -161,8 +161,40 @@
     else {
       var cand = LE.buscar(texto);
       if (cand.length === 1) { var q = cand[0]; if (q.unidad === 'kg') pedirPeso(q); else agregar(q, 1); }
+      else if (/^\d{8,14}$/.test(texto) && e.tipo === 'desconocido' && !/^Código de balanza/.test(e.motivo || '')) {
+        UI.beep(false);
+        if (usuario.rol === 'admin') altaRapida(texto);
+        else UI.toast('Ese producto todavía no está cargado. Avisale a Administración: lo carga escaneándolo una vez.', 'error');
+      }
       else { UI.beep(false); UI.toast((e.motivo || 'Código no encontrado') + ': ' + texto, 'error'); }
     }
+  }
+  /* Producto que no está en la base: Administración lo da de alta ahí mismo, escaneado. La próxima vez ya se sabe qué es y cuánto sale. */
+  function altaRapida(codigo) {
+    var cats = LE.categorias(), ctl = UI.modal({
+      titulo: 'Producto nuevo', cuerpo: '<div class="escanear">' + ico('scan-barcode', 'icon--g') + '<div><strong>No está cargado</strong><small>Código <span class="mono">' + esc(codigo) + '</span>. Poné qué es y cuánto sale: queda guardado para siempre.</small></div></div>' +
+        '<div id="ar-aviso" class="nota" hidden></div>' +
+        '<label class="campo"><span>Nombre (máx. 28 letras)</span><input name="nombre" class="entrada" maxlength="28" autocomplete="off"></label>' +
+        '<div class="fila-campos"><label class="campo"><span>Precio de venta</span><input name="precio" class="entrada" inputmode="decimal" autocomplete="off"></label><label class="campo"><span>Costo (opcional)</span><input name="costo" class="entrada" inputmode="decimal" autocomplete="off"></label></div>' +
+        '<label class="campo"><span>Categoría</span><select name="cat" class="entrada">' + UI.opciones(cats, cats[0]) + '<option value="__nueva"' + (cats.length ? '' : ' selected') + '>Otra categoría…</option></select></label>' +
+        '<label class="campo" id="ar-catnueva" hidden><span>Nombre de la categoría nueva</span><input name="catNueva" class="entrada" maxlength="40"></label>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar y agregar', clase: 'btn--tinta', id: 'ar-ok', cerrar: false, accion: function () {
+        var v = UI.valores(ctl);
+        UI.hacer(function () { return LE.guardarProducto({ nombre: v.nombre, cat: v.cat === '__nueva' ? String(v.catNueva || '').trim() : v.cat, unidad: 'u', codigo: codigo, plu: '', costo: UI.aCentavos(v.costo), precio: UI.aCentavos(v.precio), iva: 22, minimo: 0, prov: '', stockInicial: 0 }); }, 'Producto guardado.').then(function (r) {
+          if (r.ok) { ctl.cerrar(); pintarGrilla(); agregar(r.valor, 1); var sc = $('#scan'); if (sc) sc.focus(); }
+        }); return false; } }]
+    });
+    var aviso = ctl.$('#ar-aviso'); ctl.$('[name=cat]').addEventListener('change', function () { ctl.$('#ar-catnueva').hidden = this.value !== '__nueva'; }); ctl.$('#ar-catnueva').hidden = ctl.$('[name=cat]').value !== '__nueva';
+    ctl.cuerpo.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); var n = ctl.$('[name=nombre]'), pr = ctl.$('[name=precio]'); if (e.target === n && n.value.trim()) pr.focus(); else if (e.target === pr) ctl.$('#ar-ok').click(); else if (e.target.name === 'costo') ctl.$('#ar-ok').click(); } });
+    aviso.hidden = false; aviso.innerHTML = ico('scan-barcode') + '<span>Buscando el producto en bases públicas…</span>'; ctl.$('[name=nombre]').focus();
+    UI.consultarCodigo(codigo).then(function (r) {
+      if (!ctl.cuerpo.isConnected) return;
+      if (r) {
+        var nom = ctl.$('[name=nombre]'), cat = ctl.$('[name=cat]'); if (!nom.value.trim()) nom.value = r.nombre;
+        if (r.cat && [].some.call(cat.options, function (o) { return o.value === r.cat; })) cat.value = r.cat;
+        aviso.className = 'nota nota--ok'; aviso.innerHTML = ico('circle-check') + '<span>Encontrado: <strong>' + esc(r.completo) + '</strong>. Revisá el nombre y poné el precio.</span>'; var ae = document.activeElement; if (!ae || ae === document.body || ae.name === 'nombre') ctl.$('[name=precio]').focus();
+      } else { aviso.className = 'nota'; aviso.innerHTML = ico('info') + '<span>No está en las bases públicas (o no hay conexión). Escribí el nombre y el precio.</span>'; }
+    });
   }
   function abrirCatalogo(si) { pos.classList.toggle('pos--cat', !!si); }
 

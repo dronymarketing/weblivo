@@ -96,6 +96,39 @@
     });
   };
 
+  /* ---------- Consulta de códigos de barras en bases públicas (Open Food Facts y hermanas) ----------
+     Solo se envía el número del código. Devuelve {nombre, completo, marca, cat} o null (sin internet, no existe o tardó demasiado). */
+  var CAT_PALABRAS = [['lacteo', /dair|milk|cheese|yogurt|butter|cream/], ['fiambre', /charcuter|ham|sausage|salami|cold-cut/], ['carne', /meat|beef|poultry|chicken|pork/], ['fruta', /fruit|vegetable/], ['panader', /bread|bakery|cake|pastr/], ['bebida', /beverage|water|soda|juice|beer|wine/], ['limpieza', /clean|detergent|laundry|bleach/], ['perfumer', /hygiene|soap|toothpaste|shampoo|cosmetic|beauty|deodorant|diaper/], ['almac', /grocer|biscuit|cookie|cracker|pasta|rice|flour|oil|sugar|salt|cereal|coffee|tea|yerba|canned|sauce|snack|legume|spice/]];
+  function normalizar(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  UI.nombreCorto = function (t, max) {
+    t = String(t || '').replace(/\s+/g, ' ').trim(); if (t.length <= max) return t;
+    var c = t.slice(0, max + 1), i = c.lastIndexOf(' '); return (i > 12 ? c.slice(0, i) : t.slice(0, max)).trim();
+  };
+  function sugerirCategoria(tags) {
+    var tx = (tags || []).join(' ').toLowerCase(), mias = (window.LE && LE.categorias) ? LE.categorias() : [];
+    for (var i = 0; i < CAT_PALABRAS.length; i++) if (CAT_PALABRAS[i][1].test(tx)) { var m = mias.filter(function (c) { return normalizar(c).indexOf(CAT_PALABRAS[i][0]) === 0; })[0]; if (m) return m; }
+    return '';
+  }
+  UI.consultarCodigo = function (codigo) {
+    if (!window.fetch || (window.LE && LE.red && LE.red.offline) || (navigator.onLine === false)) return Promise.resolve(null);
+    var hosts = ['world.openfoodfacts.org', 'world.openproductsfacts.org', 'world.openbeautyfacts.org'], limite = Date.now() + 6000;
+    function probar(k) {
+      if (k >= hosts.length || Date.now() > limite) return Promise.resolve(null);
+      var ac = window.AbortController ? new AbortController() : null, t = setTimeout(function () { if (ac) ac.abort(); }, 3500);
+      return fetch('https://' + hosts[k] + '/api/v2/product/' + encodeURIComponent(codigo) + '.json?fields=product_name,product_name_es,brands,quantity,categories_tags', { signal: ac && ac.signal })
+        .then(function (r) { clearTimeout(t); return r.ok ? r.json() : null; })
+        .then(function (j) {
+          var p = j && j.status === 1 && j.product; if (!p) return probar(k + 1);
+          var base = String(p.product_name_es || p.product_name || '').trim(); if (!base) return probar(k + 1);
+          var marca = String(p.brands || '').split(',')[0].trim(), cant = String(p.quantity || '').trim();
+          var completo = base; if (marca && normalizar(base).indexOf(normalizar(marca)) < 0) completo += ' ' + marca; if (cant && normalizar(completo).indexOf(normalizar(cant.replace(/\s/g, ''))) < 0) completo += ' ' + cant;
+          return { nombre: UI.nombreCorto(completo, 28), completo: completo, marca: marca, cat: sugerirCategoria(p.categories_tags), fuente: hosts[k].replace('world.', '') };
+        })
+        .catch(function () { clearTimeout(t); return probar(k + 1); });
+    }
+    return probar(0);
+  };
+
   /* ---------- Sonido del lector ---------- */
   var audio;
   UI.beep = function (ok) {

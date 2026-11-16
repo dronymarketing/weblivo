@@ -35,7 +35,7 @@
     var z = $('#zona'); z.innerHTML = html;
     /* Pantallas de lista: indicadores + una tabla. En escritorio la tabla ocupa el resto de la pantalla y se desplaza por dentro. */
     var k = [].slice.call(z.children), ult = k[k.length - 1];
-    $('#vista').classList.toggle('cuerpo--lista', !!(ult && ult.classList.contains('tarjeta') && ult.querySelector('.tabla') && k.slice(0, -1).every(function (c) { return c.classList.contains('kpis') || c.classList.contains('resumen'); })));
+    $('#vista').classList.toggle('cuerpo--lista', !!(ult && (ult.classList.contains('paneles') || (ult.classList.contains('tarjeta') && ult.querySelector('.tabla'))) && k.slice(0, -1).every(function (c) { return c.classList.contains('kpis') || c.classList.contains('resumen'); })));
     if (P.alPintar) { var f = P.alPintar; P.alPintar = null; f(); } };
 
   /* Tabla que en el celular se vuelve una lista de tarjetas.
@@ -65,7 +65,7 @@
   function registrar(el, redibujar) { registroGraficos = registroGraficos.filter(function (g) { return document.body.contains(g.el); }); registroGraficos.push({ el: el, redibujar: redibujar }); redibujar(); }
   P.barras = function (el, datos, o) { o = o || {}; registrar(el, function () { dibujar(el, datos, o); }); };
   function dibujar(el, datos, o) {
-    var W = Math.max(280, el.clientWidth || 320), H = o.alto || 220, mi = 46, md = 8, ms = 14, mb = 28;
+    var W = Math.max(280, el.clientWidth || 320), H = o.llenar ? Math.max(180, el.clientHeight || 0) : (o.alto || 220), mi = 46, md = 8, ms = 14, mb = 28;
     var max = Math.max.apply(null, datos.map(function (d) { return d.v; }).concat([0])) / 100; // pesos
     var tk = ticksLindos(max), n = datos.length, area = (W - mi - md) / n, ancho = Math.min(24, area * .62);
     var y = function (v) { return ms + (H - ms - mb) * (1 - v / tk.tope); };
@@ -277,6 +277,9 @@
   };
 
   /* ============================ PRODUCTOS ============================ */
+  function CODIGO_HTML(p, destacado) {
+    return '<div id="f-codigo"><label class="campo' + (destacado ? ' campo--escaneo' : '') + '"><span>Código de barras</span><input name="codigo" class="entrada" inputmode="numeric" autocomplete="off" value="' + esc(p.codigo) + '" placeholder="' + (destacado ? 'Escaneá acá' : 'Escaneálo con el lector') + '">' + (destacado ? '' : '<small>Poné el cursor acá y pasá el producto por el lector: el código se escribe solo.</small>') + '</label></div>';
+  }
   P.rutas.productos = {
     titulo: 'Productos',
     entrar: function () {
@@ -311,25 +314,48 @@
       var regimen = LE.negocio().regimen;
       var ctl = UI.modal({
         titulo: nuevo ? 'Nuevo producto' : 'Editar producto', ancha: true,
-        cuerpo: (p.foto ? '<div class="foto-form">' + UI.foto(p, 'foto--grande') + '<small class="suave">Foto de ejemplo del producto</small></div>' : '') + '<label class="campo"><span>Nombre (máx. 28 letras, para que entre en el ticket)</span><input name="nombre" class="entrada" maxlength="28" value="' + esc(p.nombre) + '"></label>' +
+        cuerpo: (nuevo ? '<div class="escanear">' + ico('scan-barcode', 'icon--g') + '<div><strong>Escaneá el producto</strong><small>Pasalo por el lector: si ya está cargado te lo muestro y, si no, completo lo que se pueda. Después solo falta el precio.</small></div></div>' + CODIGO_HTML(p, true) + '<div id="f-aviso" class="nota" hidden></div>' : '') +
+          (p.foto ? '<div class="foto-form">' + UI.foto(p, 'foto--grande') + '<small class="suave">Foto de ejemplo del producto</small></div>' : '') + '<label class="campo"><span>Nombre (máx. 28 letras, para que entre en el ticket)</span><input name="nombre" class="entrada" maxlength="28" value="' + esc(p.nombre) + '"></label>' +
           '<div class="fila-campos"><label class="campo"><span>Categoría</span><select name="cat" class="entrada">' + UI.opciones(LE.categorias(), p.cat) + '<option value="__nueva"' + (LE.categorias().length ? '' : ' selected') + '>Otra categoría…</option></select></label>' +
           '<label class="campo"><span>Se vende por</span><select name="unidad" class="entrada"><option value="u"' + (p.unidad === 'u' ? ' selected' : '') + '>Unidad</option><option value="kg"' + (p.unidad === 'kg' ? ' selected' : '') + '>Peso (kg)</option></select></label></div>' +
           '<label class="campo" id="f-catnueva" hidden><span>Nombre de la categoría nueva</span><input name="catNueva" class="entrada" maxlength="40" placeholder="Ej.: Almacén"></label>' +
-          '<div id="f-codigo"><label class="campo"><span>Código de barras</span><input name="codigo" class="entrada" inputmode="numeric" autocomplete="off" value="' + esc(p.codigo) + '" placeholder="Escaneálo con el lector"><small>Poné el cursor acá y pasá el producto por el lector: el código se escribe solo.</small></label></div>' +
+          (nuevo ? '' : CODIGO_HTML(p, false)) +
           '<div id="f-plu" hidden><label class="campo"><span>Código de balanza (PLU, 5 números)</span><input name="plu" class="entrada" inputmode="numeric" maxlength="5" value="' + esc(p.plu) + '"><small id="f-ejemplo"></small></label></div>' +
           '<div class="fila-campos"><label class="campo"><span>Costo</span><input name="costo" class="entrada" inputmode="decimal" value="' + UI.deCentavos(p.costo) + '"></label><label class="campo"><span>Precio de venta</span><input name="precio" class="entrada" inputmode="decimal" value="' + UI.deCentavos(p.precio) + '"></label></div>' +
           '<p class="suave" id="f-margen" style="margin:-4px 0 14px"></p>' +
           '<div class="fila-campos"><label class="campo"><span>Avisar cuando quede menos de</span><input name="minimo" class="entrada" inputmode="decimal" value="' + p.minimo + '"></label>' +
-          '<label class="campo"><span>' + (nuevo ? 'Stock inicial' : 'Stock actual') + '</span><input name="stockInicial" class="entrada" inputmode="decimal" value="' + p.stock + '"' + (nuevo ? '' : ' disabled') + '>' + (nuevo ? '' : '<small>Se cambia desde Stock → Ajustar.</small>') + '</label></div>' +
+          '<label class="campo"><span>' + (nuevo ? 'Stock inicial' : 'Stock actual') + '</span><input name="stockInicial" class="entrada" inputmode="decimal" value="' + p.stock + '"' + (nuevo ? '' : ' disabled') + '>' + (nuevo ? '' : '<small>Se cuenta desde Stock → Ajustar → Contar stock.</small>') + '</label></div>' +
           '<div class="fila-campos"><label class="campo"><span>Proveedor</span><select name="prov" class="entrada">' + UI.opciones(LE.proveedores(), p.prov, 'Sin proveedor') + '</select></label>' +
           '<label class="campo"><span>IVA' + (regimen === 'monotributo' ? ' (hoy no se cobra: monotributo)' : '') + '</span><select name="iva" class="entrada">' + [22, 10, 0].map(function (x) { return '<option value="' + x + '"' + (p.iva === x ? ' selected' : '') + '>' + (x ? x + ' %' : 'Exento') + '</option>'; }).join('') + '</select></label></div>',
-        acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }].concat(nuevo ? [] : [{ texto: p.activo ? 'Dar de baja' : 'Reactivar', clase: 'btn--linea', cerrar: false, accion: function (c) { UI.hacer(function () { return LE.activarProducto(id, !p.activo); }, p.activo ? 'Producto dado de baja.' : 'Producto reactivado.').then(function (r) { if (r.ok) { c.cerrar(); P.refrescar(); } }); return false; } }]).concat([{ texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: guardar }])
+        acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }].concat(nuevo ? [] : [{ texto: p.activo ? 'Dar de baja' : 'Reactivar', clase: 'btn--linea', cerrar: false, accion: function (c) { UI.hacer(function () { return LE.activarProducto(id, !p.activo); }, p.activo ? 'Producto dado de baja.' : 'Producto reactivado.').then(function (r) { if (r.ok) { c.cerrar(); P.refrescar(); } }); return false; } }]).concat(nuevo ? [{ texto: 'Guardar y escanear otro', clase: 'btn--linea', cerrar: false, accion: function () { return guardar(true); } }] : []).concat([{ texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () { return guardar(false); } }])
       });
-      function guardar() {
+      function guardar(otro) {
         var v = UI.valores(ctl);
-        UI.hacer(function () { return LE.guardarProducto({ id: id, nombre: v.nombre, cat: v.cat === '__nueva' ? String(v.catNueva || '').trim() : v.cat, unidad: v.unidad, codigo: v.codigo, plu: v.plu, costo: UI.aCentavos(v.costo), precio: UI.aCentavos(v.precio), iva: v.iva, minimo: UI.aNumero(v.minimo), prov: v.prov, stockInicial: UI.aNumero(v.stockInicial) }); }, 'Producto guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } });
+        UI.hacer(function () { return LE.guardarProducto({ id: id, nombre: v.nombre, cat: v.cat === '__nueva' ? String(v.catNueva || '').trim() : v.cat, unidad: v.unidad, codigo: v.codigo, plu: v.plu, costo: UI.aCentavos(v.costo), precio: UI.aCentavos(v.precio), iva: v.iva, minimo: UI.aNumero(v.minimo), prov: v.prov, stockInicial: UI.aNumero(v.stockInicial) }); }, 'Producto guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); if (otro) P.rutas.productos.form(); } });
         return false;
       }
+      /* Código escaneado: ¿ya está cargado? Si no, se buscan nombre y categoría en bases públicas. */
+      var ultimo = '', aviso = ctl.$('#f-aviso');
+      function nota(tipo, html) { if (!aviso) return; aviso.hidden = !html; aviso.className = 'nota' + (tipo === 'ya' ? ' nota--alerta' : tipo === 'ok' ? ' nota--ok' : ''); aviso.innerHTML = html || ''; }
+      function revisar() {
+        var cod = ctl.$('[name=codigo]').value.trim(); if (!nuevo || ctl.$('[name=unidad]').value === 'kg' || !/^\d{8,14}$/.test(cod) || cod === ultimo) return; ultimo = cod;
+        var ya = LE.productos(true).filter(function (x) { return x.codigo === cod; })[0];
+        if (ya) { nota('ya', ico('triangle-alert') + '<span>Ese código ya está cargado: <strong>' + esc(ya.nombre) + '</strong> (' + F.din(ya.precio) + (ya.activo ? '' : ', dado de baja') + '). <button type="button" class="btn btn--chico btn--linea" id="f-abrir">Abrir</button></span>'); ctl.$('#f-abrir').onclick = function () { ctl.cerrar(); P.rutas.productos.form(ya.id); }; return; }
+        nota('info', ico('scan-barcode') + '<span>Buscando el producto en bases públicas…</span>'); ctl.$('[name=nombre]').focus();
+        UI.consultarCodigo(cod).then(function (r) {
+          if (ctl.$('[name=codigo]').value.trim() !== cod) return;
+          if (r) {
+            var nom = ctl.$('[name=nombre]'), cat = ctl.$('[name=cat]');
+            if (!nom.value.trim()) nom.value = r.nombre;
+            if (r.cat && [].some.call(cat.options, function (o) { return o.value === r.cat; })) cat.value = r.cat;
+            nota('ok', ico('circle-check') + '<span>Encontrado: <strong>' + esc(r.completo) + '</strong> (' + esc(r.fuente) + '). Revisá el nombre, poné el precio y listo.</span>');
+          } else nota('info', ico('info') + '<span>No está en las bases públicas (o no hay conexión). Escribí el nombre y el precio: queda guardado para la próxima vez.</span>');
+          ver(); var ae = document.activeElement; if (!ae || ae === document.body || ae.name === 'codigo' || ae.name === 'nombre') (ctl.$('[name=nombre]').value.trim() ? ctl.$('[name=precio]') : ctl.$('[name=nombre]')).focus();
+        });
+      }
+      var tdeb; ctl.cuerpo.addEventListener('input', function (e) { if (e.target.name === 'codigo') { clearTimeout(tdeb); tdeb = setTimeout(revisar, 700); } });
+      ctl.cuerpo.addEventListener('change', function (e) { if (e.target.name === 'codigo') revisar(); });
+      if (nuevo) { var cc = ctl.$('[name=codigo]'); if (cc) setTimeout(function () { cc.focus(); }, 60); }
       function ver() {
         var v = UI.valores(ctl), kg = v.unidad === 'kg'; ctl.$('#f-codigo').hidden = kg; ctl.$('#f-plu').hidden = !kg; ctl.$('#f-catnueva').hidden = v.cat !== '__nueva';
         var c = UI.aCentavos(v.costo), pr = UI.aCentavos(v.precio);
@@ -337,7 +363,7 @@
         var pl = ctl.$('#f-ejemplo'); pl.textContent = kg && /^\d{5}$/.test(v.plu) ? 'Etiqueta de 350 g: ' + LE.ean13(LE.negocio().balanza.prefijo + v.plu + '00350') : 'La balanza imprime este PLU dentro del código de la etiqueta.';
       }
       ctl.cuerpo.addEventListener('input', ver); ctl.cuerpo.addEventListener('change', ver);
-      ctl.cuerpo.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.name === 'codigo') { e.preventDefault(); ctl.$('[name=costo]').focus(); } });
+      ctl.cuerpo.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.name === 'codigo') { e.preventDefault(); clearTimeout(tdeb); if (nuevo && /^\d{8,14}$/.test(e.target.value.trim()) && e.target.value.trim() !== ultimo) revisar(); else (ctl.$('[name=nombre]').value.trim() ? ctl.$('[name=precio]') : ctl.$('[name=nombre]')).focus(); } });
       ver();
     }
   };

@@ -79,6 +79,6 @@ También mantiene viva la base del plan gratis. Las instrucciones están en `sup
 
 ## Qué falta (a propósito)
 
-- **Cargar los productos reales:** hoy se cargan de a uno desde el panel. Una importación desde Excel/CSV sería lo siguiente.
+- **Cargar los productos reales:** se cargan escaneando cada uno (Productos → Nuevo producto, o directo desde la caja si Administración escanea un código desconocido). El nombre sale de bases públicas cuando existe; el precio se escribe una sola vez. Una importación desde Excel/CSV y una lista de «códigos sin cargar» que deje la caja serían lo siguiente.
 - **PIN rápido** para cambiar de cajera sin escribir email y contraseña.
 - **Factura electrónica (e-Ticket):** sigue pendiente de confirmar con el contador.

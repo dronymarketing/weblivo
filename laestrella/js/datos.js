@@ -381,6 +381,12 @@
       if (d.stockInicial != null && !d.id) p.stock = +d.stockInicial || 0;
       guardar(); return p;
     },
+    ajustarMinimo: function (id, minimo) {
+      exigir('admin'); var p = porId(E.productos, id), m = Math.round((+minimo || 0) * 1000) / 1000;
+      if (!(m >= 0)) throw new Error('El mínimo no puede ser negativo.');
+      if (m !== p.minimo) anotar('Cambió el mínimo de ' + p.nombre + ': ' + p.minimo + ' → ' + m);
+      p.minimo = m; guardar(); return p;
+    },
     activarProducto: function (id, activo) { exigir('admin'); var p = porId(E.productos, id); p.activo = !!activo; anotar((activo ? 'Reactivó ' : 'Dio de baja ') + p.nombre); guardar(); },
 
     /* Stock */

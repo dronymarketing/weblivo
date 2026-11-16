@@ -58,6 +58,15 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Stock · Disponible**: una columna con la cantidad y debajo una barra de tres zonas (rojo = no hay · amarillo = alerta,
     hasta el mínimo · verde = por encima del mínimo). El recorrido llega al doble del mínimo; la parte llena toma el color de su
     zona. La regla es una sola, `LE.nivelStock(p)`: «no hay» si stock ≤ 0, «alerta / Reponer» si stock < mínimo, «bien» si es el mínimo o más (tener justo el mínimo está bien). La usan la barra, la insignia, «Para reponer» del Inicio, los filtros y el listado de productos; el servidor solo guarda el mínimo.
+  - **Stock · Ajustar** pone el **mínimo** de cada producto (con vista previa de la barra); desde esa misma ventana, «Contar stock»
+    corrige la cantidad (conteo, rotura, merma…). API: `LE.ajustarMinimo(id, minimo)`.
+  - **Alta de productos escaneando** (la idea es ir automatizando la carga): Productos → «Nuevo producto» arranca con el cursor en el
+    código de barras. Si el código ya está cargado, avisa y ofrece abrirlo; si no, `UI.consultarCodigo` busca nombre, marca, cantidad y
+    categoría en Open Food Facts / Open Products Facts / Open Beauty Facts (solo se envía el número del código; si no hay internet o no
+    existe, se sigue a mano). Después solo falta el precio; «Guardar y escanear otro» deja listo el siguiente. En la **caja**, si
+    Administración escanea un código que no está cargado se abre el alta rápida (nombre sugerido, precio, costo, categoría) y el
+    producto se agrega al ticket; la próxima vez se escanea y ya se sabe qué es y cuánto sale. Si el que escanea es Caja, ve el
+    aviso «Avisale a Administración». Pendiente: lista de «códigos sin cargar» que dejó la caja para que Administración los resuelva.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

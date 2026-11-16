@@ -124,6 +124,10 @@
     var p = { id: esUuid(d.id) ? d.id : null, nombre: d.nombre, cat: d.cat, unidad: d.unidad, codigo: d.codigo || '', plu: d.plu || '', costo: d.costo, precio: d.precio, iva: +d.iva, minimo: d.minimo || 0, prov: d.prov || null, stockInicial: d.stockInicial || 0 };
     return hacer('guardar_producto', { p: p }, function (r) { return LE.producto(r.id); });
   };
+  LE.ajustarMinimo = function (id, minimo) {
+    var q = LE.producto(id), m = Math.round((+minimo || 0) * 1000) / 1000; if (!(m >= 0)) return Promise.reject(new Error('El mínimo no puede ser negativo.'));
+    return LE.guardarProducto({ id: q.id, nombre: q.nombre, cat: q.cat, unidad: q.unidad, codigo: q.codigo, plu: q.plu, costo: q.costo, precio: q.precio, iva: q.iva, minimo: m, prov: q.prov });
+  };
   LE.activarProducto = function (id, activo) { return hacer('activar_producto', { p_id: id, p_activo: !!activo }); };
   LE.ajustarStock = function (id, delta, motivo) { return hacer('ajustar_stock', { p_id: id, p_delta: delta, p_motivo: motivo }); };
   LE.guardarProveedor = function (d) { return hacer('guardar_proveedor', { p: { id: esUuid(d.id) ? d.id : null, nombre: d.nombre, contacto: d.contacto, telefono: d.telefono, email: d.email, rubro: d.rubro } }); };

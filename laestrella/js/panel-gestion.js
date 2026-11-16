@@ -61,10 +61,29 @@
         ], ps.slice(0, 150)));
     }
   };
+  /* Ajustar = poner el mínimo de cada producto (cuándo avisar que hay que reponer). El conteo de lo que hay se hace desde acá mismo. */
   P.acciones.ajustar = function (id) {
     var p = LE.producto(id), kg = p.unidad === 'kg';
     var ctl = UI.modal({
-      titulo: 'Ajustar stock', cuerpo: '<p><strong>' + esc(p.nombre) + '</strong></p><p class="suave" style="margin:4px 0 14px">En el sistema hay ' + cant(p, p.stock) + '</p>' +
+      titulo: 'Ajustar mínimo', cuerpo: '<div class="ajuste-prod">' + UI.foto(p, 'foto--mini') + '<div><strong>' + esc(p.nombre) + '</strong><small class="suave">' + esc(p.cat) + ' · hay ' + cant(p, p.stock) + '</small></div></div>' +
+        '<label class="campo"><span>Avisar que hay que reponer cuando quede menos de' + (kg ? ' (kg)' : ' (unidades)') + '</span><input name="minimo" class="entrada" inputmode="decimal" autocomplete="off" value="' + String(p.minimo).replace('.', ',') + '"></label>' +
+        '<div id="aj-nivel" class="ajuste-nivel"></div><p id="aj-txt" class="suave" style="margin:8px 0 4px"></p>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Contar stock', clase: 'btn--linea', cerrar: false, accion: function (c) { c.cerrar(); P.acciones.contar(id); return false; } },
+        { texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () {
+          var v = UI.valores(ctl), m = UI.aNumero(v.minimo);
+          UI.hacer(function () { return LE.ajustarMinimo(id, m); }, 'Mínimo guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
+    });
+    function ver() {
+      var m = Math.max(0, UI.aNumero(ctl.$('[name=minimo]').value) || 0), q = { stock: p.stock, minimo: m, unidad: p.unidad }, z = LE.nivelStock(q);
+      ctl.$('#aj-nivel').innerHTML = barraNivel(q);
+      ctl.$('#aj-txt').textContent = z === 'cero' ? 'Hoy no hay stock.' : z === 'alerta' ? 'Con este mínimo, hoy sale en alerta: hay ' + cant(p, p.stock) + ' y el mínimo es ' + cant(p, m) + '.' : 'Con este mínimo, hoy está bien: hay ' + cant(p, p.stock) + '.';
+    }
+    ctl.$('[name=minimo]').addEventListener('input', ver); ver(); ctl.$('[name=minimo]').select();
+  };
+  P.acciones.contar = function (id) {
+    var p = LE.producto(id), kg = p.unidad === 'kg';
+    var ctl = UI.modal({
+      titulo: 'Contar stock', cuerpo: '<p><strong>' + esc(p.nombre) + '</strong></p><p class="suave" style="margin:4px 0 14px">En el sistema hay ' + cant(p, p.stock) + '</p>' +
         '<label class="campo"><span>Cuánto hay realmente (contado en el estante)</span><input name="real" class="entrada" inputmode="decimal" value="' + String(p.stock).replace('.', ',') + '"></label><p id="aj-dif" class="suave" style="margin:-6px 0 14px"></p>' +
         '<label class="campo"><span>Motivo</span><select name="motivo" class="entrada"><option>Conteo de inventario</option><option>Vencido o en mal estado</option><option>Rotura</option><option>Merma</option><option>Faltante sin explicar</option><option>Error de carga</option></select></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar ajuste', clase: 'btn--tinta', cerrar: false, accion: function () {
@@ -185,7 +204,7 @@
   P.rutas.reportes = {
     titulo: 'Reportes',
     entrar: function () {
-      var S = P.est('reportes', { rango: '7' });
+      var S = P.est('reportes', { rango: '7', tab: 'productos' });
       P.cab('Reportes', 'Cuánto se vende, qué se vende y cuánto queda.', '<button type="button" class="btn btn--linea" data-acc="csv-productos">' + ico('download') + 'Descargar productos (CSV)</button>', P.chipsRango(S.rango));
       P.rutas.reportes.pintar();
     },
@@ -198,22 +217,26 @@
       var cats = Object.keys(R.porCat).map(function (k) { return R.porCat[k]; }).sort(function (a, b) { return b.total - a.total; });
       var prods = Object.keys(R.porProd).map(function (k) { return R.porProd[k]; }).sort(function (a, b) { return b.total - a.total; });
       var cajeros = Object.keys(R.porCajero).map(function (k) { return R.porCajero[k]; }).sort(function (a, b) { return b.total - a.total; });
-      var iva = LE.negocio().regimen === 'iva';
+      var iva = LE.negocio().regimen === 'iva', tab = S.tab || 'productos', totM = 0, m;
+      for (m in R.porMedio) totM += R.porMedio[m];
       P.rutas.reportes.ult = prods;
+      var contenido = tab === 'categorias' ? P.tabla([
+          { t: 'Categoría', c: 't-titulo', f: function (c) { return esc(c.nombre); } }, { t: 'Vendido', c: 't-derecha', f: function (c) { return F.din(c.total); } },
+          { t: 'Parte', f: function (c) { return P.pct(c.total, R.total); } }, { t: 'Margen', f: function (c) { return P.pct(c.total - c.costo, c.total); } }], cats)
+        : tab === 'personas' ? (cajeros.length ? '<div class="panel__pad">' + P.ranking(cajeros.map(function (c) { return { n: c.nombre + ' · ' + c.tickets + ' ventas', v: c.total, t: c.total }; }), function (i) { return F.din(i.t); }) + '</div>' : '<p class="vacio">Sin ventas en este período.</p>')
+        : P.tabla([
+          { t: 'Producto', c: 't-titulo', f: function (p) { return esc(p.nombre) + '<small>' + esc(p.cat) + '</small>'; } }, { t: 'Vendido', c: 't-derecha', f: function (p) { return F.din(p.total); } },
+          { t: 'Cantidad', f: function (p) { return p.unidad === 'kg' ? F.kg(p.cant) : F.cant(p.cant); } }, { t: 'Ganancia', f: function (p) { return F.din(p.total - p.costo); } }], prods.slice(0, 15));
+      var ICM = { efectivo: 'banknote', debito: 'credit-card', credito: 'credit-card', qr: 'qr-code' };
       P.zona('<div class="kpis kpis--rep"><div class="kpi kpi--grande"><div class="kpi__rotulo">Ventas del período</div><div class="kpi__valor">' + F.din(R.total) + '</div><div class="kpi__sub">' + R.tickets + ' ventas' + (delta !== null ? ' · ' + (delta >= 0 ? '+' : '−') + Math.abs(delta) + ' % frente al período anterior' : '') + '</div></div>' +
         '<div class="kpi"><div class="kpi__rotulo">Ticket promedio</div><div class="kpi__valor">' + F.din(R.promedio) + '</div></div>' +
         '<div class="kpi"><div class="kpi__rotulo">Ganancia bruta</div><div class="kpi__valor">' + F.din(R.margen) + '</div><div class="kpi__sub">' + P.pct(R.margen, R.total) + ' de lo vendido</div></div>' +
         '<div class="kpi"><div class="kpi__rotulo">' + (iva ? 'IVA incluido (estimado)' : 'Ventas anuladas') + '</div><div class="kpi__valor">' + (iva ? F.din(R.iva) : R.anuladas) + '</div><div class="kpi__sub">' + (iva ? '' : F.din(R.anuladasTotal)) + '</div></div></div>' +
-        '<div class="grid grid--3" style="margin-bottom:16px"><section class="tarjeta"><h3>' + (porHora ? 'Ventas por hora' : 'Ventas por día') + '</h3><div class="grafico" id="g-rep"></div>' + P.tablaDatos(datos) + '</section>' +
-        '<section class="tarjeta"><h3>Medios de pago</h3>' + P.mediosHTML(R.porMedio) + '</section></div>' +
-        '<div class="grid grid--2" style="margin-bottom:16px"><section class="tarjeta tarjeta--plana"><h3 style="padding:16px 16px 0">Por categoría</h3>' + P.tabla([
-          { t: 'Categoría', c: 't-titulo', f: function (c) { return esc(c.nombre); } }, { t: 'Vendido', c: 't-derecha', f: function (c) { return F.din(c.total); } },
-          { t: 'Parte', f: function (c) { return P.pct(c.total, R.total); } }, { t: 'Margen', f: function (c) { return P.pct(c.total - c.costo, c.total); } }], cats) + '</section>' +
-        '<section class="tarjeta"><h3>Por persona en caja</h3>' + (cajeros.length ? P.ranking(cajeros.map(function (c) { return { n: c.nombre + ' · ' + c.tickets + ' ventas', v: c.total, t: c.total }; }), function (i) { return F.din(i.t); }) : '<p class="vacio">Sin ventas.</p>') + '</section></div>' +
-        '<h3 style="margin-bottom:10px">Productos más vendidos</h3>' + P.tabla([
-          { t: 'Producto', c: 't-titulo', f: function (p) { return esc(p.nombre) + '<small>' + esc(p.cat) + '</small>'; } }, { t: 'Vendido', c: 't-derecha', f: function (p) { return F.din(p.total); } },
-          { t: 'Cantidad', f: function (p) { return p.unidad === 'kg' ? F.kg(p.cant) : F.cant(p.cant); } }, { t: 'Ganancia', f: function (p) { return F.din(p.total - p.costo); } }], prods.slice(0, 15)));
-      P.barras($('#g-rep'), datos, { titulo: porHora ? 'Ventas por hora' : 'Ventas por día' });
+        '<div class="paneles paneles--rep"><section class="panel panel--grafico"><div class="panel__cab"><h3>' + (porHora ? 'Ventas por hora' : 'Ventas por día') + '</h3>' + P.tablaDatos(datos, true) + '</div>' +
+        '<div class="grafico grafico--llenar" id="g-rep"></div>' +
+        '<div class="mini-kpis">' + Object.keys(LE.MEDIOS).map(function (k) { return '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:' + P.COLOR_MEDIO[k] + '">' + ico(ICM[k]) + '</span><div><small>' + LE.MEDIOS[k] + ' · ' + P.pct(R.porMedio[k] || 0, totM) + '</small><strong>' + F.din(R.porMedio[k] || 0) + '</strong></div></div>'; }).join('') + '</div></section>' +
+        '<section class="panel"><div class="panel__cab panel__cab--tabs">' + tabs([['productos', 'Más vendidos'], ['categorias', 'Categorías'], ['personas', 'Personas']], tab) + '</div><div class="panel__lista">' + contenido + '</div></section></div>');
+      P.barras($('#g-rep'), datos, { titulo: porHora ? 'Ventas por hora' : 'Ventas por día', llenar: true });
     },
     csv: function () {
       var f = [['Producto', 'Categoría', 'Cantidad', 'Vendido', 'Costo', 'Ganancia']];
@@ -283,22 +306,43 @@
   }; P.acciones.persona = function (id) { formPersona(id); };
 
   /* ============================ AJUSTES ============================ */
+  function previaTicket(v) {
+    var W = 32, c = function (t) { t = String(t || ''); if (t.length >= W) return t.slice(0, W); return new Array(Math.floor((W - t.length) / 2) + 1).join(' ') + t; };
+    var der = function (a, b) { var e = Math.max(1, W - a.length - b.length); return a + new Array(e + 1).join(' ') + b; }, raya = new Array(W + 1).join('-'), L = [];
+    L.push(c(String(v.nombre || '').toUpperCase())); L.push(c(v.rubro));
+    String(v.direccion || '').split(' ').reduce(function (ls, w) { var u = ls[ls.length - 1]; if ((u + ' ' + w).trim().length <= W) ls[ls.length - 1] = (u + ' ' + w).trim(); else ls.push(w); return ls; }, ['']).forEach(function (t) { if (t) L.push(c(t)); });
+    if (v.telefono) L.push(c('Tel. ' + v.telefono)); if (v.rut) L.push(c('RUT ' + v.rut));
+    L.push(raya, 'Ticket N.º 002082', raya, 'Yerba Mate 1 kg', der('  1 x $ 279', '$ 279'), 'Pan Flauta', der('  2 x $ 30', '$ 60'), raya, der('TOTAL', '$ 339'), raya, c(v.pie));
+    return L.join('\n');
+  }
   P.rutas.ajustes = {
     titulo: 'Ajustes',
-    entrar: function () { P.cab('Ajustes', 'Los datos del negocio, lo que sale en el ticket y cómo se cobra.'); P.rutas.ajustes.pintar(); },
+    entrar: function () {
+      var S = P.est('ajustes', { tab: 'negocio' });
+      P.cab('Ajustes', 'Los datos del negocio, lo que sale en el ticket y cómo se cobra.', null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza'], ['sistema', 'Sistema']], S.tab));
+      P.rutas.ajustes.pintar();
+    },
     pintar: function () {
-      var n = LE.negocio(), b = n.balanza, ejemplo = LE.ean13(b.prefijo + '00101' + '00350');
-      P.zona('<div class="grid grid--2"><section class="tarjeta"><h3>El negocio y el ticket</h3><form id="f-neg">' + [['nombre', 'Nombre'], ['rubro', 'A qué se dedica'], ['direccion', 'Dirección'], ['telefono', 'Teléfono'], ['rut', 'RUT']].map(function (c) { return '<label class="campo"><span>' + c[1] + '</span><input name="' + c[0] + '" class="entrada" maxlength="120" value="' + esc(n[c[0]]) + '"></label>'; }).join('') +
-        '<label class="campo"><span>Régimen</span><select name="regimen" class="entrada"><option value="monotributo"' + (n.regimen === 'monotributo' ? ' selected' : '') + '>Monotributo</option><option value="iva"' + (n.regimen === 'iva' ? ' selected' : '') + '>IVA</option></select></label>' +
-        '<label class="campo"><span>Mensaje al pie del ticket</span><input name="pie" class="entrada" maxlength="60" value="' + esc(n.pie) + '"></label><button type="button" class="btn btn--tinta" data-acc="guardar-negocio">Guardar</button></form></section>' +
-        '<div style="display:grid;gap:16px;align-content:start"><section class="tarjeta"><h3>Medios de pago habilitados</h3><form id="f-med">' + Object.keys(LE.MEDIOS).map(function (m) { return '<label class="interruptor"><span>' + LE.MEDIOS[m] + '</span><input type="checkbox" name="' + m + '"' + (n.medios[m] ? ' checked' : '') + '></label>'; }).join('') +
-        '<p class="suave" style="font-size:14px;margin:12px 0">Débito, crédito y QR se cobran en el datáfono o con el QR del banco y acá se anota que se cobró.</p><button type="button" class="btn btn--tinta" data-acc="guardar-medios">Guardar</button></form></section>' +
-        '<section class="tarjeta"><h3>Balanza</h3><form id="f-bal"><div class="fila-campos"><label class="campo"><span>Código inicial</span><select name="prefijo" class="entrada">' + ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29'].map(function (x) { return '<option' + (b.prefijo === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></label>' +
-        '<label class="campo"><span>La etiqueta trae</span><select name="modo" class="entrada"><option value="peso"' + (b.modo === 'peso' ? ' selected' : '') + '>El peso</option><option value="precio"' + (b.modo === 'precio' ? ' selected' : '') + '>El precio</option></select></label></div>' +
-        '<p class="suave" style="font-size:14px;margin-bottom:12px">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div></div>' +
-        '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>Factura electrónica</h3><p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
-        '<section class="tarjeta"><h3>Créditos de las fotos</h3><p class="suave" style="font-size:14px;line-height:1.5">Las fotos de los envases vienen de <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>, Open Products Facts y Open Beauty Facts (licencia <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.es" target="_blank" rel="noopener">CC BY-SA 3.0</a>), y las de productos frescos de <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>, cada una con su autor y licencia. La lista completa está en <span class="mono">img/productos/CREDITOS.md</span>.</p></section>' +
-        (LE.nubeActiva ? '<section class="tarjeta"><h3>Base de datos</h3><p class="suave">Conectada a Supabase. Los cambios se guardan en la nube y los ven todas las terminales. Las ventas hechas sin internet se envían solas cuando vuelve la conexión.</p></section>' : '<section class="tarjeta"><h3>Datos del sistema</h3><p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section>') + '</div>');
+      var S = P.est('ajustes'), n = LE.negocio(), b = n.balanza, ejemplo = LE.ean13(b.prefijo + '00101' + '00350');
+      var cab = function (t) { return '<div class="panel__cab"><h3>' + t + '</h3></div>'; };
+      if (S.tab === 'cobro') {
+        P.zona('<div class="paneles paneles--form paneles--iguales"><section class="panel panel--form">' + cab('Medios de pago habilitados') + '<form id="f-med">' + Object.keys(LE.MEDIOS).map(function (m) { return '<label class="interruptor"><span>' + LE.MEDIOS[m] + '</span><input type="checkbox" name="' + m + '"' + (n.medios[m] ? ' checked' : '') + '></label>'; }).join('') +
+          '<p class="suave" style="font-size:14px;margin:12px 0">Débito, crédito y QR se cobran en el datáfono o con el QR del banco y acá se anota que se cobró.</p><button type="button" class="btn btn--tinta" data-acc="guardar-medios">Guardar</button></form></section>' +
+          '<section class="panel panel--form">' + cab('Balanza') + '<form id="f-bal"><div class="fila-campos"><label class="campo"><span>Código inicial</span><select name="prefijo" class="entrada">' + ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29'].map(function (x) { return '<option' + (b.prefijo === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></label>' +
+          '<label class="campo"><span>La etiqueta trae</span><select name="modo" class="entrada"><option value="peso"' + (b.modo === 'peso' ? ' selected' : '') + '>El peso</option><option value="precio"' + (b.modo === 'precio' ? ' selected' : '') + '>El precio</option></select></label></div>' +
+          '<p class="suave" style="font-size:14px;margin-bottom:14px;line-height:1.5">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div>');
+      } else if (S.tab === 'sistema') {
+        P.zona('<div class="paneles paneles--form paneles--iguales"><div class="panel-col"><section class="panel panel--form">' + cab('Factura electrónica') + '<p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
+          (LE.nubeActiva ? '<section class="panel panel--form">' + cab('Base de datos') + '<p class="suave">Conectada a Supabase. Los cambios se guardan en la nube y los ven todas las terminales. Las ventas hechas sin internet se envían solas cuando vuelve la conexión.</p></section>' : '<section class="panel panel--form">' + cab('Datos del sistema') + '<p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section>') + '</div>' +
+          '<section class="panel panel--form">' + cab('Créditos de las fotos') + '<p class="suave" style="font-size:14px;line-height:1.55">Las fotos de los envases vienen de <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>, Open Products Facts y Open Beauty Facts (licencia <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.es" target="_blank" rel="noopener">CC BY-SA 3.0</a>), y las de productos frescos de <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>, cada una con su autor y licencia. La lista completa está en <span class="mono">img/productos/CREDITOS.md</span>.</p></section></div>');
+      } else {
+        P.zona('<div class="paneles paneles--form"><section class="panel panel--form">' + cab('El negocio y el ticket') + '<form id="f-neg"><div class="campos-2">' + [['nombre', 'Nombre'], ['rubro', 'A qué se dedica'], ['direccion', 'Dirección'], ['telefono', 'Teléfono'], ['rut', 'RUT']].map(function (c) { return '<label class="campo"><span>' + c[1] + '</span><input name="' + c[0] + '" class="entrada" maxlength="120" value="' + esc(n[c[0]]) + '"></label>'; }).join('') +
+          '<label class="campo"><span>Régimen</span><select name="regimen" class="entrada"><option value="monotributo"' + (n.regimen === 'monotributo' ? ' selected' : '') + '>Monotributo</option><option value="iva"' + (n.regimen === 'iva' ? ' selected' : '') + '>IVA</option></select></label>' +
+          '<label class="campo campo--ancho"><span>Mensaje al pie del ticket</span><input name="pie" class="entrada" maxlength="60" value="' + esc(n.pie) + '"></label></div><button type="button" class="btn btn--tinta" data-acc="guardar-negocio">Guardar</button></form></section>' +
+          '<section class="panel panel--form">' + cab('Así sale en el ticket') + '<div class="papel-marco"><pre class="papel" id="tk-previa" aria-label="Vista previa del ticket"></pre></div></section></div>');
+        var f = $('#f-neg'), pre = function () { $('#tk-previa').textContent = previaTicket({ nombre: f.nombre.value, rubro: f.rubro.value, direccion: f.direccion.value, telefono: f.telefono.value, rut: f.rut.value, pie: f.pie.value }); };
+        f.addEventListener('input', pre); pre();
+      }
     }
   };
   P.acciones['guardar-negocio'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-neg')); } }); UI.hacer(function () { return LE.guardarNegocio(v); }, 'Datos guardados.').then(function (r) { if (r.ok) P.refrescar(); }); };
