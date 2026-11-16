@@ -96,13 +96,19 @@
   };
 
   /* ============================ COMPRAS Y PROVEEDORES ============================ */
+  /* Estado de una compra en tres pasos: pedida → recibida → paga. Los pasos hechos se llenan; con los tres, todo en verde. */
+  function pasosCompra(c) {
+    var hechos = [true, !!c.recibida, !!c.pagada], todo = hechos[1] && hechos[2];
+    var txt = todo ? '<strong>Completa</strong> · recibida ' + F.fechaCorta(c.recibidaTs) : !c.recibida ? '<strong>Pedida</strong>' + (c.pagada ? ' · ya paga' : ' · a pagar') : '<strong>Recibida</strong> ' + F.fechaCorta(c.recibidaTs) + ' · a pagar';
+    return '<span class="pasos' + (todo ? ' pasos--ok' : '') + '" role="img" aria-label="' + esc((todo ? 'Completa' : !c.recibida ? 'Pedida, sin recibir' : 'Recibida, falta pagar')) + '"><span class="pasos__barra"><i class="' + (hechos[0] ? 'on' : '') + '" title="Pedida"></i><i class="' + (hechos[1] ? 'on' : '') + '" title="Recibida"></i><i class="' + (hechos[2] ? 'on' : '') + '" title="Paga"></i></span><small>' + txt + '</small></span>';
+  }
   P.rutas.compras = {
     titulo: 'Compras',
     entrar: function () {
-      var S = P.est('compras', { tab: 'compras' });
+      var S = P.est('compras', { tab: 'compras', f: '' });
       P.cab('Compras y proveedores', 'Lo que se le pide a cada proveedor y lo que ya llegó. Al recibir, el stock sube solo.',
         S.tab === 'compras' ? '<button type="button" class="btn btn--acento" data-acc="compra-nueva">' + ico('plus') + 'Nueva compra</button>' : '<button type="button" class="btn btn--acento" data-acc="prov-nuevo">' + ico('plus') + 'Nuevo proveedor</button>',
-        tabs([['compras', 'Compras'], ['proveedores', 'Proveedores']], S.tab));
+        tabs([['compras', 'Compras'], ['proveedores', 'Proveedores']], S.tab) + (S.tab === 'compras' ? [['', 'Todas'], ['recibir', 'Por recibir'], ['pagar', 'Por pagar']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : ''));
       P.rutas.compras.pintar();
     },
     pintar: function () {
@@ -115,16 +121,17 @@
           { t: '', c: 't-acciones', f: function (v) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="prov" data-id="' + v.id + '">' + ico('pencil') + 'Editar</button>'; } }
         ], LE.proveedores()));
       }
-      var cs = LE.compras(), pend = cs.filter(function (c) { return !c.recibida; }), debe = cs.filter(function (c) { return c.recibida && !c.pagada; }).reduce(function (a, c) { return a + c.total; }, 0);
+      var cs = LE.compras(), pend = cs.filter(function (c) { return !c.recibida; }), porPagar = cs.filter(function (c) { return c.recibida && !c.pagada; }), debe = porPagar.reduce(function (a, c) { return a + c.total; }, 0);
       var m30 = cs.filter(function (c) { return c.ts > Date.now() - 30 * DIA; }).reduce(function (a, c) { return a + c.total; }, 0);
-      P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Pedidas sin recibir</div><div class="kpi__valor">' + pend.length + '</div></div><div class="kpi"><div class="kpi__rotulo">Para pagar a proveedores</div><div class="kpi__valor">' + F.din(debe) + '</div></div><div class="kpi"><div class="kpi__rotulo">Comprado en 30 días</div><div class="kpi__valor">' + F.din(m30) + '</div></div></div>' +
+      var lista = S.f === 'recibir' ? pend : S.f === 'pagar' ? porPagar : cs;
+      var link = function (v, rot, val, sub) { return '<button type="button" class="kpi kpi--link" data-filtro="f" data-valor="' + v + '"><span class="kpi__rotulo">' + rot + '</span><span class="kpi__valor">' + val + '</span><span class="kpi__ir">' + sub + ' ›</span></button>'; };
+      P.zona('<div class="kpis">' + link('recibir', 'Pedidas sin recibir', pend.length, 'Ver cuáles') + link('pagar', 'Para pagar a proveedores', F.din(debe), porPagar.length + (porPagar.length === 1 ? ' compra' : ' compras')) + '<div class="kpi"><div class="kpi__rotulo">Comprado en 30 días</div><div class="kpi__valor">' + F.din(m30) + '</div></div></div>' +
         P.tabla([
           { t: 'Compra', c: 't-titulo', f: function (c) { return 'C-' + LE.pad(c.num, 4) + ' · ' + esc(LE.proveedor(c.prov).nombre) + '<small>' + F.fecha(c.ts) + ' · ' + c.items.length + (c.items.length === 1 ? ' producto' : ' productos') + '</small>'; } },
           { t: 'Total', c: 't-derecha', f: function (c) { return F.din(c.total); } },
-          { t: 'Llegada', f: function (c) { return c.recibida ? '<span class="badge badge--ok">Recibida ' + F.fechaCorta(c.recibidaTs) + '</span>' : '<span class="badge badge--alerta">Pedida</span>'; } },
-          { t: 'Pago', f: function (c) { return c.pagada ? '<span class="badge badge--ok">Paga</span>' : '<span class="badge">A pagar</span>'; } },
+          { t: 'Estado', f: function (c) { return pasosCompra(c); } },
           { t: '', c: 't-acciones', f: function (c) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="compra" data-id="' + c.id + '">' + ico('eye') + 'Ver</button>' + (c.recibida ? '' : ' <button type="button" class="btn btn--chico btn--tinta" data-acc="recibir" data-id="' + c.id + '">' + ico('package-plus') + 'Recibir</button>') + (c.pagada ? '' : ' <button type="button" class="btn btn--chico btn--linea" data-acc="pagar" data-id="' + c.id + '">' + ico('hand-coins') + 'Marcar paga</button>'); } }
-        ], cs, { vacio: 'Todavía no registraste compras.' }));
+        ], lista, { vacio: cs.length ? 'No hay compras con este filtro.' : 'Todavía no registraste compras.' }));
     }
   };
   P.acciones.compra = function (id) {
@@ -251,10 +258,10 @@
   P.rutas.equipo = {
     titulo: 'Equipo',
     entrar: function () {
-      var S = P.est('equipo', { tab: 'personas', rango: '7', q: '' }), a = LE.asistenciaAbierta(usuario.id);
+      var S = P.est('equipo', { tab: 'personas', rango: '7', q: '', f: '' }), a = LE.asistenciaAbierta(usuario.id);
       P.cab('Equipo', 'Quién tiene acceso, qué puede hacer, cuándo trabajó y qué cambió cada uno.',
         '<button type="button" class="btn btn--linea" data-acc="mi-jornada">' + ico('clock') + (a ? 'Terminar mi jornada' : 'Empezar mi jornada') + '</button>' + (S.tab === 'personas' ? '<button type="button" class="btn btn--acento" data-acc="persona-nueva">' + ico('plus') + 'Nueva persona</button>' : ''),
-        tabs([['personas', 'Personas'], ['horarios', 'Horarios'], ['registro', 'Registro de cambios']], S.tab) + (S.tab === 'horarios' ? P.chipsRango(S.rango) : '') + (S.tab === 'registro' ? '<input class="entrada" data-filtro="q" placeholder="Buscar en el registro" value="' + esc(S.q) + '" aria-label="Buscar en el registro">' : ''));
+        tabs([['personas', 'Personas'], ['horarios', 'Horarios'], ['registro', 'Registro de cambios']], S.tab) + (S.tab === 'personas' ? [['', 'Todas'], ['con', 'Con acceso'], ['sin', 'Sin acceso']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : '') + (S.tab === 'horarios' ? P.chipsRango(S.rango) : '') + (S.tab === 'registro' ? '<input class="entrada" data-filtro="q" placeholder="Buscar en el registro" value="' + esc(S.q) + '" aria-label="Buscar en el registro">' : ''));
       P.rutas.equipo.pintar();
     },
     pintar: function () {
@@ -273,18 +280,24 @@
         return P.zona('<p class="resumen">Cada acción importante queda anotada con nombre y hora. Nadie puede borrarla ni cambiarla.</p>' + P.tabla([
           { t: 'Cuándo', c: 't-titulo', f: function (a) { return F.fecha(a.ts) + ' · ' + F.hora(a.ts) + '<small>' + esc(a.usuario) + '</small>'; } }, { t: 'Qué hizo', f: function (a) { return esc(a.accion); } }], lg));
       }
-      var us = LE.usuarios();
-      P.zona(P.tabla([
-        { t: 'Persona', c: 't-titulo', f: function (u) { return esc(u.nombre) + '<small>' + esc(u.email) + '</small>'; } },
-        { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'admin' ? 'badge--acento' : 'badge--rosa') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
-        { t: 'Acceso', f: function (u) { return u.activo ? '<span class="badge badge--ok">Activa</span>' : '<span class="badge badge--error">Sin acceso</span>'; } },
-        { t: 'Jornada', f: function (u) { var a = LE.asistenciaAbierta(u.id); return a ? 'Trabajando desde las ' + F.hora(a.entrada) : '—'; } },
-        { t: '', c: 't-acciones', f: function (u) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="persona" data-id="' + u.id + '">' + ico('pencil') + 'Editar</button>'; } }
-      ], us, { clase: function (u) { return u.activo ? '' : 'is-baja'; } }) +
-        '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>' + ico('shield-check') + ' Administración · control total</h3><ul class="permisos">' + [
-          'Ve y cambia productos, precios y costos', 'Maneja stock, compras y proveedores', 'Ve todas las ventas y puede anularlas', 'Ve caja, diferencias y reportes con ganancias', 'Crea personas, cambia roles y PIN', 'Ve el registro de todo lo que se hizo'].map(function (x) { return '<li><span class="si">' + ico('circle-check') + '</span><span>' + x + '</span></li>'; }).join('') + '</ul></section>' +
-        '<section class="tarjeta"><h3>' + ico('user') + ' Caja · lo justo para cobrar</h3><ul class="permisos">' + [
-          ['y', 'Abre y cierra su turno de caja'], ['y', 'Escanea, cobra e imprime tickets'], ['y', 'Hace retiros de efectivo (quedan anotados)'], ['y', 'Marca su entrada y salida'], ['n', 'No ve costos ni ganancias'], ['n', 'No cambia precios ni stock'], ['n', 'No anula ventas ya cobradas'], ['n', 'No ve los reportes ni al resto del equipo']].map(function (x) { return '<li><span class="' + (x[0] === 'y' ? 'si' : 'no') + '">' + ico(x[0] === 'y' ? 'circle-check' : 'ban') + '</span><span>' + x[1] + '</span></li>'; }).join('') + '</ul></section></div>');
+      var todos = LE.usuarios(), us = todos.filter(function (u) { return S.f === 'con' ? u.activo : S.f === 'sin' ? !u.activo : true; });
+      var conAcceso = todos.filter(function (u) { return u.activo; }).length, sinAcceso = todos.length - conAcceso, trabajando = todos.filter(function (u) { return LE.asistenciaAbierta(u.id); });
+      var permiso = function (si, t) { return '<li><span class="' + (si ? 'si' : 'no') + '">' + ico(si ? 'circle-check' : 'ban') + '</span><span>' + t + '</span></li>'; };
+      P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Personas con acceso</div><div class="kpi__valor">' + conAcceso + '</div></div>' +
+        '<div class="kpi"><div class="kpi__rotulo">Trabajando ahora</div><div class="kpi__valor">' + trabajando.length + '</div>' + (trabajando.length ? '<div class="kpi__sub">' + esc(trabajando.map(function (u) { return u.nombre.split(' ')[0]; }).join(', ')) + '</div>' : '') + '</div>' +
+        (sinAcceso ? '<button type="button" class="kpi kpi--link" data-filtro="f" data-valor="sin"><span class="kpi__rotulo">Sin acceso</span><span class="kpi__valor">' + sinAcceso + '</span><span class="kpi__ir">Ver cuáles ›</span></button>' : '<div class="kpi"><div class="kpi__rotulo">Sin acceso</div><div class="kpi__valor">0</div></div>') + '</div>' +
+        '<div class="paneles paneles--equipo"><section class="panel"><div class="panel__cab"><h3>Personas</h3></div><div class="panel__lista">' + P.tabla([
+          { t: 'Persona', c: 't-titulo', f: function (u) { return '<span class="celda-prod"><span class="avatar avatar--chico' + (u.rol === 'admin' ? ' avatar--acento' : '') + '">' + esc(UI.iniciales(u.nombre)) + '</span><span>' + esc(u.nombre) + '<small>' + esc(u.email) + '</small></span></span>'; } },
+          { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'admin' ? 'badge--acento' : 'badge--rosa') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
+          { t: 'Acceso', f: function (u) { return u.activo ? '<span class="badge badge--ok">Activa</span>' : '<span class="badge badge--error">Sin acceso</span>'; } },
+          { t: 'Jornada', f: function (u) { var a = LE.asistenciaAbierta(u.id); return a ? '<span class="en-vivo">Desde ' + F.hora(a.entrada) + '</span>' : '<span class="suave">—</span>'; } },
+          { t: '', c: 't-acciones', f: function (u) { return '<button type="button" class="btn btn--icono btn--chico btn--linea" data-acc="persona" data-id="' + u.id + '" aria-label="Editar a ' + esc(u.nombre) + '" title="Editar">' + ico('pencil') + '</button>'; } }
+        ], us, { clase: function (u) { return u.activo ? '' : 'is-baja'; }, vacio: 'No hay personas con este filtro.' }) + '</div></section>' +
+        '<section class="panel"><div class="panel__cab"><h3>Qué puede hacer cada rol</h3></div><div class="panel__lista panel__pad">' +
+          '<h4 class="rol-tit">' + ico('shield-check') + 'Administración · control total</h4><ul class="permisos">' + [
+            'Ve y cambia productos, precios y costos', 'Maneja stock, compras y proveedores', 'Ve todas las ventas y puede anularlas', 'Ve caja, diferencias y reportes con ganancias', 'Crea personas y cambia roles', 'Ve el registro de todo lo que se hizo'].map(function (x) { return permiso(true, x); }).join('') + '</ul>' +
+          '<h4 class="rol-tit">' + ico('user') + 'Caja · lo justo para cobrar</h4><ul class="permisos">' + [
+            [1, 'Abre y cierra su turno de caja'], [1, 'Escanea, cobra e imprime tickets'], [1, 'Hace retiros de efectivo (quedan anotados)'], [1, 'Marca su entrada y salida'], [0, 'No ve costos ni ganancias'], [0, 'No cambia precios ni stock'], [0, 'No anula ventas ya cobradas'], [0, 'No ve los reportes ni al resto del equipo']].map(function (x) { return permiso(x[0], x[1]); }).join('') + '</ul></div></section></div>');
     }
   };
   P.acciones['mi-jornada'] = function () { UI.hacer(function () { return LE.marcarAsistencia(); }).then(function (r) { if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada.', 'ok'); P.rutas.equipo.entrar(); } }); };

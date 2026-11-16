@@ -121,6 +121,9 @@
 .panel__cab--tabs { margin: -8px -20px 0; padding: 0 20px; }
 .panel.panel--form { padding-bottom: 22px; }
 .panel-col { gap: 16px; }
+.paneles.paneles--equipo { grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); }
+.paneles--equipo .panel__lista .tabla td, .paneles--equipo .panel__lista .tabla th { padding-left: 10px; padding-right: 10px; }
+.paneles--equipo .panel__lista .tabla td:last-child { text-align: right; }
 .panel__lista .tabla td, .panel__lista .tabla th { padding-left: 12px; padding-right: 12px; }
 .panel__lista .tabla td:first-child, .panel__lista .tabla th:first-child { padding-left: 20px; }
 .panel__lista .tabla td:last-child, .panel__lista .tabla th:last-child { padding-right: 20px; }

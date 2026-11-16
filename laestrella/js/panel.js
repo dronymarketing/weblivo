@@ -409,7 +409,7 @@
     var rg = t.closest('[data-rango]');
     if (rg) { var S = P.est(P.actual); S.rango = rg.dataset.rango; UI.$$('[data-rango]').forEach(function (c) { c.setAttribute('aria-pressed', c === rg ? 'true' : 'false'); }); P.refrescar(); return; }
     var fc = t.closest('button[data-filtro]');
-    if (fc) { var S2 = P.est(P.actual); S2[fc.dataset.filtro] = fc.dataset.valor; UI.$$('[data-filtro="' + fc.dataset.filtro + '"]').forEach(function (c) { c.setAttribute('aria-pressed', c === fc ? 'true' : 'false'); }); P.refrescar(); return; }
+    if (fc) { var S2 = P.est(P.actual); S2[fc.dataset.filtro] = fc.dataset.valor; UI.$$('.chip[data-filtro="' + fc.dataset.filtro + '"]').forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.valor === fc.dataset.valor ? 'true' : 'false'); }); P.refrescar(); return; }
     var a = t.closest('[data-acc]'); if (!a) return;
     var id = a.dataset.id, ac = a.dataset.acc;
     if (ac === 'venta') P.rutas.ventas.ver(id);

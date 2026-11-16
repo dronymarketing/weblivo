@@ -71,6 +71,12 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     `codigos_sin_cargar` por la función `registrar_codigo`). Administración la ve en Productos → solapa «Sin cargar · N» (más pedidos primero,
     con cuántas veces y quién escaneó), y en el Inicio como aviso. «Cargar» abre el alta con el código y el nombre ya sugeridos; al guardar el
     producto el código sale solo de la lista; «Descartar» lo saca (si se vuelve a escanear, reaparece). Máximo 500 códigos pendientes.
+  - **Compras**: los indicadores «Pedidas sin recibir» y «Para pagar a proveedores» filtran la lista (también hay fichas Todas / Por recibir /
+    Por pagar). Cada compra muestra su avance en tres pasos (pedida → recibida → paga): los pasos hechos se llenan en violeta y, con los
+    tres, todo pasa a verde («Completa»). La acción principal de cada fila es «Recibir» en violeta.
+  - **Equipo · Personas**: indicadores (con acceso, trabajando ahora, sin acceso → filtra) y dos paneles que entran en la pantalla: la tabla
+    de personas (avatar, rol, acceso, jornada «en vivo», editar) y «Qué puede hacer cada rol» con los permisos de Administración y de Caja.
+    Horarios y Registro siguen como listas a pantalla completa.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura
