@@ -26,16 +26,22 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Sombras teñidas** con la tinta (`--sombra`, `--sombra-alta`): halo difuso de dos capas, nunca gris ni negro.
   - **Texto en 4 escalones** de la misma tinta `#1E2842`: t1 títulos y cifras · t2 `#474F64` cuerpo · t3 `#5F6679` rótulos
     y apoyo · t4 `#818795` solo íconos y adornos (no pasa 4.5:1, no se usa para texto).
-  - **Acento violeta apagado `#7A53C9` en gotas** (el mismo tono de luminosidad e intensidad que tenía el rosa): botón principal («Cobrar»), el medio de pago elegido, el ítem activo del
-    menú (solo el ícono), la pestaña activa, el foco. Nunca como fondo grande.
+  - **Color principal violeta `#7A53C9`** (mismo tono de luminosidad e intensidad que el rosa original), en gotas: botón
+    principal («Cobrar»), medio de pago elegido, ícono del menú activo, pestaña activa, foco, enlaces «Ver …».
+    **El rosa `#B93573`** es el segundo color: tiñe UNA tarjeta (Ventas de hoy) y es la segunda línea de los gráficos (ventas en violeta, ganancia en rosa; nunca otro color de por medio).
+    No hay verde de marca (el verde solo significa «bien» en los estados).
   - **Estados** verde/ámbar/rojo apagados en píldoras de fondo tintado (≥4.6:1).
-  - **Datos**: paleta categórica validada `--serie-1..4` (violeta, verde azulado, ocre, azul); cada medio de pago tiene su
+  - **Datos**: paleta categórica validada `--serie-1..4` (violeta, rosa, ocre, verde azulado); cada medio de pago tiene su
     color en el gráfico, la dona, los mini indicadores y la barra segmentada.
   - **Jerarquía**: lo importante es oscuro, firme y grande (títulos 700, nombres 600–650, cifras 700 con tracking
     cerrado); lo secundario es más chico, de peso 450 y en t2/t3 (subtítulos, rótulos, fechas, unidades).
   - **Tipografía**: todo en una sola familia, «Haas». Neue Haas Grotesk (Monotype) es de pago y no está incluida:
     `@font-face "Haas"` usa la Neue Haas si está instalada en el equipo y, si no, **Inter Tight** (OFL, autoalojada en
     `fonts/`). Con licencia web, se suma el archivo a `fonts/` y una línea `url(...)` en `tokens-proyecto.css`.
+  - **Inicio** (arquitectura tomada de otro panel de Santi, no su estilo): una sola pantalla que entra completa en 100 % del
+    alto, con lo que más se usa y todo clickeable. Encabezado con saludo y avisos (links) · 4 tarjetas (Ventas de hoy, Caja,
+    Para reponer, Ganancia bruta) que llevan a su sección · gráfico de 7 días y últimas ventas, cada uno con su «Ver …».
+    En el celular se apila y se desplaza. Lo demás (actividad, lo más vendido, cómo se cobró) vive en Reportes y Equipo.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

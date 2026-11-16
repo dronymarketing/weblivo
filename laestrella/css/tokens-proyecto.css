@@ -7,7 +7,8 @@
    · Fondo      → tres blancos en capas: marco (lo que rodea), superficie (bandas y
                   cabeceras) y pieza (tarjetas, campos): la jerarquía se ve por capa,
                   no por rayas.
-   · Acento     → un solo violeta apagado, en gotas: «Cobrar», lo seleccionado, un foco.
+   · Acento     → el violeta es el color principal (botones, foco, enlaces, lo seleccionado), en gotas;
+                  el rosa queda como segundo color: destaca UNA tarjeta y es la segunda serie de los gráficos.
    · Texto      → cuatro escalones de la misma tinta (t1 títulos y cifras, t2 cuerpo,
                   t3 rótulos y apoyo, t4 solo decorativo).
    · Estados    → verde, ámbar y rojo apagados, en píldoras de fondo tintado.
@@ -15,7 +16,7 @@
 
    Contrastes medidos (WCAG, sobre pieza / superficie / marco):
    t1 14.6/14.0/13.3 · t2 8.2/7.8/7.4 · t3 5.7/5.5/5.2 · t4 3.6 (solo decorativo)
-   acento 5.4/5.2/4.9 · blanco sobre acento 5.4 · blanco sobre tinta 14.6
+   acento 5.4/5.2/4.9 · blanco sobre acento 5.4 · rosa 5.5/5.3/5.0 · blanco sobre tinta 14.6
    ok 5.5 · alerta 5.6 · error 6.0 (y ≥4.6 sobre su propia píldora tintada)
    Gráficos: paleta categórica validada (luminosidad, croma, separación y contraste).
    ============================================================ */
@@ -48,6 +49,8 @@
   --sobre-acento: #FFFFFF;
   --acento-suave: #F1EDFF;
   --acento-hover: #6F46BC;
+  --rosa:         #B93573;                     /* segundo color: el rosa del Inicio */
+  --rosa-suave:   #F7E7EE;
 
   /* Estados (apagados) con su píldora tintada */
   --ok:           #2E7656;
@@ -87,8 +90,8 @@
   --mono:   ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   /* Gráficos: paleta categórica validada, en este orden */
-  --serie-1: #7A53C9;
-  --serie-2: #1D9886;
+  --serie-1: #7A53C9;                          /* principal (violeta): ventas */
+  --serie-2: #B93573;                          /* secundario (rosa): ganancia */
   --serie-3: #C28527;
-  --serie-4: #4F86C6;
+  --serie-4: #1D9886;
 }
