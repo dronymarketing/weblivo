@@ -24,7 +24,7 @@
 .ingreso__nota { margin: 18px 0 0; max-width: 46ch; }
 .ingreso__roles { grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 0; max-width: 620px; }
 .rol { background: var(--superficie); padding: 16px; border-radius: var(--radio); box-shadow: var(--sombra); }
-.ingreso__panel { background: var(--superficie); box-shadow: -1px 0 0 var(--linea), -28px 0 56px -36px rgba(30, 40, 66, .16); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 48px clamp(32px, 4vw, 72px); }
+.ingreso__panel { background: var(--superficie); box-shadow: -1px 0 0 var(--linea), -28px 0 56px -36px rgba(62, 36, 112, .16); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 48px clamp(32px, 4vw, 72px); }
 .ingreso__panel > * { width: 100%; max-width: 400px; }
 .usuario { background: var(--superficie-2); box-shadow: 0 0 0 1px var(--linea); }
 .usuario:not([disabled]):hover { background: var(--superficie); box-shadow: 0 0 0 1.5px var(--acento), 0 10px 24px -14px rgba(122, 83, 201, .5); }
@@ -198,3 +198,12 @@
 a.pop-aviso:hover { background: var(--hover-velo); }
 .medio:hover { box-shadow: 0 0 0 1.5px rgba(185, 53, 115, .45), var(--sombra); }
 .medio[aria-pressed="true"]:hover { box-shadow: 0 0 0 1.5px var(--acento), 0 6px 16px -8px rgba(122, 83, 201, .4); }
+
+.entrada:hover, .campo input:hover, .campo select:hover, .campo textarea:hover { border-color: var(--hover); }
+.entrada:focus:hover, .campo input:focus:hover, .campo select:focus:hover, .campo textarea:focus:hover { border-color: var(--acento); }
+.cant button:hover, .cant__kg:hover, .teclado button:hover { border-color: var(--hover); color: var(--hover); background: var(--hover-suave); }
+.teclado button:hover { border: 0; box-shadow: 0 0 0 1.5px var(--hover); }
+.suave a:hover, .nota a:hover, .ingreso__pie a:hover, p a:hover { color: var(--hover); }
+.demo--pop summary:hover { color: var(--hover); text-decoration-color: var(--hover); }
+.grafico .barra-dato:hover, .grafico .barra-dato:focus { fill: var(--serie-2); opacity: 1; }
+.interruptor:hover > span { color: var(--hover); }

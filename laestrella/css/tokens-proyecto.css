@@ -15,7 +15,7 @@
    · Sombras    → difusas y teñidas con la tinta, nunca grises ni negras.
 
    Contrastes medidos (WCAG, sobre pieza / superficie / marco):
-   t1 14.6/14.0/13.3 · t2 8.2/7.8/7.4 · t3 5.7/5.5/5.2 · t4 3.6 (solo decorativo)
+   t1 (violeta) 5.4/5.1/4.9 · t2 8.9/8.5/8.1 · t3 5.9/5.7/5.4 · t4 3.6 (solo decorativo)
    acento 5.4/5.2/4.9 · blanco sobre acento 5.4 · rosa 5.5/5.3/5.0 · blanco sobre tinta 14.6
    ok 5.5 · alerta 5.6 · error 6.0 (y ≥4.6 sobre su propia píldora tintada)
    Gráficos: paleta categórica validada (luminosidad, croma, separación y contraste).
@@ -28,19 +28,19 @@
 
 :root {
   /* Capas de blanco (la misma familia fría, de más sombra a más luz) */
-  --marco:        #F3F4F8;
-  --superficie-2: #F9FAFC;
+  --marco:        #F4F3F9;
+  --superficie-2: #FAF9FD;
   --superficie:   #FFFFFF;
   --fondo:        var(--marco);
-  --velo:         rgba(30, 40, 66, .045);      /* apretar/hover sobre una pieza */
-  --velo-fuerte:  rgba(30, 40, 66, .08);
+  --velo:         rgba(62, 36, 112, .045);      /* apretar/hover sobre una pieza */
+  --velo-fuerte:  rgba(62, 36, 112, .08);
 
   /* Tinta y escalones de texto */
-  --tinta:        #1E2842;
-  --texto:        #1E2842;                     /* t1 */
-  --texto-2:      #474F64;                     /* t2 */
-  --texto-suave:  #5F6679;                     /* t3 */
-  --texto-muy-suave: #818795;                  /* t4: solo íconos y adornos */
+  --tinta:        #7A53C9;                     /* la tinta de todo el sistema es el violeta */
+  --texto:        #7A53C9;                     /* t1: títulos y cifras */
+  --texto-2:      #4B4470;                     /* t2 */
+  --texto-suave:  #665F85;                     /* t3 */
+  --texto-muy-suave: #8A83A8;                  /* t4: solo íconos y adornos */
   --texto-fino:   var(--texto-suave);
 
   /* Acento: gotas, no superficies */
@@ -71,18 +71,18 @@
   --error:        #B03A36;
   --error-suave:  #F6E7E7;
   --error-texto:  #B03A36;
-  --info-suave:   #ECEEF4;
+  --info-suave:   #F1EFF8;                     /* gris con un poco de violeta (neutro de insignias, avatares, avisos) */
 
   /* Líneas */
-  --linea:        rgba(30, 40, 66, .08);
-  --linea-fuerte: rgba(30, 40, 66, .16);
+  --linea:        rgba(62, 36, 112, .08);
+  --linea-fuerte: rgba(62, 36, 112, .16);
   --borde:        1px solid var(--linea);
   --borde-claro:  1px solid rgba(255, 255, 255, .18);
-  --grilla:       rgba(30, 40, 66, .07);
+  --grilla:       rgba(62, 36, 112, .07);
 
   /* Sombras teñidas con la tinta: un halo muy suave en dos capas */
-  --sombra:       0 0 0 1px rgba(30, 40, 66, .04), 0 0 12px 1px rgba(30, 40, 66, .045), 0 0 26px 2px rgba(30, 40, 66, .03);
-  --sombra-alta:  0 0 0 1px rgba(30, 40, 66, .05), 0 6px 18px -4px rgba(30, 40, 66, .12), 0 0 36px 2px rgba(30, 40, 66, .06);
+  --sombra:       0 0 0 1px rgba(62, 36, 112, .04), 0 0 12px 1px rgba(62, 36, 112, .045), 0 0 26px 2px rgba(62, 36, 112, .03);
+  --sombra-alta:  0 0 0 1px rgba(62, 36, 112, .05), 0 6px 18px -4px rgba(62, 36, 112, .12), 0 0 36px 2px rgba(62, 36, 112, .06);
   --sombra-cta:   0 1px 2px rgba(62, 36, 112, .24), 0 6px 14px -6px rgba(122, 83, 201, .5);
 
   --radio:        14px;

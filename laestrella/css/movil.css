@@ -4,7 +4,7 @@
    Capas: marco (fondo de página) → pieza (tarjetas y campos, blanco puro con halo
    suave) → superficie-2 (bandas y cabeceras). El acento aparece en gotas.
    ============================================================ */
-:root { --borde-campo: 1px solid color-mix(in srgb, var(--tinta) 30%, transparent); }
+:root { --borde-campo: 1px solid var(--apagado-icono); }
 
 /* ---------- Botones ---------- */
 .btn {
@@ -15,7 +15,7 @@
   transition: background var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease), opacity var(--dur-micro);
   user-select: none; -webkit-user-select: none; touch-action: manipulation;
 }
-.btn:active { transform: scale(.98); background: var(--superficie-2); }
+.btn:active { transform: scale(.98); background: var(--hover-suave); border-color: var(--hover); }
 .btn[disabled], .btn.is-off { opacity: .42; pointer-events: none; }
 .btn--acento { background: var(--acento); color: #fff; border-color: transparent; box-shadow: var(--sombra-cta); }
 .btn--acento:active { background: var(--hover); }
@@ -134,7 +134,7 @@
 .barra {
   position: sticky; top: 0; z-index: 30; height: var(--barra-alto);
   background: var(--superficie); color: var(--texto); display: flex; align-items: center; gap: 10px;
-  padding: 0 12px 0 var(--margen-lateral); box-shadow: 0 1px 0 var(--linea), 0 8px 24px -16px rgba(30, 40, 66, .16);
+  padding: 0 12px 0 var(--margen-lateral); box-shadow: 0 1px 0 var(--linea), 0 8px 24px -16px rgba(62, 36, 112, .16);
 }
 .barra .marca { font-size: 17px; }
 .barra .marca__estrella { width: 30px; height: 30px; border-radius: 9px; }
@@ -220,7 +220,7 @@
 .cant__kg { padding: 0 14px; height: 44px; border-radius: var(--radio-capsula); border: 1px solid var(--linea-fuerte); background: var(--superficie); font-weight: 620; font-variant-numeric: tabular-nums; }
 .linea__quitar { color: var(--error-texto); }
 
-.pos__pie { position: sticky; bottom: 0; z-index: 25; margin: 0 calc(var(--margen-lateral) * -1); background: var(--superficie); box-shadow: 0 -1px 0 var(--linea), 0 -10px 28px -16px rgba(30, 40, 66, .16); padding: 12px var(--margen-lateral) calc(12px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.pos__pie { position: sticky; bottom: 0; z-index: 25; margin: 0 calc(var(--margen-lateral) * -1); background: var(--superficie); box-shadow: 0 -1px 0 var(--linea), 0 -10px 28px -16px rgba(62, 36, 112, .16); padding: 12px var(--margen-lateral) calc(12px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .totales { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .totales__rotulo { font-size: 13px; color: var(--texto-suave); font-weight: 600; letter-spacing: .02em; }
 .totales__monto { font-size: 40px; font-weight: 680; letter-spacing: -.035em; line-height: 1; color: var(--texto); font-variant-numeric: tabular-nums; }
@@ -480,7 +480,7 @@ button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display
 .grafico .barra-dato:hover, .grafico .barra-dato:focus { opacity: .8; outline: none; }
 .grafico .barra-dato--hoy { fill: var(--serie-1); }
 .grafico .valor-dato { fill: var(--texto); font-weight: 650; }
-.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--tinta); color: #fff; border-radius: var(--radio-chico); padding: 8px 12px; font-size: 13px; line-height: 1.35; transform: translate(-50%, -100%); white-space: nowrap; box-shadow: var(--sombra-alta); }
+.tip { position: absolute; z-index: 5; pointer-events: none; background: #2E2150; color: #fff; border-radius: var(--radio-chico); padding: 8px 12px; font-size: 13px; line-height: 1.35; transform: translate(-50%, -100%); white-space: nowrap; box-shadow: var(--sombra-alta); }
 .tip strong { display: block; font-size: 16px; font-variant-numeric: tabular-nums; }
 .tip .tip__fecha { display: block; font-size: 12px; opacity: .8; margin-bottom: 4px; }
 .tip .tip__fila { display: flex; align-items: center; gap: 8px; }
@@ -536,3 +536,22 @@ button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display
 /* Mientras se espera al servidor: no se puede tocar de nuevo */
 body.ocupado { cursor: progress; }
 body.ocupado .modal__acciones .btn { pointer-events: none; opacity: .6; }
+
+/* ============================================================
+   Toda la web, mismo criterio de color:
+   · lo que no está seleccionado va en violeta apagado
+   · lo seleccionado sube a violeta pleno
+   · el toque (y el hover, en escritorio.css) va en el color secundario
+   ============================================================ */
+.badge:not(.badge--ok):not(.badge--alerta):not(.badge--error):not(.badge--acento):not(.badge--rosa), .estado:not(.estado--ok):not(.estado--alerta):not(.estado--error) { background: var(--info-suave); color: var(--apagado); }
+.avatar { background: var(--info-suave); color: var(--apagado); }
+.avatar--acento { background: var(--acento-suave); color: var(--acento); }
+.nota { color: var(--apagado); }
+.nota .icon { color: var(--apagado-icono); }
+.cant button, .cant__kg { border-color: var(--apagado-borde); color: var(--apagado); }
+.usuario__ir, .pop-aviso__ir, .ticket__vacio > .icon, .permisos .no { color: var(--apagado-icono); }
+.scan__campo .icon, .tile__rotulo .icon { color: var(--apagado-icono); }
+.kpi__rotulo, .tile__sub, .linea__sub { color: var(--apagado); }
+.prod:active, .usuario:active, .ult a:active, .menu__link:active, a.pop-aviso:active, a.aviso:active { background: var(--hover-velo); }
+.teclado button:active, .cant button:active, .chip:active { background: var(--hover-suave); color: var(--hover); border-color: var(--hover); }
+.tabla tr:active { background: var(--hover-velo); }
