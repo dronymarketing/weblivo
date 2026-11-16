@@ -16,11 +16,10 @@ body {
   overflow-x: hidden;
 }
 h1, h2, h3, h4, p { margin: 0; }
-h1, h2, h3 { line-height: var(--lh-titulo); letter-spacing: var(--ls-titulo); font-weight: 650; color: var(--texto); }
-h1, h2 { font-family: var(--display); font-weight: 560; letter-spacing: -.015em; }
-h1 { font-size: 30px; }
-h2 { font-size: 22px; }
-h3 { font-size: 16px; letter-spacing: -.005em; font-weight: 640; }
+h1, h2, h3 { line-height: var(--lh-titulo); font-weight: 680; color: var(--texto); }
+h1 { font-size: 32px; font-weight: 700; letter-spacing: -.035em; }
+h2 { font-size: 22px; letter-spacing: -.025em; }
+h3 { font-size: 17px; letter-spacing: -.015em; font-weight: 680; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }

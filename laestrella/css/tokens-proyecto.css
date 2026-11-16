@@ -7,7 +7,7 @@
    · Fondo      → tres blancos en capas: marco (lo que rodea), superficie (bandas y
                   cabeceras) y pieza (tarjetas, campos): la jerarquía se ve por capa,
                   no por rayas.
-   · Acento     → un solo rosa apagado, en gotas: «Cobrar», lo seleccionado, un foco.
+   · Acento     → un solo violeta apagado, en gotas: «Cobrar», lo seleccionado, un foco.
    · Texto      → cuatro escalones de la misma tinta (t1 títulos y cifras, t2 cuerpo,
                   t3 rótulos y apoyo, t4 solo decorativo).
    · Estados    → verde, ámbar y rojo apagados, en píldoras de fondo tintado.
@@ -15,12 +15,15 @@
 
    Contrastes medidos (WCAG, sobre pieza / superficie / marco):
    t1 14.6/14.0/13.3 · t2 8.2/7.8/7.4 · t3 5.7/5.5/5.2 · t4 3.6 (solo decorativo)
-   acento 5.5/5.3/5.0 · blanco sobre acento 5.5 · blanco sobre tinta 14.6
+   acento 5.4/5.2/4.9 · blanco sobre acento 5.4 · blanco sobre tinta 14.6
    ok 5.5 · alerta 5.6 · error 6.0 (y ≥4.6 sobre su propia píldora tintada)
    Gráficos: paleta categórica validada (luminosidad, croma, separación y contraste).
    ============================================================ */
-@font-face { font-family: "Hanken Grotesk"; src: url("../fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Fraunces"; src: url("../fonts/fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+/* Tipografía: Neue Haas Grotesk (Monotype) es de pago y no se puede incluir sin licencia.
+   «Haas» usa la Neue Haas si está instalada en el equipo y, si no, Inter Tight (libre, OFL),
+   la neogrotesca de la misma familia de formas. Con licencia web comprada, se agrega el archivo
+   a fonts/ y una línea url(...) acá: el resto del sistema no cambia. */
+@font-face { font-family: "Haas"; src: local("Neue Haas Grotesk Text Pro"), local("NeueHaasGroteskText Pro"), local("Neue Haas Grotesk Display Pro"), url("../fonts/inter-tight.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 
 :root {
   /* Capas de blanco (la misma familia fría, de más sombra a más luz) */
@@ -40,11 +43,11 @@
   --texto-fino:   var(--texto-suave);
 
   /* Acento: gotas, no superficies */
-  --primario:     #B93573;
-  --acento:       #B93573;
+  --primario:     #7A53C9;
+  --acento:       #7A53C9;
   --sobre-acento: #FFFFFF;
-  --acento-suave: #F7E7EE;
-  --acento-hover: #A82E67;
+  --acento-suave: #F1EDFF;
+  --acento-hover: #6F46BC;
 
   /* Estados (apagados) con su píldora tintada */
   --ok:           #2E7656;
@@ -68,7 +71,7 @@
   /* Sombras teñidas con la tinta: un halo muy suave en dos capas */
   --sombra:       0 0 0 1px rgba(30, 40, 66, .04), 0 0 12px 1px rgba(30, 40, 66, .045), 0 0 26px 2px rgba(30, 40, 66, .03);
   --sombra-alta:  0 0 0 1px rgba(30, 40, 66, .05), 0 6px 18px -4px rgba(30, 40, 66, .12), 0 0 36px 2px rgba(30, 40, 66, .06);
-  --sombra-cta:   0 1px 2px rgba(120, 30, 76, .22), 0 6px 14px -6px rgba(185, 53, 115, .45);
+  --sombra-cta:   0 1px 2px rgba(62, 36, 112, .24), 0 6px 14px -6px rgba(122, 83, 201, .5);
 
   --radio:        14px;
   --radio-chico:  10px;
@@ -79,13 +82,13 @@
   --barra-alto:   56px;
   --menu-ancho:   244px;
 
-  --fuente: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --fuente: "Haas", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display: var(--fuente);
   --mono:   ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   /* Gráficos: paleta categórica validada, en este orden */
-  --serie-1: #B93573;
-  --serie-2: #5B6FB8;
+  --serie-1: #7A53C9;
+  --serie-2: #1D9886;
   --serie-3: #C28527;
-  --serie-4: #1D9886;
+  --serie-4: #4F86C6;
 }

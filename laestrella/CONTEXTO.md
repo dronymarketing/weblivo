@@ -26,13 +26,16 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Sombras teñidas** con la tinta (`--sombra`, `--sombra-alta`): halo difuso de dos capas, nunca gris ni negro.
   - **Texto en 4 escalones** de la misma tinta `#1E2842`: t1 títulos y cifras · t2 `#474F64` cuerpo · t3 `#5F6679` rótulos
     y apoyo · t4 `#818795` solo íconos y adornos (no pasa 4.5:1, no se usa para texto).
-  - **Acento rosa apagado `#B93573` en gotas**: botón principal («Cobrar»), el medio de pago elegido, el ítem activo del
+  - **Acento violeta apagado `#7A53C9` en gotas** (el mismo tono de luminosidad e intensidad que tenía el rosa): botón principal («Cobrar»), el medio de pago elegido, el ítem activo del
     menú (solo el ícono), la pestaña activa, el foco. Nunca como fondo grande.
   - **Estados** verde/ámbar/rojo apagados en píldoras de fondo tintado (≥4.6:1).
-  - **Datos**: paleta categórica validada `--serie-1..4` (rosa, azul, ocre, verde azulado); cada medio de pago tiene su
+  - **Datos**: paleta categórica validada `--serie-1..4` (violeta, verde azulado, ocre, azul); cada medio de pago tiene su
     color en el gráfico, la dona, los mini indicadores y la barra segmentada.
-  - **Tipografía**: Hanken Grotesk (interfaz) y Fraunces (títulos y cifras grandes), autoalojadas en `fonts/` con
-    `font-display: swap` (tiene que andar sin internet). Cifras con `tabular-nums` donde se alinean columnas.
+  - **Jerarquía**: lo importante es oscuro, firme y grande (títulos 700, nombres 600–650, cifras 700 con tracking
+    cerrado); lo secundario es más chico, de peso 450 y en t2/t3 (subtítulos, rótulos, fechas, unidades).
+  - **Tipografía**: todo en una sola familia, «Haas». Neue Haas Grotesk (Monotype) es de pago y no está incluida:
+    `@font-face "Haas"` usa la Neue Haas si está instalada en el equipo y, si no, **Inter Tight** (OFL, autoalojada en
+    `fonts/`). Con licencia web, se suma el archivo a `fonts/` y una línea `url(...)` en `tokens-proyecto.css`.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura
@@ -43,7 +46,7 @@ laestrella/
   caja/index.html       frente de caja (POS)
   panel/index.html      panel de administración (Inicio, Ventas, Productos, Stock, Compras, Caja,
                         Reportes, Equipo, Ajustes)
-  fonts/                Hanken Grotesk y Fraunces (licencia OFL), autoalojadas
+  fonts/                Inter Tight (licencia OFL), autoalojada
   css/                  tokens.css (Livo) · tokens-proyecto.css · base.css · movil.css ·
                         escritorio.css · impresion.css (ticket de 58 mm)
   js/datos.js           la "base": datos de muestra + todas las reglas (LE.*)
