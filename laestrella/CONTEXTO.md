@@ -19,11 +19,21 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   e-Ticket (las fuentes consultadas se contradicen y son blogs de proveedores, no la DGI).
 - **Equipo previsto (a confirmar):** terminal Android 14 con pantalla dual de 8" + display de cliente,
   impresora térmica de **58 mm** integrada y lector. Por eso el ticket es de **32 columnas**.
-- **Estilo:** panel con degradés tomado de una referencia que pasó Santi (barra lateral blanca con logo en degradé,
-  tarjetas de color, gráfico de áreas, dona, actividad reciente, tablas con cabecera oscura). Rosa `#D6337C`,
-  violeta `#7B4BC0`, celeste `#1C9AD6`, naranja `#E8751A` sobre gris lavanda `#F2F3F9`. La paleta de los gráficos
-  está validada (daltonismo y contraste). Esto va contra la regla de Livo de no usar degradés violeta/azul:
-  se hizo porque Santi lo pidió. Tipografía del sistema (sin descargas: tiene que andar sin internet).
+- **Estilo (pulido a pedido de Santi):** misma estructura de panel (barra lateral, gráfico de áreas, dona, actividad,
+  tablas) pero sin degradés ni tarjetas de color. Un solo sistema en `css/tokens-proyecto.css`, con un trabajo por cosa:
+  - **Capas de blanco** (misma familia fría): `--marco #F3F4F8` (fondo de página), `--superficie-2 #F9FAFC` (bandas,
+    cabeceras de tabla, modales) y `--superficie #FFFFFF` (piezas: tarjetas, campos). La jerarquía se ve por capa, no por rayas.
+  - **Sombras teñidas** con la tinta (`--sombra`, `--sombra-alta`): halo difuso de dos capas, nunca gris ni negro.
+  - **Texto en 4 escalones** de la misma tinta `#1E2842`: t1 títulos y cifras · t2 `#474F64` cuerpo · t3 `#5F6679` rótulos
+    y apoyo · t4 `#818795` solo íconos y adornos (no pasa 4.5:1, no se usa para texto).
+  - **Acento rosa apagado `#B93573` en gotas**: botón principal («Cobrar»), el medio de pago elegido, el ítem activo del
+    menú (solo el ícono), la pestaña activa, el foco. Nunca como fondo grande.
+  - **Estados** verde/ámbar/rojo apagados en píldoras de fondo tintado (≥4.6:1).
+  - **Datos**: paleta categórica validada `--serie-1..4` (rosa, azul, ocre, verde azulado); cada medio de pago tiene su
+    color en el gráfico, la dona, los mini indicadores y la barra segmentada.
+  - **Tipografía**: Hanken Grotesk (interfaz) y Fraunces (títulos y cifras grandes), autoalojadas en `fonts/` con
+    `font-display: swap` (tiene que andar sin internet). Cifras con `tabular-nums` donde se alinean columnas.
+  Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura
 
@@ -33,6 +43,7 @@ laestrella/
   caja/index.html       frente de caja (POS)
   panel/index.html      panel de administración (Inicio, Ventas, Productos, Stock, Compras, Caja,
                         Reportes, Equipo, Ajustes)
+  fonts/                Hanken Grotesk y Fraunces (licencia OFL), autoalojadas
   css/                  tokens.css (Livo) · tokens-proyecto.css · base.css · movil.css ·
                         escritorio.css · impresion.css (ticket de 58 mm)
   js/datos.js           la "base": datos de muestra + todas las reglas (LE.*)

@@ -1,62 +1,91 @@
 /* ============================================================
-   LA ESTRELLA — paleta y medidas de este proyecto
-   Pisa a tokens.css. Estilo de panel con degradés (rosa, violeta, celeste
-   y ámbar) sobre fondo gris lavanda y tarjetas blancas.
-   Contrastes medidos (WCAG): texto/fondo 12.9:1 · texto suave/fondo 5.5:1 ·
-   blanco sobre rosa 4.5:1, violeta 5.8:1, verde 4.6:1, celeste 4.5:1, error 5.8:1 ·
-   texto oscuro sobre ámbar 7.0:1. Los degradés llevan texto blanco (el ámbar, texto oscuro).
+   LA ESTRELLA — paleta, capas y medidas de este proyecto
+   Pisa a tokens.css.
+
+   Método (cada cosa con un solo trabajo):
+   · Dominante  → la tinta azul noche: títulos, cifras, botón principal secundario, marca.
+   · Fondo      → tres blancos en capas: marco (lo que rodea), superficie (bandas y
+                  cabeceras) y pieza (tarjetas, campos): la jerarquía se ve por capa,
+                  no por rayas.
+   · Acento     → un solo rosa apagado, en gotas: «Cobrar», lo seleccionado, un foco.
+   · Texto      → cuatro escalones de la misma tinta (t1 títulos y cifras, t2 cuerpo,
+                  t3 rótulos y apoyo, t4 solo decorativo).
+   · Estados    → verde, ámbar y rojo apagados, en píldoras de fondo tintado.
+   · Sombras    → difusas y teñidas con la tinta, nunca grises ni negras.
+
+   Contrastes medidos (WCAG, sobre pieza / superficie / marco):
+   t1 14.6/14.0/13.3 · t2 8.2/7.8/7.4 · t3 5.7/5.5/5.2 · t4 3.6 (solo decorativo)
+   acento 5.5/5.3/5.0 · blanco sobre acento 5.5 · blanco sobre tinta 14.6
+   ok 5.5 · alerta 5.6 · error 6.0 (y ≥4.6 sobre su propia píldora tintada)
+   Gráficos: paleta categórica validada (luminosidad, croma, separación y contraste).
    ============================================================ */
+@font-face { font-family: "Hanken Grotesk"; src: url("../fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("../fonts/fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
 :root {
-  --fondo:        #F2F3F9;
+  /* Capas de blanco (la misma familia fría, de más sombra a más luz) */
+  --marco:        #F3F4F8;
+  --superficie-2: #F9FAFC;
   --superficie:   #FFFFFF;
-  --tinta:        #1F2A44;
-  --texto:        #1F2A44;
-  --texto-suave:  rgba(31, 42, 68, .72);
-  --texto-muy-suave: rgba(31, 42, 68, .55);
-  --slate:        #2C3548;                    /* cabecera de tablas */
-  --velo:         rgba(31, 42, 68, .05);
+  --fondo:        var(--marco);
+  --velo:         rgba(30, 40, 66, .045);      /* apretar/hover sobre una pieza */
+  --velo-fuerte:  rgba(30, 40, 66, .08);
 
-  --primario:     #D6337C;
-  --acento:       #D6337C;
+  /* Tinta y escalones de texto */
+  --tinta:        #1E2842;
+  --texto:        #1E2842;                     /* t1 */
+  --texto-2:      #474F64;                     /* t2 */
+  --texto-suave:  #5F6679;                     /* t3 */
+  --texto-muy-suave: #818795;                  /* t4: solo íconos y adornos */
+  --texto-fino:   var(--texto-suave);
+
+  /* Acento: gotas, no superficies */
+  --primario:     #B93573;
+  --acento:       #B93573;
   --sobre-acento: #FFFFFF;
-  --acento-suave: #FCE4EF;
-  --violeta:      #7B4BC0;
-  --celeste:      #1C9AD6;
-  --naranja:      #E8751A;
-  --ambar:        #F5A524;
+  --acento-suave: #F7E7EE;
+  --acento-hover: #A82E67;
 
-  --ok:           #17874D;
-  --ok-suave:     #DDF1E5;
-  --ok-texto:     #0F6B3C;
-  --alerta:       #F5A524;
-  --alerta-suave: #FDEBD0;
-  --alerta-texto: #8F4705;
-  --error:        #C0283F;
-  --error-suave:  #FADDE2;
-  --error-texto:  #A32A1D;
+  /* Estados (apagados) con su píldora tintada */
+  --ok:           #2E7656;
+  --ok-suave:     #E6EFEB;
+  --ok-texto:     #2E7656;
+  --alerta:       #8D5F10;
+  --alerta-suave: #F1ECE2;
+  --alerta-texto: #8D5F10;
+  --error:        #B03A36;
+  --error-suave:  #F6E7E7;
+  --error-texto:  #B03A36;
+  --info-suave:   #ECEEF4;
 
-  --grad-marca:   linear-gradient(135deg, #E8438A 0%, #9B4FC4 100%);
-  --grad-rosa:    linear-gradient(135deg, #D6337C 0%, #B3257A 100%);
-  --grad-violeta: linear-gradient(135deg, #8A58D0 0%, #5B3DB8 100%);
-  --grad-azul:    linear-gradient(135deg, #1286C8 0%, #3F63D4 100%);
-  --grad-ambar:   linear-gradient(135deg, #F7B32B 0%, #F07C3A 100%);
+  /* Líneas */
+  --linea:        rgba(30, 40, 66, .08);
+  --linea-fuerte: rgba(30, 40, 66, .16);
+  --borde:        1px solid var(--linea);
+  --borde-claro:  1px solid rgba(255, 255, 255, .18);
+  --grilla:       rgba(30, 40, 66, .07);
 
-  --radio:        12px;
+  /* Sombras teñidas con la tinta: un halo muy suave en dos capas */
+  --sombra:       0 0 0 1px rgba(30, 40, 66, .04), 0 0 12px 1px rgba(30, 40, 66, .045), 0 0 26px 2px rgba(30, 40, 66, .03);
+  --sombra-alta:  0 0 0 1px rgba(30, 40, 66, .05), 0 6px 18px -4px rgba(30, 40, 66, .12), 0 0 36px 2px rgba(30, 40, 66, .06);
+  --sombra-cta:   0 1px 2px rgba(120, 30, 76, .22), 0 6px 14px -6px rgba(185, 53, 115, .45);
+
+  --radio:        14px;
   --radio-chico:  10px;
   --radio-capsula: 999px;
 
   --tap:          48px;      /* alto táctil mínimo en la caja */
   --alto-boton:   52px;
   --barra-alto:   56px;
-  --menu-ancho:   250px;
+  --menu-ancho:   244px;
 
-  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fuente: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --mono:   ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
-  /* Colores de gráficos: paleta categórica validada (rosa, violeta, celeste, naranja), en este orden */
-  --serie-1: #D6337C;
-  --serie-2: #7B4BC0;
-  --serie-3: #1C9AD6;
-  --serie-4: #E8751A;
-  --grilla:  rgba(31, 42, 68, .10);
+  /* Gráficos: paleta categórica validada, en este orden */
+  --serie-1: #B93573;
+  --serie-2: #5B6FB8;
+  --serie-3: #C28527;
+  --serie-4: #1D9886;
 }

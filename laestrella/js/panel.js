@@ -169,17 +169,17 @@
   };
   P.spark = function (vals, tipo) {
     var n = vals.length, mx = Math.max.apply(null, vals.concat([1])), W = 120, H = 44, s = '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false">';
-    if (tipo === 'barras') { var bw = W / n; vals.forEach(function (v, i) { var h = Math.max(2, v / mx * (H - 4)); s += '<rect x="' + f1(i * bw + bw * .2) + '" y="' + f1(H - h) + '" width="' + f1(bw * .6) + '" height="' + f1(h) + '" rx="1.5" fill="currentColor" opacity="' + (i === n - 1 ? .95 : .55) + '"/>'; }); }
-    else { var pts = vals.map(function (v, i) { return [W * i / (n - 1), H - 4 - v / mx * (H - 10)]; }), d = trazo(pts); if (tipo === 'area') s += '<path d="' + d + 'L' + W + ' ' + H + 'L0 ' + H + 'Z" fill="currentColor" opacity=".28"/>'; s += '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/>'; }
+    if (tipo === 'barras') { var bw = W / n; vals.forEach(function (v, i) { var h = Math.max(2, v / mx * (H - 4)); s += '<rect x="' + f1(i * bw + bw * .2) + '" y="' + f1(H - h) + '" width="' + f1(bw * .6) + '" height="' + f1(h) + '" rx="1.5" fill="currentColor" opacity="' + (i === n - 1 ? .9 : .32) + '"/>'; }); }
+    else { var pts = vals.map(function (v, i) { return [W * i / (n - 1), H - 4 - v / mx * (H - 10)]; }), d = trazo(pts); if (tipo === 'area') s += '<path d="' + d + 'L' + W + ' ' + H + 'L0 ' + H + 'Z" fill="currentColor" opacity=".13"/>'; s += '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/>'; }
     return s + '</svg>';
   };
   function hace(ts) { var m = Math.round((Date.now() - ts) / 60000); if (m < 1) return 'ahora'; if (m < 60) return 'hace ' + m + ' min'; var h = Math.round(m / 60); if (h < 24) return 'hace ' + h + (h === 1 ? ' hora' : ' horas'); var d = Math.round(h / 24); return d === 1 ? 'ayer' : 'hace ' + d + ' días'; }
   function iconoAccion(a) {
     var t = a.toLowerCase();
-    if (/abri[óo] la caja/.test(t)) return ['wallet', 'var(--grad-rosa)']; if (/cerr[óo] la caja/.test(t)) return ['lock', 'var(--grad-violeta)'];
-    if (/anul/.test(t)) return ['ban', 'var(--error)']; if (/precio|producto/.test(t)) return ['tag', 'var(--grad-azul)']; if (/compra/.test(t)) return ['truck', 'var(--naranja)'];
-    if (/jornada/.test(t)) return ['clock', 'var(--grad-violeta)']; if (/stock/.test(t)) return ['boxes', 'var(--grad-azul)']; if (/cuenta|aprob|desactiv|rol|activ|persona/.test(t)) return ['user-check', 'var(--ok)'];
-    return ['circle-check', 'var(--grad-rosa)'];
+    if (/abri[óo] la caja/.test(t)) return ['wallet', 'var(--serie-4)']; if (/cerr[óo] la caja/.test(t)) return ['lock', 'var(--serie-2)'];
+    if (/anul/.test(t)) return ['ban', 'var(--error)']; if (/precio|producto/.test(t)) return ['tag', 'var(--serie-2)']; if (/compra/.test(t)) return ['truck', 'var(--serie-3)'];
+    if (/jornada/.test(t)) return ['clock', 'var(--texto-suave)']; if (/stock/.test(t)) return ['boxes', 'var(--serie-4)']; if (/cuenta|aprob|desactiv|rol|activ|persona/.test(t)) return ['user-check', 'var(--ok)'];
+    return ['circle-check', 'var(--serie-1)'];
   }
 
   /* ============================ INICIO ============================ */
@@ -221,12 +221,12 @@
         '<div class="inicio-grid"><section class="tarjeta"><div class="tc-cab"><div><h3>Ventas</h3><p>Resumen de ' + (S.tab === 'hoy' ? 'hoy' : S.tab === '7' ? 'los últimos 7 días' : S.tab === '30' ? 'los últimos 30 días' : 'los últimos 12 meses completos') + '</p></div>' +
         '<div class="tabs-inline" role="tablist" aria-label="Período">' + [['hoy', 'Hoy'], ['7', '7 días'], ['30', '30 días'], ['anio', 'Año']].map(function (x) { return '<button type="button" role="tab" data-acc="inicio-tab" data-id="' + x[0] + '" aria-selected="' + (S.tab === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
         '<div class="leyenda-linea"><span><i style="background:var(--serie-1)"></i>Ventas</span><span><i style="background:var(--serie-2)"></i>Ganancia bruta</span></div></div>' +
-        '<div class="tc-cifras"><div><span class="cifra">' + F.din(tot) + '</span><span class="cifra-sub">vendido en el período</span></div><div><span class="cifra">' + tk + '</span><span class="cifra-sub">ventas</span></div><a class="btn btn--acento btn--chico" href="#/reportes">Ver reportes</a></div>' +
+        '<div class="tc-cifras"><div><span class="cifra">' + F.din(tot) + '</span><span class="cifra-sub">vendido en el período</span></div><div><span class="cifra">' + tk + '</span><span class="cifra-sub">ventas</span></div><a class="btn btn--linea btn--chico" href="#/reportes">Ver reportes</a></div>' +
         '<div class="grafico" id="g-ventas"></div>' + P.tablaDatos(datosTabla) +
-        '<div class="mini-kpis"><div class="mini-kpi"><span class="mini-kpi__ic" style="background:var(--grad-rosa)">' + ico('banknote') + '</span><div><small>Efectivo</small><strong>' + F.din(med.efectivo) + '</strong></div></div>' +
-        '<div class="mini-kpi"><span class="mini-kpi__ic" style="background:var(--grad-violeta)">' + ico('credit-card') + '</span><div><small>Tarjetas</small><strong>' + F.din(tarjetas) + '</strong></div></div>' +
-        '<div class="mini-kpi"><span class="mini-kpi__ic" style="background:var(--grad-azul)">' + ico('qr-code') + '</span><div><small>QR</small><strong>' + F.din(med.qr) + '</strong></div></div>' +
-        '<div class="mini-kpi"><span class="mini-kpi__ic" style="background:var(--naranja)">' + ico('receipt') + '</span><div><small>Ticket promedio</small><strong>' + F.din(Rm.promedio) + '</strong></div></div></div></section>' +
+        '<div class="mini-kpis"><div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-1)">' + ico('banknote') + '</span><div><small>Efectivo</small><strong>' + F.din(med.efectivo) + '</strong></div></div>' +
+        '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-2)">' + ico('credit-card') + '</span><div><small>Tarjetas</small><strong>' + F.din(tarjetas) + '</strong></div></div>' +
+        '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-4)">' + ico('qr-code') + '</span><div><small>QR</small><strong>' + F.din(med.qr) + '</strong></div></div>' +
+        '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--tinta)">' + ico('receipt') + '</span><div><small>Ticket promedio</small><strong>' + F.din(Rm.promedio) + '</strong></div></div></div></section>' +
         '<section class="tarjeta"><h3>Cómo se cobró</h3><p class="cifra-sub" style="margin:-8px 0 8px">' + (S.tab === 'anio' ? 'últimos 30 días' : perNota) + '</p><div id="g-dona"></div></section></div>' +
 
         '<div class="cards-color">' +
@@ -235,8 +235,8 @@
         '<section class="card-color card-color--azul" aria-label="Ticket promedio"><div class="card-color__rotulo">Ticket promedio</div><div class="card-color__valor">' + F.din(prom) + '</div><div class="card-color__sub">' + (usarHoy ? 'hoy' : 'últimos 7 días') + '</div>' + P.spark(prom7, 'linea') + '</section>' +
         '<section class="card-color card-color--ambar" aria-label="Efectivo en la caja"><div class="card-color__rotulo">Efectivo en la caja</div><div class="card-color__valor">' + (t ? F.din(LE.efectivoEsperado(t)) : 'Cerrada') + '</div><div class="card-color__sub">' + (t ? 'turno ' + esc(t.turno) + ' · ' + esc(t.abrio.split(' ')[0]) : 'nadie atiende ahora') + '</div>' + P.spark(horasHoy, 'barras') + '</section></div>' +
 
-        '<div class="inicio-grid inicio-grid--actividad"><section class="tarjeta"><h3>Actividad reciente</h3><ul class="timeline">' + actividad.map(function (a) { var ic = iconoAccion(a.accion); return '<li><span class="tl-ic" style="background:' + ic[1] + '">' + ico(ic[0]) + '</span><div class="tl-txt"><strong>' + esc(a.accion) + '</strong><small>' + esc(a.usuario) + ' · ' + hace(a.ts) + '</small></div></li>'; }).join('') + '</ul><a class="btn btn--chico btn--linea" href="#/equipo" data-acc="registro">Ver todo el registro</a></section>' +
-        '<section class="tarjeta tarjeta--plana"><div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;gap:12px"><div><h3 style="margin:0">Últimas ventas</h3><p class="cifra-sub">Los últimos tickets cobrados</p></div><a class="btn btn--chico btn--acento" href="#/ventas">Ver todas</a></div><div style="margin-top:12px">' + P.tabla([
+        '<div class="inicio-grid inicio-grid--actividad"><section class="tarjeta"><h3>Actividad reciente</h3><ul class="timeline">' + actividad.map(function (a) { var ic = iconoAccion(a.accion); return '<li><span class="tl-ic" style="--c:' + ic[1] + '">' + ico(ic[0]) + '</span><div class="tl-txt"><strong>' + esc(a.accion) + '</strong><small>' + esc(a.usuario) + ' · ' + hace(a.ts) + '</small></div></li>'; }).join('') + '</ul><a class="btn btn--chico btn--linea" href="#/equipo" data-acc="registro">Ver todo el registro</a></section>' +
+        '<section class="tarjeta tarjeta--plana"><div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;gap:12px"><div><h3 style="margin:0">Últimas ventas</h3><p class="cifra-sub">Los últimos tickets cobrados</p></div><a class="btn btn--chico btn--linea" href="#/ventas">Ver todas</a></div><div style="margin-top:12px">' + P.tabla([
           { t: 'Ticket', c: 't-titulo', f: function (q) { return 'N.º ' + F.num(q.num) + '<small>' + F.fechaCorta(q.ts) + ' · ' + F.hora(q.ts) + '</small>'; } },
           { t: 'Total', c: 't-derecha', f: function (q) { return F.din(q.total); } }, { t: 'Cajera', f: function (q) { return esc(q.cajero); } },
           { t: 'Cobro', f: function (q) { return q.pagos.map(function (x) { return LE.MEDIOS[x.m]; }).join(' + '); } },
