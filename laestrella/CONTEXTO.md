@@ -83,6 +83,13 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     ventas anuladas (solo informativo). Se cierra con Escape, tocando afuera o eligiendo un aviso. El número es rojo si hay algo sin stock.
     En el menú lateral, **Stock lleva un globito redondo** con los productos para reponer (amarillo; rojo si alguno está en cero) y desaparece
     cuando no hay ninguno. Todo sale de `PANEL.avisos()` y se actualiza solo con cada cambio y cada 30 segundos (`PANEL.pintarNav()`).
+  - **Azul noche, violeta apagado y hover**: el azul noche `#1E2842` ya no se usa como relleno (el logo, los puntos del PIN, los avisos
+    emergentes y la pantalla del cliente pasaron al violeta); queda solo para el texto (títulos y cifras) y para los globitos de los
+    gráficos, donde el violeta taparía la clave de la serie. **Violeta apagado** (`--apagado` `#6A6388`, `--apagado-icono`, `--apagado-borde`,
+    `--apagado-velo`) para todo lo que NO está seleccionado: ítems e íconos del menú, pestañas, fichas de filtro y categorías, medios de pago
+    sin elegir, accesos de la barra de la caja. Lo seleccionado sube a violeta pleno. **El hover (y el toque en el celular) es el secundario**
+    (`--hover` = rosa, `--hover-suave`, `--hover-velo`): botones, fichas, menú, filas de tablas, tarjetas del Inicio, productos de la caja y
+    filas de usuarios del ingreso. Favicon e imagen para compartir regenerados en violeta.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

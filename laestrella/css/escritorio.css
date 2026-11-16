@@ -171,3 +171,30 @@
 .cifra { font-size: 38px; }
 
 .solo-movil { display: none; }
+
+/* ---------- Hover = el color secundario (rosa) ---------- */
+.btn:hover { border-color: var(--hover); color: var(--hover); background: var(--hover-suave); }
+.btn--acento:hover, .btn--tinta:hover { background: var(--hover); color: #fff; border-color: transparent; box-shadow: 0 1px 2px rgba(90, 20, 55, .25), 0 6px 14px -6px rgba(185, 53, 115, .5); }
+.btn--peligro:hover { border-color: var(--error); color: var(--error-texto); background: var(--error-suave); }
+.btn[disabled]:hover, .btn.is-off:hover { background: var(--superficie); }
+.chip:hover { border-color: var(--hover); color: var(--hover); }
+.chip[aria-pressed="true"]:hover, .chip.is-on:hover { border-color: var(--acento); color: var(--acento); }
+.pestana:hover { color: var(--hover); }
+.pestana[aria-selected="true"]:hover { color: var(--texto); }
+.menu__link:hover { background: var(--hover-velo); color: var(--hover); }
+.menu__link:hover .icon { color: var(--hover); }
+.menu__link[aria-current="page"]:hover { background: var(--marco); color: var(--texto); }
+.menu__link[aria-current="page"]:hover .icon { color: var(--acento); }
+.menu-inline .btn:hover { background: var(--hover-suave); color: var(--hover); }
+.usuario:not([disabled]):hover { box-shadow: 0 0 0 1.5px var(--hover), 0 10px 24px -14px rgba(185, 53, 115, .5); }
+.usuario:not([disabled]):hover .usuario__ir { color: var(--hover); }
+.prod:hover { box-shadow: 0 0 0 1.5px rgba(185, 53, 115, .55), var(--sombra-alta); }
+.kpi--link:hover { box-shadow: 0 0 0 1.5px rgba(185, 53, 115, .45), var(--sombra-alta); }
+.tile:hover { box-shadow: 0 0 0 1.5px rgba(185, 53, 115, .3), var(--sombra-alta); }
+.tile:hover::before { background: var(--hover); }
+.tile:hover .tile__ir, .ver:hover { color: var(--hover); }
+.tabla tbody tr:hover td { background: var(--hover-velo); }
+.ult a:hover { background: var(--hover-velo); }
+a.pop-aviso:hover { background: var(--hover-velo); }
+.medio:hover { box-shadow: 0 0 0 1.5px rgba(185, 53, 115, .45), var(--sombra); }
+.medio[aria-pressed="true"]:hover { box-shadow: 0 0 0 1.5px var(--acento), 0 6px 16px -8px rgba(122, 83, 201, .4); }

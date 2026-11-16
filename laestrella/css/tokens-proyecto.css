@@ -51,6 +51,15 @@
   --acento-hover: #6F46BC;
   --rosa:         #B93573;                     /* segundo color: el rosa del Inicio */
   --rosa-suave:   #F7E7EE;
+  /* Violeta apagado: lo que NO está seleccionado (menú, pestañas, fichas, medios de pago). 5.6:1 sobre blanco */
+  --apagado:        #6A6388;
+  --apagado-icono:  #8A83A8;
+  --apagado-borde:  #D5D0E6;
+  --apagado-velo:   #F4F2FA;
+  /* Hover y toque: el color secundario (rosa) */
+  --hover:        var(--rosa);
+  --hover-suave:  var(--rosa-suave);
+  --hover-velo:   rgba(185, 53, 115, .06);
 
   /* Estados (apagados) con su píldora tintada */
   --ok:           #2E7656;
