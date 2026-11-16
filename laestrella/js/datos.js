@@ -1,6 +1,6 @@
 /* ============================================================
-   LA ESTRELLA — datos del borrador
-   Todo es de MUESTRA y vive solo en este navegador (localStorage).
+   LA ESTRELLA — datos del sistema
+   Los datos de ejemplo viven solo en este navegador (localStorage).
    Las funciones de LE.* hacen lo que después harán las funciones del
    servidor en Supabase (como crear_reserva / cerrar_caja en Parking):
    controlan el rol, calculan los importes y anotan en la auditoría.
@@ -10,8 +10,8 @@
 (function () {
   'use strict';
 
-  var KEY = 'laestrella_borrador_v1';
-  var KEY_SESION = 'laestrella_sesion_v1';
+  var KEY = 'laestrella_v2';
+  var KEY_SESION = 'laestrella_sesion_v2';
   var DIA = 86400000, HORA = 3600000;
 
   /* ---------- utilidades ---------- */
@@ -105,17 +105,17 @@
 
   function nuevoEstado() {
     return {
-      version: 1,
+      version: 2,
       negocio: {
         nombre: 'La Estrella', rubro: 'Almacén y autoservicio',
-        direccion: 'Calle de Muestra 1234, Montevideo', telefono: '099 000 000',
-        rut: 'PENDIENTE', regimen: 'monotributo', pie: '¡Gracias por tu compra!',
+        direccion: '', telefono: '',
+        rut: '', regimen: 'monotributo', pie: '¡Gracias por tu compra!',
         medios: { efectivo: true, debito: true, credito: true, qr: true },
         balanza: { prefijo: '20', modo: 'peso' },
         facturaElectronica: false
       },
       usuarios: [
-        { id: 'u_marta', nombre: 'Marta Rodríguez', rol: 'duena', pin: '1234', activo: true, email: 'marta@laestrella.example' },
+        { id: 'u_marta', nombre: 'Marta Rodríguez', rol: 'admin', pin: '1234', activo: true, email: 'marta@laestrella.example' },
         { id: 'u_lucia', nombre: 'Lucía Pereira', rol: 'caja', pin: '1111', activo: true, email: 'lucia@laestrella.example' },
         { id: 'u_diego', nombre: 'Diego Silva', rol: 'caja', pin: '2222', activo: true, email: 'diego@laestrella.example' },
         { id: 'u_vale', nombre: 'Valentina Cabral', rol: 'caja', pin: '3333', activo: false, email: 'vale@laestrella.example' }
@@ -159,7 +159,7 @@
     var duena = E.usuarios[0];
     var factorDia = [1.25, .8, .85, .9, 1, 1.15, 1.3]; // dom, lun, mar, mié, jue, vie, sáb
 
-    for (var d = 13; d >= 0; d--) {
+    for (var d = 29; d >= 0; d--) {
       var dia0 = hoy0 - d * DIA, dow = new Date(dia0).getDay();
       var turnos = [{ n: 'mañana', h0: 8, h1: 14.5 }, { n: 'tarde', h0: 14.5, h1: 21 }];
       turnos.forEach(function (tn, ti) {
@@ -195,7 +195,7 @@
         });
         // Retiros de la jornada
         var egresos = 0;
-        if (rnd() < .6) { var m = (3 + r2(rnd() * 6)) * 100000; egresos += m; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .7, concepto: 'Retiro para la dueña', monto: -m, usuario: cajero.nombre }); }
+        if (rnd() < .6) { var m = (3 + r2(rnd() * 6)) * 100000; egresos += m; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .7, concepto: 'Retiro para administración', monto: -m, usuario: cajero.nombre }); }
         if (rnd() < .3) { var m2 = (4 + r2(rnd() * 8)) * 5000; egresos += m2; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .4, concepto: 'Pago de reparto', monto: -m2, usuario: cajero.nombre }); }
         turno.esperado = base + efectivo - egresos;
         var dif = rnd() < .68 ? 0 : r2((rnd() * 70 - 45) / 5) * 500;
@@ -211,6 +211,14 @@
       }
     }
     E.ventas.sort(function (a, b) { return a.ts - b.ts; });
+    var tot30 = E.ventas.reduce(function (a, v) { return a + (v.estado === 'ok' ? v.total : 0); }, 0), tk30 = E.ventas.filter(function (v) { return v.estado === 'ok'; }).length || 1;
+    E.mensual = []; // últimos 12 meses completos, resumidos
+    for (var mm = 12; mm >= 1; mm--) {
+      var fm = new Date(); fm.setDate(1); fm.setHours(0, 0, 0, 0); fm.setMonth(fm.getMonth() - mm);
+      var crec = .72 + .28 * ((12 - mm) / 11), est = [1.04, .9, .95, .97, 1, .96, .94, .97, 1, 1.02, 1.05, 1.18][fm.getMonth()];
+      var tm = Math.round(tot30 * crec * est * (.94 + rnd() * .12));
+      E.mensual.push({ ts: fm.getTime(), total: tm, margen: Math.round(tm * (.27 + rnd() * .04)), tickets: Math.round(tk30 * crec * est) });
+    }
     E.contador.venta = E.ventas.length; E.ventas.forEach(function (v, i) { v.num = i + 1; });
 
     // Compras de muestra
@@ -237,11 +245,10 @@
     E.movStock.sort(function (a, b) { return a.ts - b.ts; });
 
     // Auditoría de muestra
-    [[14, 'Marta Rodríguez', 'Creó la cuenta de la dueña'], [14, 'Marta Rodríguez', 'Aprobó a Lucía Pereira (caja)'], [14, 'Marta Rodríguez', 'Aprobó a Diego Silva (caja)'],
+    [[28, 'Marta Rodríguez', 'Creó la cuenta de administración'], [28, 'Marta Rodríguez', 'Aprobó a Lucía Pereira (caja)'], [28, 'Marta Rodríguez', 'Aprobó a Diego Silva (caja)'],
      [9, 'Marta Rodríguez', 'Cambió el precio de Yerba Mate 1 kg: $ 265 → $ 279'], [7, 'Marta Rodríguez', 'Desactivó a Valentina Cabral (caja)'],
-     [4, 'Marta Rodríguez', 'Cambió el precio de Aceite de Girasol 900 ml: $ 129 → $ 135'], [2, 'Marta Rodríguez', 'Registró la compra C-0005 a Higiene Total S.A.']
+     [4, 'Marta Rodríguez', 'Cambió el precio de Aceite de Girasol 900 ml: $ 129 → $ 135'], [1, 'Lucía Pereira', 'Abrió la caja del turno mañana con $ 2.500'], [2, 'Marta Rodríguez', 'Registró la compra C-0005 a Higiene Total S.A.']
     ].forEach(function (a) { E.auditoria.push({ id: uid('x'), ts: hoy0 - a[0] * DIA + 9 * HORA, usuario: a[1], accion: a[2] }); });
-    E.auditoria.push({ id: uid('x'), ts: ahora - 2 * HORA, usuario: 'Sistema', accion: 'Datos de muestra cargados para el borrador' });
     return E;
   }
 
@@ -249,7 +256,7 @@
   var E = null;
   function guardar() { try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin almacenamiento: sigue en memoria */ } }
   function cargar() {
-    try { var s = localStorage.getItem(KEY); if (s) { var o = JSON.parse(s); if (o && o.version === 1) return o; } } catch (e) { }
+    try { var s = localStorage.getItem(KEY); if (s) { var o = JSON.parse(s); if (o && o.version === 2) return o; } } catch (e) { }
     return null;
   }
   function iniciar() { E = cargar(); if (!E) { E = sembrar(); guardar(); } LE.estado = E; return E; }
@@ -285,7 +292,7 @@
     anotar: function (a) { anotar(a); guardar(); },
     negocio: function () { return E.negocio; },
     guardarNegocio: function (d) {
-      exigir('duena'); var n = E.negocio;
+      exigir('admin'); var n = E.negocio;
       ['nombre', 'rubro', 'direccion', 'telefono', 'rut', 'pie', 'regimen'].forEach(function (k) { if (d[k] != null) n[k] = String(d[k]).slice(0, 120); });
       if (d.medios) n.medios = d.medios; if (d.balanza) n.balanza = d.balanza;
       anotar('Cambió los ajustes del negocio'); guardar();
@@ -320,7 +327,7 @@
     },
     codigoBalanza: function (p, kg) { var b = E.negocio.balanza; return ean13(b.prefijo + p.plu + pad(Math.round(kg * 1000), 5)); },
     guardarProducto: function (d) {
-      exigir('duena');
+      exigir('admin');
       var nombre = String(d.nombre || '').trim(); if (nombre.length < 2) throw new Error('Escribí el nombre del producto.');
       if (nombre.length > 28) throw new Error('El nombre no puede pasar de 28 letras (para que entre en el ticket).');
       var precio = Math.round(+d.precio), costo = Math.round(+d.costo || 0);
@@ -340,11 +347,11 @@
       if (d.stockInicial != null && !d.id) p.stock = +d.stockInicial || 0;
       guardar(); return p;
     },
-    activarProducto: function (id, activo) { exigir('duena'); var p = porId(E.productos, id); p.activo = !!activo; anotar((activo ? 'Reactivó ' : 'Dio de baja ') + p.nombre); guardar(); },
+    activarProducto: function (id, activo) { exigir('admin'); var p = porId(E.productos, id); p.activo = !!activo; anotar((activo ? 'Reactivó ' : 'Dio de baja ') + p.nombre); guardar(); },
 
     /* Stock */
     ajustarStock: function (id, delta, motivo) {
-      exigir('duena'); var p = porId(E.productos, id); if (!p) throw new Error('Producto no encontrado.');
+      exigir('admin'); var p = porId(E.productos, id); if (!p) throw new Error('Producto no encontrado.');
       delta = +delta; if (!delta) throw new Error('Escribí cuánto sumar o restar.'); if (!String(motivo || '').trim()) throw new Error('Escribí el motivo.');
       movStock(p, delta, 'ajuste', motivo); anotar('Ajustó el stock de ' + p.nombre + ' (' + (delta > 0 ? '+' : '') + fmt.cant(delta) + '): ' + motivo); guardar();
     },
@@ -354,14 +361,14 @@
     /* Proveedores y compras */
     proveedores: function () { return E.proveedores; },
     guardarProveedor: function (d) {
-      exigir('duena'); var n = String(d.nombre || '').trim(); if (n.length < 2) throw new Error('Escribí el nombre del proveedor.');
+      exigir('admin'); var n = String(d.nombre || '').trim(); if (n.length < 2) throw new Error('Escribí el nombre del proveedor.');
       var v = d.id ? porId(E.proveedores, d.id) : null;
       if (!v) { v = { id: 'v' + (E.proveedores.length + 1) + Date.now().toString(36).slice(-3), activo: true }; E.proveedores.push(v); anotar('Creó el proveedor ' + n); } else anotar('Editó el proveedor ' + n);
       v.nombre = n; v.contacto = d.contacto || ''; v.telefono = d.telefono || ''; v.email = d.email || ''; v.rubro = d.rubro || ''; guardar(); return v;
     },
     compras: function () { return E.compras.slice().sort(function (a, b) { return b.ts - a.ts; }); },
     guardarCompra: function (d) {
-      exigir('duena'); if (!d.prov) throw new Error('Elegí el proveedor.');
+      exigir('admin'); if (!d.prov) throw new Error('Elegí el proveedor.');
       var its = (d.items || []).filter(function (i) { return i.p && +i.c > 0; }).map(function (i) { var p = porId(E.productos, i.p); return { p: p.id, n: p.nombre, c: +i.c, k: Math.round(+i.k) }; });
       if (!its.length) throw new Error('Agregá al menos un producto.');
       E.contador.compra++; var total = its.reduce(function (a, i) { return a + r2(i.c * i.k); }, 0);
@@ -369,24 +376,24 @@
       E.compras.push(c); anotar('Registró la compra C-' + pad(c.num, 4) + ' a ' + porId(E.proveedores, d.prov).nombre + ' por ' + fmt.din(total)); guardar(); return c;
     },
     recibirCompra: function (id) {
-      exigir('duena'); var c = porId(E.compras, id); if (!c || c.recibida) throw new Error('Esta compra ya fue recibida.');
+      exigir('admin'); var c = porId(E.compras, id); if (!c || c.recibida) throw new Error('Esta compra ya fue recibida.');
       c.items.forEach(function (i) { var p = porId(E.productos, i.p); if (p) { movStock(p, i.c, 'compra', 'Compra C-' + pad(c.num, 4)); if (i.k > 0 && p.costo !== i.k) p.costo = i.k; } });
       c.recibida = true; c.recibidaTs = Date.now(); anotar('Recibió la compra C-' + pad(c.num, 4) + ' (el stock subió)'); guardar();
     },
-    pagarCompra: function (id) { exigir('duena'); var c = porId(E.compras, id); c.pagada = true; anotar('Marcó como paga la compra C-' + pad(c.num, 4)); guardar(); },
+    pagarCompra: function (id) { exigir('admin'); var c = porId(E.compras, id); c.pagada = true; anotar('Marcó como paga la compra C-' + pad(c.num, 4)); guardar(); },
 
     /* Caja */
     turnoAbierto: turnoAbierto,
     turnos: function () { return E.turnos.slice().sort(function (a, b) { return b.apertura - a.apertura; }); },
     movimientosCaja: function (turnoId) { return E.movCaja.filter(function (m) { return m.turno === turnoId; }); },
     abrirCaja: function (base) {
-      var u = exigir('duena', 'caja'); if (turnoAbierto()) throw new Error('Ya hay una caja abierta: primero cerrá la del turno anterior.');
+      var u = exigir('admin', 'caja'); if (turnoAbierto()) throw new Error('Ya hay una caja abierta: primero cerrá la del turno anterior.');
       base = Math.round(+base); if (!(base >= 0)) throw new Error('Escribí con cuánto efectivo se abre.');
       var t = { id: uid('t'), apertura: Date.now(), base: base, turno: turnoNombre(), abrioId: u.id, abrio: u.nombre, cierre: null, esperado: null, contado: null, cerroId: null, cerro: null };
       E.turnos.push(t); anotar('Abrió la caja del turno ' + t.turno + ' con ' + fmt.din(base)); guardar(); return t;
     },
     egresoCaja: function (concepto, monto) {
-      var u = exigir('duena', 'caja'), t = turnoAbierto(); if (!t) throw new Error('No hay una caja abierta.');
+      var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('No hay una caja abierta.');
       monto = Math.round(+monto); concepto = String(concepto || '').trim();
       if (concepto.length < 2 || !(monto > 0)) throw new Error('Completá el concepto y el monto.');
       var disp = LE.efectivoEsperado(t); if (monto > disp) throw new Error('No hay tanto efectivo en la caja (hay ' + fmt.din(disp) + ').');
@@ -405,7 +412,7 @@
       return { tickets: n, total: total, porMedio: porMedio, retiros: retiros };
     },
     cerrarCaja: function (contado) {
-      var u = exigir('duena', 'caja'), t = turnoAbierto(); if (!t) throw new Error('No hay una caja abierta.');
+      var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('No hay una caja abierta.');
       contado = Math.round(+contado); if (!(contado >= 0)) throw new Error('Escribí cuánto efectivo contaste.');
       t.esperado = LE.efectivoEsperado(t); t.contado = contado; t.cierre = Date.now(); t.cerroId = u.id; t.cerro = u.nombre;
       var dif = contado - t.esperado;
@@ -421,7 +428,7 @@
       if (p.length) { anotar('Se enviaron ' + p.length + ' ventas guardadas en la caja', 'Sistema'); guardar(); } return p.length;
     },
     crearVenta: function (d) {
-      var u = exigir('duena', 'caja'), t = turnoAbierto(); if (!t) throw new Error('Abrí la caja antes de vender.');
+      var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('Abrí la caja antes de vender.');
       var ya = porId(E.ventas, d.id); if (ya) return ya; // idempotente: si se reintenta, no duplica
       if (!d.items || !d.items.length) throw new Error('El ticket está vacío.');
       var items = d.items.map(function (i) {
@@ -447,7 +454,7 @@
       guardar(); return v;
     },
     anularVenta: function (id, motivo) {
-      exigir('duena'); var v = porId(E.ventas, id); if (!v || v.estado !== 'ok') throw new Error('Esta venta ya está anulada.');
+      exigir('admin'); var v = porId(E.ventas, id); if (!v || v.estado !== 'ok') throw new Error('Esta venta ya está anulada.');
       if (!String(motivo || '').trim()) throw new Error('Escribí el motivo de la anulación.');
       var t = porId(E.turnos, v.turno); if (t && t.cierre) { /* se anula igual: queda marcada para el próximo cierre */ }
       v.estado = 'anulada'; v.anuladaPor = yo().nombre; v.motivo = motivo;
@@ -460,36 +467,39 @@
 
     /* Equipo */
     guardarUsuario: function (d) {
-      var yo_ = exigir('duena'); var n = String(d.nombre || '').trim(); if (n.length < 2) throw new Error('Escribí el nombre.');
+      var yo_ = exigir('admin'); var n = String(d.nombre || '').trim(); if (n.length < 2) throw new Error('Escribí el nombre.');
       if (!/^\d{4}$/.test(String(d.pin || ''))) throw new Error('El PIN son 4 números.');
       if (E.usuarios.some(function (x) { return x.pin === String(d.pin) && x.id !== d.id && x.activo; })) throw new Error('Ese PIN ya lo usa otra persona.');
       var u = d.id ? porId(E.usuarios, d.id) : null;
       if (u) {
         if (u.id === yo_.id && (u.rol !== d.rol || u.activo !== !!d.activo)) throw new Error('No podés cambiar tu propio rol ni desactivarte.');
-        if (u.rol === 'duena' && (d.rol !== 'duena' || !d.activo) && E.usuarios.filter(function (x) { return x.rol === 'duena' && x.activo; }).length < 2) throw new Error('Tiene que quedar al menos una dueña activa.');
+        if (u.rol === 'admin' && (d.rol !== 'admin' || !d.activo) && E.usuarios.filter(function (x) { return x.rol === 'admin' && x.activo; }).length < 2) throw new Error('Tiene que quedar al menos una cuenta de administración activa.');
         if (u.rol !== d.rol || u.activo !== !!d.activo) anotar((d.activo && !u.activo ? 'Activó a ' : !d.activo && u.activo ? 'Desactivó a ' : 'Cambió el rol de ') + u.nombre + ' (' + d.rol + ')'); else anotar('Editó a ' + u.nombre);
       } else { u = { id: 'u_' + Date.now().toString(36) }; E.usuarios.push(u); anotar('Creó la cuenta de ' + n + ' (' + d.rol + ')'); }
       u.nombre = n; u.rol = d.rol; u.pin = String(d.pin); u.activo = !!d.activo; u.email = d.email || ''; guardar(); return u;
     },
     asistenciaAbierta: function (uid_) { for (var i = E.asistencias.length - 1; i >= 0; i--) { var a = E.asistencias[i]; if (a.usuarioId === uid_ && !a.salida) return a; } return null; },
     marcarAsistencia: function () {
-      var u = exigir('duena', 'caja'), a = LE.asistenciaAbierta(u.id);
+      var u = exigir('admin', 'caja'), a = LE.asistenciaAbierta(u.id);
       if (a) { a.salida = Date.now(); anotar('Terminó la jornada'); guardar(); return { estado: 'salida', a: a }; }
       a = { id: uid('a'), usuarioId: u.id, nombre: u.nombre, entrada: Date.now(), salida: null }; E.asistencias.push(a); anotar('Empezó la jornada'); guardar(); return { estado: 'entrada', a: a };
     },
     asistencias: function (desde, hasta) { return E.asistencias.filter(function (a) { return a.entrada >= desde && a.entrada < hasta; }).sort(function (a, b) { return b.entrada - a.entrada; }); },
     auditoria: function (limite) { return E.auditoria.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, limite || 200); },
 
+    mensual: function () { return E.mensual || []; },
+
     /* Reportes */
     reporte: function (desde, hasta) {
       var vs = LE.ventas(desde, hasta), R = { desde: desde, hasta: hasta, total: 0, tickets: 0, costo: 0, iva: 0, anuladas: 0, anuladasTotal: 0, porMedio: { efectivo: 0, debito: 0, credito: 0, qr: 0 }, porCat: {}, porProd: {}, porCajero: {}, porDia: {}, porHora: [] };
-      for (var h = 0; h < 24; h++) R.porHora.push({ total: 0, tickets: 0 });
+      for (var h = 0; h < 24; h++) R.porHora.push({ total: 0, tickets: 0, margen: 0 });
       vs.forEach(function (v) {
         if (v.estado !== 'ok') { R.anuladas++; R.anuladasTotal += v.total; return; }
         R.total += v.total; R.tickets++;
+        var costoV = v.items.reduce(function (a, i) { return a + r2(i.k * i.c); }, 0), margenV = v.total - costoV;
         v.pagos.forEach(function (p) { R.porMedio[p.m] += p.monto; });
-        var d0 = inicioDia(v.ts); (R.porDia[d0] = R.porDia[d0] || { dia: d0, total: 0, tickets: 0 }); R.porDia[d0].total += v.total; R.porDia[d0].tickets++;
-        var hh = new Date(v.ts).getHours(); R.porHora[hh].total += v.total; R.porHora[hh].tickets++;
+        var d0 = inicioDia(v.ts); (R.porDia[d0] = R.porDia[d0] || { dia: d0, total: 0, tickets: 0, margen: 0 }); R.porDia[d0].total += v.total; R.porDia[d0].tickets++; R.porDia[d0].margen += margenV;
+        var hh = new Date(v.ts).getHours(); R.porHora[hh].total += v.total; R.porHora[hh].tickets++; R.porHora[hh].margen += margenV;
         var c = R.porCajero[v.cajero] = R.porCajero[v.cajero] || { nombre: v.cajero, total: 0, tickets: 0 }; c.total += v.total; c.tickets++;
         v.items.forEach(function (i) {
           var p = porId(E.productos, i.p), cat = p ? p.cat : 'Otros';

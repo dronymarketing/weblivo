@@ -7,7 +7,7 @@
 (function () {
   'use strict';
   var $ = UI.$, esc = UI.esc, F = LE.fmt, ico = UI.ico;
-  var usuario = UI.exigirSesion(['caja', 'duena'], '../index.html'); if (!usuario) return;
+  var usuario = UI.exigirSesion(['caja', 'admin'], '../index.html'); if (!usuario) return;
 
   var KEY = 'laestrella_ticket_v1';
   var S = cargarEstado();
@@ -31,7 +31,7 @@
     if (t) { l.push({ id: 'retiro', i: 'banknote', t: 'Retiro de efectivo' }); l.push({ id: 'cerrar', i: 'lock', t: 'Cerrar caja' }); }
     l.push({ id: 'jornada', i: 'clock', t: a ? 'Terminar jornada' : 'Empezar jornada' });
     if (t) { l.push({ id: 'cliente', i: 'monitor', t: S.cliente ? 'Ocultar pantalla del cliente' : 'Pantalla del cliente' }); l.push({ id: 'reimprimir', i: 'printer', t: 'Reimprimir último ticket' }); }
-    if (usuario.rol === 'duena') l.push({ id: 'panel', i: 'chart-column', t: 'Ir al panel' });
+    if (usuario.rol === 'admin') l.push({ id: 'panel', i: 'chart-column', t: 'Ir al panel' });
     l.push({ id: 'salir', i: 'log-out', t: 'Salir' });
     return l;
   }
@@ -66,7 +66,7 @@
     pos.className = 'pos';
     pos.innerHTML =
       '<div class="scan"><div class="scan__campo">' + ico('scan-barcode', 'icon--g') + '<input id="scan" class="entrada" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escaneá o buscá un producto" aria-label="Código de barras o nombre del producto"></div></div>' +
-      '<details class="demo" id="demo"><summary>' + ico('info') + ' Probar sin lector: códigos de muestra</summary><div class="demo__chips" id="demo-chips"></div>' +
+      '<details class="demo" id="demo"><summary>' + ico('scan-barcode') + ' Lector y conexión</summary><div class="demo__chips" id="demo-chips"></div>' +
       '<div class="demo__ajustes"><button type="button" class="chip" id="demo-red" aria-pressed="false"></button></div></details>' +
       '<div class="pos__cuerpo">' +
       '<section class="pos__catalogo" id="catalogo" aria-label="Productos"><div class="cat__cab"><h2>Productos</h2><button type="button" class="btn btn--chico btn--tinta" id="cat-cerrar">Listo</button></div><div class="cats" id="cats"></div><div class="grilla" id="grilla"></div></section>' +
@@ -248,7 +248,7 @@
     var ctl = UI.modal({
       titulo: copia ? 'Copia del último ticket' : 'Venta ' + F.num(v.num), persistente: true, ancha: true,
       cuerpo: cabecera + '<div class="papel-marco"><pre class="papel" id="papel">' + esc(texto) + '</pre></div>' +
-        '<details class="demo" style="margin:14px 0 0"><summary>' + ico('info') + ' Para técnicos: lo que recibe la impresora (ESC/POS)</summary>' +
+        '<details class="demo" style="margin:14px 0 0"><summary>' + ico('info') + ' Detalle técnico: lo que recibe la impresora (ESC/POS)</summary>' +
         '<p class="suave" style="font-size:13px;margin:8px 0">' + bytes.length + ' bytes: inicializar (1B 40), página de códigos CP858 (1B 74 13), el texto, corte (1D 56 42 00)' + (v.pagos.some(function (p) { return p.m === 'efectivo'; }) ? ' y pulso al cajón de dinero (1B 70 00 19 FA)' : '') + '. En la terminal real se envía esto directo a la impresora, sin diálogo.</p>' +
         '<pre class="mono" style="font-size:12px;overflow-x:auto;background:var(--superficie);border:var(--borde);border-radius:10px;padding:10px;margin:0">' + esc(LE.hexdump(bytes, 80)) + '</pre></details>',
       acciones: [{ texto: 'Imprimir ticket', icono: 'printer', clase: 'btn--linea', cerrar: false, accion: function () { LE.imprimirTicket(texto); return false; } }, { texto: copia ? 'Cerrar' : 'Nueva venta', clase: 'btn--tinta' }],
@@ -274,7 +274,7 @@
     var ctl = UI.modal({
       titulo: 'Retiro de efectivo',
       cuerpo: '<p class="suave" style="margin-bottom:12px">En el cajón hay ' + F.din(LE.efectivoEsperado(t)) + '. El retiro queda anotado con tu nombre.</p>' +
-        '<div class="billetes" style="margin:0 0 14px">' + ['Retiro para la dueña', 'Pago a proveedor', 'Pago de reparto', 'Compra urgente'].map(function (c) { return '<button type="button" class="chip" data-c="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>' +
+        '<div class="billetes" style="margin:0 0 14px">' + ['Retiro para administración', 'Pago a proveedor', 'Pago de reparto', 'Compra urgente'].map(function (c) { return '<button type="button" class="chip" data-c="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>' +
         '<label class="campo"><span>Concepto</span><input name="c" class="entrada" maxlength="120" autocomplete="off"></label><label class="campo"><span>Monto</span><input name="m" class="entrada" inputmode="decimal" autocomplete="off"></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Registrar retiro', clase: 'btn--tinta', cerrar: false, accion: function () { var v = UI.valores(ctl); var r = UI.intentar(function () { LE.egresoCaja(v.c, UI.aCentavos(v.m)); }, 'Retiro registrado.'); if (r.ok) { ctl.cerrar(); pintarBarra(); } return false; } }]
     });
@@ -302,7 +302,7 @@
       titulo: 'Caja cerrada', persistente: true,
       cuerpo: '<div class="vuelto" style="margin:0 0 14px;' + (ok ? '' : 'background:var(--alerta-suave);color:var(--alerta)') + '">' + (ok ? 'La caja cierra justa' : (c.diferencia > 0 ? 'Sobran' : 'Faltan')) + '<strong>' + (ok ? F.din(c.contado) : F.din(Math.abs(c.diferencia))) + '</strong></div>' +
         '<ul class="leyenda"><li><span>Tendría que haber</span><span class="lv">' + F.din(c.esperado) + '</span></li><li><span>Contaste</span><span class="lv">' + F.din(c.contado) + '</span></li></ul>' +
-        (ok ? '' : '<p class="suave" style="margin-top:12px;font-size:14px">La diferencia queda registrada y la dueña la ve en el panel.</p>'),
+        (ok ? '' : '<p class="suave" style="margin-top:12px;font-size:14px">La diferencia queda registrada y administración la ve en el panel.</p>'),
       acciones: [{ texto: 'Listo', clase: 'btn--tinta' }], alCerrar: function () { montar(); }
     });
   }

@@ -3,7 +3,7 @@
    Se carga con media="(min-width: 768px)" en el <link>.
    En escritorio nunca hay hamburguesa: los accesos van a la vista.
    ============================================================ */
-:root { --borrador-alto: 29px; --margen-lateral: 32px; }
+:root { --margen-lateral: 32px; }
 
 /* Modal centrado */
 .modal { align-items: center; }
@@ -20,7 +20,7 @@
 .ingreso__cuerpo { max-width: 520px; padding-top: 72px; }
 
 /* ---------- Caja (POS) en pantalla de 8" y escritorio ---------- */
-.pos { height: calc(100svh - var(--barra-alto) - var(--borrador-alto)); min-height: 0; overflow: hidden; }
+.pos { height: calc(100svh - var(--barra-alto)); min-height: 0; overflow: hidden; }
 .scan { position: static; padding: 10px var(--margen-lateral); }
 .demo { margin: 0; padding: 4px var(--margen-lateral) 0; border-bottom: var(--borde); }
 .demo[open] { padding-bottom: 6px; }
@@ -38,10 +38,17 @@
 
 /* ---------- Panel: menú lateral siempre a la vista ---------- */
 .app { display: block; }
-.menu { inset: 0 auto 0 0; width: var(--menu-ancho); transform: none; visibility: visible; z-index: 40; transition: none; padding-top: 22px; }
+.menu { inset: 0 auto 0 0; width: var(--menu-ancho); transform: none; visibility: visible; z-index: 40; transition: none; padding-top: 0; border-right: var(--borde); }
 .menu__cerrar { display: none; }
-.menu__link { min-height: 46px; font-size: 16px; }
-.app__barra { display: none; }
+.menu__cab { min-height: 64px; padding: 0 20px; }
+.menu__link { min-height: 44px; font-size: 15px; }
+.app__barra { background: var(--superficie); color: var(--texto); height: 64px; border-bottom: var(--borde); padding: 0 var(--margen-lateral); gap: 16px; }
+.app__marca { display: none; }
+.migas { display: flex; align-items: center; gap: 8px; color: var(--texto-suave); font-size: 14px; }
+.migas strong { color: var(--texto); }
+.app__caja { display: inline-flex; color: var(--texto); border: var(--borde); background: var(--superficie); }
+.usuario-chip__txt { display: block; }
+.usuario-chip .avatar { background: var(--grad-violeta); color: #fff; }
 .app__contenido { margin-left: var(--menu-ancho); }
 .cuerpo { padding: 32px var(--margen-lateral) 64px; }
 .pagina__cab h1 { font-size: 34px; }
@@ -50,8 +57,6 @@
 .kpi { padding: 18px; }
 .kpi__valor { font-size: 28px; }
 .kpi--grande { grid-column: span 2; }
-.kpis--inicio { grid-template-columns: 2fr 1fr 1fr; }
-.kpis--inicio .kpi--grande { grid-column: 1; grid-row: span 2; display: flex; flex-direction: column; justify-content: center; }
 .kpis--rep { grid-template-columns: 2fr 1fr 1fr 1fr; }
 .kpis--rep .kpi--grande { grid-column: auto; }
 .kpi--grande .kpi__valor { font-size: 56px; }
@@ -63,7 +68,7 @@
 .tabla thead { display: table-header-group; }
 .tabla tbody { display: table-row-group; }
 .tabla tr { display: table-row; padding: 0; }
-.tabla th { text-align: left; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--texto-suave); font-weight: 650; padding: 12px 16px; border-bottom: var(--borde); background: var(--velo); white-space: nowrap; }
+.tabla th { text-align: left; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #fff; font-weight: 650; padding: 13px 16px; background: var(--slate); white-space: nowrap; }
 .tabla th.t-derecha, .tabla td.t-derecha { text-align: right; }
 .tabla td { display: table-cell; padding: 12px 16px; border-bottom: var(--borde); vertical-align: middle; }
 .tabla tr:last-child td { border-bottom: 0; }
@@ -81,3 +86,18 @@
 @media (min-width: 1366px) { .menu-inline .txt { display: inline; } }
 .pos__botones { grid-template-columns: auto auto 1fr; }
 .tabla td.t-titulo, .tabla td.t-derecha, .tabla td.t-acciones { display: table-cell; }
+
+/* Inicio en pantalla ancha */
+.inicio-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+.inicio-grid--actividad { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); }
+.cifra { font-size: 34px; }
+.mini-kpis { grid-template-columns: repeat(4, 1fr); }
+.mini-kpi { border-bottom: 0; border-right: var(--borde); }
+.mini-kpi:last-child { border-right: 0; }
+.cards-color { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.card-color { min-height: 168px; padding: 20px; }
+.card-color__valor { font-size: 30px; }
+.card-color__rotulo { font-size: 15px; }
+.card-color .spark { height: 56px; }
+
+.solo-movil { display: none; }

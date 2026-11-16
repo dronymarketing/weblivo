@@ -4,7 +4,7 @@
   var $ = UI.$, esc = UI.esc;
   var lista = $('#usuarios');
 
-  function destino(u) { return u.rol === 'duena' ? 'panel/' : 'caja/'; }
+  function destino(u) { return u.rol === 'admin' ? 'panel/' : 'caja/'; }
 
   function pintar() {
     var actual = LE.usuario(), html = '';
@@ -12,11 +12,11 @@
       html += '<a class="usuario" href="' + destino(actual) + '" style="background:var(--acento-suave)"><span class="avatar avatar--acento">' + esc(UI.iniciales(actual.nombre)) + '</span>' +
         '<span><span class="usuario__nombre">Seguir como ' + esc(actual.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span></a>';
     }
-    LE.usuarios().slice().sort(function (a, b) { return (b.activo - a.activo) || (a.rol === 'duena' ? -1 : 1); }).forEach(function (u) {
+    LE.usuarios().slice().sort(function (a, b) { return (b.activo - a.activo) || (a.rol === 'admin' ? -1 : 1); }).forEach(function (u) {
       html += '<button type="button" class="usuario" data-id="' + esc(u.id) + '"' + (u.activo ? '' : ' disabled') + '>' +
-        '<span class="avatar' + (u.rol === 'duena' ? ' avatar--acento' : '') + '">' + esc(UI.iniciales(u.nombre)) + '</span>' +
+        '<span class="avatar' + (u.rol === 'admin' ? ' avatar--acento' : '') + '">' + esc(UI.iniciales(u.nombre)) + '</span>' +
         '<span><span class="usuario__nombre">' + esc(u.nombre) + '</span>' +
-        '<span class="usuario__rol">' + UI.rolNombre(u.rol) + (u.activo ? ' · PIN de muestra ' + esc(u.pin) : ' · sin acceso') + '</span></span></button>';
+        '<span class="usuario__rol">' + UI.rolNombre(u.rol) + (u.activo ? '' : ' · sin acceso') + '</span></span></button>';
     });
     lista.innerHTML = html;
   }
@@ -44,9 +44,6 @@
   lista.addEventListener('click', function (e) {
     var b = e.target.closest('button[data-id]'); if (!b) return;
     pedirPin(LE.usuarios().filter(function (u) { return u.id === b.dataset.id; })[0]);
-  });
-  $('#restablecer').addEventListener('click', function () {
-    UI.confirmar('Restablecer el borrador', 'Se borra todo lo que cargaste y se vuelven a generar los datos de muestra.', { ok: 'Restablecer', peligro: true }).then(function (si) { if (si) { LE.reset(); location.reload(); } });
   });
   pintar();
 })();

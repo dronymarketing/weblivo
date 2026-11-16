@@ -1,5 +1,5 @@
 /* ============================================================
-   LA ESTRELLA — panel de la dueña · gestión
+   LA ESTRELLA — panel de administración · gestión
    Stock, compras y proveedores, caja, reportes, equipo y ajustes.
    ============================================================ */
 (function () {
@@ -242,12 +242,12 @@
       var us = LE.usuarios();
       P.zona(P.tabla([
         { t: 'Persona', c: 't-titulo', f: function (u) { return esc(u.nombre) + '<small>' + esc(u.email) + '</small>'; } },
-        { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'duena' ? 'badge--acento' : '') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
+        { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'admin' ? 'badge--acento' : '') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
         { t: 'Acceso', f: function (u) { return u.activo ? '<span class="badge badge--ok">Activa</span>' : '<span class="badge badge--error">Sin acceso</span>'; } },
         { t: 'Jornada', f: function (u) { var a = LE.asistenciaAbierta(u.id); return a ? 'Trabajando desde las ' + F.hora(a.entrada) : '—'; } },
         { t: '', c: 't-acciones', f: function (u) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="persona" data-id="' + u.id + '">' + ico('pencil') + 'Editar</button>'; } }
       ], us, { clase: function (u) { return u.activo ? '' : 'is-baja'; } }) +
-        '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>' + ico('shield-check') + ' Dueña · control total</h3><ul class="permisos">' + [
+        '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>' + ico('shield-check') + ' Administración · control total</h3><ul class="permisos">' + [
           'Ve y cambia productos, precios y costos', 'Maneja stock, compras y proveedores', 'Ve todas las ventas y puede anularlas', 'Ve caja, diferencias y reportes con ganancias', 'Crea personas, cambia roles y PIN', 'Ve el registro de todo lo que se hizo'].map(function (x) { return '<li><span class="si">' + ico('circle-check') + '</span><span>' + x + '</span></li>'; }).join('') + '</ul></section>' +
         '<section class="tarjeta"><h3>' + ico('user') + ' Caja · lo justo para cobrar</h3><ul class="permisos">' + [
           ['y', 'Abre y cierra su turno de caja'], ['y', 'Escanea, cobra e imprime tickets'], ['y', 'Hace retiros de efectivo (quedan anotados)'], ['y', 'Marca su entrada y salida'], ['n', 'No ve costos ni ganancias'], ['n', 'No cambia precios ni stock'], ['n', 'No anula ventas ya cobradas'], ['n', 'No ve los reportes ni al resto del equipo']].map(function (x) { return '<li><span class="' + (x[0] === 'y' ? 'si' : 'no') + '">' + ico(x[0] === 'y' ? 'circle-check' : 'ban') + '</span><span>' + x[1] + '</span></li>'; }).join('') + '</ul></section></div>');
@@ -259,7 +259,7 @@
     var ctl = UI.modal({
       titulo: id ? 'Editar persona' : 'Nueva persona',
       cuerpo: '<label class="campo"><span>Nombre y apellido</span><input name="nombre" class="entrada" maxlength="60" value="' + esc(u.nombre) + '"></label><label class="campo"><span>Email</span><input name="email" class="entrada" type="email" value="' + esc(u.email) + '"></label>' +
-        '<div class="fila-campos"><label class="campo"><span>Rol</span><select name="rol" class="entrada"' + (yo ? ' disabled' : '') + '><option value="caja"' + (u.rol === 'caja' ? ' selected' : '') + '>Caja</option><option value="duena"' + (u.rol === 'duena' ? ' selected' : '') + '>Dueña</option></select>' + (yo ? '<small>No podés cambiar tu propio rol.</small>' : '') + '</label>' +
+        '<div class="fila-campos"><label class="campo"><span>Rol</span><select name="rol" class="entrada"' + (yo ? ' disabled' : '') + '><option value="caja"' + (u.rol === 'caja' ? ' selected' : '') + '>Caja</option><option value="admin"' + (u.rol === 'admin' ? ' selected' : '') + '>Administración</option></select>' + (yo ? '<small>No podés cambiar tu propio rol.</small>' : '') + '</label>' +
         '<label class="campo"><span>PIN (4 números)</span><input name="pin" class="entrada" inputmode="numeric" maxlength="4" autocomplete="off" value="' + esc(u.pin) + '"></label></div>' +
         '<label class="interruptor"><span>Tiene acceso al sistema' + (yo ? ' (no podés desactivarte)' : '') + '</span><input type="checkbox" name="activo"' + (u.activo ? ' checked' : '') + (yo ? ' disabled' : '') + '></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--tinta', cerrar: false, accion: function () {
@@ -284,11 +284,11 @@
         '<label class="campo"><span>La etiqueta trae</span><select name="modo" class="entrada"><option value="peso"' + (b.modo === 'peso' ? ' selected' : '') + '>El peso</option><option value="precio"' + (b.modo === 'precio' ? ' selected' : '') + '>El precio</option></select></label></div>' +
         '<p class="suave" style="font-size:14px;margin-bottom:12px">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div></div>' +
         '<div class="grid grid--2" style="margin-top:16px"><section class="tarjeta"><h3>Factura electrónica</h3><p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
-        '<section class="tarjeta"><h3>Datos de muestra</h3><p class="suave" style="margin-bottom:12px">Todo lo que ves son datos inventados para mostrar cómo funciona. Se guardan solo en este navegador.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos de muestra</button></section></div>');
+        '<section class="tarjeta"><h3>Datos del sistema</h3><p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section></div>');
     }
   };
   P.acciones['guardar-negocio'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-neg')); } }); var r = UI.intentar(function () { LE.guardarNegocio(v); }, 'Datos guardados.'); if (r.ok) P.refrescar(); };
   P.acciones['guardar-medios'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-med')); } }); if (!Object.keys(v).some(function (k) { return v[k]; })) return UI.toast('Dejá al menos un medio de pago.', 'error'); var r = UI.intentar(function () { LE.guardarNegocio({ medios: v }); }, 'Medios de pago guardados.'); if (r.ok) P.refrescar(); };
   P.acciones['guardar-balanza'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-bal')); } }); var r = UI.intentar(function () { LE.guardarNegocio({ balanza: { prefijo: v.prefijo, modo: v.modo } }); }, 'Balanza guardada.'); if (r.ok) P.refrescar(); };
-  P.acciones.reset = function () { UI.confirmar('Restablecer el borrador', 'Se borra todo lo que cargaste y se vuelven a generar los datos de muestra.', { ok: 'Restablecer', peligro: true }).then(function (si) { if (si) { LE.reset(); location.href = '../index.html'; } }); };
+  P.acciones.reset = function () { UI.confirmar('Restablecer los datos', 'Se borra todo lo que cargaste y se vuelven a generar los datos iniciales.', { ok: 'Restablecer', peligro: true }).then(function (si) { if (si) { LE.reset(); location.href = '../index.html'; } }); };
 })();

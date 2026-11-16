@@ -16,9 +16,9 @@
   LE.ticketTexto = function (v, opts) {
     opts = opts || {}; var n = LE.negocio(), L = [], u;
     L.push(centro(n.nombre.toUpperCase())); L.push(centro(n.rubro));
-    envolver(n.direccion, W).forEach(function (x) { L.push(centro(x)); });
-    L.push(centro('Tel. ' + n.telefono));
-    if (n.rut && n.rut !== 'PENDIENTE') L.push(centro('RUT ' + n.rut));
+    if (n.direccion) envolver(n.direccion, W).forEach(function (x) { L.push(centro(x)); });
+    if (n.telefono) L.push(centro('Tel. ' + n.telefono));
+    if (n.rut) L.push(centro('RUT ' + n.rut));
     L.push(RAYA);
     L.push('Ticket N.º ' + F.num(v.num) + (opts.copia ? '  (COPIA)' : ''));
     L.push(der(F.fecha(v.ts) + ' ' + F.hora(v.ts), 'Caja: ' + v.cajero.split(' ')[0]));
@@ -39,7 +39,6 @@
     L.push(RAYA);
     if (n.facturaElectronica) { /* el e-Ticket de verdad lleva CAE, QR y firma: lo agrega el proveedor de facturación */ }
     else { L.push(centro('COMPROBANTE INTERNO')); L.push(centro('NO ES FACTURA ELECTRÓNICA')); }
-    L.push(centro('*** BORRADOR · MUESTRA ***'));
     if (n.pie) envolver(n.pie, W).forEach(function (x) { L.push(centro(x)); });
     return L.join('\n');
   };

@@ -121,15 +121,12 @@
   };
 
   /* ---------- Entradas comunes de página ---------- */
-  UI.franjaBorrador = function () {
-    return '<div class="borrador">BORRADOR · Datos de muestra, solo en este navegador</div>';
-  };
   UI.exigirSesion = function (roles, destino) {
     var u = window.LE && LE.usuario();
     if (!u || (roles && roles.indexOf(u.rol) < 0)) { location.replace(destino || '../index.html'); return null; }
     return u;
   };
-  UI.rolNombre = function (r) { return r === 'duena' ? 'Dueña' : 'Caja'; };
+  UI.rolNombre = function (r) { return r === 'admin' ? 'Administración' : 'Caja'; };
 
   window.UI = UI;
 })();
