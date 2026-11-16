@@ -15,8 +15,8 @@
    · Sombras    → difusas y teñidas con la tinta, nunca grises ni negras.
 
    Contrastes medidos (WCAG, sobre pieza / superficie / marco):
-   t1 (violeta) 5.4/5.1/4.9 · t2 8.9/8.5/8.1 · t3 5.9/5.7/5.4 · t4 3.6 (solo decorativo)
-   acento 5.4/5.2/4.9 · blanco sobre acento 5.4 · rosa 5.5/5.3/5.0 · blanco sobre tinta 14.6
+   t1 (violeta oscuro) 13.3/12.7/12.0 · t2 8.9/8.5/8.1 · t3 5.9/5.7/5.4 · t4 3.6 (solo decorativo)
+   acento 13.3/12.7/12.0 · blanco sobre acento 13.3 · rosa 5.5/5.3/5.0 · blanco sobre tinta 14.6
    ok 5.5 · alerta 5.6 · error 6.0 (y ≥4.6 sobre su propia píldora tintada)
    Gráficos: paleta categórica validada (luminosidad, croma, separación y contraste).
    ============================================================ */
@@ -36,19 +36,19 @@
   --velo-fuerte:  rgba(62, 36, 112, .08);
 
   /* Tinta y escalones de texto */
-  --tinta:        #7A53C9;                     /* la tinta de todo el sistema es el violeta */
-  --texto:        #7A53C9;                     /* t1: títulos y cifras */
+  --tinta:        #392068;                     /* la tinta de todo el sistema es el violeta oscuro, de la misma luminosidad que tenía el azul noche */
+  --texto:        #392068;                     /* t1: títulos y cifras */
   --texto-2:      #4B4470;                     /* t2 */
   --texto-suave:  #665F85;                     /* t3 */
   --texto-muy-suave: #8A83A8;                  /* t4: solo íconos y adornos */
   --texto-fino:   var(--texto-suave);
 
   /* Acento: gotas, no superficies */
-  --primario:     #7A53C9;
-  --acento:       #7A53C9;
+  --primario:     #392068;
+  --acento:       #392068;
   --sobre-acento: #FFFFFF;
   --acento-suave: #F1EDFF;
-  --acento-hover: #6F46BC;
+  --acento-hover: #2C1850;
   --rosa:         #B93573;                     /* segundo color: el rosa del Inicio */
   --rosa-suave:   #F7E7EE;
   /* Violeta apagado: lo que NO está seleccionado (menú, pestañas, fichas, medios de pago). 5.6:1 sobre blanco */
@@ -83,7 +83,7 @@
   /* Sombras teñidas con la tinta: un halo muy suave en dos capas */
   --sombra:       0 0 0 1px rgba(62, 36, 112, .04), 0 0 12px 1px rgba(62, 36, 112, .045), 0 0 26px 2px rgba(62, 36, 112, .03);
   --sombra-alta:  0 0 0 1px rgba(62, 36, 112, .05), 0 6px 18px -4px rgba(62, 36, 112, .12), 0 0 36px 2px rgba(62, 36, 112, .06);
-  --sombra-cta:   0 1px 2px rgba(62, 36, 112, .24), 0 6px 14px -6px rgba(122, 83, 201, .5);
+  --sombra-cta:   0 1px 2px rgba(62, 36, 112, .24), 0 6px 14px -6px rgba(57, 32, 104, .5);
 
   --radio:        14px;
   --radio-chico:  10px;
@@ -99,7 +99,7 @@
   --mono:   ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
   /* Gráficos: paleta categórica validada, en este orden */
-  --serie-1: #7A53C9;                          /* principal (violeta): ventas */
+  --serie-1: #5B3FB0;                          /* violeta (el más oscuro que pasa la validación de gráficos): ventas */
   --serie-2: #B93573;                          /* secundario (rosa): ganancia */
   --serie-3: #C28527;
   --serie-4: #1D9886;

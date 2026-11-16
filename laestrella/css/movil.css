@@ -95,7 +95,7 @@
 .ingreso__panel { order: 2; }
 .ingreso__roles { order: 3; }
 .marca { display: inline-flex; align-items: center; gap: 10px; font-weight: 680; letter-spacing: -.02em; font-size: 20px; text-decoration: none; color: var(--texto); white-space: nowrap; flex-shrink: 0; }
-.marca__estrella { width: 36px; height: 36px; border-radius: 11px; background: var(--acento); color: #fff; display: grid; place-items: center; box-shadow: 0 1px 2px rgba(62, 36, 112, .28), 0 6px 14px -6px rgba(122, 83, 201, .55); }
+.marca__estrella { width: 36px; height: 36px; border-radius: 11px; background: var(--acento); color: #fff; display: grid; place-items: center; box-shadow: 0 1px 2px rgba(62, 36, 112, .28), 0 6px 14px -6px rgba(57, 32, 104, .55); }
 .marca__estrella .icon { width: 20px; height: 20px; fill: #fff; stroke: #fff; stroke-width: 1.5; }
 .ingreso h1 { margin: 32px 0 8px; font-size: 38px; }
 .ingreso__sub { color: var(--texto-suave); margin-bottom: 26px; line-height: 1.5; }
@@ -262,7 +262,7 @@
 .medios { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .medio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 84px; background: var(--superficie); border: 0; border-radius: var(--radio); box-shadow: var(--sombra); font-weight: 600; color: var(--apagado); touch-action: manipulation; transition: background var(--dur-micro), color var(--dur-micro), box-shadow var(--dur-micro); }
 .medio .icon { width: 26px; height: 26px; stroke-width: 1.5; color: var(--apagado-icono); }
-.medio[aria-pressed="true"] { background: var(--superficie); color: var(--texto); box-shadow: 0 0 0 1.5px var(--acento), 0 6px 16px -8px rgba(122, 83, 201, .4); }
+.medio[aria-pressed="true"] { background: var(--superficie); color: var(--texto); box-shadow: 0 0 0 1.5px var(--acento), 0 6px 16px -8px rgba(57, 32, 104, .4); }
 .medio[aria-pressed="true"] .icon { color: var(--acento); }
 .billetes { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
 .pagos-hechos { margin: 14px 0 0; display: grid; gap: 6px; }
@@ -485,7 +485,7 @@ button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display
 .tip .tip__fecha { display: block; font-size: 12px; opacity: .8; margin-bottom: 4px; }
 .tip .tip__fila { display: flex; align-items: center; gap: 8px; }
 .tip .tip__fila strong { display: inline; font-size: 14px; margin-left: auto; padding-left: 14px; }
-.tip .tip__clave { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+.tip .tip__clave { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(255, 255, 255, .45); }
 .grafico .serie { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .grafico .cruz { stroke: color-mix(in srgb, var(--tinta) 24%, transparent); stroke-width: 1; }
 .grafico .punto { stroke: var(--superficie); stroke-width: 2; }

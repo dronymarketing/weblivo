@@ -24,15 +24,15 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Capas de blanco** (blancos con un matiz violeta): `--marco #F4F3F9` (fondo de página), `--superficie-2 #FAF9FD` (bandas,
     cabeceras de tabla, modales) y `--superficie #FFFFFF` (piezas: tarjetas, campos). La jerarquía se ve por capa, no por rayas.
   - **Sombras teñidas** con la tinta (`--sombra`, `--sombra-alta`): halo difuso de dos capas, nunca gris ni negro.
-  - **Texto en 4 escalones, todo en violeta**: t1 `#7A53C9` (el violeta del sistema: títulos, nombres y cifras; 5,4:1 sobre blanco) · t2 `#4B4470`
+  - **Texto en 4 escalones, todo en violeta**: t1 `#392068` (el violeta del sistema, de la misma luminosidad que tenía el azul noche: títulos, nombres y cifras; 13:1 sobre blanco) · t2 `#4B4470`
     cuerpo (8,9:1) · t3 `#665F85` rótulos y apoyo (5,9:1) · t4 `#8A83A8` solo íconos y adornos. El orden de importancia lo marcan el tamaño y el
     peso (títulos 700, cifras grandes, apoyo liviano), no un color distinto.
-  - **Color principal violeta `#7A53C9`** (mismo tono de luminosidad e intensidad que el rosa original), en gotas: botón
+  - **Color principal violeta oscuro `#392068`** (antes `#7A53C9`; pasó a la luminosidad del azul noche original), en gotas: botón
     principal («Cobrar»), medio de pago elegido, ícono del menú activo, pestaña activa, foco, enlaces «Ver …».
     **El rosa `#B93573`** es el segundo color: tiñe UNA tarjeta (Ventas de hoy) y es la segunda línea de los gráficos (ventas en violeta, ganancia en rosa; nunca otro color de por medio).
     No hay verde de marca (el verde solo significa «bien» en los estados).
   - **Estados** verde/ámbar/rojo apagados en píldoras de fondo tintado (≥4.6:1).
-  - **Datos**: paleta categórica validada `--serie-1..4` (violeta, rosa, ocre, verde azulado); cada medio de pago tiene su
+  - **Datos**: paleta categórica validada `--serie-1..4` (violeta `#5B3FB0` —el más oscuro que pasa la validación de gráficos—, rosa, ocre, verde azulado); cada medio de pago tiene su
     color en el gráfico, la dona, los mini indicadores y la barra segmentada.
   - **Jerarquía**: lo importante es oscuro, firme y grande (títulos 700, nombres 600–650, cifras 700 con tracking
     cerrado); lo secundario es más chico, de peso 450 y en t2/t3 (subtítulos, rótulos, fechas, unidades).
