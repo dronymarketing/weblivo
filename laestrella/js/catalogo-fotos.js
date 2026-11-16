@@ -1,4 +1,4 @@
-/* Fotos de ejemplo: código de barras real de cada producto, tomado de Open Food Facts (CC BY-SA). Ver img/productos/CREDITOS.md */
+/* Fotos de ejemplo: código de barras real de cada producto, tomado de Open Food Facts / Open Products Facts / Open Beauty Facts (CC BY-SA). Ver img/productos/CREDITOS.md */
 window.LE_FOTOS = {
  "Arroz Blanco 1 kg": {
   "c": "7730114400016"
@@ -72,12 +72,6 @@ window.LE_FOTOS = {
  "Yogur Natural 1 L": {
   "c": "7730105022050"
  },
- "Jamón Cocido": {
-  "c": "7730138001329"
- },
- "Salame Milán": {
-  "c": "7730687070005"
- },
  "Pan de Molde 500 g": {
   "c": "7730912480524"
  },
@@ -107,5 +101,92 @@ window.LE_FOTOS = {
  },
  "Hamburguesas x4": {
   "c": "7730984660213"
+ },
+ "Arroz Parboil 1 kg": {
+  "c": "7790070411815"
+ },
+ "Fideos Tallarín 500 g": {
+  "c": "8480000063212"
+ },
+ "Té en Saquitos x25": {
+  "c": "7790150211625"
+ },
+ "Atún en Lata 170 g": {
+  "c": "8410090610638"
+ },
+ "Yogur Frutilla 1 L": {
+  "c": "7802955001087"
+ },
+ "Queso Untable 200 g": {
+  "c": "7622210103505"
+ },
+ "Refresco Naranja 2,25 L": {
+  "c": "5449000004840"
+ },
+ "Cerveza Retornable 1 L": {
+  "c": "5410228143376"
+ },
+ "Vino Tinto 750 ml": {
+  "c": "8410537200422"
+ },
+ "Vino Tinto Cartón 1 L": {
+  "c": "8410261271101"
+ },
+ "Lavandina 1 L": {
+  "c": "7771214008580"
+ },
+ "Limpiador de Pisos 900 ml": {
+  "c": "7775000002509"
+ },
+ "Papel Higiénico x4": {
+  "c": "8480000478191"
+ },
+ "Esponja x3": {
+  "c": "8480000713421"
+ },
+ "Rollo de Cocina x2": {
+  "c": "8004260248532"
+ },
+ "Jabón de Tocador x3": {
+  "c": "7791293049120"
+ },
+ "Shampoo 400 ml": {
+  "c": "8402001006029"
+ },
+ "Pasta Dental 90 g": {
+  "c": "6920354822209"
+ },
+ "Desodorante Aerosol 150 ml": {
+  "c": "4005808980239"
+ },
+ "Caramelos Surtidos 150 g": {
+  "c": "8410085111850"
+ },
+ "Papas Fritas 100 g": {
+  "c": "0038000183713"
+ },
+ "Chupetín": {
+  "c": "7790206009534"
+ },
+ "Helado de Vainilla 1 L": {
+  "c": "8711327544772"
+ },
+ "Cacao en Polvo 360 g": {
+  "c": "8422073110011"
+ },
+ "Crema de Leche 200 ml": {
+  "c": "8480000101174"
+ },
+ "Pizza Muzzarella": {
+  "c": "4001724039112"
+ },
+ "Detergente 750 ml": {
+  "c": "8402001024634"
+ },
+ "Jabón en Polvo 800 g": {
+  "c": "8480000862310"
+ },
+ "Bolsas de Residuos x10": {
+  "c": "2000000117276"
  }
 };

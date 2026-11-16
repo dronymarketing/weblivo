@@ -88,15 +88,19 @@ El POS ya guarda el ticket en curso al recargar (`laestrella_ticket_v1`).
 
 ## Fotos de productos
 
-- Las fotos son de **Open Food Facts** (base abierta, licencia CC BY-SA 3.0): `img/productos/pXXX.png`, 256 px,
-  36 de 87 productos. Se eligieron a mano las que coinciden con el producto; el resto (frescos, limpieza,
-  perfumería, que esa base casi no tiene) usa una **ilustración propia** con ícono Lucide.
-- Créditos y enlace a cada producto de origen: `img/productos/CREDITOS.md` (también se menciona en Ajustes).
-- Los productos con foto usan el **código de barras real** del producto (`js/catalogo-fotos.js`), así que se
-  pueden escanear envases reales. Los precios, costos y el stock siguen siendo de ejemplo.
+- **Los 87 productos tienen foto en PNG** (`img/productos/pXXX.png`, 256 px, ~25 KB cada una).
+- Envases: **Open Food Facts**, **Open Products Facts** y **Open Beauty Facts** (CC BY-SA 3.0). Productos frescos
+  (frutas, verduras, carnes, algunos quesos): **Wikimedia Commons**, solo con licencias CC BY, CC BY-SA, CC0 o
+  dominio público. Autor, licencia y enlace de cada una: `img/productos/CREDITOS.md` (también se menciona en Ajustes).
+- Cada foto se eligió a mano mirando una hoja de contacto con las candidatas. Hay algunas aproximaciones: el
+  detergente es de ropa, la cerveza retornable es una botella cualquiera, las milanesas son un plato servido.
+- Los productos con foto de envase usan el **código de barras real** (`js/catalogo-fotos.js`), así que se pueden
+  escanear envases reales. Los de peso (frutas, carnes, fiambres) usan PLU de balanza. Precios, costos y stock
+  siguen siendo de ejemplo.
 - No se descargaron fotos de ningún supermercado: son de la tienda y de las marcas.
-- Para sumar más fotos: buscar el producto en Open Food Facts, bajar la foto, convertirla a PNG de 256 px y
-  anotarla en `CREDITOS.md`. Productos nuevos cargados desde el panel quedan sin foto (se muestra un recuadro vacío).
+- Para sumar o cambiar una foto: buscarla en esas bases, convertirla a PNG de 256 px y anotarla en `CREDITOS.md`.
+  Los productos nuevos cargados desde el panel quedan sin foto (se muestra un recuadro vacío).
+- Las fuentes limitan la cantidad de consultas: se pidió con pausas, un nombre de cliente genérico y sin repetir.
 
 ## Datos de muestra
 
