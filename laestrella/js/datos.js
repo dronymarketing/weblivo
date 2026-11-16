@@ -136,10 +136,11 @@
     // Productos
     CATALOGO.forEach(function (c, i) {
       var kg = c[2] === 'kg';
+      var ft = (window.LE_FOTOS || {})[c[1]] || {};
       var p = {
-        id: 'p' + pad(i + 1, 3), codigo: kg ? '' : ean13('773' + pad(100000000 + i * 7919, 9)), plu: c[8] || '',
+        id: 'p' + pad(i + 1, 3), codigo: kg ? '' : (ft.c || ean13('773' + pad(100000000 + i * 7919, 9))), plu: c[8] || '',
         nombre: c[1], cat: c[0], unidad: c[2], costo: c[3] * 100, precio: c[4] * 100, iva: c[5],
-        minimo: c[6], prov: c[7], activo: true, stock: 0
+        minimo: c[6], prov: c[7], activo: true, stock: 0, foto: 'img/productos/p' + pad(i + 1, 3) + '.png'
       };
       var f = 1.2 + rnd() * 3.2; p.stock = kg ? Math.round(c[6] * f * 1000) / 1000 : Math.round(c[6] * f);
       E.productos.push(p);
@@ -256,7 +257,20 @@
   var E = null;
   function guardar() { try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin almacenamiento: sigue en memoria */ } }
   function cargar() {
-    try { var s = localStorage.getItem(KEY); if (s) { var o = JSON.parse(s); if (o && o.version === 2) return o; } } catch (e) { }
+    try {
+      var s = localStorage.getItem(KEY);
+      if (s) {
+        var o = JSON.parse(s);
+        if (o && o.version === 2) {
+          // Datos guardados antes de las fotos: se les asigna foto y código real sin perder lo cargado
+          if (o.productos && o.productos.length && o.productos[0].foto === undefined) {
+            o.productos.forEach(function (p) { if (/^p\d{3}$/.test(p.id)) { p.foto = 'img/productos/' + p.id + '.png'; var ft = (window.LE_FOTOS || {})[p.nombre]; if (ft && p.unidad !== 'kg' && !o.productos.some(function (x) { return x !== p && x.codigo === ft.c; })) p.codigo = ft.c; } else p.foto = ''; });
+            try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { }
+          }
+          return o;
+        }
+      }
+    } catch (e) { }
     return null;
   }
   function iniciar() { E = cargar(); if (!E) { E = sembrar(); guardar(); } LE.estado = E; return E; }
@@ -341,7 +355,7 @@
       if (p) {
         if (p.precio !== precio) anotar('Cambió el precio de ' + p.nombre + ': ' + fmt.din(p.precio) + ' → ' + fmt.din(precio));
         else anotar('Editó el producto ' + p.nombre);
-      } else { p = { id: 'p' + pad(E.productos.length + 1, 3) + Date.now().toString(36).slice(-3), stock: 0, activo: true }; E.productos.push(p); anotar('Creó el producto ' + nombre); }
+      } else { p = { id: 'p' + pad(E.productos.length + 1, 3) + Date.now().toString(36).slice(-3), stock: 0, activo: true, foto: '' }; E.productos.push(p); anotar('Creó el producto ' + nombre); }
       p.nombre = nombre; p.cat = d.cat; p.unidad = d.unidad; p.codigo = d.unidad === 'kg' ? '' : cod; p.plu = d.unidad === 'kg' ? plu : '';
       p.precio = precio; p.costo = costo; p.iva = +d.iva; p.minimo = +d.minimo || 0; p.prov = d.prov || '';
       if (d.stockInicial != null && !d.id) p.stock = +d.stockInicial || 0;

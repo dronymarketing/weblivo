@@ -15,6 +15,16 @@
   UI.iniciales = function (n) { var p = String(n).trim().split(/\s+/); return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase(); };
   UI.hayModal = function () { return abiertos.length > 0; };
 
+  /* ---------- Fotos de productos ---------- */
+  UI.base = /\/(caja|panel)(\/|$)/.test(location.pathname) ? '../' : '';
+  UI.foto = function (p, extra) {
+    var c = 'foto ' + (extra || '');
+    return p && p.foto ? '<img class="' + c + '" src="' + UI.base + UI.esc(p.foto) + '" alt="" loading="lazy" width="128" height="128">' : '<span class="' + c + ' foto--vacia" aria-hidden="true"></span>';
+  };
+  document.addEventListener('error', function (e) {
+    var t = e.target; if (t && t.tagName === 'IMG' && t.classList.contains('foto')) { var s = document.createElement('span'); s.className = t.className + ' foto--vacia'; s.setAttribute('aria-hidden', 'true'); t.replaceWith(s); }
+  }, true);
+
   /* ---------- Modal ---------- */
   UI.modal = function (o) {
     var previo = document.activeElement;

@@ -86,6 +86,18 @@ El botón "Simular corte de internet" (en la caja) hace que las ventas queden ma
 la conexión se envían. En la versión real: cola local (IndexedDB) + envío con el mismo `id` de venta.
 El POS ya guarda el ticket en curso al recargar (`laestrella_ticket_v1`).
 
+## Fotos de productos
+
+- Las fotos son de **Open Food Facts** (base abierta, licencia CC BY-SA 3.0): `img/productos/pXXX.png`, 256 px,
+  36 de 87 productos. Se eligieron a mano las que coinciden con el producto; el resto (frescos, limpieza,
+  perfumería, que esa base casi no tiene) usa una **ilustración propia** con ícono Lucide.
+- Créditos y enlace a cada producto de origen: `img/productos/CREDITOS.md` (también se menciona en Ajustes).
+- Los productos con foto usan el **código de barras real** del producto (`js/catalogo-fotos.js`), así que se
+  pueden escanear envases reales. Los precios, costos y el stock siguen siendo de ejemplo.
+- No se descargaron fotos de ningún supermercado: son de la tienda y de las marcas.
+- Para sumar más fotos: buscar el producto en Open Food Facts, bajar la foto, convertirla a PNG de 256 px y
+  anotarla en `CREDITOS.md`. Productos nuevos cargados desde el panel quedan sin foto (se muestra un recuadro vacío).
+
 ## Datos de muestra
 
 Productos, proveedores, personas y ventas de 14 días son inventados. Los productos son típicos de un almacén

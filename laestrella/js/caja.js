@@ -108,7 +108,7 @@
   function pintarGrilla() {
     var ps = filtro.q ? LE.buscar(filtro.q) : LE.productos(true).filter(function (p) { return filtro.cat === 'Todos' || p.cat === filtro.cat; });
     $('#grilla').innerHTML = ps.length ? ps.map(function (p) {
-      return '<button type="button" class="prod' + (p.stock <= 0 ? ' prod--sin-stock' : '') + '" data-p="' + p.id + '"><span class="prod__nombre">' + esc(p.nombre) + '</span>' +
+      return '<button type="button" class="prod' + (p.stock <= 0 ? ' prod--sin-stock' : '') + '" data-p="' + p.id + '">' + UI.foto(p, 'foto--tile') + '<span class="prod__nombre">' + esc(p.nombre) + '</span>' +
         '<span class="prod__precio">' + F.din(p.precio) + (p.unidad === 'kg' ? '<small>por kg</small>' : '') + (p.stock <= 0 ? '<small>sin stock</small>' : '') + '</span></button>';
     }).join('') : '<p class="vacio" style="grid-column:1/-1">No hay productos con “' + esc(filtro.q) + '”.</p>';
   }
@@ -121,7 +121,7 @@
       var p = LE.producto(i.p), kg = p.unidad === 'kg';
       var ctrl = kg ? '<button type="button" class="cant__kg" data-acc-linea="peso" data-k="' + k + '" aria-label="Cambiar peso">' + F.kg(i.c) + '</button>'
         : '<span class="cant"><button type="button" data-acc-linea="menos" data-k="' + k + '" aria-label="Uno menos">' + ico('minus') + '</button><span class="cant__n">' + i.c + '</span><button type="button" data-acc-linea="mas" data-k="' + k + '" aria-label="Uno más">' + ico('plus') + '</button></span>';
-      return '<div class="linea' + (nuevoId === i.p ? ' is-nueva' : '') + '" data-p="' + p.id + '"><div><div class="linea__nombre">' + esc(p.nombre) + '</div><div class="linea__sub">' + (kg ? F.din(p.precio) + ' por kg' : F.din(p.precio) + ' c/u') + '</div></div>' +
+      return '<div class="linea' + (nuevoId === i.p ? ' is-nueva' : '') + '" data-p="' + p.id + '"><div class="linea__prod">' + UI.foto(p, 'foto--mini') + '<div><div class="linea__nombre">' + esc(p.nombre) + '</div><div class="linea__sub">' + (kg ? F.din(p.precio) + ' por kg' : F.din(p.precio) + ' c/u') + '</div></div></div>' +
         '<div class="linea__total">' + F.din(subtotal(i)) + '</div><div>' + ctrl + '</div>' +
         '<div style="text-align:right"><button type="button" class="btn btn--chico btn--linea linea__quitar" data-acc-linea="quitar" data-k="' + k + '" aria-label="Quitar ' + esc(p.nombre) + '">' + ico('trash-2') + 'Quitar</button></div></div>';
     }).join('');

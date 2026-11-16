@@ -22,6 +22,7 @@
     var o = [['hoy', 'Hoy'], ['ayer', 'Ayer'], ['7', '7 días'], ['30', '30 días'], ['mes', 'Este mes']];
     return o.map(function (x) { return '<button type="button" class="chip" data-rango="' + x[0] + '" aria-pressed="' + (sel === x[0]) + '">' + x[1] + '</button>'; }).join('');
   };
+  P.celdaProd = function (p, sub) { return '<span class="celda-prod">' + UI.foto(p, 'foto--mini') + '<span>' + esc(p.nombre) + (sub ? '<small>' + sub + '</small>' : '') + '</span></span>'; };
   P.pct = function (a, b) { return b ? Math.round(a * 100 / b) + ' %' : '—'; };
 
   /* ---------- Estructura de cada vista ---------- */
@@ -328,7 +329,7 @@
         return true;
       });
       P.zona('<p class="suave" style="margin-bottom:12px">' + ps.length + ' productos</p>' + P.tabla([
-        { t: 'Producto', c: 't-titulo', f: function (p) { return esc(p.nombre) + '<small>' + esc(p.cat) + ' · ' + (p.unidad === 'kg' ? 'por kg · PLU ' + p.plu : 'código ' + esc(p.codigo)) + '</small>'; } },
+        { t: 'Producto', c: 't-titulo', f: function (p) { return P.celdaProd(p, esc(p.cat) + ' · ' + (p.unidad === 'kg' ? 'por kg · PLU ' + p.plu : 'código ' + esc(p.codigo))); } },
         { t: 'Precio', c: 't-derecha', f: function (p) { return F.din(p.precio) + (p.unidad === 'kg' ? '<small>por kg</small>' : ''); } },
         { t: 'Costo', f: function (p) { return F.din(p.costo); } },
         { t: 'Margen', f: function (p) { return p.precio ? Math.round((p.precio - p.costo) * 100 / p.precio) + ' %' : '—'; } },
@@ -342,7 +343,7 @@
       var regimen = LE.negocio().regimen;
       var ctl = UI.modal({
         titulo: nuevo ? 'Nuevo producto' : 'Editar producto', ancha: true,
-        cuerpo: '<label class="campo"><span>Nombre (máx. 28 letras, para que entre en el ticket)</span><input name="nombre" class="entrada" maxlength="28" value="' + esc(p.nombre) + '"></label>' +
+        cuerpo: (p.foto ? '<div class="foto-form">' + UI.foto(p, 'foto--grande') + '<small class="suave">Foto de ejemplo del producto</small></div>' : '') + '<label class="campo"><span>Nombre (máx. 28 letras, para que entre en el ticket)</span><input name="nombre" class="entrada" maxlength="28" value="' + esc(p.nombre) + '"></label>' +
           '<div class="fila-campos"><label class="campo"><span>Categoría</span><select name="cat" class="entrada">' + UI.opciones(LE.categorias(), p.cat) + '</select></label>' +
           '<label class="campo"><span>Se vende por</span><select name="unidad" class="entrada"><option value="u"' + (p.unidad === 'u' ? ' selected' : '') + '>Unidad</option><option value="kg"' + (p.unidad === 'kg' ? ' selected' : '') + '>Peso (kg)</option></select></label></div>' +
           '<div id="f-codigo"><label class="campo"><span>Código de barras</span><input name="codigo" class="entrada" inputmode="numeric" autocomplete="off" value="' + esc(p.codigo) + '" placeholder="Escaneálo con el lector"><small>Poné el cursor acá y pasá el producto por el lector: el código se escribe solo.</small></label></div>' +
