@@ -324,9 +324,35 @@
 .menu__pie strong { display: block; color: var(--texto); font-size: 15px; font-weight: 640; }
 .app__barra { position: sticky; top: 0; z-index: 30; height: var(--barra-alto); background: var(--superficie); color: var(--texto); display: flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; box-shadow: 0 1px 0 var(--linea); }
 .app__barra .btn { border-color: transparent; background: transparent; }
+/* Campana de avisos y globitos de alerta */
+.campana-wrap { position: relative; }
+.campana { position: relative; width: 44px; height: 44px; color: var(--texto-2); }
+.campana .icon { width: 22px; height: 22px; }
+.campana__n, .menu__n { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; font-size: 11.5px; font-weight: 750; line-height: 1; background: #F2B93B; color: #2A1D04; font-variant-numeric: tabular-nums; }
+.campana__n { position: absolute; top: 3px; right: 1px; box-shadow: 0 0 0 2px var(--superficie); }
+.menu__n { margin-left: auto; }
+.campana__n--rojo, .menu__n--rojo { background: var(--error); color: #fff; }
+.menu__link[aria-current="page"] .menu__n { box-shadow: 0 0 0 2px var(--marco); }
+.pop-avisos { position: fixed; left: 12px; right: 12px; top: calc(var(--barra-alto) + 8px); z-index: 70; background: var(--superficie); border-radius: var(--radio); box-shadow: var(--sombra-alta); padding: 6px; }
+.pop-avisos[hidden] { display: none; }
+.pop-avisos__cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 10px 8px; }
+.pop-avisos__cab strong { font-size: 16px; font-weight: 700; }
+.pop-avisos__cab small { font-size: 12px; color: var(--texto-suave); font-weight: 450; }
+.pop-aviso { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radio-chico); text-decoration: none; color: var(--texto); font-size: 14.5px; font-weight: 520; line-height: 1.3; transition: background var(--dur-micro); }
+a.pop-aviso:active, a.pop-aviso:hover { background: var(--superficie-2); }
+.pop-aviso > span:nth-child(2) { flex: 1; min-width: 0; }
+.pop-aviso__ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: var(--info-suave); color: var(--texto-2); }
+.pop-aviso__ic .icon { width: 17px; height: 17px; }
+.pop-aviso--ok .pop-aviso__ic { background: var(--ok-suave); color: var(--ok-texto); }
+.pop-aviso--alerta .pop-aviso__ic { background: var(--alerta-suave); color: var(--alerta-texto); }
+.pop-aviso--error .pop-aviso__ic { background: var(--error-suave); color: var(--error-texto); }
+.pop-aviso__ir { color: var(--texto-muy-suave); width: 16px; height: 16px; }
+.pop-aviso__vacio { padding: 10px 12px 12px; font-size: 14px; color: var(--texto-suave); }
 .app__marca { font-size: 17px; }
 .migas, .app__caja, .usuario-chip__txt { display: none; }
-.usuario-chip { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.usuario-chip { display: flex; align-items: center; gap: 10px; }
+.app__derecha { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.app__estado { display: none; text-decoration: none; }
 .usuario-chip .avatar { width: 36px; height: 36px; font-size: 13px; }
 .usuario-chip__txt strong { display: block; font-size: 14px; line-height: 1.2; font-weight: 640; }
 .usuario-chip__txt small { font-size: 12px; color: var(--texto-suave); }
@@ -375,18 +401,7 @@ button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display
 
 /* ---------- Inicio: una pantalla con lo que más se usa; cada tarjeta lleva a su sección ---------- */
 .inicio { display: grid; gap: 14px; }
-.inicio__cab { display: grid; gap: 12px; }
 .inicio__cab h1 { font-size: 30px; }
-.inicio__cab p { font-size: 13px; color: var(--texto-suave); font-weight: 450; margin-top: 4px; }
-.inicio__cab p::first-letter { text-transform: uppercase; }
-.avisos { display: flex; flex-wrap: wrap; gap: 6px; }
-.aviso { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: var(--radio-capsula); background: var(--superficie); box-shadow: 0 0 0 1px var(--linea); color: var(--texto-2); font-size: 13px; font-weight: 560; text-decoration: none; white-space: nowrap; transition: background var(--dur-micro); }
-a.aviso:active { background: var(--superficie-2); }
-.aviso .icon { width: 15px; height: 15px; color: var(--texto-suave); }
-.aviso--ok { background: var(--ok-suave); box-shadow: none; color: var(--ok-texto); }
-.aviso--ok .icon { color: var(--ok-texto); }
-.aviso--alerta { background: var(--alerta-suave); box-shadow: none; color: var(--alerta-texto); }
-.aviso--alerta .icon { color: var(--alerta-texto); }
 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tile { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 14px 14px 12px; border-radius: var(--radio); background: var(--superficie); box-shadow: var(--sombra); color: var(--texto); text-decoration: none; overflow: hidden; transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease); }
 .tile::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--acento); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-menu) var(--ease); }

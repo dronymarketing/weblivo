@@ -77,6 +77,12 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Equipo · Personas**: indicadores (con acceso, trabajando ahora, sin acceso → filtra) y dos paneles que entran en la pantalla: la tabla
     de personas (avatar, rol, acceso, jornada «en vivo», editar) y «Qué puede hacer cada rol» con los permisos de Administración y de Caja.
     Horarios y Registro siguen como listas a pantalla completa.
+  - **Avisos en el menú de arriba** (antes eran una franja de fichas en el Inicio): a la derecha de la barra del panel van el estado de la caja
+    («Caja abierta · Marta», solo en escritorio) y una **campana con número** (`#btn-avisos`) que abre la lista de avisos pendientes:
+    productos para reponer, compras por recibir, diferencia de caja, códigos sin cargar, ventas sin enviar (cuentan en el número) y
+    ventas anuladas (solo informativo). Se cierra con Escape, tocando afuera o eligiendo un aviso. El número es rojo si hay algo sin stock.
+    En el menú lateral, **Stock lleva un globito redondo** con los productos para reponer (amarillo; rojo si alguno está en cero) y desaparece
+    cuando no hay ninguno. Todo sale de `PANEL.avisos()` y se actualiza solo con cada cambio y cada 30 segundos (`PANEL.pintarNav()`).
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura

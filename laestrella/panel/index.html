@@ -21,12 +21,12 @@
 <link rel="icon" type="image/png" href="../img/favicon.png?v=4">
 <link rel="apple-touch-icon" href="../img/favicon.png?v=4">
 <meta name="theme-color" content="#FFFFFF">
-<link rel="stylesheet" href="../css/tokens.css?v=26">
-<link rel="stylesheet" href="../css/tokens-proyecto.css?v=26">
-<link rel="stylesheet" href="../css/base.css?v=26">
-<link rel="stylesheet" href="../css/movil.css?v=26">
-<link rel="stylesheet" href="../css/escritorio.css?v=26" media="(min-width: 768px)">
-<link rel="stylesheet" href="../css/impresion.css?v=26" media="print">
+<link rel="stylesheet" href="../css/tokens.css?v=28">
+<link rel="stylesheet" href="../css/tokens-proyecto.css?v=28">
+<link rel="stylesheet" href="../css/base.css?v=28">
+<link rel="stylesheet" href="../css/movil.css?v=28">
+<link rel="stylesheet" href="../css/escritorio.css?v=28" media="(min-width: 768px)">
+<link rel="stylesheet" href="../css/impresion.css?v=28" media="print">
 </head>
 <body>
 <div class="app">
@@ -39,7 +39,7 @@
       <a class="menu__link" data-vista="inicio" href="#/inicio"><svg class="icon" aria-hidden="true"><use href="#i-house"/></svg>Inicio</a>
       <a class="menu__link" data-vista="ventas" href="#/ventas"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg>Ventas</a>
       <a class="menu__link" data-vista="productos" href="#/productos"><svg class="icon" aria-hidden="true"><use href="#i-tag"/></svg>Productos</a>
-      <a class="menu__link" data-vista="stock" href="#/stock"><svg class="icon" aria-hidden="true"><use href="#i-boxes"/></svg>Stock</a>
+      <a class="menu__link" data-vista="stock" href="#/stock"><svg class="icon" aria-hidden="true"><use href="#i-boxes"/></svg>Stock<span class="menu__n" id="n-stock" hidden></span></a>
       <a class="menu__link" data-vista="compras" href="#/compras"><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg>Compras</a>
       <a class="menu__link" data-vista="caja" href="#/caja"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg>Caja</a>
       <a class="menu__link" data-vista="reportes" href="#/reportes"><svg class="icon" aria-hidden="true"><use href="#i-chart-column"/></svg>Reportes</a>
@@ -59,19 +59,26 @@
       <span class="marca app__marca">La Estrella</span>
       <nav class="migas" aria-label="Ubicación"><span>Panel</span><span aria-hidden="true">/</span><strong id="miga">Inicio</strong></nav>
       <a class="btn btn--chico app__caja" href="../caja/"><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg>Ir a la caja</a>
-      <span class="usuario-chip"><span class="avatar" id="bar-avatar"></span><span class="usuario-chip__txt"><strong id="bar-nombre"></strong><small>Administración</small></span></span>
+      <div class="app__derecha">
+        <a class="estado app__estado" id="nav-caja" href="#/caja"></a>
+        <div class="campana-wrap">
+          <button type="button" class="btn btn--icono btn--chico campana" id="btn-avisos" aria-label="Avisos" aria-haspopup="true" aria-expanded="false" aria-controls="pop-avisos"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><span class="campana__n" id="campana-n" hidden></span></button>
+          <div class="pop-avisos" id="pop-avisos" role="dialog" aria-label="Avisos" hidden></div>
+        </div>
+        <span class="usuario-chip"><span class="avatar" id="bar-avatar"></span><span class="usuario-chip__txt"><strong id="bar-nombre"></strong><small>Administración</small></span></span>
+      </div>
     </header>
     <main class="cuerpo" id="vista"></main>
   </div>
 </div>
-<script src="../js/iconos.js?v=8"></script>
+<script src="../js/iconos.js?v=9"></script>
 <script src="../js/config.js?v=1"></script>
 <script src="../js/catalogo-fotos.js?v=2"></script>
 <script src="../js/datos.js?v=8"></script>
 <script src="../js/nube.js?v=3"></script>
 <script src="../js/ui.js?v=7"></script>
 <script src="../js/ticket.js?v=5"></script>
-<script src="../js/panel.js?v=19"></script>
+<script src="../js/panel.js?v=20"></script>
 <script src="../js/panel-gestion.js?v=15"></script>
 </body>
 </html>

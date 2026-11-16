@@ -162,6 +162,28 @@
   /* ============================ INICIO ============================
      Una sola pantalla con lo que más se usa. Cada tarjeta lleva a su sección. */
   function hora5(d) { return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  /* ---------- Avisos: salen en el menú de arriba (campana con número) y en el globito de Stock ---------- */
+  P.avisos = function () {
+    var t = LE.turnoAbierto(), bajo = LE.stockBajo(), cero = bajo.filter(function (p) { return p.stock <= 0; }).length, pend = LE.pendientes().length, sinc = LE.codigosSinCargar().length;
+    var cp = LE.compras().filter(function (c) { return !c.recibida; }), dif = LE.turnos().filter(function (q) { return q.cierre && q.contado !== q.esperado; })[0];
+    var h = LE.inicioDia(Date.now()), anul = LE.reporte(h - 6 * DIA, h + DIA).anuladas, L = [];
+    if (bajo.length) L.push({ nivel: cero ? 'error' : 'alerta', ic: 'boxes', txt: bajo.length + (bajo.length === 1 ? ' producto para reponer' : ' productos para reponer') + (cero ? ' · ' + cero + ' sin stock' : ''), href: '#/stock' });
+    if (cp.length) L.push({ nivel: 'alerta', ic: 'truck', txt: cp.length + (cp.length === 1 ? ' compra por recibir' : ' compras por recibir'), href: '#/compras' });
+    if (dif) L.push({ nivel: 'alerta', ic: 'triangle-alert', txt: 'Última caja con diferencia: ' + F.din(dif.contado - dif.esperado, true), href: '#/caja' });
+    if (sinc) L.push({ nivel: 'alerta', ic: 'scan-barcode', txt: sinc + (sinc === 1 ? ' código sin cargar' : ' códigos sin cargar'), href: '#/productos', acc: 'ver-sin-cargar' });
+    if (pend) L.push({ nivel: 'alerta', ic: 'wifi-off', txt: pend + (pend === 1 ? ' venta sin enviar' : ' ventas sin enviar') });
+    if (anul) L.push({ nivel: 'info', ic: 'ban', txt: anul + (anul === 1 ? ' venta anulada' : ' ventas anuladas') + ' en 7 días', href: '#/ventas' });
+    return { caja: t, items: L, cuenta: L.filter(function (x) { return x.nivel !== 'info'; }).length, hayRojo: L.some(function (x) { return x.nivel === 'error'; }), bajo: bajo.length, cero: cero };
+  };
+  P.pintarNav = function () {
+    var A = P.avisos(), t = A.caja, c = $('#nav-caja'), n = $('#campana-n'), ns = $('#n-stock'), pop = $('#pop-avisos'); if (!c || !n || !pop) return;
+    c.className = 'estado app__estado ' + (t ? 'estado--ok' : 'estado--alerta'); c.innerHTML = ico(t ? 'circle-check' : 'lock') + (t ? 'Caja abierta · ' + esc(t.abrio.split(' ')[0]) : 'Caja cerrada');
+    n.hidden = !A.cuenta; n.textContent = A.cuenta; n.className = 'campana__n' + (A.hayRojo ? ' campana__n--rojo' : ''); $('#btn-avisos').setAttribute('aria-label', A.cuenta ? 'Avisos: ' + A.cuenta + ' pendientes' : 'Avisos: todo en orden');
+    ns.hidden = !A.bajo; ns.textContent = A.bajo; ns.className = 'menu__n' + (A.cero ? ' menu__n--rojo' : ''); ns.setAttribute('aria-label', A.bajo + (A.bajo === 1 ? ' producto para reponer' : ' productos para reponer'));
+    pop.innerHTML = '<div class="pop-avisos__cab"><strong>Avisos</strong><small>actualizado a las ' + hora5(new Date()) + '</small></div>' +
+      '<a class="pop-aviso pop-aviso--' + (t ? 'ok' : 'info') + '" href="#/caja"><span class="pop-aviso__ic">' + ico(t ? 'circle-check' : 'lock') + '</span><span>' + (t ? 'Caja abierta por ' + esc(t.abrio) + ' desde las ' + F.hora(t.apertura) : 'La caja está cerrada') + '</span></a>' +
+      (A.items.length ? A.items.map(function (x) { return '<' + (x.href ? 'a href="' + x.href + '"' + (x.acc ? ' data-acc="' + x.acc + '"' : '') : 'div') + ' class="pop-aviso pop-aviso--' + x.nivel + '"><span class="pop-aviso__ic">' + ico(x.ic) + '</span><span>' + esc(x.txt) + '</span>' + (x.href ? ico('chevron-right', 'pop-aviso__ir') : '') + '</' + (x.href ? 'a' : 'div') + '>'; }).join('') : '<p class="pop-aviso__vacio">Todo en orden: no hay nada pendiente.</p>');
+  };
   function tile(href, ic, rotulo, valor, sub, ir, primero) {
     return '<a class="tile' + (primero ? ' tile--primero' : '') + '" href="' + href + '"><span class="tile__rotulo">' + ico(ic) + rotulo + '</span>' +
       '<strong class="tile__valor">' + valor + '</strong><span class="tile__sub">' + sub + '</span><span class="tile__ir">' + ir + ico('chevron-right') + '</span></a>';
@@ -184,18 +206,9 @@
       var ult = LE.estado.ventas.slice(-6).reverse();
       var prom = RH.tickets ? RH.promedio : R7.promedio;
 
-      var avisos = [];
-      avisos.push(t ? '<a class="aviso aviso--ok" href="#/caja">' + ico('circle-check') + 'Caja abierta · ' + esc(t.abrio.split(' ')[0]) + '</a>' : '<a class="aviso" href="#/caja">' + ico('lock') + 'Caja cerrada</a>');
-      if (pend) avisos.push('<span class="aviso aviso--alerta">' + ico('wifi-off') + pend + (pend === 1 ? ' venta sin enviar' : ' ventas sin enviar') + '</span>');
-      if (cp.length) avisos.push('<a class="aviso aviso--alerta" href="#/compras">' + ico('truck') + cp.length + (cp.length === 1 ? ' compra por recibir' : ' compras por recibir') + '</a>');
-      if (dif) avisos.push('<a class="aviso aviso--alerta" href="#/caja">' + ico('triangle-alert') + 'Diferencia ' + F.din(dif.contado - dif.esperado, true) + '</a>');
-      var sinc = LE.codigosSinCargar().length;
-      if (sinc) avisos.push('<a class="aviso aviso--alerta" href="#/productos" data-acc="ver-sin-cargar">' + ico('scan-barcode') + sinc + (sinc === 1 ? ' código sin cargar' : ' códigos sin cargar') + '</a>');
-      if (R7.anuladas) avisos.push('<a class="aviso" href="#/ventas">' + ico('ban') + R7.anuladas + (R7.anuladas === 1 ? ' anulada' : ' anuladas') + '</a>');
-
       $('#vista').innerHTML =
         '<div class="inicio" id="zona">' +
-        '<header class="inicio__cab"><div><h1>' + saludo + ', ' + esc(usuario.nombre.split(' ')[0]) + '</h1><p>' + ahora.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · actualizado a las ' + hora5(ahora) + '</p></div><div class="avisos">' + avisos.join('') + '</div></header>' +
+        '<header class="inicio__cab"><h1>' + saludo + ', ' + esc(usuario.nombre.split(' ')[0]) + '</h1></header>' +
         '<div class="tiles">' +
           tile('#/ventas', 'receipt', 'Ventas de hoy', F.din(RH.total), RH.tickets + (RH.tickets === 1 ? ' venta' : ' ventas') + ' · promedio ' + F.din(prom), 'Ver ventas', true) +
           tile('#/caja', 'wallet', 'Caja', t ? F.din(LE.efectivoEsperado(t)) : 'Cerrada', t ? 'efectivo esperado · turno ' + esc(t.turno) : 'nadie atiende ahora', 'Ver cajas', false) +
@@ -390,16 +403,26 @@
   };
 
   /* ============================ Navegación ============================ */
-  P.refrescar = function () { var r = P.rutas[P.actual]; if (r && r.pintar) r.pintar(); };
+  P.refrescar = function () { var r = P.rutas[P.actual]; if (r && r.pintar) r.pintar(); if (P.pintarNav) P.pintarNav(); };
   function ir() {
     var k = (location.hash.replace(/^#\/?/, '') || 'inicio').split('?')[0]; if (!P.rutas[k]) k = 'inicio';
     P.actual = k; P.rutas[k].entrar(); $('#miga').textContent = P.rutas[k].titulo;
     if (LE.nubeActiva && LE.nube) LE.nube.cargar().catch(function () { });   // datos frescos del servidor al cambiar de sección
     UI.$$('.menu__link[data-vista]').forEach(function (a) { if (a.dataset.vista === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-    cerrarMenu(); document.title = P.rutas[k].titulo + ' — La Estrella'; window.scrollTo(0, 0);
+    cerrarMenu(); cerrarAvisos(); P.pintarNav(); document.title = P.rutas[k].titulo + ' — La Estrella'; window.scrollTo(0, 0);
   }
   function cerrarMenu() { $('#menu').classList.remove('menu--abierto'); var b = $('#btn-menu'); if (b) b.setAttribute('aria-expanded', 'false'); }
   window.addEventListener('hashchange', ir);
+  /* Campana de avisos: se abre y se cierra sola al tocar afuera, con Escape o al elegir un aviso */
+  function cerrarAvisos() { var p = $('#pop-avisos'), b = $('#btn-avisos'); if (p) p.hidden = true; if (b) b.setAttribute('aria-expanded', 'false'); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('#btn-avisos'), p = $('#pop-avisos'); if (!p) return;
+    if (b) { var abrir = p.hidden; if (abrir) P.pintarNav(); p.hidden = !abrir; b.setAttribute('aria-expanded', abrir ? 'true' : 'false'); return; }
+    if (!e.target.closest('#pop-avisos') || e.target.closest('#pop-avisos a')) cerrarAvisos();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarAvisos(); });
+  document.addEventListener('le:datos', function () { if (P.pintarNav) P.pintarNav(); });
+  setInterval(function () { if (!document.hidden && P.pintarNav) P.pintarNav(); }, 30000);
 
   document.addEventListener('click', function (e) {
     var t = e.target;
