@@ -46,6 +46,7 @@ laestrella/
   js/nube.js            modo conectado: ingreso, copia local, cola de ventas sin internet
   lib/supabase.min.js   cliente oficial de Supabase (v2.119), guardado en el proyecto
   supabase/esquema.sql  la base real (tablas, reglas, funciones)  ·  LEEME.md: cómo conectar
+  supabase/kit-respaldos/  copias de seguridad automáticas (va en un repositorio privado aparte)
   supabase/semilla-ejemplo.sql  87 productos de ejemplo (opcional, solo para probar)
 ```
 
@@ -70,8 +71,11 @@ laestrella/
 - **Pruebas hechas** contra un Postgres 16 local (con un reemplazo mínimo de `auth` y de la API): 63 del esquema,
   46 del módulo de conexión y 25 recorriendo la pantalla real en un navegador (alta de cuentas, aprobación, venta,
   corte y vuelta de internet). **Sin probar contra un Supabase real**: puede haber diferencias menores.
-- **Pendiente:** copias de seguridad propias (como en Parking), importar productos desde CSV, PIN rápido,
-  múltiples cajas (hoy el número de ticket asume una sola).
+- **Copias de seguridad:** kit en `supabase/kit-respaldos/` (mismo mecanismo que Parking Despegar: repositorio privado,
+  copia a las 12:00 y 21:30, resumen legible, restauración con confirmación, aviso que evita la pausa del plan gratis).
+  Probado contra Postgres local con los scripts reales (29 pruebas). **Falta instalarlo**: crear el repositorio privado
+  y pegar el secreto `SUPABASE_DB_URL` (lo hace Santi; la contraseña no pasa por el chat).
+- **Pendiente:** importar productos desde CSV, PIN rápido, múltiples cajas (hoy el número de ticket asume una sola).
 
 ## Cómo mapea cada función (modo de ejemplo → servidor)
 

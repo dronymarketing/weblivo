@@ -60,6 +60,14 @@ window.LE_CONFIG = {
 2. Cada persona del equipo crea su cuenta de la misma forma. Queda como **«Sin acceso»**.
 3. En el panel → **Equipo**, la administración la edita, le elige el rol (**Caja** o **Administración**) y la activa.
 
+## 6. Copias de seguridad (hacelo apenas esté conectado)
+
+El plan de Supabase puede tener sus propias copias, pero conviene tener las **propias**, en un lugar aparte.
+El kit está en `supabase/kit-respaldos/`: copia la base **dos veces por día** (12:00 y 21:30) a un repositorio **privado**
+de GitHub, deja un resumen legible de cada copia y permite **volver atrás** con un botón (pide escribir RESTAURAR).
+También mantiene viva la base del plan gratis. Las instrucciones están en `supabase/kit-respaldos/README.md`
+(crear el repositorio privado, copiar el kit y pegar la dirección de la base como secreto de GitHub).
+
 ## Cómo se comporta
 
 - **La caja sigue vendiendo sin internet.** Las ventas y los retiros de efectivo se guardan en la terminal y se envían solos cuando vuelve la conexión.
@@ -71,7 +79,6 @@ window.LE_CONFIG = {
 
 ## Qué falta (a propósito)
 
-- **Copias de seguridad propias:** como en Parking Despegar, se puede armar un repositorio privado con una tarea que copie la base todos los días.
 - **Cargar los productos reales:** hoy se cargan de a uno desde el panel. Una importación desde Excel/CSV sería lo siguiente.
 - **PIN rápido** para cambiar de cajera sin escribir email y contraseña.
 - **Factura electrónica (e-Ticket):** sigue pendiente de confirmar con el contador.

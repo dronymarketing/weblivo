@@ -710,3 +710,9 @@ grant execute on function
   public.guardar_proveedor(jsonb), public.guardar_compra(jsonb), public.recibir_compra(uuid), public.pagar_compra(uuid),
   public.guardar_usuario(jsonb), public.marcar_asistencia(), public.guardar_negocio(jsonb)
   to authenticated;
+
+-- Latido: una consulta mínima y pública (solo devuelve la hora) que usa la tarea de respaldos
+-- para que Supabase vea actividad y no pause el proyecto. No lee ningún dato del negocio.
+create or replace function public.latido() returns timestamptz
+language sql stable as $$ select now() $$;
+grant execute on function public.latido() to anon, authenticated;
