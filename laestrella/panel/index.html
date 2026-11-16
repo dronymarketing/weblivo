@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Panel — La Estrella</title>
+<meta name="description" content="Panel de la dueña de La Estrella: ventas, productos, stock, compras, caja, reportes y equipo.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="La Estrella">
+<meta property="og:title" content="Panel — La Estrella">
+<meta property="og:description" content="Panel de la dueña de La Estrella: ventas, productos, stock, compras, caja, reportes y equipo.">
+<meta property="og:url" content="https://livo.com.uy/laestrella/panel/">
+<meta property="og:image" content="https://livo.com.uy/laestrella/img/og-blanco.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Logo de La Estrella sobre fondo blanco">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://livo.com.uy/laestrella/img/og-blanco.jpg?v=1">
+<link rel="icon" type="image/png" href="../img/favicon.png?v=1">
+<link rel="apple-touch-icon" href="../img/favicon.png?v=1">
+<meta name="theme-color" content="#14213D">
+<link rel="stylesheet" href="../css/tokens.css?v=1">
+<link rel="stylesheet" href="../css/tokens-proyecto.css?v=1">
+<link rel="stylesheet" href="../css/base.css?v=1">
+<link rel="stylesheet" href="../css/movil.css?v=1">
+<link rel="stylesheet" href="../css/escritorio.css?v=1" media="(min-width: 768px)">
+<link rel="stylesheet" href="../css/impresion.css?v=1" media="print">
+</head>
+<body>
+<div class="app">
+  <aside class="menu" id="menu" aria-label="Menú del panel">
+    <div class="menu__cab">
+      <a class="marca" href="#/inicio"><span class="marca__estrella"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></span>La Estrella</a>
+      <button type="button" class="btn btn--icono btn--chico menu__cerrar" id="menu-cerrar" aria-label="Cerrar menú" style="color:#fff;background:transparent;border-color:rgba(255,255,255,.28)"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <nav>
+      <a class="menu__link" data-vista="inicio" href="#/inicio"><svg class="icon icon--g" aria-hidden="true"><use href="#i-house"/></svg>Inicio</a>
+      <a class="menu__link" data-vista="ventas" href="#/ventas"><svg class="icon icon--g" aria-hidden="true"><use href="#i-receipt"/></svg>Ventas</a>
+      <a class="menu__link" data-vista="productos" href="#/productos"><svg class="icon icon--g" aria-hidden="true"><use href="#i-tag"/></svg>Productos</a>
+      <a class="menu__link" data-vista="stock" href="#/stock"><svg class="icon icon--g" aria-hidden="true"><use href="#i-boxes"/></svg>Stock</a>
+      <a class="menu__link" data-vista="compras" href="#/compras"><svg class="icon icon--g" aria-hidden="true"><use href="#i-truck"/></svg>Compras</a>
+      <a class="menu__link" data-vista="caja" href="#/caja"><svg class="icon icon--g" aria-hidden="true"><use href="#i-wallet"/></svg>Caja</a>
+      <a class="menu__link" data-vista="reportes" href="#/reportes"><svg class="icon icon--g" aria-hidden="true"><use href="#i-chart-column"/></svg>Reportes</a>
+      <a class="menu__link" data-vista="equipo" href="#/equipo"><svg class="icon icon--g" aria-hidden="true"><use href="#i-users"/></svg>Equipo</a>
+      <a class="menu__link" data-vista="ajustes" href="#/ajustes"><svg class="icon icon--g" aria-hidden="true"><use href="#i-settings"/></svg>Ajustes</a>
+      <div class="menu__sep"></div>
+      <a class="menu__link" href="../caja/"><svg class="icon icon--g" aria-hidden="true"><use href="#i-store"/></svg>Ir a la caja</a>
+    </nav>
+    <div class="menu__pie">
+      <strong id="pie-nombre"></strong><span id="pie-rol"></span>
+      <p style="margin-top:12px"><button type="button" class="btn btn--chico" id="salir" style="color:#fff;border-color:rgba(255,255,255,.28);background:transparent"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Salir</button></p>
+    </div>
+  </aside>
+  <div class="app__contenido">
+    <div class="borrador">BORRADOR · Datos de muestra, solo en este navegador</div>
+    <header class="app__barra">
+      <button type="button" class="btn btn--icono btn-menu" id="btn-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><svg class="icon icon--g" aria-hidden="true"><use href="#i-menu"/></svg></button>
+      <span class="marca" style="font-size:18px;color:#fff">La Estrella</span>
+    </header>
+    <main class="cuerpo" id="vista"></main>
+  </div>
+</div>
+<script src="../js/iconos.js?v=1"></script>
+<script src="../js/datos.js?v=1"></script>
+<script src="../js/ui.js?v=1"></script>
+<script src="../js/ticket.js?v=1"></script>
+<script src="../js/panel.js?v=1"></script>
+<script src="../js/panel-gestion.js?v=1"></script>
+</body>
+</html>

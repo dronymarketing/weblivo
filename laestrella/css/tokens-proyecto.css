@@ -1,0 +1,45 @@
+/* ============================================================
+   LA ESTRELLA — paleta y medidas de este proyecto
+   Pisa a tokens.css. Una dominante (azul noche), un fondo (crema)
+   y un acento (amarillo estrella). El amarillo nunca va en texto:
+   solo en rellenos, íconos y barras. Texto sobre amarillo = azul noche.
+   Contrastes medidos (WCAG): tinta/fondo 14.4:1 · tinta/amarillo 8.7:1 · texto suave/fondo 6.1:1 ·
+   ok, alerta y error sobre su fondo suave: todos 4.5:1 o más.
+   ============================================================ */
+:root {
+  --fondo:        #F6F3EC;
+  --superficie:   #FFFFFF;
+  --tinta:        #14213D;
+  --texto:        #14213D;
+  --texto-suave:  rgba(20, 33, 61, .72);
+  --texto-muy-suave: rgba(20, 33, 61, .55);
+  --acento:       #F2B51B;
+  --acento-suave: #FBE9B3;
+  --velo:         rgba(20, 33, 61, .05);
+
+  --ok:           #176A3E;
+  --ok-suave:     #DCEFE4;
+  --alerta:       #8F4705;
+  --alerta-suave: #FBE7D2;
+  --error:        #A32A1D;
+  --error-suave:  #F8DAD5;
+
+  --radio:        14px;
+  --radio-chico:  10px;
+  --radio-capsula: 999px;
+
+  --tap:          48px;      /* alto táctil mínimo en la caja */
+  --alto-boton:   52px;
+  --barra-alto:   56px;
+  --menu-ancho:   232px;
+
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:   ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* Colores de gráficos: paleta categórica validada (slots 1 a 4, en orden) */
+  --serie-1: #2a78d6;
+  --serie-2: #eb6834;
+  --serie-3: #1baf7a;
+  --serie-4: #eda100;
+  --grilla:  rgba(20, 33, 61, .10);
+}
