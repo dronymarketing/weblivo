@@ -244,7 +244,7 @@
     titulo: 'Ventas',
     entrar: function () {
       var S = P.est('ventas', { rango: 'hoy', cajero: '', estado: '', q: '' });
-      P.cab('Ventas', 'Todos los tickets, con el detalle de cada cobro.', '<button type="button" class="btn btn--linea" data-acc="csv-ventas">' + ico('download') + 'Descargar CSV</button>',
+      P.cab('Ventas', null, '<button type="button" class="btn btn--linea" data-acc="csv-ventas">' + ico('download') + 'Descargar CSV</button>',
         P.chipsRango(S.rango) + '<select class="entrada" data-filtro="cajero" aria-label="Cajera">' + UI.opciones(LE.usuarios().filter(function (u) { return u.rol === 'caja' || true; }).map(function (u) { return { id: u.nombre, nombre: u.nombre }; }), S.cajero, 'Todas las personas') + '</select>' +
         '<select class="entrada" data-filtro="estado" aria-label="Estado"><option value="">Todos los estados</option><option value="ok"' + (S.estado === 'ok' ? ' selected' : '') + '>Cobradas</option><option value="anulada"' + (S.estado === 'anulada' ? ' selected' : '') + '>Anuladas</option></select>' +
         '<input class="entrada" data-filtro="q" inputmode="numeric" placeholder="N.º de ticket" value="' + esc(S.q) + '" aria-label="Buscar por número de ticket">');
@@ -304,7 +304,7 @@
     titulo: 'Productos',
     entrar: function () {
       var S = P.est('productos', { q: '', cat: '', est: '', tab: 'productos' }), pend = LE.codigosSinCargar().length;
-      P.cab('Productos', 'Precios, costos y códigos de barras. Los cambios de precio quedan en el registro.', '<button type="button" class="btn btn--acento" data-acc="producto-nuevo">' + ico('plus') + 'Nuevo producto</button>',
+      P.cab('Productos', null, '<button type="button" class="btn btn--acento" data-acc="producto-nuevo">' + ico('plus') + 'Nuevo producto</button>',
         P.tabs([['productos', 'Productos'], ['sin', 'Sin cargar' + (pend ? ' · ' + pend : '')]], S.tab) + (S.tab === 'sin' ? '' :
         '<input class="entrada" data-filtro="q" placeholder="Buscar por nombre o código" value="' + esc(S.q) + '" aria-label="Buscar producto">' +
         '<select class="entrada" data-filtro="cat" aria-label="Categoría">' + UI.opciones(LE.categorias(), S.cat, 'Todas las categorías') + '</select>' +
@@ -315,7 +315,7 @@
     pintarSinCargar: function () {
       var lista = LE.codigosSinCargar().sort(function (a, b) { return (b.veces - a.veces) || (b.ultima - a.ultima); });
       if (!lista.length) return P.zona('<div class="tarjeta"><p class="vacio">No hay códigos pendientes.<br>Cuando la caja escanee un producto que no está cargado, aparece acá con las veces que se pidió.</p></div>');
-      P.zona('<p class="resumen"><strong>' + lista.length + (lista.length === 1 ? ' código' : ' códigos') + '</strong> escaneados en la caja que todavía no están cargados. Los más pedidos van primero.</p>' + P.tabla([
+      P.zona('<p class="resumen"><strong>' + lista.length + (lista.length === 1 ? ' código' : ' códigos') + '</strong> por cargar</p>' + P.tabla([
         { t: 'Código', c: 't-titulo', f: function (c) { return '<span class="mono">' + esc(c.codigo) + '</span><small>primera vez ' + F.fechaCorta(c.primera) + '</small>'; } },
         { t: 'Escaneos', f: function (c) { return '<strong>' + c.veces + '</strong> ' + (c.veces === 1 ? 'vez' : 'veces'); } },
         { t: 'Último', f: function (c) { return F.fechaCorta(c.ultima) + ' · ' + F.hora(c.ultima) + '<small>' + esc(c.por || '') + '</small>'; } },
@@ -449,7 +449,7 @@
 
   document.addEventListener('le:datos', function () { if (!UI.hayModal() && P.actual) P.refrescar(); });
   $('#bar-avatar').textContent = UI.iniciales(usuario.nombre); $('#bar-nombre').textContent = usuario.nombre; $('#pie-nombre').textContent = usuario.nombre; $('#pie-rol').textContent = 'Administración · control total';
-  P.acciones = P.acciones || {}; P.iniciar = ir;
+  P.acciones = P.acciones || {}; P.iniciar = ir; UI.iniciarReloj();
   P.acciones.registro = function () { P.est('equipo', { tab: 'personas', rango: '7', q: '' }).tab = 'registro'; };
   window.addEventListener('DOMContentLoaded', function () { if (!P.diferido) ir(); });
   if (document.readyState !== 'loading' && !P.diferido) setTimeout(function () { if (!P.actual) ir(); }, 0);

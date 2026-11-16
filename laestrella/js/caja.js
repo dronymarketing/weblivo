@@ -61,6 +61,7 @@
 
   /* ---------- Montaje ---------- */
   var montadaAbierta = false;
+  UI.iniciarReloj();
   function montar() {
     montadaAbierta = !!LE.turnoAbierto();
     pintarBarra();
@@ -84,7 +85,7 @@
   function montarCerrada() {
     pos.className = 'pos pos--cerrada';
     var ult = LE.turnos().filter(function (t) { return t.cierre; })[0];
-    pos.innerHTML = '<div class="cerrada"><span class="cerrada__ic">' + ico('lock', 'icon--g') + '</span><h1>La caja está cerrada</h1><p>Contá el efectivo del cajón y abrí el turno para empezar a cobrar.</p>' +
+    pos.innerHTML = '<div class="cerrada"><span class="cerrada__ic">' + ico('lock', 'icon--g') + '</span><h1>La caja está cerrada</h1>' +
       '<label class="campo"><span>Efectivo con el que se abre</span><input id="base" class="entrada" inputmode="decimal" autocomplete="off" value="2500"></label>' +
       '<button type="button" class="btn btn--acento btn--grande btn--bloque" id="btn-abrir">Abrir caja</button>' +
       (ult ? '<p style="margin-top:18px;font-size:14px">Último cierre: ' + esc(F.fechaHora(ult.cierre)) + ' · ' + esc(ult.cerro) + '</p>' : '') + '</div>';

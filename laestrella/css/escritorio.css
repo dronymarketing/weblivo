@@ -207,3 +207,9 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .demo--pop summary:hover { color: var(--hover); text-decoration-color: var(--hover); }
 .grafico .barra-dato:hover, .grafico .barra-dato:focus { fill: var(--serie-2); opacity: 1; }
 .interruptor:hover > span { color: var(--hover); }
+
+.f-larga { display: inline; }
+.f-corta { display: none; }
+.reloj-nav { margin-right: 6px; }
+.reloj-nav time { font-size: 16px; }
+.barra .reloj-nav small { display: block; }

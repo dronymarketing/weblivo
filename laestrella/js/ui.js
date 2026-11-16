@@ -129,6 +129,15 @@
     return probar(0);
   };
 
+  /* ---------- Fecha y hora en la barra (hora de Uruguay) ---------- */
+  UI.iniciarReloj = function () {
+    var larga = document.getElementById('nav-fecha-l'), corta = document.getElementById('nav-fecha-c'), hora = document.getElementById('nav-hora'); if (!hora) return;
+    var tz = 'America/Montevideo', mayus = function (t) { return t.charAt(0).toUpperCase() + t.slice(1); };
+    var fl = new Intl.DateTimeFormat('es-UY', { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz }), fc = new Intl.DateTimeFormat('es-UY', { weekday: 'short', day: 'numeric', month: 'short', timeZone: tz }), fh = new Intl.DateTimeFormat('es-UY', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz });
+    function pintar() { var d = new Date(); if (larga) larga.textContent = mayus(fl.format(d)); if (corta && fc) corta.textContent = mayus(fc.format(d).replace(/\./g, '')); hora.textContent = fh.format(d); hora.setAttribute('datetime', d.toISOString()); }
+    pintar(); setInterval(pintar, 15000); document.addEventListener('visibilitychange', pintar);
+  };
+
   /* ---------- Sonido del lector ---------- */
   var audio;
   UI.beep = function (ok) {

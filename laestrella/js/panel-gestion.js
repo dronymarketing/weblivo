@@ -31,7 +31,7 @@
     titulo: 'Stock',
     entrar: function () {
       var S = P.est('stock', { tab: 'existencias', f: '', q: '' });
-      P.cab('Stock', 'Cuánto hay de cada cosa. Cada venta, compra y ajuste deja su movimiento.', null,
+      P.cab('Stock', null, null,
         tabs([['existencias', 'Existencias'], ['movimientos', 'Movimientos']], S.tab) +
         (S.tab === 'existencias' ? '<button type="button" class="chip" data-filtro="f" data-valor="" aria-pressed="' + (S.f === '') + '">Todos</button><button type="button" class="chip" data-filtro="f" data-valor="bajo" aria-pressed="' + (S.f === 'bajo') + '">Por reponer</button><button type="button" class="chip" data-filtro="f" data-valor="cero" aria-pressed="' + (S.f === 'cero') + '">Sin stock</button><input class="entrada" data-filtro="q" placeholder="Buscar producto" value="' + esc(S.q) + '" aria-label="Buscar producto">' : ''));
       P.rutas.stock.pintar();
@@ -106,7 +106,7 @@
     titulo: 'Compras',
     entrar: function () {
       var S = P.est('compras', { tab: 'compras', f: '' });
-      P.cab('Compras y proveedores', 'Lo que se le pide a cada proveedor y lo que ya llegó. Al recibir, el stock sube solo.',
+      P.cab('Compras y proveedores', null,
         S.tab === 'compras' ? '<button type="button" class="btn btn--acento" data-acc="compra-nueva">' + ico('plus') + 'Nueva compra</button>' : '<button type="button" class="btn btn--acento" data-acc="prov-nuevo">' + ico('plus') + 'Nuevo proveedor</button>',
         tabs([['compras', 'Compras'], ['proveedores', 'Proveedores']], S.tab) + (S.tab === 'compras' ? [['', 'Todas'], ['recibir', 'Por recibir'], ['pagar', 'Por pagar']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : ''));
       P.rutas.compras.pintar();
@@ -178,7 +178,7 @@
   /* ============================ CAJA ============================ */
   P.rutas.caja = {
     titulo: 'Caja',
-    entrar: function () { P.cab('Caja', 'Cada turno con lo que tendría que haber, lo que se contó y la diferencia.', '<a class="btn btn--acento" href="../caja/">' + ico('store') + 'Ir a la caja</a>'); P.rutas.caja.pintar(); },
+    entrar: function () { P.cab('Caja', null, '<a class="btn btn--acento" href="../caja/">' + ico('store') + 'Ir a la caja</a>'); P.rutas.caja.pintar(); },
     pintar: function () {
       var ts = LE.turnos(), ab = LE.turnoAbierto(), cerr = ts.filter(function (t) { return t.cierre; }).slice(0, 40);
       var d30 = ts.filter(function (t) { return t.cierre && t.cierre > Date.now() - 30 * DIA; }), dif = d30.reduce(function (a, t) { return a + (t.contado - t.esperado); }, 0), conDif = d30.filter(function (t) { return t.contado !== t.esperado; }).length;
@@ -213,7 +213,7 @@
     titulo: 'Reportes',
     entrar: function () {
       var S = P.est('reportes', { rango: '7', tab: 'productos' });
-      P.cab('Reportes', 'Cuánto se vende, qué se vende y cuánto queda.', '<button type="button" class="btn btn--linea" data-acc="csv-productos">' + ico('download') + 'Descargar productos (CSV)</button>', P.chipsRango(S.rango));
+      P.cab('Reportes', null, '<button type="button" class="btn btn--linea" data-acc="csv-productos">' + ico('download') + 'Descargar productos (CSV)</button>', P.chipsRango(S.rango));
       P.rutas.reportes.pintar();
     },
     pintar: function () {
@@ -259,7 +259,7 @@
     titulo: 'Equipo',
     entrar: function () {
       var S = P.est('equipo', { tab: 'personas', rango: '7', q: '', f: '' }), a = LE.asistenciaAbierta(usuario.id);
-      P.cab('Equipo', 'Quién tiene acceso, qué puede hacer, cuándo trabajó y qué cambió cada uno.',
+      P.cab('Equipo', null,
         '<button type="button" class="btn btn--linea" data-acc="mi-jornada">' + ico('clock') + (a ? 'Terminar mi jornada' : 'Empezar mi jornada') + '</button>' + (S.tab === 'personas' ? '<button type="button" class="btn btn--acento" data-acc="persona-nueva">' + ico('plus') + 'Nueva persona</button>' : ''),
         tabs([['personas', 'Personas'], ['horarios', 'Horarios'], ['registro', 'Registro de cambios']], S.tab) + (S.tab === 'personas' ? [['', 'Todas'], ['con', 'Con acceso'], ['sin', 'Sin acceso']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : '') + (S.tab === 'horarios' ? P.chipsRango(S.rango) : '') + (S.tab === 'registro' ? '<input class="entrada" data-filtro="q" placeholder="Buscar en el registro" value="' + esc(S.q) + '" aria-label="Buscar en el registro">' : ''));
       P.rutas.equipo.pintar();
@@ -277,7 +277,7 @@
       }
       if (S.tab === 'registro') {
         var q = S.q.trim().toLowerCase(), lg = LE.auditoria(400).filter(function (a) { return !q || (a.accion + ' ' + a.usuario).toLowerCase().indexOf(q) >= 0; }).slice(0, 150);
-        return P.zona('<p class="resumen">Cada acción importante queda anotada con nombre y hora. Nadie puede borrarla ni cambiarla.</p>' + P.tabla([
+        return P.zona(P.tabla([
           { t: 'Cuándo', c: 't-titulo', f: function (a) { return F.fecha(a.ts) + ' · ' + F.hora(a.ts) + '<small>' + esc(a.usuario) + '</small>'; } }, { t: 'Qué hizo', f: function (a) { return esc(a.accion); } }], lg));
       }
       var todos = LE.usuarios(), us = todos.filter(function (u) { return S.f === 'con' ? u.activo : S.f === 'sin' ? !u.activo : true; });
@@ -333,7 +333,7 @@
     titulo: 'Ajustes',
     entrar: function () {
       var S = P.est('ajustes', { tab: 'negocio' });
-      P.cab('Ajustes', 'Los datos del negocio, lo que sale en el ticket y cómo se cobra.', null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza'], ['sistema', 'Sistema']], S.tab));
+      P.cab('Ajustes', null, null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza'], ['sistema', 'Sistema']], S.tab));
       P.rutas.ajustes.pintar();
     },
     pintar: function () {

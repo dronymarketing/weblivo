@@ -324,6 +324,12 @@
 .menu__pie strong { display: block; color: var(--texto); font-size: 15px; font-weight: 640; }
 .app__barra { position: sticky; top: 0; z-index: 30; height: var(--barra-alto); background: var(--superficie); color: var(--texto); display: flex; align-items: center; gap: 8px; padding: 0 12px 0 8px; box-shadow: 0 1px 0 var(--linea); }
 .app__barra .btn { border-color: transparent; background: transparent; }
+/* Fecha y hora en la barra */
+.reloj-nav { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; text-align: right; margin-right: 2px; white-space: nowrap; }
+.reloj-nav small { font-size: 11.5px; font-weight: 520; color: var(--apagado); }
+.reloj-nav time { font-size: 15px; font-weight: 720; letter-spacing: -.01em; color: var(--texto); font-variant-numeric: tabular-nums; }
+.f-larga { display: none; }
+.barra .reloj-nav small { display: none; }
 /* Campana de avisos y globitos de alerta */
 .campana-wrap { position: relative; }
 .campana { position: relative; width: 44px; height: 44px; color: var(--texto-2); }
