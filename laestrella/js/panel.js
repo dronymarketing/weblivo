@@ -27,10 +27,16 @@
 
   /* ---------- Estructura de cada vista ---------- */
   P.cab = function (titulo, sub, acciones, filtros) {
+    $('#vista').classList.remove('cuerpo--lista');
     $('#vista').innerHTML = '<div class="pagina__cab"><div><h1>' + esc(titulo) + '</h1>' + (sub ? '<p>' + sub + '</p>' : '') + '</div>' + (acciones ? '<div class="pagina__acciones">' + acciones + '</div>' : '') + '</div>' +
       (filtros ? '<div class="filtros" id="filtros">' + filtros + '</div>' : '') + '<div id="zona"></div>';
   };
-  P.zona = function (html) { $('#zona').innerHTML = html; if (P.alPintar) { var f = P.alPintar; P.alPintar = null; f(); } };
+  P.zona = function (html) {
+    var z = $('#zona'); z.innerHTML = html;
+    /* Pantallas de lista: indicadores + una tabla. En escritorio la tabla ocupa el resto de la pantalla y se desplaza por dentro. */
+    var k = [].slice.call(z.children), ult = k[k.length - 1];
+    $('#vista').classList.toggle('cuerpo--lista', !!(ult && ult.classList.contains('tarjeta') && ult.querySelector('.tabla') && k.slice(0, -1).every(function (c) { return c.classList.contains('kpis') || c.classList.contains('resumen'); })));
+    if (P.alPintar) { var f = P.alPintar; P.alPintar = null; f(); } };
 
   /* Tabla que en el celular se vuelve una lista de tarjetas.
      cols: [{t: título, c: clase de celda, f: function(fila)→html, l: etiqueta móvil}] */
@@ -233,7 +239,7 @@
     },
     pintar: function () {
       var vs = P.rutas.ventas.lista(), tot = vs.reduce(function (a, v) { return a + (v.estado === 'ok' ? v.total : 0); }, 0), mostrar = vs.slice(0, 100);
-      P.zona('<p class="suave" style="margin-bottom:12px">' + vs.length + (vs.length === 1 ? ' venta' : ' ventas') + ' · cobrado ' + F.din(tot) + (vs.length > 100 ? ' · se muestran las últimas 100' : '') + '</p>' +
+      P.zona('<p class="resumen"><strong>' + vs.length + (vs.length === 1 ? ' venta' : ' ventas') + '</strong> · cobrado <strong>' + F.din(tot) + '</strong>' + (vs.length > 100 ? ' · se muestran las últimas 100' : '') + '</p>' +
         P.tabla([
           { t: 'Ticket', c: 't-titulo', f: function (v) { return 'N.º ' + F.num(v.num) + '<small>' + F.fecha(v.ts) + ' · ' + F.hora(v.ts) + '</small>'; } },
           { t: 'Total', c: 't-derecha', f: function (v) { return v.estado === 'ok' ? F.din(v.total) : '<s class="suave">' + F.din(v.total) + '</s>'; } },
@@ -290,7 +296,7 @@
         if (q) { var n = p.nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); if (n.indexOf(q) < 0 && p.codigo.indexOf(q) < 0 && p.plu.indexOf(q) < 0) return false; }
         return true;
       });
-      P.zona('<p class="suave" style="margin-bottom:12px">' + ps.length + ' productos</p>' + P.tabla([
+      P.zona('<p class="resumen"><strong>' + ps.length + ' productos</strong></p>' + P.tabla([
         { t: 'Producto', c: 't-titulo', f: function (p) { return P.celdaProd(p, esc(p.cat) + ' · ' + (p.unidad === 'kg' ? 'por kg · PLU ' + p.plu : 'código ' + esc(p.codigo))); } },
         { t: 'Precio', c: 't-derecha', f: function (p) { return F.din(p.precio) + (p.unidad === 'kg' ? '<small>por kg</small>' : ''); } },
         { t: 'Costo', f: function (p) { return F.din(p.costo); } },

@@ -13,6 +13,17 @@
   }
   P.acciones.tab = function (id) { P.est(P.actual).tab = id; P.rutas[P.actual].entrar(); };
   function cant(p, n) { return p.unidad === 'kg' ? F.kg(n) : F.cant(n) + ' u'; }
+  /* Barra de nivel: tres zonas sobre el recorrido (rojo = no hay, amarillo = alerta, hasta el mínimo; verde = por encima del mínimo).
+     El recorrido llega al doble del mínimo; la parte llena muestra cuánto hay y toma el color de su zona. */
+  function barraNivel(p) {
+    var min = Math.max(p.minimo || 0, 0), q = Math.max(p.stock, 0), tope = Math.max(min * 2, 1), cap = 7;
+    var x = function (v) { return cap + (100 - cap) * v / tope; };
+    var zona = q <= 0 ? 'cero' : q <= min ? 'alerta' : 'ok', lleno = q <= 0 ? cap : x(Math.min(q, tope));
+    var txt = zona === 'cero' ? 'No hay' : zona === 'alerta' ? 'Alerta: hay ' + cant(p, p.stock) + ', el mínimo es ' + cant(p, p.minimo) : 'Bien: hay ' + cant(p, p.stock) + ', el mínimo es ' + cant(p, p.minimo);
+    return '<span class="nivel nivel--' + zona + '" role="img" aria-label="' + esc(txt) + '" title="Mínimo: ' + esc(cant(p, p.minimo)) + '">' +
+      '<i class="nivel__z nivel__z--r" style="left:0;width:' + cap + '%"></i><i class="nivel__z nivel__z--a" style="left:' + cap + '%;width:' + (x(min) - cap) + '%"></i><i class="nivel__z nivel__z--v" style="left:' + x(min) + '%;right:0"></i>' +
+      '<b class="nivel__lleno" style="width:' + lleno + '%"></b></span>';
+  }
 
   /* ============================ STOCK ============================ */
   P.rutas.stock = {
@@ -40,11 +51,10 @@
         return !q || p.nombre.toLowerCase().indexOf(q) >= 0;
       }).sort(function (a, b) { return (a.stock / (a.minimo || 1)) - (b.stock / (b.minimo || 1)); });
       var all = LE.productos(true), valor = all.reduce(function (a, p) { return a + Math.round(Math.max(0, p.stock) * p.costo); }, 0), bajo = all.filter(function (p) { return p.stock <= p.minimo; }).length, cero = all.filter(function (p) { return p.stock <= 0; }).length;
-      P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Valor del stock (a costo)</div><div class="kpi__valor">' + F.din(valor) + '</div></div><div class="kpi"><div class="kpi__rotulo">Por reponer</div><div class="kpi__valor">' + bajo + '</div></div><div class="kpi"><div class="kpi__rotulo">Sin stock</div><div class="kpi__valor">' + cero + '</div></div><div class="kpi"><div class="kpi__rotulo">Productos activos</div><div class="kpi__valor">' + all.length + '</div></div></div>' +
+      P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Valor del stock (a costo)</div><div class="kpi__valor">' + F.din(valor) + '</div></div><button type="button" class="kpi kpi--link" data-filtro="f" data-valor="bajo"><span class="kpi__rotulo">Por reponer</span><span class="kpi__valor">' + bajo + '</span><span class="kpi__ir">Ver cuáles ›</span></button><button type="button" class="kpi kpi--link" data-filtro="f" data-valor="cero"><span class="kpi__rotulo">Sin stock</span><span class="kpi__valor">' + cero + '</span><span class="kpi__ir">Ver cuáles ›</span></button><div class="kpi"><div class="kpi__rotulo">Productos activos</div><div class="kpi__valor">' + all.length + '</div></div></div>' +
         P.tabla([
           { t: 'Producto', c: 't-titulo', f: function (p) { return P.celdaProd(p, esc(p.cat)); } },
-          { t: 'Hay', c: 't-derecha', f: function (p) { return cant(p, p.stock); } },
-          { t: 'Mínimo', f: function (p) { return cant(p, p.minimo); } },
+          { t: 'Disponible', f: function (p) { return '<span class="disp"><strong>' + cant(p, p.stock) + '</strong>' + barraNivel(p) + '</span>'; } },
           { t: 'Estado', f: function (p) { return p.stock <= 0 ? '<span class="badge badge--error">Sin stock</span>' : p.stock <= p.minimo ? '<span class="badge badge--alerta">Reponer</span>' : '<span class="badge badge--ok">Bien</span>'; } },
           { t: 'Valor', f: function (p) { return F.din(Math.round(Math.max(0, p.stock) * p.costo)); } },
           { t: '', c: 't-acciones', f: function (p) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="ajustar" data-id="' + p.id + '">' + ico('square-pen') + 'Ajustar</button>'; } }
@@ -236,13 +246,13 @@
       }
       if (S.tab === 'registro') {
         var q = S.q.trim().toLowerCase(), lg = LE.auditoria(400).filter(function (a) { return !q || (a.accion + ' ' + a.usuario).toLowerCase().indexOf(q) >= 0; }).slice(0, 150);
-        return P.zona('<p class="suave" style="margin-bottom:12px">Cada acción importante queda anotada con nombre y hora. Nadie puede borrarla ni cambiarla.</p>' + P.tabla([
+        return P.zona('<p class="resumen">Cada acción importante queda anotada con nombre y hora. Nadie puede borrarla ni cambiarla.</p>' + P.tabla([
           { t: 'Cuándo', c: 't-titulo', f: function (a) { return F.fecha(a.ts) + ' · ' + F.hora(a.ts) + '<small>' + esc(a.usuario) + '</small>'; } }, { t: 'Qué hizo', f: function (a) { return esc(a.accion); } }], lg));
       }
       var us = LE.usuarios();
       P.zona(P.tabla([
         { t: 'Persona', c: 't-titulo', f: function (u) { return esc(u.nombre) + '<small>' + esc(u.email) + '</small>'; } },
-        { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'admin' ? 'badge--acento' : '') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
+        { t: 'Rol', f: function (u) { return '<span class="badge ' + (u.rol === 'admin' ? 'badge--acento' : 'badge--rosa') + '">' + UI.rolNombre(u.rol) + '</span>'; } },
         { t: 'Acceso', f: function (u) { return u.activo ? '<span class="badge badge--ok">Activa</span>' : '<span class="badge badge--error">Sin acceso</span>'; } },
         { t: 'Jornada', f: function (u) { var a = LE.asistenciaAbierta(u.id); return a ? 'Trabajando desde las ' + F.hora(a.entrada) : '—'; } },
         { t: '', c: 't-acciones', f: function (u) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="persona" data-id="' + u.id + '">' + ico('pencil') + 'Editar</button>'; } }

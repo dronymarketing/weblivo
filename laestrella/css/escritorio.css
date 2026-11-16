@@ -103,8 +103,20 @@
 .tabla tbody tr:hover td { background: var(--velo); }
 .tabla tr.pie-tabla td { background: var(--superficie-2); font-weight: 680; }
 
+/* Listas: la pantalla no se desplaza, la tabla ocupa lo que queda y se desplaza por dentro */
+.cuerpo--lista { max-width: none; height: calc(100svh - 64px); min-height: 560px; padding-bottom: 24px; display: flex; flex-direction: column; }
+.cuerpo--lista .pagina__cab { margin-bottom: 14px; }
+.cuerpo--lista .pagina__cab h1 { font-size: 34px; }
+.cuerpo--lista .filtros { margin-bottom: 14px; }
+.cuerpo--lista #zona { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+.cuerpo--lista #zona > .kpis, .cuerpo--lista #zona > .resumen { flex: none; margin: 0; }
+.cuerpo--lista #zona > .tarjeta { flex: 1; min-height: 0; overflow: auto; }
+.cuerpo--lista .tabla th { position: sticky; top: 0; z-index: 2; }
+.tabla td .disp { align-items: flex-start; }
+.kpi--link:hover { box-shadow: var(--sombra-alta); transform: translateY(-1px); }
+.filtros .entrada { flex: 0 1 190px; }
+.filtros .pestanas { flex: 0 0 auto; }
 .linea-compra { grid-template-columns: 1fr 100px 130px 44px; }
-.filtros .entrada { flex: 0 1 280px; }
 
 /* Pantallas anchas: los accesos de la barra muestran su nombre */
 @media (min-width: 1366px) { .menu-inline .txt { display: inline; } }

@@ -19,8 +19,8 @@
 .btn[disabled], .btn.is-off { opacity: .42; pointer-events: none; }
 .btn--acento { background: var(--acento); color: #fff; border-color: transparent; box-shadow: var(--sombra-cta); }
 .btn--acento:active { background: var(--acento-hover); }
-.btn--tinta { background: var(--tinta); color: #fff; border-color: transparent; }
-.btn--tinta:active { background: #151d33; }
+.btn--tinta { background: var(--acento); color: #fff; border-color: transparent; }
+.btn--tinta:active { background: var(--acento-hover); }
 .btn--linea { background: transparent; }
 .btn--peligro { color: var(--error-texto); background: var(--superficie); }
 .btn--ok { background: var(--ok); color: #fff; border-color: transparent; }
@@ -44,7 +44,7 @@
 .campo small { display: block; margin-top: 6px; font-size: 13px; color: var(--texto-suave); }
 .fila-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
 .interruptor { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: var(--borde); }
-.interruptor input { width: 24px; height: 24px; accent-color: var(--tinta); flex-shrink: 0; }
+.interruptor input { width: 24px; height: 24px; accent-color: var(--acento); flex-shrink: 0; }
 
 /* ---------- Tarjetas, chips, badges ---------- */
 .tarjeta { background: var(--superficie); border-radius: var(--radio); padding: 18px; box-shadow: var(--sombra); }
@@ -321,6 +321,7 @@
 .pagina__acciones { display: flex; gap: 8px; flex-wrap: wrap; }
 .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
 .filtros .entrada { width: auto; flex: 1 1 200px; min-height: 40px; padding: 6px 14px; }
+.filtros .pestanas { flex: 1 1 100%; margin-bottom: 0; }
 .grid { display: grid; gap: 12px; }
 .grid--2 { grid-template-columns: 1fr; }
 .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
@@ -328,6 +329,13 @@
 .kpi__rotulo { font-size: 12.5px; color: var(--texto-suave); font-weight: 450; }
 .kpi__valor { font-size: 26px; font-weight: 700; letter-spacing: -.035em; margin-top: 6px; white-space: nowrap; color: var(--texto); }
 .kpi__sub { font-size: 12px; color: var(--texto-suave); font-weight: 450; margin-top: 3px; }
+.resumen { margin: -4px 0 12px; font-size: 14px; color: var(--texto-suave); font-weight: 450; }
+.resumen strong { color: var(--texto); font-weight: 680; }
+button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display: block; width: 100%; }
+.kpi--link { cursor: pointer; transition: box-shadow var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease); }
+.kpi--link:active { transform: scale(.985); }
+.kpi--link .kpi__rotulo, .kpi--link .kpi__valor { display: block; }
+.kpi__ir { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 620; color: var(--acento); }
 .kpi--grande { grid-column: 1 / -1; background: linear-gradient(180deg, var(--superficie) 0, var(--superficie-2) 100%); }
 .kpi--grande .kpi__valor { font-size: 48px; font-weight: 700; letter-spacing: -.04em; line-height: 1.05; }
 .kpi--grande .kpi__sub { font-size: 14px; }
@@ -453,6 +461,18 @@ a.aviso:active { background: var(--superficie-2); }
 .ranking .barrita i { display: block; height: 100%; border-radius: 3px; background: var(--serie-1); }
 
 /* Equipo / permisos */
+.disp { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 7px; min-width: 0; }
+.disp strong { font-size: 15px; font-weight: 700; letter-spacing: -.02em; color: var(--texto); font-variant-numeric: tabular-nums; }
+.tabla td .disp { align-items: flex-end; }
+.nivel { --ok-c: var(--ok); --al-c: #C28527; --er-c: var(--error); position: relative; display: block; width: 150px; max-width: 100%; height: 8px; border-radius: var(--radio-capsula); overflow: hidden; background: var(--marco); }
+.nivel__z { position: absolute; top: 0; bottom: 0; }
+.nivel__z--r { background: color-mix(in srgb, var(--er-c) 24%, #fff); }
+.nivel__z--a { background: color-mix(in srgb, var(--al-c) 26%, #fff); }
+.nivel__z--v { background: color-mix(in srgb, var(--ok-c) 22%, #fff); }
+.nivel__lleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: var(--radio-capsula); }
+.nivel--ok .nivel__lleno { background: var(--ok-c); }
+.nivel--alerta .nivel__lleno { background: var(--al-c); }
+.nivel--cero .nivel__lleno { background: var(--er-c); }
 .permisos { display: grid; gap: 0; }
 .permisos li { display: flex; gap: 10px; padding: 10px 0; border-bottom: var(--borde); font-size: 15px; font-weight: 450; align-items: flex-start; color: var(--texto-2); }
 .permisos li:last-child { border-bottom: 0; }

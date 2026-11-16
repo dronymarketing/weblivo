@@ -50,6 +50,14 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **Ingreso**, mismo método: en escritorio son dos zonas sin scroll (a la izquierda marca, título grande y qué hace cada rol
     en dos tarjetas; a la derecha el panel blanco con los usuarios o con email/contraseña). En el celular se apila: título,
     usuarios y, al final, los roles. Cada usuario es una fila clickeable con flecha; al pasar el mouse se marca en violeta.
+  - **Resto del panel**, mismo método: las pantallas de lista (Ventas, Productos, Stock, Compras, Caja, Equipo → horarios y
+    registro) ocupan el 100 % del alto en escritorio: título, filtros e indicadores arriba y la tabla ocupa el resto con
+    scroll por dentro y cabecera fija (`.cuerpo--lista`, que `P.zona` activa solo cuando la pantalla es «indicadores + una
+    tabla»). Reportes y Ajustes siguen con scroll de página. Los indicadores de Stock «Por reponer» y «Sin stock» filtran la lista.
+    Los botones principales de cada pantalla y de cada ventana son violeta; el rol Caja usa el rosa en sus insignias.
+  - **Stock · Disponible**: una columna con la cantidad y debajo una barra de tres zonas (rojo = no hay · amarillo = alerta,
+    hasta el mínimo · verde = por encima del mínimo). El recorrido llega al doble del mínimo; la parte llena toma el color de su
+    zona. Sigue la misma regla que «Reponer» (stock ≤ mínimo es amarillo).
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura
