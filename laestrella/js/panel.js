@@ -292,7 +292,7 @@
       var ps = LE.productos().filter(function (p) {
         if (S.cat && p.cat !== S.cat) return false;
         if (S.est === 'baja' && p.activo) return false;
-        if (S.est === 'bajo' && !(p.activo && p.stock <= p.minimo)) return false;
+        if (S.est === 'bajo' && !(p.activo && LE.nivelStock(p) !== 'ok')) return false;
         if (q) { var n = p.nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); if (n.indexOf(q) < 0 && p.codigo.indexOf(q) < 0 && p.plu.indexOf(q) < 0) return false; }
         return true;
       });
@@ -301,7 +301,7 @@
         { t: 'Precio', c: 't-derecha', f: function (p) { return F.din(p.precio) + (p.unidad === 'kg' ? '<small>por kg</small>' : ''); } },
         { t: 'Costo', f: function (p) { return F.din(p.costo); } },
         { t: 'Margen', f: function (p) { return p.precio ? Math.round((p.precio - p.costo) * 100 / p.precio) + ' %' : '—'; } },
-        { t: 'Stock', f: function (p) { var s = p.unidad === 'kg' ? F.kg(p.stock) : p.stock + ' u'; return p.stock <= 0 ? '<span class="badge badge--error">Sin stock</span>' : p.stock <= p.minimo ? '<span class="badge badge--alerta">' + s + ' · bajo</span>' : s; } },
+        { t: 'Stock', f: function (p) { var s = p.unidad === 'kg' ? F.kg(p.stock) : p.stock + ' u'; return p.stock <= 0 ? '<span class="badge badge--error">Sin stock</span>' : LE.nivelStock(p) === 'alerta' ? '<span class="badge badge--alerta">' + s + ' · bajo</span>' : s; } },
         { t: 'Estado', f: function (p) { return p.activo ? '<span class="badge badge--ok">Activo</span>' : '<span class="badge">De baja</span>'; } },
         { t: '', c: 't-acciones', f: function (p) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="producto" data-id="' + p.id + '">' + ico('pencil') + 'Editar</button>'; } }
       ], ps.slice(0, 150), { clase: function (p) { return p.activo ? '' : 'is-baja'; } }) + (ps.length > 150 ? '<p class="suave" style="margin-top:10px">Se muestran 150: afiná la búsqueda para ver el resto.</p>' : ''));

@@ -390,7 +390,9 @@
       movStock(p, delta, 'ajuste', motivo); anotar('Ajustó el stock de ' + p.nombre + ' (' + (delta > 0 ? '+' : '') + fmt.cant(delta) + '): ' + motivo); guardar();
     },
     movimientosStock: function (limite) { return E.movStock.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, limite || 200); },
-    stockBajo: function () { return E.productos.filter(function (p) { return p.activo && p.stock <= p.minimo; }).sort(function (a, b) { return (a.stock / (a.minimo || 1)) - (b.stock / (b.minimo || 1)); }); },
+    /* Nivel de stock: 'cero' (no hay) · 'alerta' (menos que el mínimo) · 'ok' (el mínimo o más). Tener justo el mínimo está bien. */
+    nivelStock: function (p) { return p.stock <= 0 ? 'cero' : p.stock < p.minimo ? 'alerta' : 'ok'; },
+    stockBajo: function () { return E.productos.filter(function (p) { return p.activo && LE.nivelStock(p) !== 'ok'; }).sort(function (a, b) { return (a.stock / (a.minimo || 1)) - (b.stock / (b.minimo || 1)); }); },
 
     /* Proveedores y compras */
     proveedores: function () { return E.proveedores; },

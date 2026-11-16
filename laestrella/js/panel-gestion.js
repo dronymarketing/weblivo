@@ -18,7 +18,7 @@
   function barraNivel(p) {
     var min = Math.max(p.minimo || 0, 0), q = Math.max(p.stock, 0), tope = Math.max(min * 2, 1), cap = 7;
     var x = function (v) { return cap + (100 - cap) * v / tope; };
-    var zona = q <= 0 ? 'cero' : q <= min ? 'alerta' : 'ok', lleno = q <= 0 ? cap : x(Math.min(q, tope));
+    var zona = LE.nivelStock(p), lleno = q <= 0 ? cap : x(Math.min(q, tope));
     var txt = zona === 'cero' ? 'No hay' : zona === 'alerta' ? 'Alerta: hay ' + cant(p, p.stock) + ', el mínimo es ' + cant(p, p.minimo) : 'Bien: hay ' + cant(p, p.stock) + ', el mínimo es ' + cant(p, p.minimo);
     return '<span class="nivel nivel--' + zona + '" role="img" aria-label="' + esc(txt) + '" title="Mínimo: ' + esc(cant(p, p.minimo)) + '">' +
       '<i class="nivel__z nivel__z--r" style="left:0;width:' + cap + '%"></i><i class="nivel__z nivel__z--a" style="left:' + cap + '%;width:' + (x(min) - cap) + '%"></i><i class="nivel__z nivel__z--v" style="left:' + x(min) + '%;right:0"></i>' +
@@ -47,15 +47,15 @@
         ], LE.movimientosStock(150), { vacio: 'Todavía no hay movimientos.' }));
       }
       var q = S.q.trim().toLowerCase(), ps = LE.productos(true).filter(function (p) {
-        if (S.f === 'bajo' && !(p.stock <= p.minimo)) return false; if (S.f === 'cero' && p.stock > 0) return false;
+        if (S.f === 'bajo' && LE.nivelStock(p) === 'ok') return false; if (S.f === 'cero' && p.stock > 0) return false;
         return !q || p.nombre.toLowerCase().indexOf(q) >= 0;
       }).sort(function (a, b) { return (a.stock / (a.minimo || 1)) - (b.stock / (b.minimo || 1)); });
-      var all = LE.productos(true), valor = all.reduce(function (a, p) { return a + Math.round(Math.max(0, p.stock) * p.costo); }, 0), bajo = all.filter(function (p) { return p.stock <= p.minimo; }).length, cero = all.filter(function (p) { return p.stock <= 0; }).length;
+      var all = LE.productos(true), valor = all.reduce(function (a, p) { return a + Math.round(Math.max(0, p.stock) * p.costo); }, 0), bajo = all.filter(function (p) { return LE.nivelStock(p) !== 'ok'; }).length, cero = all.filter(function (p) { return p.stock <= 0; }).length;
       P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Valor del stock (a costo)</div><div class="kpi__valor">' + F.din(valor) + '</div></div><button type="button" class="kpi kpi--link" data-filtro="f" data-valor="bajo"><span class="kpi__rotulo">Por reponer</span><span class="kpi__valor">' + bajo + '</span><span class="kpi__ir">Ver cuáles ›</span></button><button type="button" class="kpi kpi--link" data-filtro="f" data-valor="cero"><span class="kpi__rotulo">Sin stock</span><span class="kpi__valor">' + cero + '</span><span class="kpi__ir">Ver cuáles ›</span></button><div class="kpi"><div class="kpi__rotulo">Productos activos</div><div class="kpi__valor">' + all.length + '</div></div></div>' +
         P.tabla([
           { t: 'Producto', c: 't-titulo', f: function (p) { return P.celdaProd(p, esc(p.cat)); } },
           { t: 'Disponible', f: function (p) { return '<span class="disp"><strong>' + cant(p, p.stock) + '</strong>' + barraNivel(p) + '</span>'; } },
-          { t: 'Estado', f: function (p) { return p.stock <= 0 ? '<span class="badge badge--error">Sin stock</span>' : p.stock <= p.minimo ? '<span class="badge badge--alerta">Reponer</span>' : '<span class="badge badge--ok">Bien</span>'; } },
+          { t: 'Estado', f: function (p) { return p.stock <= 0 ? '<span class="badge badge--error">Sin stock</span>' : LE.nivelStock(p) === 'alerta' ? '<span class="badge badge--alerta">Reponer</span>' : '<span class="badge badge--ok">Bien</span>'; } },
           { t: 'Valor', f: function (p) { return F.din(Math.round(Math.max(0, p.stock) * p.costo)); } },
           { t: '', c: 't-acciones', f: function (p) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="ajustar" data-id="' + p.id + '">' + ico('square-pen') + 'Ajustar</button>'; } }
         ], ps.slice(0, 150)));

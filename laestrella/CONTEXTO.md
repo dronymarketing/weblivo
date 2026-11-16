@@ -57,7 +57,7 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     Los botones principales de cada pantalla y de cada ventana son violeta; el rol Caja usa el rosa en sus insignias.
   - **Stock · Disponible**: una columna con la cantidad y debajo una barra de tres zonas (rojo = no hay · amarillo = alerta,
     hasta el mínimo · verde = por encima del mínimo). El recorrido llega al doble del mínimo; la parte llena toma el color de su
-    zona. Sigue la misma regla que «Reponer» (stock ≤ mínimo es amarillo).
+    zona. La regla es una sola, `LE.nivelStock(p)`: «no hay» si stock ≤ 0, «alerta / Reponer» si stock < mínimo, «bien» si es el mínimo o más (tener justo el mínimo está bien). La usan la barra, la insignia, «Para reponer» del Inicio, los filtros y el listado de productos; el servidor solo guarda el mínimo.
   Cualquier color nuevo se define como token con su función; si no tiene una función clara, no se agrega.
 
 ## Estructura
