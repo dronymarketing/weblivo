@@ -100,6 +100,10 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
   - **En vivo**: el panel se redibuja solo cuando entra una venta. En la demo, con la caja y el panel abiertos en el MISMO navegador (otra pestaña o
     ventana), por el evento `storage` (`datos.js`); entre aparatos distintos la demo no comparte nada (cada navegador tiene sus datos), para eso hace
     falta Supabase. Conectado, cada terminal se pone al día cada 8 segundos (`nube.js`, `ciclo`) y la venta se ve en el panel en unos 5 segundos.
+  - **Tiempo real entre pantallas** (modo conectado, `vivo: true` en `js/config.js`): cuando la caja manda una venta o un retiro, o alguien cambia algo desde el panel,
+    se manda un aviso vacío por el canal `la-estrella-cambios` (Supabase Realtime Broadcast, sin datos) y las demás pantallas se ponen al día en el acto (≈0,2 s en la prueba),
+    aunque su pestaña no esté a la vista. Si el canal no anda, queda de respaldo la consulta cada 8 segundos. Si algún día no llegan los avisos, revisar en
+    Supabase → Realtime → Settings que «Allow public access» esté prendido. Prueba: `pgtest/ui-vivo2.js` (con un servidor Realtime simulado).
   - **Fecha y hora en la barra** (`UI.iniciarReloj`, hora de Uruguay, se actualiza sola): en el panel y en la caja, a la derecha («Lunes, 16 de
     noviembre» y la hora en negrita; en el celular, fecha corta en el panel y solo la hora en la caja).
   - **Sin subtítulos explicativos**: las pantallas del panel (y el ingreso y la caja cerrada) solo llevan título; lo que cada pantalla hace lo

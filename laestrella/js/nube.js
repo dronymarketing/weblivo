@@ -72,7 +72,7 @@
       var it = (E.outbox || [])[0]; if (!it) return Promise.resolve(n);
       var q = it.tipo === 'venta' ? rpc('crear_venta', { p: it.payload }) : rpc('egreso_caja', { p_concepto: it.payload.concepto, p_monto: it.payload.monto, p_id: it.payload.id, p_ts: it.payload.ts });
       return q.then(function (srv) {
-        E.outbox.shift();
+        E.outbox.shift(); avisarCambio();
         if (it.tipo === 'venta') { var i = E.ventas.map(function (v) { return v.id; }).indexOf(it.id); if (i >= 0 && srv && srv.id) E.ventas[i] = srv; }
         LE.guardar(); return paso(n + (it.tipo === 'venta' ? 1 : 0));
       }, function (e) {
@@ -123,7 +123,7 @@
 
   /* ---------- Todo lo demás: en el servidor, y se refresca la copia ---------- */
   function hacer(nombre, args, despues) {
-    return rpc(nombre, args).then(function (r) { return cargar().then(function () { return despues ? despues(r) : r; }, function () { return despues ? despues(r) : r; }); });
+    return rpc(nombre, args).then(function (r) { avisarCambio(); return cargar().then(function () { return despues ? despues(r) : r; }, function () { return despues ? despues(r) : r; }); });
   }
   LE.abrirCaja = function (base) { return hacer('abrir_caja', { p_base: Math.round(base) }, function () { return LE.turnoAbierto(); }); };
   LE.cerrarCaja = function (contado) {
@@ -202,6 +202,24 @@
     });
     sb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_OUT') { limpiarPerfil(); location.replace('../index.html'); } });
   }
+  /* ---------- En vivo: cuando alguien cobra o cambia algo, avisa por el canal de Supabase (Realtime Broadcast) y las demás pantallas
+     se ponen al día en el acto. Solo viaja un aviso vacío, nunca datos. Si el canal no anda, queda la consulta cada 8 segundos. ---------- */
+  var canal = null, canalListo = false, tCambio = null;
+  function alCambio() {
+    clearTimeout(tCambio);
+    tCambio = setTimeout(function () {
+      if (enLogin || !LE.usuario() || !enLinea()) return;
+      vaciarCola().then(function () { if (!(E.outbox || []).length) return cargar(); }).catch(function () { });
+    }, 120);
+  }
+  function avisarCambio() { try { if (canal && canalListo) canal.send({ type: 'broadcast', event: 'cambio', payload: {} }); } catch (e) { } }
+  function iniciarVivo() {
+    if (!C.vivo || enLogin || !sb.channel) return;
+    try {
+      canal = sb.channel('la-estrella-cambios', { config: { broadcast: { self: false } } });
+      canal.on('broadcast', { event: 'cambio' }, alCambio).subscribe(function (estado) { canalListo = estado === 'SUBSCRIBED'; if (canalListo) alCambio(); });
+    } catch (e) { canal = null; }
+  }
   function ciclo() {
     if (enLogin || document.hidden || !enLinea() || !LE.usuario()) return;
     enviarCodigos().then(function () { }, function () { });
@@ -210,5 +228,5 @@
   setInterval(ciclo, 8000);   // el panel y la caja se ponen al día solos, cada pocos segundos
   window.addEventListener('online', ciclo);
   document.addEventListener('visibilitychange', ciclo);
-  if (!enLogin) setTimeout(ciclo, 30);
+  if (!enLogin) { setTimeout(ciclo, 30); setTimeout(iniciarVivo, 400); }
 })();
