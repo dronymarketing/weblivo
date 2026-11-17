@@ -245,3 +245,7 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .prod__nombre { font-size: 15px; } .prod__precio { font-size: 17px; letter-spacing: -.03em; }
 .linea__nombre { font-size: 16px; } .linea__total { font-size: 18px; letter-spacing: -.02em; }
 .reloj-nav time { font-size: 16px; } .reloj-nav small { font-size: 11.5px; }
+
+.pagina__cab { gap: 12px; margin-bottom: 24px; } .pagina__acciones { width: auto; } .pagina__acciones .btn { flex: 0 0 auto; }
+.kpis--rep .kpi:last-child, .kpis > .kpi:last-child:nth-child(odd) { grid-column: auto; }
+.tabla td.t-acciones .btn { flex: 0 0 auto; } .pestana { padding: 0 16px; }

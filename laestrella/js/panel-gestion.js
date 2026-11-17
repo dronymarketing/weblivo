@@ -106,7 +106,7 @@
     titulo: 'Compras',
     entrar: function () {
       var S = P.est('compras', { tab: 'compras', f: '' });
-      P.cab('Compras y proveedores', null,
+      P.cab('Compras', null,
         S.tab === 'compras' ? '<button type="button" class="btn btn--acento" data-acc="compra-nueva">' + ico('plus') + 'Nueva compra</button>' : '<button type="button" class="btn btn--acento" data-acc="prov-nuevo">' + ico('plus') + 'Nuevo proveedor</button>',
         tabs([['compras', 'Compras'], ['proveedores', 'Proveedores']], S.tab) + (S.tab === 'compras' ? [['', 'Todas'], ['recibir', 'Por recibir'], ['pagar', 'Por pagar']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : ''));
       P.rutas.compras.pintar();
@@ -261,7 +261,7 @@
       var S = P.est('equipo', { tab: 'personas', rango: '7', q: '', f: '' }), a = LE.asistenciaAbierta(usuario.id);
       P.cab('Equipo', null,
         '<button type="button" class="btn btn--linea" data-acc="mi-jornada">' + ico('clock') + (a ? 'Terminar mi jornada' : 'Empezar mi jornada') + '</button>' + (S.tab === 'personas' ? '<button type="button" class="btn btn--acento" data-acc="persona-nueva">' + ico('plus') + 'Nueva persona</button>' : ''),
-        tabs([['personas', 'Personas'], ['horarios', 'Horarios'], ['registro', 'Registro de cambios']], S.tab) + (S.tab === 'personas' ? [['', 'Todas'], ['con', 'Con acceso'], ['sin', 'Sin acceso']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : '') + (S.tab === 'horarios' ? P.chipsRango(S.rango) : '') + (S.tab === 'registro' ? '<input class="entrada" data-filtro="q" placeholder="Buscar en el registro" value="' + esc(S.q) + '" aria-label="Buscar en el registro">' : ''));
+        tabs([['personas', 'Personas'], ['horarios', 'Horarios'], ['registro', 'Registro']], S.tab) + (S.tab === 'personas' ? [['', 'Todas'], ['con', 'Con acceso'], ['sin', 'Sin acceso']].map(function (x) { return '<button type="button" class="chip" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join('') : '') + (S.tab === 'horarios' ? P.chipsRango(S.rango) : '') + (S.tab === 'registro' ? '<input class="entrada" data-filtro="q" placeholder="Buscar en el registro" value="' + esc(S.q) + '" aria-label="Buscar en el registro">' : ''));
       P.rutas.equipo.pintar();
     },
     pintar: function () {

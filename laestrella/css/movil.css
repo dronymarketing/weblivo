@@ -635,3 +635,12 @@ body.ocupado .modal__acciones .btn { pointer-events: none; opacity: .6; }
 .linea__total { font-size: 20px; letter-spacing: -.045em; }
 .reloj-nav time { font-size: 17px; }
 .reloj-nav small { font-size: 12.5px; }
+
+/* Celular: encabezados de pantalla, indicadores sueltos y botones de las filas */
+.pagina__cab { gap: 12px; margin-bottom: 14px; }
+.pagina__acciones { width: 100%; }
+.pagina__acciones .btn { flex: 1 1 auto; }
+.kpis--rep .kpi:last-child, .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.tabla td.t-acciones { flex-wrap: wrap; }
+.tabla td.t-acciones .btn { flex: 1 1 auto; min-width: 0; white-space: nowrap; }
+.pestana { padding: 0 14px; }
