@@ -8,7 +8,7 @@
   function destinoPerfil(p) { return p.rol === 'admin' ? 'panel/' : 'caja/'; }
   function montarNube() {
     $('.ingreso h1').textContent = 'Ingresá';
-    var perfil = LE.nube.perfil(), registro = false; var np = $('#nota-primera'); if (np) np.hidden = false;
+    var perfil = LE.nube.perfil(), registro = false;
     lista.innerHTML = (perfil && perfil.activo ? '<a class="usuario" href="' + destinoPerfil(perfil) + '" style="background:var(--acento-suave);margin-bottom:14px"><span class="avatar avatar--acento">' + esc(UI.iniciales(perfil.nombre)) + '</span><span><span class="usuario__nombre">Seguir como ' + esc(perfil.nombre) + '</span><span class="usuario__rol">Ya ingresaste · tocá para volver</span></span>' + UI.ico('chevron-right', 'usuario__ir') + '</a>' : '') +
       '<form id="acceso" novalidate>' +
       '<label class="campo" id="campo-nombre" hidden><span>Tu nombre y apellido</span><input name="nombre" class="entrada" autocomplete="name" maxlength="60"></label>' +
