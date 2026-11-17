@@ -92,6 +92,7 @@
 
   /* ---------- Venta y retiro: al instante, con envío en cola ---------- */
   LE.crearVenta = function (d) {
+    if (!esUuid(d.id)) d = Object.assign({}, d, { id: LE.uid('v') });   // por si llegara un identificador de otro formato
     var antes = (E.outbox || []).some(function (o) { return o.id === d.id; }) || E.ventas.some(function (v) { return v.id === d.id; });
     var v = orig.crearVenta(d);
     if (antes) return v;

@@ -17,7 +17,15 @@
   /* ---------- Estado del ticket (sobrevive a un corte de luz o a recargar) ---------- */
   function nuevoTicket() { return { id: LE.uid('v'), items: [] }; }
   function cargarEstado() {
-    try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.actual) return s; } catch (e) { }
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY));
+      if (s && s.actual) {
+        /* Un ticket guardado antes de conectar con la base (o en la demo) trae un identificador de otro formato: se renueva */
+        var uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (LE.nubeActiva) { if (!uuid.test(String(s.actual.id))) s.actual.id = LE.uid('v'); (s.espera || []).forEach(function (t) { if (!uuid.test(String(t.id))) t.id = LE.uid('v'); }); }
+        return s;
+      }
+    } catch (e) { }
     return { actual: nuevoTicket(), espera: [], cliente: false };
   }
   function guardarEstado() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
