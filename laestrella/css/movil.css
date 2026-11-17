@@ -590,3 +590,48 @@ body.ocupado .modal__acciones .btn { pointer-events: none; opacity: .6; }
 .chip--alerta:active::before, .chip--alerta[aria-pressed="true"]::before { background: #F2B93B; }
 .chip--error:active, .chip--error[aria-pressed="true"] { border-color: var(--error); background: color-mix(in srgb, var(--error) 8%, #fff); color: var(--error-texto); }
 .chip--error:active::before, .chip--error[aria-pressed="true"]::before { background: var(--error); }
+
+/* ============================================================
+   Celular: todo un poco más grande, poco margen a los costados y
+   cifras grandes con las letras más juntas (así entran sin achicarlas de más)
+   ============================================================ */
+:root { --margen-lateral: 14px; }
+.cuerpo { padding-top: 16px; }
+.inicio__cab h1, .pagina__cab h1 { font-size: 34px; letter-spacing: -.045em; }
+.tiles { gap: 10px; }
+.tile { padding: 16px 14px 14px; }
+.tile__rotulo { font-size: 16px; gap: 7px; }
+.tile__rotulo .icon { width: 20px; height: 20px; }
+.tile__valor { font-size: clamp(22px, 7.2vw, 31px); letter-spacing: -.06em; }
+.tile__sub { font-size: 14px; }
+.tile__ir, .ver { font-size: 15px; }
+.tile__estados { flex-wrap: wrap; gap: 8px 10px; }
+.est strong { font-size: 31px; letter-spacing: -.06em; }
+.est small { font-size: 12px; gap: 5px; }
+.est small::before { width: 7px; height: 7px; }
+.tile__ok { font-size: 24px; }
+.cifra { font-size: 36px; letter-spacing: -.06em; }
+.kpi__valor { font-size: 28px; letter-spacing: -.06em; }
+.kpi--grande .kpi__valor { font-size: 46px; letter-spacing: -.065em; }
+.kpi__rotulo { font-size: 14px; }
+.kpi { padding: 16px 14px; }
+.mini-kpi strong { font-size: 17px; letter-spacing: -.03em; }
+.mini-kpi small { font-size: 13px; }
+.panel__cab h3 { font-size: 20px; }
+.ult__n strong { font-size: 16px; }
+.ult__n small { font-size: 13.5px; }
+.ult__t { font-size: 18px; letter-spacing: -.04em; }
+.tabla td { font-size: 15.5px; }
+.tabla td.t-titulo { font-size: 17px; }
+.tabla td.t-derecha { letter-spacing: -.03em; }
+.menu__link { font-size: 17px; min-height: 52px; }
+.pestana, .chip { font-size: 15.5px; }
+.campo > span { font-size: 14px; }
+.totales__monto { font-size: 44px; letter-spacing: -.06em; }
+.pagar__total strong { font-size: 52px; letter-spacing: -.065em; }
+.prod__nombre { font-size: 16px; }
+.prod__precio { font-size: 19px; letter-spacing: -.045em; }
+.linea__nombre { font-size: 17px; }
+.linea__total { font-size: 20px; letter-spacing: -.045em; }
+.reloj-nav time { font-size: 17px; }
+.reloj-nav small { font-size: 12.5px; }

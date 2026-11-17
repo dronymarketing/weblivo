@@ -227,3 +227,21 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 
 .est strong { font-size: 34px; }
 .tile__ok { font-size: 26px; }
+
+/* Escritorio: vuelve a los tamaños de pantalla grande (lo de arriba es del celular) */
+.tile__rotulo { font-size: 15px; } .tile__rotulo .icon { width: 18px; height: 18px; }
+.tile__valor, .est strong { letter-spacing: -.04em; }
+.tile__sub { font-size: 13px; } .tile__ir, .ver { font-size: 13px; }
+.est small { font-size: 12.5px; }
+.cifra { letter-spacing: -.04em; } .kpi__valor { letter-spacing: -.035em; } .kpi--grande .kpi__valor { letter-spacing: -.04em; }
+.kpi__rotulo { font-size: 12.5px; } .kpi { padding: 20px; }
+.mini-kpi strong { font-size: 16px; } .mini-kpi small { font-size: 12px; }
+.panel__cab h3 { font-size: 20px; }
+.ult__n strong { font-size: 15px; } .ult__n small { font-size: 12.5px; } .ult__t { font-size: 17px; letter-spacing: -.02em; }
+.tabla td { font-size: 14.5px; } .tabla td.t-titulo { font-size: 15px; }
+.menu__link { font-size: 14.5px; min-height: 42px; }
+.pestana, .chip { font-size: 14px; } .campo > span { font-size: 13px; }
+.totales__monto { font-size: 40px; letter-spacing: -.035em; } .pagar__total strong { font-size: 54px; letter-spacing: -.04em; }
+.prod__nombre { font-size: 15px; } .prod__precio { font-size: 17px; letter-spacing: -.03em; }
+.linea__nombre { font-size: 16px; } .linea__total { font-size: 18px; letter-spacing: -.02em; }
+.reloj-nav time { font-size: 16px; } .reloj-nav small { font-size: 11.5px; }
