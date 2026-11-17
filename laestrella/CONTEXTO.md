@@ -96,6 +96,7 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     guardan en pesos enteros, y lo que se escribe en un campo de dinero (`UI.aCentavos`) se redondea al peso. Por eso la caja, el ticket y el
     servidor siempre coinciden. Los pesos (kg) siguen con tres decimales. Las cifras abreviadas de los gráficos (`$ 27,6 k`) no son centavos.
     Los datos de ejemplo se regeneran (`laestrella_v4`). Al aplicar este cambio en un Supabase ya creado hay que volver a correr `esquema.sql`.
+  - **Caja sin textos sobrantes**: la apertura queda con el título, el campo del efectivo y «Abrir caja»; el ticket vacío solo dice «Ticket vacío»; el panel «Lector», los cobros, el retiro y el cierre no llevan frases explicativas (quedan los datos: total, esperado, contado, diferencia).
   - **Fecha y hora en la barra** (`UI.iniciarReloj`, hora de Uruguay, se actualiza sola): en el panel y en la caja, a la derecha («Lunes, 16 de
     noviembre» y la hora en negrita; en el celular, fecha corta en el panel y solo la hora en la caja).
   - **Sin subtítulos explicativos**: las pantallas del panel (y el ingreso y la caja cerrada) solo llevan título; lo que cada pantalla hace lo

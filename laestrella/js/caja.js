@@ -69,7 +69,7 @@
     pos.className = 'pos';
     pos.innerHTML =
       '<div class="scan"><div class="scan__campo">' + ico('scan-barcode', 'icon--g') + '<input id="scan" class="entrada" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escaneá o buscá un producto" aria-label="Código de barras o nombre del producto"></div>' +
-      '<details class="demo demo--pop demo--lector" id="demo"><summary class="btn btn--linea" aria-label="Lector y conexión">' + ico('scan-barcode') + '<span class="txt-pos">Lector</span></summary><div class="demo__pop"><p class="demo__tit">Probar el lector y la conexión</p><div class="demo__chips" id="demo-chips"></div>' +
+      '<details class="demo demo--pop demo--lector" id="demo"><summary class="btn btn--linea" aria-label="Lector y conexión">' + ico('scan-barcode') + '<span class="txt-pos">Lector</span></summary><div class="demo__pop"><div class="demo__chips" id="demo-chips"></div>' +
       '<div class="demo__ajustes"><button type="button" class="chip" id="demo-red" aria-pressed="false"></button></div></div></details></div>' +
       '<div class="pos__cuerpo">' +
       '<section class="pos__catalogo" id="catalogo" aria-label="Productos"><div class="cat__cab"><h2>Productos</h2><button type="button" class="btn btn--chico btn--tinta" id="cat-cerrar">Listo</button></div><div class="cats" id="cats"></div><div class="grilla" id="grilla"></div></section>' +
@@ -84,11 +84,10 @@
   }
   function montarCerrada() {
     pos.className = 'pos pos--cerrada';
-    var ult = LE.turnos().filter(function (t) { return t.cierre; })[0];
     pos.innerHTML = '<div class="cerrada"><span class="cerrada__ic">' + ico('lock', 'icon--g') + '</span><h1>La caja está cerrada</h1>' +
       '<label class="campo"><span>Efectivo con el que se abre</span><input id="base" class="entrada" inputmode="decimal" autocomplete="off" value="2500"></label>' +
       '<button type="button" class="btn btn--acento btn--grande btn--bloque" id="btn-abrir">Abrir caja</button>' +
-      (ult ? '<p style="margin-top:18px;font-size:14px">Último cierre: ' + esc(F.fechaHora(ult.cierre)) + ' · ' + esc(ult.cerro) + '</p>' : '') + '</div>';
+      '</div>';
     pintarCliente();
   }
 
@@ -119,7 +118,7 @@
   /* ---------- Ticket en curso ---------- */
   function pintarTicket(nuevoId) {
     var t = S.actual, l = $('#lineas'); if (!l) return;
-    if (!t.items.length) l.innerHTML = '<div class="ticket__vacio">' + ico('scan-barcode') + '<p><strong>Ticket vacío</strong></p><p>Escaneá un producto o tocalo en la lista.</p><button type="button" class="btn btn--tinta pos__catalogo-btn" data-abrir-cat>' + ico('layers') + 'Elegir de la lista</button></div>';
+    if (!t.items.length) l.innerHTML = '<div class="ticket__vacio">' + ico('scan-barcode') + '<p><strong>Ticket vacío</strong></p><button type="button" class="btn btn--tinta pos__catalogo-btn" data-abrir-cat>' + ico('layers') + 'Elegir de la lista</button></div>';
     else l.innerHTML = t.items.map(function (i, k) {
       var p = LE.producto(i.p), kg = p.unidad === 'kg';
       var ctrl = kg ? '<button type="button" class="cant__kg" data-acc-linea="peso" data-k="' + k + '" aria-label="Cambiar peso">' + F.kg(i.c) + '</button>'
@@ -173,7 +172,7 @@
   /* Producto que no está en la base: Administración lo da de alta ahí mismo, escaneado. La próxima vez ya se sabe qué es y cuánto sale. */
   function altaRapida(codigo) {
     var cats = LE.categorias(), ctl = UI.modal({
-      titulo: 'Producto nuevo', cuerpo: '<div class="escanear">' + ico('scan-barcode', 'icon--g') + '<div><strong>No está cargado</strong><small>Código <span class="mono">' + esc(codigo) + '</span>. Poné qué es y cuánto sale: queda guardado para siempre.</small></div></div>' +
+      titulo: 'Producto nuevo', cuerpo: '<div class="escanear">' + ico('scan-barcode', 'icon--g') + '<div><strong>No está cargado</strong><small>Código <span class="mono">' + esc(codigo) + '</span></small></div></div>' +
         '<div id="ar-aviso" class="nota" hidden></div>' +
         '<label class="campo"><span>Nombre (máx. 28 letras)</span><input name="nombre" class="entrada" maxlength="28" autocomplete="off"></label>' +
         '<div class="fila-campos"><label class="campo"><span>Precio de venta</span><input name="precio" class="entrada" inputmode="decimal" autocomplete="off"></label><label class="campo"><span>Costo (opcional)</span><input name="costo" class="entrada" inputmode="decimal" autocomplete="off"></label></div>' +
@@ -204,7 +203,7 @@
     var actual = k != null ? S.actual.items[k].c : 0;
     var ctl = UI.modal({
       titulo: p.nombre,
-      cuerpo: '<p class="suave" style="margin-bottom:12px">' + F.din(p.precio) + ' por kg · poné el producto en la balanza o escribí el peso</p>' +
+      cuerpo: '<p class="suave" style="margin-bottom:12px">' + F.din(p.precio) + ' por kg</p>' +
         '<label class="campo"><span>Peso en kilos</span><input id="peso" class="entrada" inputmode="decimal" autocomplete="off" value="' + (actual ? String(actual).replace('.', ',') : '') + '" placeholder="0,350"></label>' +
         '<div class="billetes">' + ['0,250', '0,500', '1', '1,5', '2'].map(function (x) { return '<button type="button" class="chip" data-kg="' + x + '">' + x + ' kg</button>'; }).join('') + '</div>' +
         '<p class="resumen-pago"><span>Importe</span><strong id="peso-imp">$ 0</strong></p>',
@@ -251,7 +250,6 @@
       if (medio === 'efectivo' && m > f) { info.innerHTML = '<div class="vuelto">Vuelto<strong>' + F.din(m - f) + '</strong></div>'; }
       else if (pagos.length || m < f) { info.innerHTML = '<p class="resumen-pago"><span>' + (m < f ? 'Falta cobrar' : 'A cobrar') + '</span><strong>' + F.din(m < f ? f - Math.max(m, 0) : f) + '</strong></p>'; }
       else info.innerHTML = '';
-      if (medio !== 'efectivo' && m > 0) info.innerHTML += '<p class="suave" style="font-size:14px;margin-top:6px">' + (medio === 'qr' ? 'Mostrá el QR al cliente y confirmá cuando el pago llegue.' : 'Cobrá en el datáfono y confirmá acá.') + '</p>';
       ok.disabled = m <= 0; ok.innerHTML = m >= f ? 'Confirmar cobro' : 'Agregar pago de ' + F.din(Math.max(aplic, 0));
     }
     function confirmar() {
@@ -309,7 +307,7 @@
     var t = LE.turnoAbierto(); if (!t) return;
     var ctl = UI.modal({
       titulo: 'Retiro de efectivo',
-      cuerpo: '<p class="suave" style="margin-bottom:12px">En el cajón hay ' + F.din(LE.efectivoEsperado(t)) + '. El retiro queda anotado con tu nombre.</p>' +
+      cuerpo: '<p class="suave" style="margin-bottom:12px">En el cajón hay ' + F.din(LE.efectivoEsperado(t)) + '</p>' +
         '<div class="billetes" style="margin:0 0 14px">' + ['Retiro para administración', 'Pago a proveedor', 'Pago de reparto', 'Compra urgente'].map(function (c) { return '<button type="button" class="chip" data-c="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>' +
         '<label class="campo"><span>Concepto</span><input name="c" class="entrada" maxlength="120" autocomplete="off"></label><label class="campo"><span>Monto</span><input name="m" class="entrada" inputmode="decimal" autocomplete="off"></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Registrar retiro', clase: 'btn--tinta', cerrar: false, accion: function () { var v = UI.valores(ctl); var r = UI.intentar(function () { LE.egresoCaja(v.c, UI.aCentavos(v.m)); }, 'Retiro registrado.'); if (r.ok) { ctl.cerrar(); pintarBarra(); } return false; } }]
@@ -325,7 +323,7 @@
       cuerpo: '<p class="suave" style="margin-bottom:10px">Turno ' + esc(t.turno) + ' · abrió ' + esc(t.abrio) + ' a las ' + F.hora(t.apertura) + '</p>' +
         '<div class="tarjeta" style="margin-bottom:14px"><div class="resumen-pago" style="padding-top:0"><span>' + r.tickets + ' ventas</span><strong>' + F.din(r.total) + '</strong></div><ul class="leyenda">' +
         Object.keys(LE.MEDIOS).map(function (m) { return '<li><span>' + LE.MEDIOS[m] + '</span><span class="lv">' + F.din(r.porMedio[m]) + '</span></li>'; }).join('') + '</ul></div>' +
-        '<label class="campo"><span>Efectivo que hay en el cajón (contalo ahora)</span><input name="c" class="entrada" inputmode="decimal" autocomplete="off" placeholder="0"><small>Contá billetes y monedas. El sistema compara con lo que tendría que haber.</small></label>',
+        '<label class="campo"><span>Efectivo que hay en el cajón (contalo ahora)</span><input name="c" class="entrada" inputmode="decimal" autocomplete="off" placeholder="0"></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Cerrar caja', clase: 'btn--tinta', cerrar: false, accion: function () {
         var v = UI.valores(ctl); if (v.c === '') { UI.toast('Escribí cuánto efectivo contaste.', 'error'); return false; }
         UI.hacer(function () { return LE.cerrarCaja(UI.aCentavos(v.c)); }).then(function (rr) { if (rr.ok) { ctl.cerrar(); mostrarCierre(rr.valor); } });
@@ -338,7 +336,7 @@
       titulo: 'Caja cerrada', persistente: true,
       cuerpo: '<div class="vuelto" style="margin:0 0 14px;' + (ok ? '' : 'background:var(--alerta-suave);color:var(--alerta)') + '">' + (ok ? 'La caja cierra justa' : (c.diferencia > 0 ? 'Sobran' : 'Faltan')) + '<strong>' + (ok ? F.din(c.contado) : F.din(Math.abs(c.diferencia))) + '</strong></div>' +
         '<ul class="leyenda"><li><span>Tendría que haber</span><span class="lv">' + F.din(c.esperado) + '</span></li><li><span>Contaste</span><span class="lv">' + F.din(c.contado) + '</span></li></ul>' +
-        (ok ? '' : '<p class="suave" style="margin-top:12px;font-size:14px">La diferencia queda registrada y administración la ve en el panel.</p>'),
+        '',
       acciones: [{ texto: 'Listo', clase: 'btn--tinta' }], alCerrar: function () { montar(); }
     });
   }
