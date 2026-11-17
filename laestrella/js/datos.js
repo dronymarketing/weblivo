@@ -291,7 +291,15 @@
     if (!E) { E = NUBE ? estadoVacio() : sembrar(); guardar(); }
     E.sinCargar = E.sinCargar || []; E.codigosCola = E.codigosCola || [];
     if (NUBE) { E.offline = false; E.outbox = E.outbox || []; E.rechazadas = E.rechazadas || []; }
-    LE.estado = E; return E;
+    LE.estado = E;
+    /* Demo: si la caja (otra pestaña o ventana del mismo navegador) guarda algo, este panel lo toma al instante y se redibuja */
+    if (!NUBE) window.addEventListener('storage', function (ev) {
+      if (ev.key !== KEY || !ev.newValue) return;
+      var n = cargar(); if (!n) return;
+      n.sinCargar = n.sinCargar || []; n.codigosCola = n.codigosCola || []; E = n; LE.estado = n;
+      try { document.dispatchEvent(new CustomEvent('le:datos')); } catch (e) { }
+    });
+    return E;
   }
 
   function yo() {

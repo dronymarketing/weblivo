@@ -206,7 +206,7 @@
     enviarCodigos().then(function () { }, function () { });
     vaciarCola().then(function () { if (!(E.outbox || []).length) return cargar(); }).catch(function (e) { if (e && e.sesion) { limpiarPerfil(); location.replace('../index.html'); } });
   }
-  setInterval(ciclo, 45000);
+  setInterval(ciclo, 8000);   // el panel y la caja se ponen al día solos, cada pocos segundos
   window.addEventListener('online', ciclo);
   document.addEventListener('visibilitychange', ciclo);
   if (!enLogin) setTimeout(ciclo, 30);
