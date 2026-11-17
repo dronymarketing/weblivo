@@ -219,3 +219,8 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .kpi--error:hover { box-shadow: 0 0 0 1.5px var(--error), var(--sombra-alta); }
 .chip--alerta:hover { border-color: #D9A21B; color: var(--alerta-texto); }
 .chip--error:hover { border-color: var(--error); color: var(--error-texto); }
+
+.chip--alerta:hover { border-color: #D9A21B; color: var(--alerta-texto); background: color-mix(in srgb, #F2B93B 8%, #fff); }
+.chip--alerta:hover::before { background: #F2B93B; }
+.chip--error:hover { border-color: var(--error); color: var(--error-texto); background: color-mix(in srgb, var(--error) 6%, #fff); }
+.chip--error:hover::before { background: var(--error); }

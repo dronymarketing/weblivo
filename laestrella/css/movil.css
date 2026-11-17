@@ -571,3 +571,13 @@ body.ocupado .modal__acciones .btn { pointer-events: none; opacity: .6; }
 .prod:active, .usuario:active, .ult a:active, .menu__link:active, a.pop-aviso:active, a.aviso:active { background: var(--hover-velo); }
 .teclado button:active, .cant button:active, .chip:active { background: var(--hover-suave); color: var(--hover); border-color: var(--hover); }
 .tabla tr:active { background: var(--hover-velo); }
+
+/* Fichas «Por reponer» y «Sin stock»: apagadas cuando no están elegidas; al tocarlas (o pasar el mouse) se prende el amarillo o el rojo puro */
+.chip--alerta { border-color: #EADBB0; color: #7A6A3E; }
+.chip--alerta::before { background: #E3CF9B; transition: background var(--dur-micro); }
+.chip--error { border-color: #E6C3C1; color: #8A4A48; }
+.chip--error::before { background: #D9A5A2; transition: background var(--dur-micro); }
+.chip--alerta:active, .chip--alerta[aria-pressed="true"] { border-color: #D9A21B; background: color-mix(in srgb, #F2B93B 12%, #fff); color: var(--alerta-texto); }
+.chip--alerta:active::before, .chip--alerta[aria-pressed="true"]::before { background: #F2B93B; }
+.chip--error:active, .chip--error[aria-pressed="true"] { border-color: var(--error); background: color-mix(in srgb, var(--error) 8%, #fff); color: var(--error-texto); }
+.chip--error:active::before, .chip--error[aria-pressed="true"]::before { background: var(--error); }
