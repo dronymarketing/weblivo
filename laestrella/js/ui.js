@@ -174,9 +174,9 @@
     }).join('');
   };
   /* "129,90" o "129.90" → centavos */
-  UI.aCentavos = function (s) { s = String(s || '').trim().replace(/\./g, function (m, i, t) { return t.indexOf(',') >= 0 ? '' : '.'; }).replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.round(n * 100); };
+  UI.aCentavos = function (s) { s = String(s || '').trim().replace(/\./g, function (m, i, t) { return t.indexOf(',') >= 0 ? '' : '.'; }).replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.round(n) * 100; };   // sin centavos: siempre pesos enteros
   UI.aNumero = function (s) { var n = parseFloat(String(s || '').trim().replace(',', '.')); return isNaN(n) ? 0 : n; };
-  UI.deCentavos = function (c) { return (c / 100).toFixed(2).replace('.', ',').replace(/,00$/, ''); };
+  UI.deCentavos = function (c) { return String(Math.round(c / 100)); };
 
   /* ---------- Descargas ---------- */
   UI.descargarCSV = function (nombre, filas) {

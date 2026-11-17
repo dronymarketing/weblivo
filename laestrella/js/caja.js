@@ -21,7 +21,7 @@
     return { actual: nuevoTicket(), espera: [], cliente: false };
   }
   function guardarEstado() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
-  function subtotal(i) { var p = LE.producto(i.p); return Math.round(p.precio * i.c); }
+  function subtotal(i) { var p = LE.producto(i.p); return Math.round(p.precio * i.c / 100) * 100; }
   function totalTicket(t) { return (t || S.actual).items.reduce(function (a, i) { return a + subtotal(i); }, 0); }
   function cantArticulos(t) { return (t || S.actual).items.reduce(function (a, i) { return a + (LE.producto(i.p).unidad === 'kg' ? 1 : i.c); }, 0); }
 
@@ -212,7 +212,7 @@
         var kg = Math.round(UI.aNumero(ctl.$('#peso').value) * 1000) / 1000; if (!(kg > 0) || kg > 50) { UI.toast('Escribí un peso entre 0,001 y 50 kg.', 'error'); return false; }
         if (k != null) { S.actual.items[k].c = kg; UI.beep(true); pintarTicket(); } else agregar(p, kg); ctl.cerrar(); return false; } }]
     });
-    function imp() { var kg = UI.aNumero(ctl.$('#peso').value); ctl.$('#peso-imp').textContent = F.din(Math.round(p.precio * kg)); }
+    function imp() { var kg = UI.aNumero(ctl.$('#peso').value); ctl.$('#peso-imp').textContent = F.din(Math.round(p.precio * kg / 100) * 100); }
     ctl.$('#peso').addEventListener('input', imp); imp();
     ctl.cuerpo.addEventListener('click', function (e) { var b = e.target.closest('[data-kg]'); if (b) { ctl.$('#peso').value = b.dataset.kg; imp(); } });
     ctl.$('#peso').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ctl.$('#peso-ok').click(); } });

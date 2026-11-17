@@ -91,6 +91,11 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     celular) es el secundario** (`--hover` = rosa, `--hover-suave`, `--hover-velo`): botones, fichas, menú, campos, filas de tablas, tarjetas del
     Inicio, productos de la caja y usuarios del ingreso. Favicon e imagen para compartir en violeta.
 
+  - **Sin centavos**: todos los importes se muestran en pesos enteros (`$ 27.609`, nunca `$ 27.608,79`) y también se calculan así: cada línea de
+    venta se redondea al peso (`aPesos` en el cliente, `round(precio * cant / 100) * 100` en `crear_venta`), los precios y costos de producto se
+    guardan en pesos enteros, y lo que se escribe en un campo de dinero (`UI.aCentavos`) se redondea al peso. Por eso la caja, el ticket y el
+    servidor siempre coinciden. Los pesos (kg) siguen con tres decimales. Las cifras abreviadas de los gráficos (`$ 27,6 k`) no son centavos.
+    Los datos de ejemplo se regeneran (`laestrella_v4`). Al aplicar este cambio en un Supabase ya creado hay que volver a correr `esquema.sql`.
   - **Fecha y hora en la barra** (`UI.iniciarReloj`, hora de Uruguay, se actualiza sola): en el panel y en la caja, a la derecha («Lunes, 16 de
     noviembre» y la hora en negrita; en el celular, fecha corta en el panel y solo la hora en la caja).
   - **Sin subtítulos explicativos**: las pantallas del panel (y el ingreso y la caja cerrada) solo llevan título; lo que cada pantalla hace lo

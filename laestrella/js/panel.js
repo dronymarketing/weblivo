@@ -291,7 +291,7 @@
     },
     csv: function () {
       var vs = P.rutas.ventas.lista().slice().reverse(); var f = [['Ticket', 'Fecha', 'Hora', 'Cajera', 'Medios', 'Total', 'Estado']];
-      vs.forEach(function (v) { f.push([F.num(v.num), F.fecha(v.ts), F.hora(v.ts), v.cajero, v.pagos.map(function (p) { return LE.MEDIOS[p.m]; }).join('+'), (v.total / 100).toFixed(2).replace('.', ','), v.estado === 'ok' ? 'Cobrada' : 'Anulada']); });
+      vs.forEach(function (v) { f.push([F.num(v.num), F.fecha(v.ts), F.hora(v.ts), v.cajero, v.pagos.map(function (p) { return LE.MEDIOS[p.m]; }).join('+'), (v.total / 100).toFixed(0), v.estado === 'ok' ? 'Cobrada' : 'Anulada']); });
       UI.descargarCSV('ventas-la-estrella.csv', f);
     }
   };

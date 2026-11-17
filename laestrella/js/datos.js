@@ -12,8 +12,8 @@
 
   // Modo conectado: si js/config.js tiene la dirección y la clave de Supabase, los datos viven en la nube
   var NUBE = !!(window.LE_CONFIG && window.LE_CONFIG.url && window.LE_CONFIG.clave);
-  var KEY = NUBE ? 'laestrella_nube_v1' : 'laestrella_v3';
-  var KEY_SESION = 'laestrella_sesion_v3';
+  var KEY = NUBE ? 'laestrella_nube_v1' : 'laestrella_v4';
+  var KEY_SESION = 'laestrella_sesion_v4';
   var KEY_PERFIL = 'laestrella_perfil_v1';
   var DIA = 86400000, HORA = 3600000;
 
@@ -25,6 +25,7 @@
   }
   function inicioDia(ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
   function r2(n) { return Math.round(n); }
+  function aPesos(c) { return Math.round(c / 100) * 100; }   // todo importe se redondea a pesos enteros (no se usan centavos)
   function ean13Digito(d12) { var s = 0; for (var i = 0; i < 12; i++) s += (+d12[i]) * (i % 2 ? 3 : 1); return String((10 - s % 10) % 10); }
   function ean13(d12) { return d12 + ean13Digito(d12); }
   function eanValido(c) { return /^\d{13}$/.test(c) && ean13Digito(c.slice(0, 12)) === c[12]; }
@@ -35,7 +36,8 @@
   var nf2 = new Intl.NumberFormat('es-UY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var nf3 = new Intl.NumberFormat('es-UY', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
   var fmt = {
-    din: function (c, signo) { c = c || 0; var s = (c < 0 ? '-' : (signo && c > 0 ? '+' : '')); var a = Math.abs(c); return s + '$ ' + (a % 100 ? nf2.format(a / 100) : nf0.format(a / 100)); },
+    /* Sin centavos: los importes se muestran siempre en pesos enteros */
+    din: function (c, signo) { c = c || 0; var a = Math.round(Math.abs(c) / 100); var s = a === 0 ? '' : (c < 0 ? '-' : (signo ? '+' : '')); return s + '$ ' + nf0.format(a); },
     kg: function (n) { return nf3.format(n) + ' kg'; },
     cant: function (n) { return Math.round(n) === n ? String(n) : nf3.format(n); },
     fecha: function (ts) { return new Date(ts).toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric' }); },
@@ -191,7 +193,7 @@
           for (var j = 0; j < n; j++) {
             var p = elegirProducto(); if (vistos[p.id]) continue; vistos[p.id] = 1;
             var c = p.unidad === 'kg' ? Math.max(.1, Math.round((0.15 + rnd() * 1.2) * 200) / 200) : (rnd() < .76 ? 1 : (rnd() < .75 ? 2 : 3));
-            var s = r2(p.precio * c); total += s;
+            var s = aPesos(p.precio * c); total += s;
             items.push({ p: p.id, n: p.nombre, c: c, u: p.precio, s: s, iva: p.iva, k: p.costo });
           }
           if (!items.length) return;
@@ -363,7 +365,7 @@
       exigir('admin');
       var nombre = String(d.nombre || '').trim(); if (nombre.length < 2) throw new Error('Escribí el nombre del producto.');
       if (nombre.length > 28) throw new Error('El nombre no puede pasar de 28 letras (para que entre en el ticket).');
-      var precio = Math.round(+d.precio), costo = Math.round(+d.costo || 0);
+      var precio = aPesos(+d.precio), costo = aPesos(+d.costo || 0);
       if (!(precio > 0)) throw new Error('El precio tiene que ser mayor que cero.');
       var cod = String(d.codigo || '').trim();
       if (d.unidad === 'u' && cod && !/^\d{8,14}$/.test(cod)) throw new Error('El código de barras tiene que tener entre 8 y 14 números.');
@@ -487,7 +489,7 @@
       var items = d.items.map(function (i) {
         var p = porId(E.productos, i.p); if (!p || !p.activo) throw new Error('El producto "' + (i.n || '') + '" ya no está disponible.');
         var c = p.unidad === 'kg' ? Math.round(+i.c * 1000) / 1000 : Math.round(+i.c); if (!(c > 0)) throw new Error('Cantidad inválida en ' + p.nombre + '.');
-        return { p: p.id, n: p.nombre, c: c, u: p.precio, s: r2(p.precio * c), iva: p.iva, k: p.costo }; // el precio sale del servidor, no de la pantalla
+        return { p: p.id, n: p.nombre, c: c, u: p.precio, s: aPesos(p.precio * c), iva: p.iva, k: p.costo }; // el precio sale del servidor, no de la pantalla
       });
       var total = items.reduce(function (a, i) { return a + i.s; }, 0);
       var pagos = (d.pagos || []).map(function (p) { return { m: p.m, monto: Math.round(+p.monto) }; }).filter(function (p) { return p.monto > 0; });

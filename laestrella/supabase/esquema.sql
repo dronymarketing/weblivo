@@ -259,7 +259,7 @@ language sql immutable as $$ select (extract(epoch from p_ts) * 1000)::bigint $$
 
 create or replace function public.din(p_c bigint) returns text
 language sql immutable as $$
-  select '$ ' || case when p_c % 100 = 0 then to_char(p_c / 100, 'FM999G999G999') else to_char(p_c / 100.0, 'FM999G999G990D00') end
+  select '$ ' || to_char(round(p_c / 100.0), 'FM999G999G999')
 $$;
 
 -- ---------- Alta de personas ----------
@@ -484,7 +484,7 @@ begin
     if not found or not v_prod.activo then raise exception 'Un producto del ticket ya no está disponible.' using errcode = 'P0001'; end if;
     v_c := case when v_prod.unidad = 'kg' then round((v_it ->> 'c')::numeric, 3) else round((v_it ->> 'c')::numeric) end;
     if not (v_c > 0) then raise exception 'Cantidad inválida en %.', v_prod.nombre using errcode = 'P0001'; end if;
-    v_total := v_total + round(v_prod.precio * v_c)::int;
+    v_total := v_total + (round(v_prod.precio * v_c / 100) * 100)::int;
   end loop;
 
   -- 2) cobro: los medios habilitados y que cierre justo
@@ -509,7 +509,7 @@ begin
   for v_it in select * from jsonb_array_elements(p -> 'items') loop
     select * into v_prod from public.productos where id = (v_it ->> 'p')::uuid;
     v_c := case when v_prod.unidad = 'kg' then round((v_it ->> 'c')::numeric, 3) else round((v_it ->> 'c')::numeric) end;
-    v_s := round(v_prod.precio * v_c)::int;
+    v_s := (round(v_prod.precio * v_c / 100) * 100)::int;
     insert into public.venta_items (venta, producto, nombre, cant, precio, subtotal, iva, costo) values (v_id, v_prod.id, v_prod.nombre, v_c, v_prod.precio, v_s, v_prod.iva, v_prod.costo);
     perform public.mover_stock(v_prod.id, -v_c, 'venta', 'Ticket ' || lpad(v_num::text, 6, '0'), v_ts);
   end loop;
@@ -542,7 +542,7 @@ language plpgsql security definer set search_path = public as $$
 declare
   v_id uuid := nullif(p ->> 'id', '')::uuid; v_old public.productos; v_nombre text := btrim(coalesce(p ->> 'nombre', ''));
   v_unidad text := coalesce(p ->> 'unidad', 'u'); v_cod text := btrim(coalesce(p ->> 'codigo', '')); v_plu text := btrim(coalesce(p ->> 'plu', ''));
-  v_precio int := round((p ->> 'precio')::numeric); v_costo int := round(coalesce((p ->> 'costo')::numeric, 0)); v_prov uuid := nullif(p ->> 'prov', '')::uuid;
+  v_precio int := (round((p ->> 'precio')::numeric / 100) * 100)::int; v_costo int := (round(coalesce((p ->> 'costo')::numeric, 0) / 100) * 100)::int; v_prov uuid := nullif(p ->> 'prov', '')::uuid;
   v_dup text;
 begin
   perform public.exigir_rol('admin');

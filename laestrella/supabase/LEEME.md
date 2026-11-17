@@ -69,7 +69,7 @@ También mantiene viva la base del plan gratis. Las instrucciones están en `sup
 (crear el repositorio privado, copiar el kit y pegar la dirección de la base como secreto de GitHub).
 
 > **Si ya habías corrido `esquema.sql` en tu proyecto:** volvé a correrlo entero cuando se actualice este archivo (se puede repetir sin
-> romper nada). La última actualización suma la lista de «códigos sin cargar» y corrige la sincronización incremental de ventas.
+> romper nada). La última actualización suma la lista de «códigos sin cargar» y corrige la sincronización incremental de ventas. También pasa los importes a pesos enteros (sin centavos).
 
 ## Cómo se comporta
 

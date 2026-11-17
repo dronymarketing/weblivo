@@ -248,7 +248,7 @@
     },
     csv: function () {
       var f = [['Producto', 'Categoría', 'Cantidad', 'Vendido', 'Costo', 'Ganancia']];
-      (P.rutas.reportes.ult || []).forEach(function (p) { f.push([p.nombre, p.cat, String(p.cant).replace('.', ','), (p.total / 100).toFixed(2).replace('.', ','), (p.costo / 100).toFixed(2).replace('.', ','), ((p.total - p.costo) / 100).toFixed(2).replace('.', ',')]); });
+      (P.rutas.reportes.ult || []).forEach(function (p) { f.push([p.nombre, p.cat, String(p.cant).replace('.', ','), (p.total / 100).toFixed(0), (p.costo / 100).toFixed(0), ((p.total - p.costo) / 100).toFixed(0)]); });
       UI.descargarCSV('productos-la-estrella.csv', f);
     }
   };
