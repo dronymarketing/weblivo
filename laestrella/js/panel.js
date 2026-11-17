@@ -212,7 +212,7 @@
         '<div class="tiles">' +
           tile('#/ventas', 'receipt', 'Ventas de hoy', F.din(RH.total), RH.tickets + (RH.tickets === 1 ? ' venta' : ' ventas') + ' · promedio ' + F.din(prom), 'Ver ventas', true) +
           tile('#/caja', 'wallet', 'Caja', t ? F.din(LE.efectivoEsperado(t)) : 'Cerrada', t ? 'efectivo esperado · turno ' + esc(t.turno) : 'nadie atiende ahora', 'Ver cajas', false) +
-          tile('#/stock', 'boxes', 'Para reponer', String(bajo.length), bajo.length ? (bajo.filter(function (p) { return p.stock <= 0; }).length + ' sin stock · el resto bajo el mínimo') : 'todo en orden', 'Ver stock', false) +
+          tile('#/stock', 'boxes', 'Stock', (function () { var ce = bajo.filter(function (p) { return p.stock <= 0; }).length, re = bajo.length - ce; return bajo.length ? '<span class="tile__estados">' + (re ? '<span class="est est--alerta"><strong>' + re + '</strong><small>Reponer</small></span>' : '') + (ce ? '<span class="est est--error"><strong>' + ce + '</strong><small>Sin stock</small></span>' : '') + '</span>' : '<span class="tile__ok">Todo en orden</span>'; })(), '', 'Ver stock', false) +
           tile('#/reportes', 'trending-up', 'Ganancia bruta de hoy', F.din(RH.margen), P.pct(RH.margen, RH.total) + ' de lo vendido', 'Ver reportes', false) +
         '</div>' +
         '<div class="paneles">' +

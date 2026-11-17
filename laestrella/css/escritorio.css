@@ -224,3 +224,6 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .chip--alerta:hover::before { background: #F2B93B; }
 .chip--error:hover { border-color: var(--error); color: var(--error-texto); background: color-mix(in srgb, var(--error) 6%, #fff); }
 .chip--error:hover::before { background: var(--error); }
+
+.est strong { font-size: 34px; }
+.tile__ok { font-size: 26px; }

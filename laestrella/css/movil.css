@@ -428,6 +428,15 @@ button.kpi { border: 0; text-align: left; font: inherit; color: inherit; display
 .tile__rotulo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 650; color: var(--texto); line-height: 1.25; }
 .tile__rotulo .icon { width: 18px; height: 18px; color: var(--texto-suave); }
 .tile__valor { margin-top: 14px; font-size: 28px; font-weight: 700; letter-spacing: -.04em; line-height: 1.05; white-space: nowrap; }
+.tile__estados { display: flex; gap: 22px; align-items: flex-start; }
+.est strong { display: block; font-size: 28px; font-weight: 700; letter-spacing: -.04em; line-height: 1.05; }
+.est small { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12.5px; font-weight: 650; letter-spacing: 0; white-space: nowrap; }
+.est small::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
+.est--alerta strong, .est--alerta small { color: var(--alerta-texto); }
+.est--alerta small::before { background: #F2B93B; }
+.est--error strong, .est--error small { color: var(--error-texto); }
+.est--error small::before { background: var(--error); }
+.tile__ok { font-size: 22px; font-weight: 700; letter-spacing: -.03em; color: var(--ok-texto); line-height: 1.1; }
 .tile__sub { margin-top: 5px; font-size: 12.5px; font-weight: 450; color: var(--texto-suave); line-height: 1.35; flex: 1; }
 .tile__ir, .ver { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 620; color: var(--acento); text-decoration: none; }
 .tile__ir { margin-top: 12px; }
