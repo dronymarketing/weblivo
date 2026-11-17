@@ -12,8 +12,8 @@
 
   // Modo conectado: si js/config.js tiene la dirección y la clave de Supabase, los datos viven en la nube
   var NUBE = !!(window.LE_CONFIG && window.LE_CONFIG.url && window.LE_CONFIG.clave);
-  var KEY = NUBE ? 'laestrella_nube_v1' : 'laestrella_v2';
-  var KEY_SESION = 'laestrella_sesion_v2';
+  var KEY = NUBE ? 'laestrella_nube_v1' : 'laestrella_v3';
+  var KEY_SESION = 'laestrella_sesion_v3';
   var KEY_PERFIL = 'laestrella_perfil_v1';
   var DIA = 86400000, HORA = 3600000;
 
@@ -121,10 +121,9 @@
         facturaElectronica: false
       },
       usuarios: [
-        { id: 'u_marta', nombre: 'Marta Rodríguez', rol: 'admin', pin: '1234', activo: true, email: 'marta@laestrella.example' },
-        { id: 'u_lucia', nombre: 'Lucía Pereira', rol: 'caja', pin: '1111', activo: true, email: 'lucia@laestrella.example' },
-        { id: 'u_diego', nombre: 'Diego Silva', rol: 'caja', pin: '2222', activo: true, email: 'diego@laestrella.example' },
-        { id: 'u_vale', nombre: 'Valentina Cabral', rol: 'caja', pin: '3333', activo: false, email: 'vale@laestrella.example' }
+        { id: 'u_luana', nombre: 'Luana', rol: 'admin', pin: '1234', activo: true, email: 'luana@laestrella.example' },
+        { id: 'u_noelia', nombre: 'Noelia', rol: 'caja', pin: '1111', activo: true, email: 'noelia@laestrella.example' },
+        { id: 'u_ignacio', nombre: 'Ignacio', rol: 'caja', pin: '2222', activo: true, email: 'ignacio@laestrella.example' }
       ],
       categorias: CATEGORIAS.slice(),
       proveedores: PROVEEDORES.map(function (v) { return { id: v[0], nombre: v[1], contacto: v[2], telefono: v[3], email: v[4], rubro: v[5], activo: true }; }),
@@ -243,7 +242,7 @@
       var ts = hoy0 - dias * DIA + 10 * HORA;
       var c = { id: uid('c'), num: E.contador.compra, ts: ts, prov: prov, items: its, total: total, recibida: recibida, recibidaTs: recibida ? ts + DIA : null, pagada: pagada, nota: '' };
       E.compras.push(c);
-      if (recibida) its.forEach(function (i) { E.movStock.push({ id: uid('s'), ts: c.recibidaTs, p: i.p, n: i.n, cant: i.c, tipo: 'compra', ref: 'Compra C-' + pad(c.num, 4), usuario: 'Marta Rodríguez' }); });
+      if (recibida) its.forEach(function (i) { E.movStock.push({ id: uid('s'), ts: c.recibidaTs, p: i.p, n: i.n, cant: i.c, tipo: 'compra', ref: 'Compra C-' + pad(c.num, 4), usuario: 'Luana' }); });
     }
     compra(12, 'v1', [['Arroz Blanco 1 kg', 60], ['Azúcar 1 kg', 48], ['Fideos Tallarín 500 g', 48], ['Aceite de Girasol 900 ml', 24]], true, true);
     compra(10, 'v5', [['Refresco Cola 2,25 L', 36], ['Agua Sin Gas 2 L', 48], ['Cerveza Lata 473 ml', 72]], true, true);
@@ -254,14 +253,13 @@
     // Ajustes
     [['Queso Colonia', -0.35, 'Merma por corte'], ['Pan Flauta', -6, 'Pan del día anterior'], ['Pasta Dental 90 g', -2, 'Envase roto']].forEach(function (a, i) {
       var p = E.productos.filter(function (x) { return x.nombre === a[0]; })[0];
-      E.movStock.push({ id: uid('s'), ts: hoy0 - (5 - i) * DIA + 17 * HORA, p: p.id, n: p.nombre, cant: a[1], tipo: 'ajuste', ref: a[2], usuario: 'Marta Rodríguez' });
+      E.movStock.push({ id: uid('s'), ts: hoy0 - (5 - i) * DIA + 17 * HORA, p: p.id, n: p.nombre, cant: a[1], tipo: 'ajuste', ref: a[2], usuario: 'Luana' });
     });
     E.movStock.sort(function (a, b) { return a.ts - b.ts; });
 
     // Auditoría de muestra
-    [[28, 'Marta Rodríguez', 'Creó la cuenta de administración'], [28, 'Marta Rodríguez', 'Aprobó a Lucía Pereira (caja)'], [28, 'Marta Rodríguez', 'Aprobó a Diego Silva (caja)'],
-     [9, 'Marta Rodríguez', 'Cambió el precio de Yerba Mate 1 kg: $ 265 → $ 279'], [7, 'Marta Rodríguez', 'Desactivó a Valentina Cabral (caja)'],
-     [4, 'Marta Rodríguez', 'Cambió el precio de Aceite de Girasol 900 ml: $ 129 → $ 135'], [1, 'Lucía Pereira', 'Abrió la caja del turno mañana con $ 2.500'], [2, 'Marta Rodríguez', 'Registró la compra C-0005 a Higiene Total S.A.']
+    [[28, 'Luana', 'Creó la cuenta de administración'], [28, 'Luana', 'Aprobó a Noelia (caja)'], [28, 'Luana', 'Aprobó a Ignacio (caja)'],
+     [9, 'Luana', 'Cambió el precio de Yerba Mate 1 kg: $ 265 → $ 279'], [4, 'Luana', 'Cambió el precio de Aceite de Girasol 900 ml: $ 129 → $ 135'], [1, 'Noelia', 'Abrió la caja del turno mañana con $ 2.500'], [2, 'Luana', 'Registró la compra C-0005 a Higiene Total S.A.']
     ].forEach(function (a) { E.auditoria.push({ id: uid('x'), ts: hoy0 - a[0] * DIA + 9 * HORA, usuario: a[1], accion: a[2] }); });
     return E;
   }
