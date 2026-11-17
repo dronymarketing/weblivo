@@ -213,3 +213,9 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .reloj-nav { margin-right: 6px; }
 .reloj-nav time { font-size: 16px; }
 .barra .reloj-nav small { display: block; }
+
+/* En las alertas de stock el hover no es rosa: es del color de la alerta */
+.kpi--alerta:hover { box-shadow: 0 0 0 1.5px #E0A622, var(--sombra-alta); }
+.kpi--error:hover { box-shadow: 0 0 0 1.5px var(--error), var(--sombra-alta); }
+.chip--alerta:hover { border-color: #D9A21B; color: var(--alerta-texto); }
+.chip--error:hover { border-color: var(--error); color: var(--error-texto); }
