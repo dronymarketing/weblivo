@@ -586,6 +586,11 @@ begin
   v_vuelto := case when v_ef > 0 then v_recibido - v_ef else 0 end;
   end if;
 
+  -- Fiar por encima del límite solo lo puede autorizar administración (la caja queda bloqueada)
+  if v_deu_id is not null and v_deu.limite > 0 and v_saldo0 + v_total > v_deu.limite and not public.tiene_rol('admin') then
+    raise exception '% pasaría su límite de % (debe % y esta compra es de %). Avisale a administración.', v_deu.nombre, public.din(v_deu.limite), public.din(v_saldo0), public.din(v_total) using errcode = 'P0001';
+  end if;
+
   -- 3) número de ticket: el de la caja si está libre; si no, el siguiente
   v_num := coalesce(nullif((p ->> 'num')::int, 0), nextval('public.venta_numero')::int);
   if exists (select 1 from public.ventas where num = v_num) then v_num := (select max(num) + 1 from public.ventas); end if;
@@ -603,7 +608,10 @@ begin
   for v_pg in select * from jsonb_array_elements(coalesce(p -> 'pagos', '[]'::jsonb)) loop
     insert into public.venta_pagos (venta, medio, monto) values (v_id, v_pg ->> 'm', (v_pg ->> 'monto')::int);
   end loop;
-  if v_deu_id is not null then perform public.avisar_deudor(v_deu_id, v_saldo0, v_saldo0 + v_total); end if;
+  if v_deu_id is not null then
+    perform public.avisar_deudor(v_deu_id, v_saldo0, v_saldo0 + v_total);
+    perform public.anotar('Fió ' || public.din(v_total) || ' a ' || v_deu.nombre || ' (ticket ' || lpad(v_num::text, 6, '0') || ')' || case when v_deu.limite > 0 and v_saldo0 + v_total > v_deu.limite then ' por encima de su límite' else '' end);
+  end if;
   return public.venta_json(v_id);
 end $$;
 
@@ -692,24 +700,24 @@ begin
   delete from public.codigos_sin_cargar where codigo = btrim(coalesce(p_codigo, ''));
 end $$;
 
--- Alta y edición de deudores. La caja puede darlos de alta y corregir nombre y teléfono; el límite y el alta/baja son de administración.
+-- Alta y edición de deudores: SOLO administración. La caja únicamente los elige para fiar (no puede crear, renombrar, cambiar el teléfono ni el límite,
+-- ni dar de baja: así no se puede inventar un deudor ni redirigir los avisos). Nadie borra deudores: se dan de baja y queda el historial.
 create or replace function public.guardar_deudor(p jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   v_id uuid := nullif(p ->> 'id', '')::uuid; v_nombre text := btrim(coalesce(p ->> 'nombre', '')); v_tel text := btrim(coalesce(p ->> 'telefono', ''));
-  v_lim int := greatest(0, (round(coalesce((p ->> 'limite')::numeric, 0) / 100) * 100)::int); v_admin boolean; v_old public.deudores;
+  v_lim int := greatest(0, (round(coalesce((p ->> 'limite')::numeric, 0) / 100) * 100)::int); v_old public.deudores;
 begin
-  perform public.exigir_rol('admin', 'caja'); v_admin := public.tiene_rol('admin');
+  perform public.exigir_rol('admin');
   if char_length(v_nombre) < 2 then raise exception 'Escribí el nombre.' using errcode = 'P0001'; end if;
   if v_tel !~ '^[0-9 +()-]{0,30}$' then raise exception 'El teléfono solo puede llevar números.' using errcode = 'P0001'; end if;
   if v_id is not null then
     select * into v_old from public.deudores where id = v_id for update;
     if not found then raise exception 'Deudor no encontrado.' using errcode = 'P0001'; end if;
-    update public.deudores set nombre = v_nombre, telefono = v_tel,
-           limite = case when v_admin then v_lim else limite end, activo = case when v_admin then coalesce((p ->> 'activo')::boolean, activo) else activo end where id = v_id;
-    perform public.anotar('Editó al deudor ' || v_nombre);
+    update public.deudores set nombre = v_nombre, telefono = v_tel, limite = v_lim, activo = coalesce((p ->> 'activo')::boolean, activo) where id = v_id;
+    perform public.anotar('Editó al deudor ' || v_nombre || ' (límite ' || public.din(v_lim) || case when coalesce((p ->> 'activo')::boolean, v_old.activo) then '' else ', dado de baja' end || ')');
   else
-    insert into public.deudores (nombre, telefono, limite) values (v_nombre, v_tel, case when v_admin then v_lim else 0 end) returning id into v_id;
+    insert into public.deudores (nombre, telefono, limite) values (v_nombre, v_tel, v_lim) returning id into v_id;
     perform public.anotar('Agregó al deudor ' || v_nombre);
   end if;
   return jsonb_build_object('id', v_id);
@@ -742,7 +750,7 @@ end $$;
 create or replace function public.marcar_aviso(p_id bigint, p_estado text, p_detalle text default '') returns void
 language plpgsql security definer set search_path = public as $$
 begin
-  perform public.exigir_rol('admin', 'caja');
+  perform public.exigir_rol('admin');
   if p_estado not in ('pendiente', 'enviado', 'error') then raise exception 'Estado inválido.' using errcode = 'P0001'; end if;
   update public.avisos_deudor set estado = p_estado, detalle = left(coalesce(p_detalle, ''), 200) where id = p_id;
 end $$;

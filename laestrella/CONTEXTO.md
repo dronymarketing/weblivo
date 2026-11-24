@@ -115,6 +115,14 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     WhatsApp Business de Meta y plantilla aprobada; guía en `supabase/funciones/LEEME.md`; se activa con `whatsapp: true` en `config.js`; NO probada contra Meta);
     mientras tanto cada aviso queda «Pendiente» y el botón «Abrir en WhatsApp» abre el chat con el texto armado y lo marca enviado. Modelo: tablas `deudores`,
     `deudor_pagos`, `avisos_deudor`, columna `ventas.deudor_id`; funciones `guardar_deudor`, `cobrar_deuda`, `marcar_aviso`, `saldo_deudor`.
+  - **Controles anti-fraude (caja ↔ deudores)**, todos aplicados en el SERVIDOR (la pantalla solo los refleja): la caja **no crea, no renombra, no cambia el
+    teléfono ni el límite, ni da de baja a un deudor, y nadie los borra** (se dan de baja y queda el historial); la caja **no puede fiar por encima del límite**
+    (se bloquea y avisa «Avisale a administración»; solo administración puede autorizarlo, confirmando); la caja **no puede marcar avisos de WhatsApp como
+    enviados** (no puede esconder una alerta); **cada venta a cuenta queda en el registro** («Fió $ X a Fulano (ticket N)», con «por encima de su límite» si
+    corresponde) y en la venta figura quién la hizo; no se puede anular ni editar un fiado desde la caja. Lo que la caja SÍ puede (y queda con su nombre en el
+    registro): elegir un deudor y fiar dentro del límite, registrar el pago de una deuda, cambiar precio/mínimo/stock. Riesgo que queda abierto a propósito:
+    un pago de deuda con tarjeta/QR que la cajera anote sin que haya existido (en efectivo se descubre en el cierre porque sobraría efectivo esperado); por eso
+    cada pago figura en «Movimientos» del deudor, en el turno y en el registro, con quién lo cobró. Un deudor con límite 0 es «sin límite»: ponerlo es decisión de administración.
   - **La caja también cambia precios y stock**: menú de la caja → «Precios y stock» (busca o escanea, cambia precio, mínimo y el stock contado). Server: la caja
     puede `guardar_producto` solo sobre un producto existente y solo precio y mínimo (nombre, costo y códigos quedan como estaban; no crea productos) y
     `ajustar_stock`; dar de baja, compras y alta de productos siguen siendo de administración. Queda en el registro con el nombre de quien lo hizo.

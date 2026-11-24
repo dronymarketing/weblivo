@@ -153,8 +153,10 @@
   LE.pendientes = function () { return (E.ventas || []).filter(function (v) { return v.sync === false; }); };
 
   /* ---------- Todo lo demás: en el servidor, y se refresca la copia ---------- */
+  /* Después de guardar algo hay que pedir datos NUEVOS: si ya había una actualización en curso, es una foto anterior al cambio, así que se espera y se vuelve a pedir */
+  function cargarFresco() { var previo = cargando; return (previo ? previo.then(function () { }, function () { }) : Promise.resolve()).then(function () { return cargar(); }); }
   function hacer(nombre, args, despues) {
-    return rpc(nombre, args).then(function (r) { avisarCambio(); return cargar().then(function () { return despues ? despues(r) : r; }, function () { return despues ? despues(r) : r; }); });
+    return rpc(nombre, args).then(function (r) { avisarCambio(); return cargarFresco().then(function () { return despues ? despues(r) : r; }, function () { return despues ? despues(r) : r; }); });
   }
   LE.abrirCaja = function (base) { return hacer('abrir_caja', { p_base: Math.round(base) }, function () { return LE.turnoAbierto(); }); };
   LE.cerrarCaja = function (contado) {

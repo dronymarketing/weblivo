@@ -521,6 +521,7 @@
         return { p: p.id, n: p.nombre, c: c, u: p.precio, s: aPesos(p.precio * c), iva: p.iva, k: p.costo }; // el precio sale del servidor, no de la pantalla
       });
       var total = items.reduce(function (a, i) { return a + i.s; }, 0);
+      if (deu && deu.limite > 0 && (deu.saldo || 0) + total > deu.limite && u.rol !== 'admin') throw new Error(deu.nombre + ' pasaría su límite de ' + fmt.din(deu.limite) + ' (debe ' + fmt.din(deu.saldo || 0) + ' y esta compra es de ' + fmt.din(total) + '). Avisale a administración.');
       var pagos = (d.pagos || []).map(function (p) { return { m: p.m, monto: Math.round(+p.monto) }; }).filter(function (p) { return p.monto > 0; });
       var pagado = pagos.reduce(function (a, p) { return a + p.monto; }, 0);
       if (deu && pagos.length) throw new Error('Una venta a cuenta no lleva pagos.');
@@ -536,7 +537,7 @@
       var v = { id: d.id || uid('v'), num: E.contador.venta, ts: Date.now(), turno: t.id, cajeroId: u.id, cajero: u.nombre, items: items, total: total, pagos: pagos, recibido: recibido, vuelto: vuelto, estado: 'ok', sync: !E.offline };
       if (deu) { v.fiado = true; v.deudor = deu.id; v.deudorNombre = deu.nombre; }
       E.ventas.push(v);
-      if (deu) { var antes = deu.saldo || 0; deu.saldo = antes + total; avisarDeudor(deu, antes, deu.saldo); }
+      if (deu) { var antes = deu.saldo || 0; deu.saldo = antes + total; avisarDeudor(deu, antes, deu.saldo); anotar('Fió ' + fmt.din(total) + ' a ' + deu.nombre + ' (ticket ' + fmt.num(v.num) + ')' + (deu.limite > 0 && deu.saldo > deu.limite ? ' por encima de su límite' : '')); }
       items.forEach(function (i) { movStock(porId(E.productos, i.p), -i.c, 'venta', 'Ticket ' + fmt.num(v.num)); });
       guardar(); return v;
     },
@@ -547,14 +548,15 @@
     nivelDeudor: function (d, saldo) { var s = saldo == null ? (d.saldo || 0) : saldo; if (!d.limite) return 'ok'; return s >= d.limite ? 'limite' : s * 10 >= d.limite * 8 ? 'cerca' : 'ok'; },
     totalDeudas: function () { return E.deudores.reduce(function (a, d) { return a + Math.max(0, d.saldo || 0); }, 0); },
     fiadoDelDia: function (ts) { var d0 = inicioDia(ts || Date.now()), r = { total: 0, tickets: 0 }; E.ventas.forEach(function (v) { if (v.fiado && v.estado === 'ok' && inicioDia(v.ts) === d0) { r.total += v.total; r.tickets++; } }); return r; },
+    /* Solo administración da de alta o cambia deudores (la caja los elige para fiar, nada más). Nadie los borra: se dan de baja. */
     guardarDeudor: function (d) {
-      var u = exigir('admin', 'caja'), admin = u.rol === 'admin';
+      var u = exigir('admin'), admin = true;
       var nombre = String(d.nombre || '').trim(); if (nombre.length < 2) throw new Error('Escribí el nombre.');
       var tel = String(d.telefono || '').trim(); if (!/^[0-9 +()-]{0,30}$/.test(tel)) throw new Error('El teléfono solo puede llevar números.');
       var lim = Math.max(0, aPesos(+d.limite || 0)), x = d.id ? porId(E.deudores, d.id) : null;
       if (d.id && !x) throw new Error('Deudor no encontrado.');
-      if (x) { x.nombre = nombre; x.telefono = tel; if (admin) { x.limite = lim; if (d.activo != null) x.activo = !!d.activo; } anotar('Editó al deudor ' + nombre); }
-      else { x = { id: uid('d'), nombre: nombre, telefono: tel, limite: admin ? lim : 0, activo: true, saldo: 0 }; E.deudores.push(x); anotar('Agregó al deudor ' + nombre); }
+      if (x) { x.nombre = nombre; x.telefono = tel; x.limite = lim; if (d.activo != null) x.activo = !!d.activo; anotar('Editó al deudor ' + nombre + ' (límite ' + fmt.din(lim) + (x.activo ? '' : ', dado de baja') + ')'); }
+      else { x = { id: uid('d'), nombre: nombre, telefono: tel, limite: lim, activo: true, saldo: 0 }; E.deudores.push(x); anotar('Agregó al deudor ' + nombre); }
       guardar(); return x;
     },
     /* El pago de una deuda entra en la caja del turno abierto (el efectivo suma al efectivo esperado) */
@@ -572,7 +574,7 @@
     },
     pagosDeudor: function (id) { return E.pagosDeuda.filter(function (g) { return g.deudor === id; }); },
     avisosDeuda: function () { return E.avisosDeuda.slice().sort(function (a, b) { return b.ts - a.ts; }); },
-    marcarAviso: function (id, estado, detalle) { var a = porId(E.avisosDeuda, id); if (a) { a.estado = estado; a.detalle = detalle || ''; guardar(); } },
+    marcarAviso: function (id, estado, detalle) { exigir('admin'); var a = porId(E.avisosDeuda, id); if (a) { a.estado = estado; a.detalle = detalle || ''; guardar(); } },
     anularVenta: function (id, motivo) {
       exigir('admin'); var v = porId(E.ventas, id); if (!v || v.estado !== 'ok') throw new Error('Esta venta ya está anulada.');
       if (!String(motivo || '').trim()) throw new Error('Escribí el motivo de la anulación.');

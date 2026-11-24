@@ -239,7 +239,7 @@
   function abrirDeudores() {
     var ctl = UI.modal({
       titulo: 'Deudores', ancha: true,
-      cuerpo: '<div class="dd-barra"><input id="dd-q" class="entrada" placeholder="Buscar por nombre" autocomplete="off" aria-label="Buscar deudor"><button type="button" class="btn btn--acento" id="dd-nuevo">' + ico('plus') + 'Nuevo</button></div><div id="dd-lista" class="dd-lista"></div>',
+      cuerpo: '<div class="dd-barra"><input id="dd-q" class="entrada" placeholder="Buscar por nombre" autocomplete="off" aria-label="Buscar deudor">' + (usuario.rol === 'admin' ? '<button type="button" class="btn btn--acento" id="dd-nuevo">' + ico('plus') + 'Nuevo</button>' : '') + '</div><div id="dd-lista" class="dd-lista"></div>',
       acciones: [{ texto: 'Cerrar', clase: 'btn--linea' }]
     });
     function pintar() {
@@ -248,7 +248,7 @@
         var nv = LE.nivelDeudor(d);
         return '<div class="dd dd--' + nv + '"><button type="button" class="dd__elegir" data-elegir="' + d.id + '"><span class="avatar">' + esc(UI.iniciales(d.nombre)) + '</span><span class="dd__txt"><strong>' + esc(d.nombre) + '</strong><small>' + ((d.saldo || 0) > 0 ? 'Debe ' + F.din(d.saldo) : 'No debe nada') + (d.limite ? ' · límite ' + F.din(d.limite) : '') + '</small>' + barraUso(d) + '</span></button>' +
           ((d.saldo || 0) > 0 ? '<button type="button" class="btn btn--chico btn--linea" data-cobrar="' + d.id + '">' + ico('banknote') + 'Cobrar</button>' : '') + '</div>';
-      }).join('') : '<p class="vacio">' + (q ? 'No encontré a nadie con ese nombre.' : 'Todavía no hay deudores. Tocá «Nuevo» para agregar el primero.') + '</p>';
+      }).join('') : '<p class="vacio">' + (q ? 'No encontré a nadie con ese nombre.' : 'Todavía no hay deudores. Administración los da de alta desde el panel.') + '</p>';
     }
     ctl.cuerpo.addEventListener('input', function (e) { if (e.target.id === 'dd-q') pintar(); });
     ctl.cuerpo.addEventListener('click', function (e) {
@@ -296,6 +296,7 @@
       if (!r.ok) return;
       S.actual = nuevoTicket(); guardarEstado(); pintarTicket(); pintarBarra(); pintarGrilla(); pintarCliente('gracias'); mostrarTicket(r.valor, false);
     }
+    if (d.limite > 0 && despues > d.limite && usuario.rol !== 'admin') { UI.beep(false); return UI.toast(d.nombre + ' pasaría su límite de ' + F.din(d.limite) + ' (debe ' + F.din(d.saldo || 0) + '). Avisale a administración.', 'error'); }
     if (LE.nivelDeudor(d, despues) === 'limite') UI.confirmar('Pasa su límite', d.nombre + ' quedaría debiendo ' + F.din(despues) + ' y su límite es ' + F.din(d.limite) + '. ¿Fiar igual?', { ok: 'Fiar igual' }).then(function (si) { if (si) emitir(); });
     else emitir();
   }
