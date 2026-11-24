@@ -125,11 +125,11 @@
     return g;
   };
   LE.marcarAviso = function (id, estado, detalle) { return hacer('marcar_aviso', { p_id: id, p_estado: estado, p_detalle: detalle || '' }); };
-  /* Envío automático por WhatsApp: una función del servidor (supabase/funciones/enviar-whatsapp) manda los avisos pendientes.
-     Se activa con `whatsapp: true` en config.js una vez desplegada; mientras tanto los avisos quedan pendientes y el panel los abre a mano. */
+  /* Envío automático por WhatsApp: lo hace el servicio de Cloudflare (supabase/servicio) apenas la base crea el aviso.
+     Acá solo se vuelve a leer la base unos segundos después, para ver el aviso como «Enviado». */
   function dispararWhatsApp() {
-    if (!C.whatsapp || !sb.functions) return;
-    try { sb.functions.invoke('enviar-whatsapp', { body: {} }).then(function () { setTimeout(function () { cargar().then(avisar, function () { }); }, 2500); }, function () { }); } catch (e) { }
+    if (!C.whatsapp) return;
+    [4000, 12000].forEach(function (ms) { setTimeout(function () { cargar().then(avisar, function () { }); }, ms); });
   }
   LE.enviarAvisosWhatsApp = function () { dispararWhatsApp(); };
   LE.egresoCaja = function (concepto, monto) {

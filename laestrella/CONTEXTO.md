@@ -111,9 +111,7 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     la lista), **ese pago sí entra en la caja del día** (suma al efectivo esperado si es en efectivo y figura en el cierre y en el turno del panel).
     *Panel*: sección «Deudores» (lo que les deben en total, cerca/sobre el límite, lista con barra de uso, movimientos de cada uno, cobrar, editar con límite en
     pesos; 0 = sin límite) y «Avisos de WhatsApp». **Avisos**: se crean solos (servidor, `avisar_deudor`) al cruzar el 80 % del límite y al llegar al límite,
-    una vez por cruce; la campana y un globito en el menú avisan. **Envío**: automático por la función `supabase/funciones/enviar-whatsapp` (requiere cuenta de
-    WhatsApp Business de Meta y plantilla aprobada; guía en `supabase/funciones/LEEME.md`; se activa con `whatsapp: true` en `config.js`; NO probada contra Meta);
-    mientras tanto cada aviso queda «Pendiente» y el botón «Abrir en WhatsApp» abre el chat con el texto armado y lo marca enviado. Modelo: tablas `deudores`,
+    una vez por cruce; la campana y un globito en el menú avisan. **Envío**: automático por un Worker de Cloudflare (`supabase/servicio/worker.js`, mismo esquema que Parking Despegar: disparador `al_crear_aviso_deudor` con pg_net → `/aviso` → `servicio_aviso` / `servicio_resultado`, clave con `crear_clave_servicio()`; requiere WhatsApp Business de Meta y plantilla aprobada; guía en `supabase/servicio/LEEME.md`; `whatsapp: true` en `config.js` solo refresca la pantalla; NO probado contra Meta real); mientras tanto cada aviso queda «Pendiente» y el botón «Abrir en WhatsApp» abre el chat con el texto armado y lo marca enviado. Modelo: tablas `deudores`,
     `deudor_pagos`, `avisos_deudor`, columna `ventas.deudor_id`; funciones `guardar_deudor`, `cobrar_deuda`, `marcar_aviso`, `saldo_deudor`.
   - **Controles anti-fraude (caja ↔ deudores)**, todos aplicados en el SERVIDOR (la pantalla solo los refleja): la caja **no crea, no renombra, no cambia el
     teléfono ni el límite, ni da de baja a un deudor, y nadie los borra** (se dan de baja y queda el historial); la caja **no puede fiar por encima del límite**

@@ -240,6 +240,16 @@ create table if not exists public.avisos_deudor (
   detalle  text not null default ''
 );
 create index if not exists avisos_deudor_estado on public.avisos_deudor (estado, ts desc);
+alter table public.avisos_deudor add column if not exists reclamado timestamptz;
+
+-- Servicio de WhatsApp (Cloudflare Worker, supabase/servicio/worker.js): la clave se guarda solo como huella y la
+-- dirección del servicio dice adónde avisar cuando nace un aviso pendiente (vacía = sin envío automático).
+create table if not exists public.config_servicio (
+  id         int primary key default 1 check (id = 1),
+  clave_hash text,
+  aviso_url  text
+);
+insert into public.config_servicio (id) values (1) on conflict do nothing;
 
 -- ---------- Seguridad: RLS sin políticas = nadie toca las tablas directo ----------
 
@@ -262,6 +272,7 @@ alter table public.codigos_sin_cargar enable row level security;
 alter table public.deudores           enable row level security;
 alter table public.deudor_pagos       enable row level security;
 alter table public.avisos_deudor      enable row level security;
+alter table public.config_servicio    enable row level security;
 
 revoke all on all tables    in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
@@ -755,6 +766,67 @@ begin
   update public.avisos_deudor set estado = p_estado, detalle = left(coalesce(p_detalle, ''), 200) where id = p_id;
 end $$;
 
+-- ---------- Servicio de WhatsApp (Cloudflare) ----------
+-- Se corre a mano en el SQL Editor (nadie más puede): select public.crear_clave_servicio();  → devuelve la clave UNA vez.
+create or replace function public.crear_clave_servicio() returns text
+language plpgsql security definer set search_path = public as $$
+declare v_clave text := replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', '');
+begin
+  update public.config_servicio set clave_hash = encode(sha256(convert_to(v_clave, 'UTF8')), 'hex') where id = 1;
+  return v_clave;
+end $$;
+
+create or replace function public.servicio_validar(p_clave text) returns void
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if coalesce(p_clave, '') = '' or not exists (
+       select 1 from public.config_servicio
+        where id = 1 and clave_hash = encode(sha256(convert_to(p_clave, 'UTF8')), 'hex')) then
+    raise exception 'Clave del servicio incorrecta.' using errcode = '42501';
+  end if;
+end $$;
+
+-- El servicio pide el aviso: solo si sigue pendiente y nadie lo tomó en los últimos 5 minutos (evita mandarlo dos veces)
+create or replace function public.servicio_aviso(p_clave text, p_id bigint) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare a public.avisos_deudor;
+begin
+  perform public.servicio_validar(p_clave);
+  update public.avisos_deudor set reclamado = now()
+   where id = p_id and estado = 'pendiente' and (reclamado is null or reclamado < now() - interval '5 minutes')
+   returning * into a;
+  if not found then return null; end if;
+  return jsonb_build_object('id', a.id, 'mensaje', a.mensaje, 'telefono', a.telefono);
+end $$;
+
+create or replace function public.servicio_resultado(p_clave text, p_id bigint, p_estado text, p_detalle text default '') returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.servicio_validar(p_clave);
+  if p_estado not in ('enviado', 'error') then raise exception 'Estado inválido.' using errcode = 'P0001'; end if;
+  update public.avisos_deudor set estado = p_estado, detalle = left(coalesce(p_detalle, ''), 200) where id = p_id and estado = 'pendiente';
+end $$;
+
+-- Cuando nace un aviso pendiente, la base le avisa al servicio. Nunca frena la venta: si algo falla, el aviso queda
+-- «Pendiente» y se puede mandar a mano desde el panel.
+create extension if not exists pg_net with schema extensions;
+create or replace function public.al_crear_aviso_deudor() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text;
+begin
+  select aviso_url into v_url from public.config_servicio where id = 1;
+  if coalesce(v_url, '') = '' or new.estado <> 'pendiente' then return new; end if;
+  begin
+    perform net.http_post(url := v_url, body := jsonb_build_object('aviso', new.id),
+                          headers := '{"Content-Type": "application/json"}'::jsonb);
+  exception when others then null;
+  end;
+  return new;
+end $$;
+drop trigger if exists al_crear_aviso_deudor on public.avisos_deudor;
+create trigger al_crear_aviso_deudor after insert on public.avisos_deudor
+  for each row execute function public.al_crear_aviso_deudor();
+
 create or replace function public.activar_producto(p_id uuid, p_activo boolean) returns void
 language plpgsql security definer set search_path = public as $$
 declare v_n text;
@@ -914,3 +986,4 @@ grant execute on function
 create or replace function public.latido() returns timestamptz
 language sql stable as $$ select now() $$;
 grant execute on function public.latido() to anon, authenticated;
+grant execute on function public.servicio_aviso(text, bigint), public.servicio_resultado(text, bigint, text, text) to anon, authenticated;
