@@ -26,6 +26,86 @@
       '<b class="nivel__lleno" style="width:' + lleno + '%"></b></span>';
   }
 
+  /* ============================ DEUDORES ============================
+     Compras a cuenta (fiado): descuentan stock pero no suman a lo cobrado; el pago de la deuda sí entra en la caja del día. */
+  function telWA(t) { var d = String(t || '').replace(/\D/g, ''); if (!d) return ''; if (d.indexOf('598') === 0) return d; if (d.charAt(0) === '0') d = d.slice(1); return '598' + d; }
+  function barraUsoP(d) {
+    if (!d.limite) return '<span class="suave">Sin límite</span>';
+    var pc = Math.max(0, Math.min(100, Math.round((d.saldo || 0) * 100 / d.limite)));
+    return '<span class="uso-fila"><span class="uso uso--' + LE.nivelDeudor(d) + '" role="img" aria-label="Usó el ' + pc + ' % de su límite"><i style="width:' + Math.max(pc, 3) + '%"></i></span><small>' + pc + ' % de ' + F.din(d.limite) + '</small></span>';
+  }
+  P.rutas.deudores = {
+    titulo: 'Deudores',
+    entrar: function () {
+      var S = P.est('deudores', { f: '' });
+      P.cab('Deudores', null, '<button type="button" class="btn btn--acento" data-acc="deudor-nuevo">' + ico('plus') + 'Nuevo deudor</button>',
+        [['', 'Todos'], ['deuda', 'Con deuda'], ['cerca', 'Cerca del límite'], ['limite', 'Sobre el límite']].map(function (x) { return '<button type="button" class="chip' + (x[0] === 'cerca' ? ' chip--alerta' : x[0] === 'limite' ? ' chip--error' : '') + '" data-filtro="f" data-valor="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>'; }).join(''));
+      P.rutas.deudores.pintar();
+    },
+    pintar: function () {
+      var S = P.est('deudores'), todos = LE.deudores(true), activos = todos.filter(function (d) { return d.activo; });
+      var cerca = activos.filter(function (d) { return LE.nivelDeudor(d) === 'cerca'; }), lim = activos.filter(function (d) { return LE.nivelDeudor(d) === 'limite'; });
+      var lista = todos.filter(function (d) { return S.f === 'deuda' ? (d.saldo || 0) > 0 : S.f === 'cerca' ? LE.nivelDeudor(d) === 'cerca' : S.f === 'limite' ? LE.nivelDeudor(d) === 'limite' : true; }).sort(function (a, b) { return (b.saldo || 0) - (a.saldo || 0); });
+      var avs = LE.avisosDeuda().slice(0, 40), pend = avs.filter(function (a) { return a.estado !== 'enviado'; }).length;
+      var link = function (v, cls, rot, n) { return '<button type="button" class="kpi kpi--link' + (n ? cls : '') + '" data-filtro="f" data-valor="' + v + '"><span class="kpi__rotulo">' + rot + '</span><span class="kpi__valor">' + n + '</span><span class="kpi__ir">Ver cuáles ›</span></button>'; };
+      P.zona('<div class="kpis"><div class="kpi"><div class="kpi__rotulo">Les deben en total</div><div class="kpi__valor">' + F.din(LE.totalDeudas()) + '</div></div>' +
+        link('cerca', ' kpi--alerta', 'Cerca del límite', cerca.length) + link('limite', ' kpi--error', 'Sobre el límite', lim.length) +
+        '<div class="kpi"><div class="kpi__rotulo">Avisos sin enviar</div><div class="kpi__valor">' + pend + '</div></div></div>' +
+        '<div class="paneles paneles--equipo"><section class="panel"><div class="panel__cab"><h3>Personas</h3></div><div class="panel__lista">' + P.tabla([
+          { t: 'Persona', c: 't-titulo', f: function (d) { return '<span class="celda-prod"><span class="avatar avatar--chico">' + esc(UI.iniciales(d.nombre)) + '</span><span>' + esc(d.nombre) + '<small>' + (esc(d.telefono) || 'Sin teléfono') + (d.activo ? '' : ' · de baja') + '</small></span></span>'; } },
+          { t: 'Debe', c: 't-derecha', f: function (d) { return (d.saldo || 0) > 0 ? F.din(d.saldo) : '<span class="suave">—</span>'; } },
+          { t: 'Límite', f: function (d) { return barraUsoP(d); } },
+          { t: '', c: 't-acciones', f: function (d) { return ((d.saldo || 0) > 0 ? '<button type="button" class="btn btn--chico btn--acento" data-acc="deudor-cobrar" data-id="' + d.id + '">' + ico('banknote') + 'Cobrar</button> ' : '') + '<button type="button" class="btn btn--chico btn--linea btn--icono" data-acc="deudor-ver" data-id="' + d.id + '" aria-label="Ver movimientos de ' + esc(d.nombre) + '" title="Movimientos">' + ico('eye') + '</button> <button type="button" class="btn btn--chico btn--linea btn--icono" data-acc="deudor-editar" data-id="' + d.id + '" aria-label="Editar a ' + esc(d.nombre) + '" title="Editar">' + ico('pencil') + '</button>'; } }
+        ], lista, { clase: function (d) { return d.activo ? '' : 'is-baja'; }, vacio: todos.length ? 'No hay deudores con este filtro.' : 'Todavía no hay deudores. Se agregan desde acá o desde la caja.' }) + '</div></section>' +
+        '<section class="panel"><div class="panel__cab"><h3>Avisos de WhatsApp</h3></div><div class="panel__lista">' + (avs.length ? '<ul class="avisos-wa">' + avs.map(function (a) {
+          var d = LE.deudor(a.deudor), est = a.estado === 'enviado' ? '<span class="badge badge--ok">Enviado</span>' : a.estado === 'error' ? '<span class="badge badge--error">' + esc(a.detalle || 'Error') + '</span>' : '<span class="badge badge--alerta">Pendiente</span>';
+          return '<li><div class="aw__cab"><strong>' + esc(d ? d.nombre : 'Deudor') + '</strong>' + est + '</div><small>' + (a.tipo === 'limite' ? 'Llegó al límite' : 'Cerca del límite') + ' · ' + F.fechaCorta(a.ts) + ' ' + F.hora(a.ts) + '</small>' +
+            (a.estado !== 'enviado' && telWA(a.telefono) ? '<button type="button" class="btn btn--chico btn--linea" data-acc="aviso-wa" data-id="' + a.id + '">' + ico('message-circle') + 'Abrir en WhatsApp</button>' : '') + '</li>'; }).join('') + '</ul>' : '<p class="vacio">Todavía no hay avisos. Se crean solos cuando alguien llega al 80 % de su límite y cuando lo supera.</p>') + '</div></section></div>');
+    }
+  };
+  function formDeudor(id) {
+    var d = id ? LE.deudor(id) : { nombre: '', telefono: '', limite: 0, activo: true }, nuevo = !id;
+    var ctl = UI.modal({
+      titulo: nuevo ? 'Nuevo deudor' : 'Editar deudor',
+      cuerpo: '<label class="campo"><span>Nombre</span><input name="nombre" class="entrada" maxlength="60" autocomplete="off" value="' + esc(d.nombre) + '"></label>' +
+        '<label class="campo"><span>Teléfono (WhatsApp)</span><input name="telefono" class="entrada" inputmode="tel" maxlength="30" autocomplete="off" placeholder="099 123 456" value="' + esc(d.telefono) + '"></label>' +
+        '<label class="campo"><span>Límite de deuda (0 = sin límite)</span><input name="limite" class="entrada" inputmode="decimal" autocomplete="off" value="' + UI.deCentavos(d.limite || 0) + '"></label>' +
+        (nuevo ? '' : '<label class="interruptor"><span>Puede comprar a cuenta</span><input type="checkbox" name="activo"' + (d.activo ? ' checked' : '') + '></label>'),
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--acento', cerrar: false, accion: function () {
+        var v = UI.valores(ctl);
+        UI.hacer(function () { return LE.guardarDeudor({ id: id, nombre: v.nombre, telefono: v.telefono, limite: UI.aCentavos(v.limite), activo: nuevo ? true : !!v.activo }); }, 'Deudor guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
+    });
+  }
+  P.acciones['deudor-nuevo'] = function () { formDeudor(null); };
+  P.acciones['deudor-editar'] = function (id) { formDeudor(id); };
+  P.acciones['deudor-cobrar'] = function (id) {
+    var d = LE.deudor(id), n = LE.negocio(), medios = Object.keys(LE.MEDIOS).filter(function (m) { return n.medios[m]; }), medio = medios.indexOf('efectivo') >= 0 ? 'efectivo' : medios[0];
+    var ctl = UI.modal({
+      titulo: 'Cobrar deuda',
+      cuerpo: '<p><strong>' + esc(d.nombre) + '</strong> debe <strong>' + F.din(d.saldo || 0) + '</strong></p><div class="medios" id="cd-medios" style="margin:12px 0">' + medios.map(function (m) { return '<button type="button" class="medio" data-m="' + m + '" aria-pressed="' + (m === medio) + '">' + LE.MEDIOS[m] + '</button>'; }).join('') + '</div>' +
+        '<label class="campo"><span>Cuánto paga</span><input name="monto" class="entrada" inputmode="decimal" autocomplete="off" value="' + UI.deCentavos(d.saldo || 0) + '"></label>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Registrar pago', clase: 'btn--acento', cerrar: false, accion: function () {
+        var m = UI.aCentavos(UI.valores(ctl).monto);
+        UI.hacer(function () { return LE.cobrarDeuda({ deudor: id, monto: m, medio: medio }); }, 'Pago registrado: entra en la caja de hoy.').then(function (r) { if (r.ok) { ctl.cerrar(); P.refrescar(); } }); return false; } }]
+    });
+    ctl.cuerpo.addEventListener('click', function (e) { var b = e.target.closest('[data-m]'); if (b) { medio = b.dataset.m; ctl.$$('.medio').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.m === medio ? 'true' : 'false'); }); } });
+  };
+  P.acciones['deudor-ver'] = function (id) {
+    var d = LE.deudor(id), mov = [];
+    LE.ventas(0, Date.now() + 1000).forEach(function (v) { if (v.fiado && v.deudor === id) mov.push({ ts: v.ts, txt: 'Compró a cuenta · ticket ' + F.num(v.num) + (v.estado === 'ok' ? '' : ' (anulado)'), monto: v.estado === 'ok' ? v.total : 0, tipo: 'debe' }); });
+    LE.pagosDeudor(id).forEach(function (g) { mov.push({ ts: g.ts, txt: 'Pagó (' + LE.MEDIOS[g.medio].toLowerCase() + ') · cobró ' + esc(g.usuario), monto: g.monto, tipo: 'pago' }); });
+    mov.sort(function (a, b) { return b.ts - a.ts; });
+    UI.modal({ titulo: d.nombre, ancha: true, cuerpo: '<p style="margin-bottom:12px">Debe <strong>' + F.din(d.saldo || 0) + '</strong>' + (d.limite ? ' · límite ' + F.din(d.limite) : '') + '</p>' +
+      (mov.length ? '<ul class="permisos">' + mov.map(function (m) { return '<li><span style="flex:1">' + F.fechaCorta(m.ts) + ' ' + F.hora(m.ts) + ' · ' + m.txt + '</span><strong class="num" style="color:' + (m.tipo === 'pago' ? 'var(--ok-texto)' : 'var(--texto)') + '">' + (m.tipo === 'pago' ? '−' : '') + F.din(m.monto) + '</strong></li>'; }).join('') + '</ul>' : '<p class="vacio">Sin movimientos en los últimos días.</p>'),
+      acciones: [{ texto: 'Cerrar', clase: 'btn--linea' }] });
+  };
+  P.acciones['aviso-wa'] = function (id) {
+    var a = LE.avisosDeuda().filter(function (x) { return String(x.id) === String(id); })[0]; if (!a) return;
+    var url = 'https://wa.me/' + telWA(a.telefono) + '?text=' + encodeURIComponent(a.mensaje);
+    window.open(url, '_blank', 'noopener');
+    UI.hacer(function () { return LE.marcarAviso(a.id, 'enviado', 'Abierto en WhatsApp'); }).then(function (r) { if (r.ok) P.refrescar(); });
+  };
+
   /* ============================ STOCK ============================ */
   P.rutas.stock = {
     titulo: 'Stock',
@@ -201,8 +281,8 @@
     UI.modal({
       titulo: 'Turno ' + t.turno + ' · ' + F.fecha(t.apertura), ancha: true,
       cuerpo: '<p class="suave" style="margin-bottom:14px">Abrió ' + esc(t.abrio) + ' (' + F.hora(t.apertura) + ') con ' + F.din(t.base) + (t.cierre ? ' · cerró ' + esc(t.cerro) + ' (' + F.hora(t.cierre) + ')' : '') + '</p>' +
-        '<div class="grid grid--2"><div class="tarjeta"><h3>' + r.tickets + ' ventas · ' + F.din(r.total) + '</h3><ul class="leyenda">' + Object.keys(LE.MEDIOS).map(function (m) { return '<li><span class="clave" style="background:' + P.COLOR_MEDIO[m] + '"></span><span>' + LE.MEDIOS[m] + '</span><span class="lv">' + F.din(r.porMedio[m]) + '</span></li>'; }).join('') + '</ul></div>' +
-        '<div class="tarjeta"><h3>Efectivo del cajón</h3><ul class="leyenda"><li><span>Apertura</span><span class="lv">' + F.din(t.base) + '</span></li><li><span>Cobrado en efectivo</span><span class="lv">' + F.din(r.porMedio.efectivo) + '</span></li><li><span>Retiros</span><span class="lv">−' + F.din(r.retiros) + '</span></li>' + (t.cierre ? '<li><span>Debería haber</span><span class="lv">' + F.din(t.esperado) + '</span></li><li><span>Se contó</span><span class="lv">' + F.din(t.contado) + '</span></li>' : '') + '</ul></div></div>' +
+        '<div class="grid grid--2"><div class="tarjeta"><h3>' + r.tickets + ' ventas · ' + F.din(r.total) + '</h3><ul class="leyenda">' + Object.keys(LE.MEDIOS).map(function (m) { return '<li><span class="clave" style="background:' + P.COLOR_MEDIO[m] + '"></span><span>' + LE.MEDIOS[m] + '</span><span class="lv">' + F.din(r.porMedio[m]) + '</span></li>'; }).join('') + (r.cobrosDeuda.n ? '<li><span>Pagos de deudas (' + r.cobrosDeuda.n + ')</span><span class="lv">' + F.din(r.cobrosDeuda.total) + '</span></li>' : '') + (r.fiado.tickets ? '<li class="suave"><span>A cuenta, sin cobrar (' + r.fiado.tickets + ')</span><span class="lv">' + F.din(r.fiado.total) + '</span></li>' : '') + '</ul></div>' +
+        '<div class="tarjeta"><h3>Efectivo del cajón</h3><ul class="leyenda"><li><span>Apertura</span><span class="lv">' + F.din(t.base) + '</span></li><li><span>Cobrado en efectivo</span><span class="lv">' + F.din(r.porMedio.efectivo) + '</span></li>' + (r.cobrosDeuda.porMedio.efectivo ? '<li><span>Pagos de deudas en efectivo</span><span class="lv">' + F.din(r.cobrosDeuda.porMedio.efectivo) + '</span></li>' : '') + '<li><span>Retiros</span><span class="lv">−' + F.din(r.retiros) + '</span></li>' + (t.cierre ? '<li><span>Debería haber</span><span class="lv">' + F.din(t.esperado) + '</span></li><li><span>Se contó</span><span class="lv">' + F.din(t.contado) + '</span></li>' : '') + '</ul></div></div>' +
         (movs.length ? '<h3 style="margin:16px 0 8px">Retiros</h3><ul class="permisos">' + movs.map(function (m) { return '<li><span style="flex:1">' + F.hora(m.ts) + ' · ' + esc(m.concepto) + ' <span class="suave">(' + esc(m.usuario) + ')</span></span><span class="num">' + F.din(m.monto) + '</span></li>'; }).join('') + '</ul>' : ''),
       acciones: [{ texto: 'Cerrar', clase: 'btn--tinta' }]
     });

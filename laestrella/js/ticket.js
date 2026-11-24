@@ -34,8 +34,13 @@
     L.push(der('ARTÍCULOS', String(cantArt % 1 ? Math.round(cantArt) : cantArt)));
     L.push(der('TOTAL', F.din(v.total)));
     L.push(RAYA);
+    if (v.fiado) {
+      envolver('A CUENTA DE ' + String(v.deudorNombre || '').toUpperCase(), W).forEach(function (x) { L.push(x); });
+      L.push('NO ABONADO: queda pendiente'); var dd = LE.deudor && LE.deudor(v.deudor); if (dd && dd.saldo != null) L.push(der('Saldo a la fecha', F.din(dd.saldo)));
+    } else {
     v.pagos.forEach(function (p) { L.push(der(LE.MEDIOS[p.m], F.din(p.m === 'efectivo' && v.recibido ? v.recibido : p.monto))); });
     if (v.vuelto > 0) L.push(der('Vuelto', F.din(v.vuelto)));
+    }
     L.push(RAYA);
     if (n.facturaElectronica) { /* el e-Ticket de verdad lleva CAE, QR y firma: lo agrega el proveedor de facturación */ }
     else { L.push(centro('COMPROBANTE INTERNO')); L.push(centro('NO ES FACTURA ELECTRÓNICA')); }

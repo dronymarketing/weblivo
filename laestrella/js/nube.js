@@ -20,7 +20,7 @@
 
   var C = window.LE_CONFIG, E = LE.estado;
   var sb = window.supabase.createClient(C.url, C.clave, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
-  var orig = {}; ['crearVenta', 'egresoCaja'].forEach(function (k) { orig[k] = LE[k]; });
+  var orig = {}; ['crearVenta', 'egresoCaja', 'cobrarDeuda'].forEach(function (k) { orig[k] = LE[k]; });
 
   /* ---------- Llamadas al servidor ---------- */
   function esRed(err) { return !err.code && /fetch|network|load failed|conexi/i.test(err.message || ''); }
@@ -50,16 +50,27 @@
   function cargar() {
     if (cargando) return cargando;
     var completo = !E.ultAct;
+    var cola0 = (E.outbox || []).map(function (o) { return o.id; });   // lo que estaba en la cola al pedir los datos
     cargando = Promise.all([rpc('snap_base'), rpc('snap_ventas', { p_desde: completo ? null : E.ultAct, p_dias: 35 })]).then(function (r) {
       var b = r[0];
-      ['negocio', 'categorias', 'productos', 'usuarios', 'proveedores', 'compras', 'turnos', 'movCaja', 'asistencias', 'movStock', 'auditoria', 'mensual', 'sinCargar'].forEach(function (k) { if (b[k] != null) E[k] = b[k]; });
+      ['negocio', 'categorias', 'productos', 'usuarios', 'proveedores', 'compras', 'turnos', 'movCaja', 'asistencias', 'movStock', 'auditoria', 'mensual', 'sinCargar', 'deudores', 'pagosDeuda', 'avisosDeuda'].forEach(function (k) { if (b[k] != null) E[k] = b[k]; });
       var local = (E.ventas || []).reduce(function (a, v) { return Math.max(a, v.num || 0); }, 0);
       E.contador = { venta: Math.max(b.contador.venta, local), compra: b.contador.compra };
       aplicarVentas(r[1], completo);
+      // Lo hecho acá y todavía sin enviar (ventas a cuenta y cobros de deudas) se suma otra vez a los saldos del servidor
+      (E.ventas || []).forEach(function (v) { if (v.sync === false && v.fiado) { var dd = E.deudores.filter(function (x) { return x.id === v.deudor; })[0]; if (dd) dd.saldo = (dd.saldo || 0) + v.total; } });
+      (E.outbox || []).filter(function (o) { return o.tipo === 'cobro_deuda'; }).forEach(function (o) {
+        var dd = E.deudores.filter(function (x) { return x.id === o.payload.deudor; })[0]; if (dd) dd.saldo = (dd.saldo || 0) - o.payload.monto;
+        if (!E.pagosDeuda.some(function (g) { return g.id === o.id; })) E.pagosDeuda.push({ id: o.id, deudor: o.payload.deudor, turno: (LE.turnoAbierto() || {}).id, ts: o.payload.ts, monto: o.payload.monto, medio: o.payload.medio, usuario: (LE.usuario() || {}).nombre });
+      });
       // Retiros hechos acá y todavía sin enviar: no se pierden al refrescar
       (E.outbox || []).filter(function (o) { return o.tipo === 'egreso'; }).forEach(function (o) { if (!E.movCaja.some(function (m) { return m.id === o.id; })) E.movCaja.push({ id: o.id, turno: (LE.turnoAbierto() || {}).id, ts: o.payload.ts, concepto: o.payload.concepto, monto: -o.payload.monto, usuario: (LE.usuario() || {}).nombre }); });
       LE.guardar(); avisar();
-    }).then(function () { cargando = null; }, function (e) { cargando = null; throw e; });
+    }).then(function () {
+      cargando = null;
+      // Si mientras tanto salió algo de la cola, la foto del servidor puede haber quedado vieja: se vuelve a pedir
+      if (cola0.some(function (id) { return !(E.outbox || []).some(function (o) { return o.id === id; }); })) setTimeout(function () { cargar().then(avisar, function () { }); }, 60);
+    }, function (e) { cargando = null; throw e; });
     return cargando;
   }
 
@@ -70,9 +81,10 @@
     if (!enLinea() || !(E.outbox || []).length) return Promise.resolve(0);
     vaciando = (function paso(n) {
       var it = (E.outbox || [])[0]; if (!it) return Promise.resolve(n);
-      var q = it.tipo === 'venta' ? rpc('crear_venta', { p: it.payload }) : rpc('egreso_caja', { p_concepto: it.payload.concepto, p_monto: it.payload.monto, p_id: it.payload.id, p_ts: it.payload.ts });
+      var q = it.tipo === 'venta' ? rpc('crear_venta', { p: it.payload }) : it.tipo === 'cobro_deuda' ? rpc('cobrar_deuda', { p: it.payload }) : rpc('egreso_caja', { p_concepto: it.payload.concepto, p_monto: it.payload.monto, p_id: it.payload.id, p_ts: it.payload.ts });
       return q.then(function (srv) {
         E.outbox.shift(); avisarCambio();
+        if (it.tipo === 'venta' && it.payload.deudor) dispararWhatsApp();
         if (it.tipo === 'venta') { var i = E.ventas.map(function (v) { return v.id; }).indexOf(it.id); if (i >= 0 && srv && srv.id) E.ventas[i] = srv; }
         LE.guardar(); return paso(n + (it.tipo === 'venta' ? 1 : 0));
       }, function (e) {
@@ -97,10 +109,29 @@
     var v = orig.crearVenta(d);
     if (antes) return v;
     v.sync = false;
-    E.outbox.push({ tipo: 'venta', id: v.id, payload: { id: v.id, num: v.num, ts: v.ts, turno: v.turno, items: v.items.map(function (i) { return { p: i.p, c: i.c }; }), pagos: v.pagos.map(function (p) { return { m: p.m, monto: p.monto }; }), recibido: v.recibido } });
+    E.outbox.push({ tipo: 'venta', id: v.id, payload: { id: v.id, num: v.num, ts: v.ts, turno: v.turno, items: v.items.map(function (i) { return { p: i.p, c: i.c }; }), pagos: v.pagos.map(function (p) { return { m: p.m, monto: p.monto }; }), recibido: v.recibido, deudor: v.deudor || null } });
     LE.guardar(); setTimeout(function () { vaciarCola().then(function (n) { if (n) { avisar(); } }, function () { }); }, 0);
     return v;
   };
+  /* ---------- Deudores ---------- */
+  LE.guardarDeudor = function (d) {
+    var p = { id: esUuid(d.id) ? d.id : null, nombre: d.nombre, telefono: d.telefono || '', limite: d.limite || 0, activo: d.activo == null ? true : !!d.activo };
+    return hacer('guardar_deudor', { p: p }, function (r) { return LE.deudor(r.id); });
+  };
+  LE.cobrarDeuda = function (d) {
+    var g = orig.cobrarDeuda(Object.assign({}, d, { id: esUuid(d.id) ? d.id : LE.uid('g') }));
+    E.outbox.push({ tipo: 'cobro_deuda', id: g.id, payload: { id: g.id, deudor: g.deudor, monto: g.monto, medio: g.medio, ts: g.ts } });
+    LE.guardar(); setTimeout(function () { vaciarCola().then(function () { }, function () { }); }, 0);
+    return g;
+  };
+  LE.marcarAviso = function (id, estado, detalle) { return hacer('marcar_aviso', { p_id: id, p_estado: estado, p_detalle: detalle || '' }); };
+  /* Envío automático por WhatsApp: una función del servidor (supabase/funciones/enviar-whatsapp) manda los avisos pendientes.
+     Se activa con `whatsapp: true` en config.js una vez desplegada; mientras tanto los avisos quedan pendientes y el panel los abre a mano. */
+  function dispararWhatsApp() {
+    if (!C.whatsapp || !sb.functions) return;
+    try { sb.functions.invoke('enviar-whatsapp', { body: {} }).then(function () { setTimeout(function () { cargar().then(avisar, function () { }); }, 2500); }, function () { }); } catch (e) { }
+  }
+  LE.enviarAvisosWhatsApp = function () { dispararWhatsApp(); };
   LE.egresoCaja = function (concepto, monto) {
     orig.egresoCaja(concepto, monto);
     var mv = E.movCaja[E.movCaja.length - 1];

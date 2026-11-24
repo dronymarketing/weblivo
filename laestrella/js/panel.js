@@ -172,13 +172,18 @@
     if (dif) L.push({ nivel: 'alerta', ic: 'triangle-alert', txt: 'Última caja con diferencia: ' + F.din(dif.contado - dif.esperado, true), href: '#/caja' });
     if (sinc) L.push({ nivel: 'alerta', ic: 'scan-barcode', txt: sinc + (sinc === 1 ? ' código sin cargar' : ' códigos sin cargar'), href: '#/productos', acc: 'ver-sin-cargar' });
     if (pend) L.push({ nivel: 'alerta', ic: 'wifi-off', txt: pend + (pend === 1 ? ' venta sin enviar' : ' ventas sin enviar') });
+    var dCerca = LE.deudores().filter(function (d) { return LE.nivelDeudor(d) !== 'ok'; }), dLim = dCerca.filter(function (d) { return LE.nivelDeudor(d) === 'limite'; }).length;
+    var wa = LE.avisosDeuda().filter(function (a) { return a.estado !== 'enviado'; }).length;
+    if (dCerca.length) L.push({ nivel: dLim ? 'error' : 'alerta', ic: 'hand-coins', txt: dCerca.length + (dCerca.length === 1 ? ' deudor cerca o sobre su límite' : ' deudores cerca o sobre su límite') + (dLim ? ' · ' + dLim + ' sobre el límite' : ''), href: '#/deudores' });
+    if (wa) L.push({ nivel: 'alerta', ic: 'message-circle', txt: wa + (wa === 1 ? ' aviso de WhatsApp sin enviar' : ' avisos de WhatsApp sin enviar'), href: '#/deudores' });
     if (anul) L.push({ nivel: 'info', ic: 'ban', txt: anul + (anul === 1 ? ' venta anulada' : ' ventas anuladas') + ' en 7 días', href: '#/ventas' });
-    return { caja: t, items: L, cuenta: L.filter(function (x) { return x.nivel !== 'info'; }).length, hayRojo: L.some(function (x) { return x.nivel === 'error'; }), bajo: bajo.length, cero: cero };
+    return { caja: t, items: L, cuenta: L.filter(function (x) { return x.nivel !== 'info'; }).length, hayRojo: L.some(function (x) { return x.nivel === 'error'; }), bajo: bajo.length, cero: cero, deudores: dCerca.length, deudoresRojo: dLim > 0 };
   };
   P.pintarNav = function () {
     var A = P.avisos(), t = A.caja, c = $('#nav-caja'), n = $('#campana-n'), ns = $('#n-stock'), pop = $('#pop-avisos'); if (!c || !n || !pop) return;
     c.className = 'estado app__estado ' + (t ? 'estado--ok' : 'estado--alerta'); c.innerHTML = ico(t ? 'circle-check' : 'lock') + (t ? 'Caja abierta · ' + esc(t.abrio.split(' ')[0]) : 'Caja cerrada');
     n.hidden = !A.cuenta; n.textContent = A.cuenta; n.className = 'campana__n' + (A.hayRojo ? ' campana__n--rojo' : ''); $('#btn-avisos').setAttribute('aria-label', A.cuenta ? 'Avisos: ' + A.cuenta + ' pendientes' : 'Avisos: todo en orden');
+    var nd = $('#n-deudores'); if (nd) { nd.hidden = !A.deudores; nd.textContent = A.deudores; nd.className = 'menu__n' + (A.deudoresRojo ? ' menu__n--rojo' : ''); }
     ns.hidden = !A.bajo; ns.textContent = A.bajo; ns.className = 'menu__n' + (A.cero ? ' menu__n--rojo' : ''); ns.setAttribute('aria-label', A.bajo + (A.bajo === 1 ? ' producto para reponer' : ' productos para reponer'));
     pop.innerHTML = '<div class="pop-avisos__cab"><strong>Avisos</strong><small>actualizado a las ' + hora5(new Date()) + '</small></div>' +
       '<a class="pop-aviso pop-aviso--' + (t ? 'ok' : 'info') + '" href="#/caja"><span class="pop-aviso__ic">' + ico(t ? 'circle-check' : 'lock') + '</span><span>' + (t ? 'Caja abierta por ' + esc(t.abrio) + ' desde las ' + F.hora(t.apertura) : 'La caja está cerrada') + '</span></a>' +
@@ -197,7 +202,7 @@
     pintar: function () {
       var ahora = new Date(), h = ahora.getHours(), saludo = h < 12 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
       var hoy = P.rango('hoy'), r7 = P.rango('7'), RH = LE.reporte(hoy[0], hoy[1]), R7 = LE.reporte(r7[0], r7[1]);
-      var t = LE.turnoAbierto(), bajo = LE.stockBajo(), pend = LE.pendientes().length;
+      var t = LE.turnoAbierto(), bajo = LE.stockBajo(), pend = LE.pendientes().length, fiHoy = LE.fiadoDelDia();
       var cp = LE.compras().filter(function (c) { return !c.recibida; });
       var dif = LE.turnos().filter(function (q) { return q.cierre && q.contado !== q.esperado; })[0];
       var etq = [], tips = [], v = [], g = [], tot = 0;
@@ -210,7 +215,7 @@
         '<div class="inicio" id="zona">' +
         '<header class="inicio__cab"><h1>' + saludo + ', ' + esc(usuario.nombre.split(' ')[0]) + '</h1></header>' +
         '<div class="tiles">' +
-          tile('#/ventas', 'receipt', 'Ventas de hoy', F.din(RH.total), RH.tickets + (RH.tickets === 1 ? ' venta' : ' ventas') + ' · promedio ' + F.din(prom), 'Ver ventas', true) +
+          tile('#/ventas', 'receipt', 'Ventas de hoy', F.din(RH.total), RH.tickets + (RH.tickets === 1 ? ' venta' : ' ventas') + ' · promedio ' + F.din(prom) + (fiHoy.total ? '<span class="tile__fiado">A cuenta hoy ' + F.din(fiHoy.total) + ' · sin cobrar</span>' : ''), 'Ver ventas', true) +
           tile('#/caja', 'wallet', 'Caja', t ? F.din(LE.efectivoEsperado(t)) : 'Cerrada', t ? 'efectivo esperado · turno ' + esc(t.turno) : 'nadie atiende ahora', 'Ver cajas', false) +
           tile('#/stock', 'boxes', 'Stock', (function () { var ce = bajo.filter(function (p) { return p.stock <= 0; }).length, re = bajo.length - ce; return bajo.length ? '<span class="tile__estados">' + (re ? '<span class="est est--alerta"><strong>' + re + '</strong><small>Reponer</small></span>' : '') + (ce ? '<span class="est est--error"><strong>' + ce + '</strong><small>Sin stock</small></span>' : '') + '</span>' : '<span class="tile__ok">Todo en orden</span>'; })(), '', 'Ver stock', false) +
           tile('#/reportes', 'trending-up', 'Ganancia bruta de hoy', F.din(RH.margen), P.pct(RH.margen, RH.total) + ' de lo vendido', 'Ver reportes', false) +
@@ -258,14 +263,14 @@
       return vs;
     },
     pintar: function () {
-      var vs = P.rutas.ventas.lista(), tot = vs.reduce(function (a, v) { return a + (v.estado === 'ok' ? v.total : 0); }, 0), mostrar = vs.slice(0, 100);
-      P.zona('<p class="resumen"><strong>' + vs.length + (vs.length === 1 ? ' venta' : ' ventas') + '</strong> · cobrado <strong>' + F.din(tot) + '</strong>' + (vs.length > 100 ? ' · se muestran las últimas 100' : '') + '</p>' +
+      var vs = P.rutas.ventas.lista(), tot = vs.reduce(function (a, v) { return a + (v.estado === 'ok' && !v.fiado ? v.total : 0); }, 0), cta = vs.reduce(function (a, v) { return a + (v.estado === 'ok' && v.fiado ? v.total : 0); }, 0), mostrar = vs.slice(0, 100);
+      P.zona('<p class="resumen"><strong>' + vs.length + (vs.length === 1 ? ' venta' : ' ventas') + '</strong> · cobrado <strong>' + F.din(tot) + '</strong>' + (cta ? ' · a cuenta <strong>' + F.din(cta) + '</strong> (sin cobrar)' : '') + (vs.length > 100 ? ' · se muestran las últimas 100' : '') + '</p>' +
         P.tabla([
           { t: 'Ticket', c: 't-titulo', f: function (v) { return 'N.º ' + F.num(v.num) + '<small>' + F.fecha(v.ts) + ' · ' + F.hora(v.ts) + '</small>'; } },
           { t: 'Total', c: 't-derecha', f: function (v) { return v.estado === 'ok' ? F.din(v.total) : '<s class="suave">' + F.din(v.total) + '</s>'; } },
           { t: 'Cajera', f: function (v) { return esc(v.cajero); } },
-          { t: 'Cobro', f: function (v) { return v.pagos.map(function (p) { return LE.MEDIOS[p.m]; }).join(' + '); } },
-          { t: 'Estado', f: function (v) { return v.estado === 'ok' ? (v.sync === false ? '<span class="badge badge--alerta">Sin enviar</span>' : '<span class="badge badge--ok">Cobrada</span>') : '<span class="badge badge--error">Anulada</span>'; } },
+          { t: 'Cobro', f: function (v) { return v.fiado ? 'A cuenta de ' + esc(v.deudorNombre || '') : v.pagos.map(function (p) { return LE.MEDIOS[p.m]; }).join(' + '); } },
+          { t: 'Estado', f: function (v) { return v.estado === 'ok' ? (v.sync === false ? '<span class="badge badge--alerta">Sin enviar</span>' : v.fiado ? '<span class="badge badge--acento">A cuenta</span>' : '<span class="badge badge--ok">Cobrada</span>') : '<span class="badge badge--error">Anulada</span>'; } },
           { t: '', c: 't-acciones', f: function (v) { return '<button type="button" class="btn btn--chico btn--linea" data-acc="venta" data-id="' + v.id + '">' + ico('eye') + 'Ver</button>'; } }
         ], mostrar, { vacio: 'No hay ventas con este filtro.', clase: function (v) { return v.estado === 'ok' ? '' : 'is-baja'; } }));
     },

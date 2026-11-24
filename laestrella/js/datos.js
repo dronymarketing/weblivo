@@ -130,6 +130,7 @@
       categorias: CATEGORIAS.slice(),
       proveedores: PROVEEDORES.map(function (v) { return { id: v[0], nombre: v[1], contacto: v[2], telefono: v[3], email: v[4], rubro: v[5], activo: true }; }),
       productos: [], ventas: [], turnos: [], movCaja: [], movStock: [], compras: [], asistencias: [], auditoria: [],
+      deudores: [], pagosDeuda: [], avisosDeuda: [],
       contador: { venta: 0, compra: 0 }
     };
   }
@@ -290,6 +291,7 @@
     E = cargar();
     if (!E) { E = NUBE ? estadoVacio() : sembrar(); guardar(); }
     E.sinCargar = E.sinCargar || []; E.codigosCola = E.codigosCola || [];
+    E.deudores = E.deudores || []; E.pagosDeuda = E.pagosDeuda || []; E.avisosDeuda = E.avisosDeuda || [];
     if (NUBE) { E.offline = false; E.outbox = E.outbox || []; E.rechazadas = E.rechazadas || []; }
     LE.estado = E;
     /* Demo: si la caja (otra pestaña o ventana del mismo navegador) guarda algo, este panel lo toma al instante y se redibuja */
@@ -310,6 +312,13 @@
   function porId(lista, id) { for (var i = 0; i < lista.length; i++) if (lista[i].id === id) return lista[i]; return null; }
   function turnoAbierto() { for (var i = E.turnos.length - 1; i >= 0; i--) if (!E.turnos[i].cierre) return E.turnos[i]; return null; }
   function turnoNombre() { var d = new Date(); return d.getHours() + d.getMinutes() / 60 < 14.5 ? 'mañana' : 'tarde'; }
+  /* Aviso de WhatsApp cuando el saldo cruza el 80 % del límite o el límite (en modo conectado lo crea el servidor) */
+  function avisarDeudor(d, antes, despues) {
+    if (NUBE || !d.limite) return;
+    var tipo = (antes < d.limite && despues >= d.limite) ? 'limite' : (antes * 10 < d.limite * 8 && despues * 10 >= d.limite * 8) ? 'cerca' : null; if (!tipo) return;
+    var neg = E.negocio.nombre, msg = 'Hola ' + d.nombre + ', te escribimos de ' + neg + '. Tu cuenta está en ' + fmt.din(despues) + (tipo === 'limite' ? ' y llegó al límite de ' + fmt.din(d.limite) + '. Pasá a abonar cuando puedas para seguir comprando a cuenta. ¡Gracias!' : ' y te estás acercando a tu límite de ' + fmt.din(d.limite) + '. Pasá a abonar cuando puedas. ¡Gracias!');
+    E.avisosDeuda.push({ id: uid('a'), deudor: d.id, tipo: tipo, mensaje: msg, telefono: d.telefono, ts: Date.now(), estado: String(d.telefono || '').trim() ? 'pendiente' : 'error', detalle: String(d.telefono || '').trim() ? '' : 'El deudor no tiene teléfono cargado' });
+  }
   function movStock(p, cant, tipo, ref) { p.stock = Math.round((p.stock + cant) * 1000) / 1000; var u = yo(); E.movStock.push({ id: uid('s'), ts: Date.now(), p: p.id, n: p.nombre, cant: cant, tipo: tipo, ref: ref || '', usuario: u ? u.nombre : 'Sistema' }); }
 
   /* ---------- API ---------- */
@@ -370,7 +379,13 @@
     },
     codigoBalanza: function (p, kg) { var b = E.negocio.balanza; return ean13(b.prefijo + p.plu + pad(Math.round(kg * 1000), 5)); },
     guardarProducto: function (d) {
-      exigir('admin');
+      var u0 = exigir('admin', 'caja');
+      if (u0.rol === 'caja') {   // la caja cambia el precio y el mínimo de un producto que ya existe; lo demás es de administración
+        var q = d.id ? porId(E.productos, d.id) : null; if (!q) throw new Error('Solo administración crea productos.');
+        var pr = aPesos(+d.precio); if (!(pr > 0)) throw new Error('El precio tiene que ser mayor que cero.');
+        if (q.precio !== pr) anotar('Cambió el precio de ' + q.nombre + ': ' + fmt.din(q.precio) + ' → ' + fmt.din(pr)); else anotar('Cambió el mínimo de ' + q.nombre);
+        q.precio = pr; if (d.minimo != null) q.minimo = Math.max(0, +d.minimo || 0); guardar(); return q;
+      }
       var nombre = String(d.nombre || '').trim(); if (nombre.length < 2) throw new Error('Escribí el nombre del producto.');
       if (nombre.length > 28) throw new Error('El nombre no puede pasar de 28 letras (para que entre en el ticket).');
       var precio = aPesos(+d.precio), costo = aPesos(+d.costo || 0);
@@ -403,7 +418,7 @@
     codigosSinCargar: function () { exigir('admin'); return E.sinCargar.slice().sort(function (a, b) { return b.ultima - a.ultima; }); },
     descartarCodigo: function (codigo) { exigir('admin'); E.sinCargar = E.sinCargar.filter(function (x) { return x.codigo !== codigo; }); guardar(); },
     ajustarMinimo: function (id, minimo) {
-      exigir('admin'); var p = porId(E.productos, id), m = Math.round((+minimo || 0) * 1000) / 1000;
+      exigir('admin', 'caja'); var p = porId(E.productos, id), m = Math.round((+minimo || 0) * 1000) / 1000;
       if (!(m >= 0)) throw new Error('El mínimo no puede ser negativo.');
       if (m !== p.minimo) anotar('Cambió el mínimo de ' + p.nombre + ': ' + p.minimo + ' → ' + m);
       p.minimo = m; guardar(); return p;
@@ -412,7 +427,7 @@
 
     /* Stock */
     ajustarStock: function (id, delta, motivo) {
-      exigir('admin'); var p = porId(E.productos, id); if (!p) throw new Error('Producto no encontrado.');
+      exigir('admin', 'caja'); var p = porId(E.productos, id); if (!p) throw new Error('Producto no encontrado.');
       delta = +delta; if (!delta) throw new Error('Escribí cuánto sumar o restar.'); if (!String(motivo || '').trim()) throw new Error('Escribí el motivo.');
       movStock(p, delta, 'ajuste', motivo); anotar('Ajustó el stock de ' + p.nombre + ' (' + (delta > 0 ? '+' : '') + fmt.cant(delta) + '): ' + motivo); guardar();
     },
@@ -466,13 +481,17 @@
     efectivoEsperado: function (t) {
       var ef = 0; E.ventas.forEach(function (v) { if (v.turno === t.id && v.estado === 'ok') v.pagos.forEach(function (p) { if (p.m === 'efectivo') ef += p.monto; }); });
       var eg = 0; E.movCaja.forEach(function (m) { if (m.turno === t.id) eg += m.monto; });
-      return t.base + ef + eg;
+      var dp = 0; (E.pagosDeuda || []).forEach(function (g) { if (g.turno === t.id && g.medio === 'efectivo') dp += g.monto; });   // lo que pagaron los deudores en efectivo
+      return t.base + ef + eg + dp;
     },
     resumenTurno: function (t) {
       var porMedio = { efectivo: 0, debito: 0, credito: 0, qr: 0 }, n = 0, total = 0;
-      E.ventas.forEach(function (v) { if (v.turno === t.id && v.estado === 'ok') { n++; total += v.total; v.pagos.forEach(function (p) { porMedio[p.m] += p.monto; }); } });
+      var fiado = { tickets: 0, total: 0 };
+      E.ventas.forEach(function (v) { if (v.turno === t.id && v.estado === 'ok') { if (v.fiado) { fiado.tickets++; fiado.total += v.total; return; } n++; total += v.total; v.pagos.forEach(function (p) { porMedio[p.m] += p.monto; }); } });
       var retiros = 0; E.movCaja.forEach(function (m) { if (m.turno === t.id) retiros += -m.monto; });
-      return { tickets: n, total: total, porMedio: porMedio, retiros: retiros };
+      var cobrosDeuda = { total: 0, porMedio: { efectivo: 0, debito: 0, credito: 0, qr: 0 }, n: 0 };
+      (E.pagosDeuda || []).forEach(function (g) { if (g.turno === t.id) { cobrosDeuda.total += g.monto; cobrosDeuda.n++; cobrosDeuda.porMedio[g.medio] += g.monto; } });
+      return { tickets: n, total: total, porMedio: porMedio, retiros: retiros, fiado: fiado, cobrosDeuda: cobrosDeuda };
     },
     cerrarCaja: function (contado) {
       var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('No hay una caja abierta.');
@@ -494,6 +513,8 @@
       var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('Abrí la caja antes de vender.');
       var ya = porId(E.ventas, d.id); if (ya) return ya; // idempotente: si se reintenta, no duplica
       if (!d.items || !d.items.length) throw new Error('El ticket está vacío.');
+      var deu = d.deudor ? porId(E.deudores, d.deudor) : null;
+      if (d.deudor && (!deu || !deu.activo)) throw new Error('Esa persona ya no está en la lista de deudores.');
       var items = d.items.map(function (i) {
         var p = porId(E.productos, i.p); if (!p || !p.activo) throw new Error('El producto "' + (i.n || '') + '" ya no está disponible.');
         var c = p.unidad === 'kg' ? Math.round(+i.c * 1000) / 1000 : Math.round(+i.c); if (!(c > 0)) throw new Error('Cantidad inválida en ' + p.nombre + '.');
@@ -502,25 +523,62 @@
       var total = items.reduce(function (a, i) { return a + i.s; }, 0);
       var pagos = (d.pagos || []).map(function (p) { return { m: p.m, monto: Math.round(+p.monto) }; }).filter(function (p) { return p.monto > 0; });
       var pagado = pagos.reduce(function (a, p) { return a + p.monto; }, 0);
+      if (deu && pagos.length) throw new Error('Una venta a cuenta no lleva pagos.');
       pagos.forEach(function (p) { if (!MEDIOS[p.m] || !E.negocio.medios[p.m]) throw new Error('Medio de pago no habilitado.'); });
       var ef = pagos.filter(function (p) { return p.m === 'efectivo'; }).reduce(function (a, p) { return a + p.monto; }, 0);
-      if (pagado < total) throw new Error('Falta cobrar ' + fmt.din(total - pagado) + '.');
-      if (pagado > total) throw new Error('El cobro no coincide con el total.');
+      if (!deu && pagado < total) throw new Error('Falta cobrar ' + fmt.din(total - pagado) + '.');
+      if (!deu && pagado > total) throw new Error('El cobro no coincide con el total.');
       // El efectivo recibido puede ser más que lo cobrado en efectivo: la diferencia es el vuelto
       var recibido = ef ? Math.round(+d.recibido || ef) : 0;
       if (ef && recibido < ef) throw new Error('El efectivo recibido es menor al cobrado.');
       var vuelto = ef ? recibido - ef : 0;
       E.contador.venta++;
       var v = { id: d.id || uid('v'), num: E.contador.venta, ts: Date.now(), turno: t.id, cajeroId: u.id, cajero: u.nombre, items: items, total: total, pagos: pagos, recibido: recibido, vuelto: vuelto, estado: 'ok', sync: !E.offline };
+      if (deu) { v.fiado = true; v.deudor = deu.id; v.deudorNombre = deu.nombre; }
       E.ventas.push(v);
+      if (deu) { var antes = deu.saldo || 0; deu.saldo = antes + total; avisarDeudor(deu, antes, deu.saldo); }
       items.forEach(function (i) { movStock(porId(E.productos, i.p), -i.c, 'venta', 'Ticket ' + fmt.num(v.num)); });
       guardar(); return v;
     },
+    /* ---------- Deudores (compras a cuenta) ---------- */
+    deudores: function (todos) { return E.deudores.filter(function (d) { return todos || d.activo; }).sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); }); },
+    deudor: function (id) { return porId(E.deudores, id); },
+    /* 'ok' · 'cerca' (usó el 80 % del límite) · 'limite' (llegó al límite). Límite 0 = sin límite. */
+    nivelDeudor: function (d, saldo) { var s = saldo == null ? (d.saldo || 0) : saldo; if (!d.limite) return 'ok'; return s >= d.limite ? 'limite' : s * 10 >= d.limite * 8 ? 'cerca' : 'ok'; },
+    totalDeudas: function () { return E.deudores.reduce(function (a, d) { return a + Math.max(0, d.saldo || 0); }, 0); },
+    fiadoDelDia: function (ts) { var d0 = inicioDia(ts || Date.now()), r = { total: 0, tickets: 0 }; E.ventas.forEach(function (v) { if (v.fiado && v.estado === 'ok' && inicioDia(v.ts) === d0) { r.total += v.total; r.tickets++; } }); return r; },
+    guardarDeudor: function (d) {
+      var u = exigir('admin', 'caja'), admin = u.rol === 'admin';
+      var nombre = String(d.nombre || '').trim(); if (nombre.length < 2) throw new Error('Escribí el nombre.');
+      var tel = String(d.telefono || '').trim(); if (!/^[0-9 +()-]{0,30}$/.test(tel)) throw new Error('El teléfono solo puede llevar números.');
+      var lim = Math.max(0, aPesos(+d.limite || 0)), x = d.id ? porId(E.deudores, d.id) : null;
+      if (d.id && !x) throw new Error('Deudor no encontrado.');
+      if (x) { x.nombre = nombre; x.telefono = tel; if (admin) { x.limite = lim; if (d.activo != null) x.activo = !!d.activo; } anotar('Editó al deudor ' + nombre); }
+      else { x = { id: uid('d'), nombre: nombre, telefono: tel, limite: admin ? lim : 0, activo: true, saldo: 0 }; E.deudores.push(x); anotar('Agregó al deudor ' + nombre); }
+      guardar(); return x;
+    },
+    /* El pago de una deuda entra en la caja del turno abierto (el efectivo suma al efectivo esperado) */
+    cobrarDeuda: function (d) {
+      var u = exigir('admin', 'caja'), t = turnoAbierto(); if (!t) throw new Error('Abrí la caja para cobrar una deuda.');
+      var x = porId(E.deudores, d.deudor); if (!x) throw new Error('Deudor no encontrado.');
+      if (d.id && porId(E.pagosDeuda, d.id)) return porId(E.pagosDeuda, d.id);
+      var medio = d.medio || 'efectivo', monto = Math.round(+d.monto);
+      if (!MEDIOS[medio] || !E.negocio.medios[medio]) throw new Error('Medio de pago no habilitado.');
+      if (!(monto > 0)) throw new Error('Escribí cuánto pagó.');
+      if (monto > (x.saldo || 0)) throw new Error('La deuda es de ' + fmt.din(x.saldo || 0) + '.');
+      var g = { id: d.id || uid('g'), deudor: x.id, turno: t.id, ts: Date.now(), monto: monto, medio: medio, usuario: u.nombre };
+      E.pagosDeuda.push(g); x.saldo -= monto;
+      anotar('Cobró ' + fmt.din(monto) + ' de la deuda de ' + x.nombre + ' (' + medio + ')'); guardar(); return g;
+    },
+    pagosDeudor: function (id) { return E.pagosDeuda.filter(function (g) { return g.deudor === id; }); },
+    avisosDeuda: function () { return E.avisosDeuda.slice().sort(function (a, b) { return b.ts - a.ts; }); },
+    marcarAviso: function (id, estado, detalle) { var a = porId(E.avisosDeuda, id); if (a) { a.estado = estado; a.detalle = detalle || ''; guardar(); } },
     anularVenta: function (id, motivo) {
       exigir('admin'); var v = porId(E.ventas, id); if (!v || v.estado !== 'ok') throw new Error('Esta venta ya está anulada.');
       if (!String(motivo || '').trim()) throw new Error('Escribí el motivo de la anulación.');
       var t = porId(E.turnos, v.turno); if (t && t.cierre) { /* se anula igual: queda marcada para el próximo cierre */ }
       v.estado = 'anulada'; v.anuladaPor = yo().nombre; v.motivo = motivo;
+      if (v.fiado) { var dd = porId(E.deudores, v.deudor); if (dd) dd.saldo = (dd.saldo || 0) - v.total; }
       v.items.forEach(function (i) { var p = porId(E.productos, i.p); if (p) movStock(p, i.c, 'anulacion', 'Anuló ticket ' + fmt.num(v.num)); });
       anotar('Anuló el ticket ' + fmt.num(v.num) + ' (' + fmt.din(v.total) + '): ' + motivo); guardar();
     },
@@ -556,7 +614,9 @@
     reporte: function (desde, hasta) {
       var vs = LE.ventas(desde, hasta), R = { desde: desde, hasta: hasta, total: 0, tickets: 0, costo: 0, iva: 0, anuladas: 0, anuladasTotal: 0, porMedio: { efectivo: 0, debito: 0, credito: 0, qr: 0 }, porCat: {}, porProd: {}, porCajero: {}, porDia: {}, porHora: [] };
       for (var h = 0; h < 24; h++) R.porHora.push({ total: 0, tickets: 0, margen: 0 });
+      R.fiado = { total: 0, tickets: 0 };
       vs.forEach(function (v) {
+        if (v.fiado) { if (v.estado === 'ok') { R.fiado.total += v.total; R.fiado.tickets++; } return; }   // a cuenta: descuenta stock, pero no es plata que entró
         if (v.estado !== 'ok') { R.anuladas++; R.anuladasTotal += v.total; return; }
         R.total += v.total; R.tickets++;
         var costoV = v.items.reduce(function (a, i) { return a + r2(i.k * i.c); }, 0), margenV = v.total - costoV;

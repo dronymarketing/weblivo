@@ -249,3 +249,6 @@ a.pop-aviso:hover { background: var(--hover-velo); }
 .pagina__cab { gap: 12px; margin-bottom: 24px; } .pagina__acciones { width: auto; } .pagina__acciones .btn { flex: 0 0 auto; }
 .kpis--rep .kpi:last-child, .kpis > .kpi:last-child:nth-child(odd) { grid-column: auto; }
 .tabla td.t-acciones .btn { flex: 0 0 auto; } .pestana { padding: 0 16px; }
+
+.tk-deudor { margin: 0 20px 8px; }
+.dd:hover { box-shadow: 0 0 0 1.5px var(--hover); }

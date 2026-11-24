@@ -36,7 +36,7 @@
   /* ---------- Barra superior ---------- */
   function acciones() {
     var t = LE.turnoAbierto(), a = LE.asistenciaAbierta(usuario.id), l = [];
-    if (t) { l.push({ id: 'retiro', i: 'banknote', t: 'Retiro de efectivo' }); l.push({ id: 'cerrar', i: 'lock', t: 'Cerrar caja' }); }
+    if (t) { l.push({ id: 'deudores', i: 'hand-coins', t: 'Deudores' }); l.push({ id: 'precios', i: 'tag', t: 'Precios y stock' }); l.push({ id: 'retiro', i: 'banknote', t: 'Retiro de efectivo' }); l.push({ id: 'cerrar', i: 'lock', t: 'Cerrar caja' }); }
     l.push({ id: 'jornada', i: 'clock', t: a ? 'Terminar jornada' : 'Empezar jornada' });
     if (t) { l.push({ id: 'cliente', i: 'monitor', t: S.cliente ? 'Ocultar pantalla del cliente' : 'Pantalla del cliente' }); l.push({ id: 'reimprimir', i: 'printer', t: 'Reimprimir último ticket' }); }
     if (usuario.rol === 'admin') l.push({ id: 'panel', i: 'chart-column', t: 'Ir al panel' });
@@ -55,7 +55,7 @@
   }
   function accion(id) {
     ({
-      retiro: abrirRetiro, cerrar: abrirCierre, salir: function () { UI.hacer(function () { return LE.salir(); }).then(function (r) { if (r.ok) location.href = '../index.html'; }); },
+      deudores: abrirDeudores, precios: abrirPrecios, retiro: abrirRetiro, cerrar: abrirCierre, salir: function () { UI.hacer(function () { return LE.salir(); }).then(function (r) { if (r.ok) location.href = '../index.html'; }); },
       panel: function () { location.href = '../panel/'; },
       jornada: function () { UI.hacer(function () { return LE.marcarAsistencia(); }).then(function (r) { if (r.ok) { UI.toast(r.valor.estado === 'entrada' ? 'Empezaste tu jornada.' : 'Terminaste tu jornada. Trabajaste ' + F.dur(r.valor.a.salida - r.valor.a.entrada) + '.', 'ok'); pintarBarra(); } }); },
       cliente: function () { S.cliente = !S.cliente; guardarEstado(); pintarCliente(); pintarBarra(); },
@@ -81,7 +81,7 @@
       '<div class="demo__ajustes"><button type="button" class="chip" id="demo-red" aria-pressed="false"></button></div></div></details></div>' +
       '<div class="pos__cuerpo">' +
       '<section class="pos__catalogo" id="catalogo" aria-label="Productos"><div class="cat__cab"><h2>Productos</h2><button type="button" class="btn btn--chico btn--tinta" id="cat-cerrar">Listo</button></div><div class="cats" id="cats"></div><div class="grilla" id="grilla"></div></section>' +
-      '<section class="pos__ticket" aria-label="Ticket"><div class="ticket__cab"><h3>Ticket actual</h3><span id="tk-espera"></span></div><div class="lineas" id="lineas" aria-live="polite"></div>' +
+      '<section class="pos__ticket" aria-label="Ticket"><div class="ticket__cab"><h3>Ticket actual</h3><span id="tk-espera"></span></div><div class="tk-deudor" id="tk-deudor" hidden></div><div class="lineas" id="lineas" aria-live="polite"></div>' +
       '<div class="pos__pie"><div class="totales"><span class="totales__rotulo" id="tot-rotulo"></span><span class="totales__monto" id="tot">$ 0</span></div>' +
       '<div class="pos__botones"><button type="button" class="btn btn--icono btn--linea pos__catalogo-btn" id="btn-productos" aria-label="Elegir productos de la lista">' + ico('layers') + '</button>' +
       '<button type="button" class="btn btn--icono btn--linea" id="btn-espera" aria-label="Poner en espera o ver tickets en espera"></button>' +
@@ -137,7 +137,10 @@
     }).join('');
     var n = cantArticulos(), tot = totalTicket();
     $('#tot').textContent = F.din(tot); $('#tot-rotulo').textContent = n ? (n % 1 ? Math.round(n) : n) + (n === 1 ? ' artículo' : ' artículos') : 'Total';
-    $('#btn-cobrar').disabled = !t.items.length; $('#btn-cobrar').textContent = 'Cobrar';
+    var dx = t.deudor ? LE.deudor(t.deudor) : null; if (t.deudor && !dx) delete t.deudor;
+    var chipD = $('#tk-deudor'); chipD.hidden = !dx;
+    if (dx) { var qd = (dx.saldo || 0) + tot, nv = LE.nivelDeudor(dx, qd); chipD.className = 'tk-deudor tk-deudor--' + nv; chipD.innerHTML = '<span class="tk-deudor__ic">' + ico('hand-coins') + '</span><span class="tk-deudor__txt"><strong>A cuenta de ' + esc(dx.nombre) + '</strong><small>Debe ' + F.din(dx.saldo || 0) + (tot ? ' · con este ticket ' + F.din(qd) : '') + (dx.limite ? ' · límite ' + F.din(dx.limite) : '') + '</small></span><button type="button" class="btn btn--icono btn--chico btn--linea" data-quitar-deudor aria-label="Sacar a ' + esc(dx.nombre) + ' del ticket">' + ico('x') + '</button>'; }
+    $('#btn-cobrar').disabled = !t.items.length; $('#btn-cobrar').textContent = dx ? 'Finalizar' : 'Cobrar';
     $('#btn-anular').disabled = !t.items.length;
     var e = $('#btn-espera'); e.innerHTML = ico('pause') + '<span class="txt-pos">En espera</span>' + (S.espera.length ? '<span class="badge badge--rosa">' + S.espera.length + '</span>' : ''); e.classList.toggle('btn--ancho', !!S.espera.length);
     $('#tk-espera').innerHTML = S.espera.length ? '<span class="badge badge--rosa">' + S.espera.length + (S.espera.length === 1 ? ' en espera' : ' en espera') + '</span>' : '';
@@ -225,6 +228,116 @@
     ctl.$('#peso').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ctl.$('#peso-ok').click(); } });
   }
 
+  /* ---------- Deudores: compras a cuenta (fiado) ----------
+     Se elige a la persona, se escanean los productos y se da por finalizada. Descuenta del inventario pero NO entra plata a la caja;
+     cuando la persona paga, ese pago sí entra en la caja del día. */
+  function barraUso(d) {
+    if (!d.limite) return '<span class="uso uso--libre"><small>Sin límite</small></span>';
+    var pc = Math.max(0, Math.min(100, Math.round((d.saldo || 0) * 100 / d.limite)));
+    return '<span class="uso uso--' + LE.nivelDeudor(d) + '" role="img" aria-label="Usó el ' + pc + ' % de su límite"><i style="width:' + Math.max(pc, 3) + '%"></i></span>';
+  }
+  function abrirDeudores() {
+    var ctl = UI.modal({
+      titulo: 'Deudores', ancha: true,
+      cuerpo: '<div class="dd-barra"><input id="dd-q" class="entrada" placeholder="Buscar por nombre" autocomplete="off" aria-label="Buscar deudor"><button type="button" class="btn btn--acento" id="dd-nuevo">' + ico('plus') + 'Nuevo</button></div><div id="dd-lista" class="dd-lista"></div>',
+      acciones: [{ texto: 'Cerrar', clase: 'btn--linea' }]
+    });
+    function pintar() {
+      var q = ctl.$('#dd-q').value.trim().toLowerCase(), lista = LE.deudores().filter(function (d) { return !q || d.nombre.toLowerCase().indexOf(q) >= 0; });
+      ctl.$('#dd-lista').innerHTML = lista.length ? lista.map(function (d) {
+        var nv = LE.nivelDeudor(d);
+        return '<div class="dd dd--' + nv + '"><button type="button" class="dd__elegir" data-elegir="' + d.id + '"><span class="avatar">' + esc(UI.iniciales(d.nombre)) + '</span><span class="dd__txt"><strong>' + esc(d.nombre) + '</strong><small>' + ((d.saldo || 0) > 0 ? 'Debe ' + F.din(d.saldo) : 'No debe nada') + (d.limite ? ' · límite ' + F.din(d.limite) : '') + '</small>' + barraUso(d) + '</span></button>' +
+          ((d.saldo || 0) > 0 ? '<button type="button" class="btn btn--chico btn--linea" data-cobrar="' + d.id + '">' + ico('banknote') + 'Cobrar</button>' : '') + '</div>';
+      }).join('') : '<p class="vacio">' + (q ? 'No encontré a nadie con ese nombre.' : 'Todavía no hay deudores. Tocá «Nuevo» para agregar el primero.') + '</p>';
+    }
+    ctl.cuerpo.addEventListener('input', function (e) { if (e.target.id === 'dd-q') pintar(); });
+    ctl.cuerpo.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-elegir]'), co = e.target.closest('[data-cobrar]');
+      if (el) { var d = LE.deudor(el.dataset.elegir); S.actual.deudor = d.id; guardarEstado(); ctl.cerrar(); pintarTicket(); UI.toast('Compra a cuenta de ' + d.nombre + ': escaneá los productos.', 'ok'); var sc = $('#scan'); if (sc) sc.focus({ preventScroll: true }); return; }
+      if (co) { ctl.cerrar(); abrirCobroDeuda(co.dataset.cobrar); return; }
+      if (e.target.closest('#dd-nuevo')) { ctl.cerrar(); abrirNuevoDeudor(); }
+    });
+    pintar(); ctl.$('#dd-q').focus();
+  }
+  function abrirNuevoDeudor() {
+    var ctl = UI.modal({
+      titulo: 'Nuevo deudor',
+      cuerpo: '<label class="campo"><span>Nombre</span><input name="nombre" class="entrada" maxlength="60" autocomplete="off"></label><label class="campo"><span>Teléfono (WhatsApp)</span><input name="telefono" class="entrada" inputmode="tel" maxlength="30" autocomplete="off" placeholder="099 123 456"></label>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--acento', cerrar: false, accion: function () {
+        var v = UI.valores(ctl);
+        UI.hacer(function () { return LE.guardarDeudor({ nombre: v.nombre, telefono: v.telefono }); }, 'Deudor agregado.').then(function (r) { if (r.ok) { ctl.cerrar(); abrirDeudores(); } }); return false; } }]
+    });
+  }
+  function abrirCobroDeuda(id) {
+    var d = LE.deudor(id), n = LE.negocio(), medios = Object.keys(LE.MEDIOS).filter(function (m) { return n.medios[m]; }), medio = medios.indexOf('efectivo') >= 0 ? 'efectivo' : medios[0];
+    var ic = { efectivo: 'banknote', debito: 'credit-card', credito: 'credit-card', qr: 'qr-code' };
+    var ctl = UI.modal({
+      titulo: 'Cobrar deuda',
+      cuerpo: '<div class="pagar__total"><span class="suave">' + esc(d.nombre) + ' debe</span><strong>' + F.din(d.saldo || 0) + '</strong></div>' +
+        '<div class="medios" id="cd-medios">' + medios.map(function (m) { return '<button type="button" class="medio" data-m="' + m + '" aria-pressed="' + (m === medio) + '">' + ico(ic[m]) + LE.MEDIOS[m] + '</button>'; }).join('') + '</div>' +
+        '<label class="campo" style="margin-top:14px"><span>Cuánto paga</span><input id="cd-monto" class="entrada" inputmode="decimal" autocomplete="off" value="' + UI.deCentavos(d.saldo || 0) + '"></label><div class="billetes"><button type="button" class="chip" data-todo>Todo</button></div>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Registrar pago', clase: 'btn--acento', cerrar: false, accion: function () {
+        var m = UI.aCentavos(ctl.$('#cd-monto').value);
+        var r = UI.intentar(function () { return LE.cobrarDeuda({ deudor: d.id, monto: m, medio: medio }); });
+        if (!r.ok) return false;
+        ctl.cerrar(); pintarBarra(); UI.toast('Pago de ' + F.din(m) + ' registrado: entra en la caja de hoy.', 'ok'); return false; } }]
+    });
+    ctl.cuerpo.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-m]'); if (b) { medio = b.dataset.m; ctl.$$('.medio').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.m === medio ? 'true' : 'false'); }); }
+      if (e.target.closest('[data-todo]')) ctl.$('#cd-monto').value = UI.deCentavos(d.saldo || 0);
+    });
+    ctl.$('#cd-monto').select();
+  }
+  function finalizarCuenta() {
+    var t = S.actual; if (!t.items.length) return; var d = LE.deudor(t.deudor); if (!d) { delete t.deudor; return pintarTicket(); }
+    var total = totalTicket(t), despues = (d.saldo || 0) + total;
+    function emitir() {
+      var r = UI.intentar(function () { return LE.crearVenta({ id: t.id, deudor: d.id, items: t.items.map(function (i) { return { p: i.p, c: i.c }; }) }); });
+      if (!r.ok) return;
+      S.actual = nuevoTicket(); guardarEstado(); pintarTicket(); pintarBarra(); pintarGrilla(); pintarCliente('gracias'); mostrarTicket(r.valor, false);
+    }
+    if (LE.nivelDeudor(d, despues) === 'limite') UI.confirmar('Pasa su límite', d.nombre + ' quedaría debiendo ' + F.din(despues) + ' y su límite es ' + F.din(d.limite) + '. ¿Fiar igual?', { ok: 'Fiar igual' }).then(function (si) { if (si) emitir(); });
+    else emitir();
+  }
+
+  /* ---------- Precios y stock (la caja también los puede cambiar) ---------- */
+  function abrirPrecios() {
+    var ctl = UI.modal({
+      titulo: 'Precios y stock', ancha: true,
+      cuerpo: '<input id="pr-q" class="entrada" placeholder="Escaneá o buscá un producto" autocomplete="off" aria-label="Buscar producto"><div id="pr-lista" class="dd-lista" style="margin-top:12px"></div>',
+      acciones: [{ texto: 'Cerrar', clase: 'btn--linea' }]
+    });
+    function pintar() {
+      var q = ctl.$('#pr-q').value.trim(), lista = q ? LE.buscar(q).slice(0, 30) : LE.productos().slice(0, 30);
+      ctl.$('#pr-lista').innerHTML = lista.length ? lista.map(function (p) {
+        return '<div class="dd"><button type="button" class="dd__elegir" data-editar="' + p.id + '">' + UI.foto(p, 'foto--mini') + '<span class="dd__txt"><strong>' + esc(p.nombre) + '</strong><small>' + F.din(p.precio) + (p.unidad === 'kg' ? ' por kg' : '') + ' · hay ' + (p.unidad === 'kg' ? F.kg(p.stock) : p.stock + ' u') + '</small></span></button><button type="button" class="btn btn--chico btn--linea" data-editar="' + p.id + '">' + ico('square-pen') + 'Cambiar</button></div>';
+      }).join('') : '<p class="vacio">No encontré ese producto.</p>';
+    }
+    ctl.cuerpo.addEventListener('input', function (e) { if (e.target.id === 'pr-q') pintar(); });
+    ctl.cuerpo.addEventListener('keydown', function (e) { if (e.target.id === 'pr-q' && e.key === 'Enter') { var x = LE.buscar(e.target.value.trim()); if (x.length === 1) { e.preventDefault(); ctl.cerrar(); editarProducto(x[0].id); } } });
+    ctl.cuerpo.addEventListener('click', function (e) { var b = e.target.closest('[data-editar]'); if (b) { ctl.cerrar(); editarProducto(b.dataset.editar); } });
+    pintar(); ctl.$('#pr-q').focus();
+  }
+  function editarProducto(id) {
+    var p = LE.producto(id), kg = p.unidad === 'kg';
+    var ctl = UI.modal({
+      titulo: p.nombre,
+      cuerpo: '<div class="ajuste-prod">' + UI.foto(p, 'foto--mini') + '<div><strong>' + esc(p.nombre) + '</strong><small class="suave">' + esc(p.cat) + '</small></div></div>' +
+        '<label class="campo"><span>Precio' + (kg ? ' por kg' : '') + '</span><input name="precio" class="entrada" inputmode="decimal" autocomplete="off" value="' + UI.deCentavos(p.precio) + '"></label>' +
+        '<div class="fila-campos"><label class="campo"><span>Hay (contado)</span><input name="stock" class="entrada" inputmode="decimal" autocomplete="off" value="' + String(p.stock).replace('.', ',') + '"></label>' +
+        '<label class="campo"><span>Avisar si queda menos de</span><input name="minimo" class="entrada" inputmode="decimal" autocomplete="off" value="' + String(p.minimo).replace('.', ',') + '"></label></div>',
+      acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Guardar', clase: 'btn--acento', cerrar: false, accion: function () {
+        var v = UI.valores(ctl), precio = UI.aCentavos(v.precio), minimo = UI.aNumero(v.minimo), real = UI.aNumero(v.stock), delta = Math.round((real - p.stock) * 1000) / 1000;
+        UI.hacer(function () {
+          var cambio = precio !== p.precio || minimo !== p.minimo;
+          return Promise.resolve(cambio ? LE.guardarProducto({ id: p.id, nombre: p.nombre, cat: p.cat, unidad: p.unidad, codigo: p.codigo, plu: p.plu, costo: p.costo, precio: precio, iva: p.iva, minimo: minimo, prov: p.prov }) : null)
+            .then(function () { return delta ? LE.ajustarStock(p.id, delta, 'Conteo en la caja') : null; });
+        }, 'Guardado.').then(function (r) { if (r.ok) { ctl.cerrar(); pintarGrilla(); pintarTicket(); abrirPrecios(); } });
+        return false; } }]
+    });
+    ctl.$('[name=precio]').select();
+  }
+
   /* ---------- Cobro ---------- */
   function abrirCobro() {
     var t = S.actual; if (!t.items.length) return;
@@ -286,7 +399,7 @@
   /* ---------- Ticket emitido ---------- */
   function mostrarTicket(v, copia) {
     var texto = LE.ticketTexto(v, { copia: copia }), bytes = LE.ticketEscpos(v, { copia: copia });
-    var cabecera = copia ? '' : '<div class="vuelto" style="margin:0 0 14px;' + (v.vuelto ? '' : 'background:var(--velo);color:var(--tinta)') + '">' + (v.vuelto ? 'Vuelto<strong>' + F.din(v.vuelto) + '</strong>' : 'Venta cobrada<strong>' + F.din(v.total) + '</strong>') + '</div>';
+    var cabecera = v.fiado ? (copia ? '' : '<div class="vuelto vuelto--cuenta" style="margin:0 0 14px">A cuenta de ' + esc(v.deudorNombre || '') + '<strong>' + F.din(v.total) + '</strong></div>') : copia ? '' : '<div class="vuelto" style="margin:0 0 14px;' + (v.vuelto ? '' : 'background:var(--velo);color:var(--tinta)') + '">' + (v.vuelto ? 'Vuelto<strong>' + F.din(v.vuelto) + '</strong>' : 'Venta cobrada<strong>' + F.din(v.total) + '</strong>') + '</div>';
     var ctl = UI.modal({
       titulo: copia ? 'Copia del último ticket' : 'Venta ' + F.num(v.num), persistente: true, ancha: true,
       cuerpo: cabecera + '<div class="papel-marco"><pre class="papel" id="papel">' + esc(texto) + '</pre></div>' +
@@ -330,7 +443,7 @@
       titulo: 'Cerrar caja',
       cuerpo: '<p class="suave" style="margin-bottom:10px">Turno ' + esc(t.turno) + ' · abrió ' + esc(t.abrio) + ' a las ' + F.hora(t.apertura) + '</p>' +
         '<div class="tarjeta" style="margin-bottom:14px"><div class="resumen-pago" style="padding-top:0"><span>' + r.tickets + ' ventas</span><strong>' + F.din(r.total) + '</strong></div><ul class="leyenda">' +
-        Object.keys(LE.MEDIOS).map(function (m) { return '<li><span>' + LE.MEDIOS[m] + '</span><span class="lv">' + F.din(r.porMedio[m]) + '</span></li>'; }).join('') + '</ul></div>' +
+        Object.keys(LE.MEDIOS).map(function (m) { return '<li><span>' + LE.MEDIOS[m] + '</span><span class="lv">' + F.din(r.porMedio[m]) + '</span></li>'; }).join('') + (r.cobrosDeuda.n ? '<li><span>Cobros de deudas (' + r.cobrosDeuda.n + ')</span><span class="lv">' + F.din(r.cobrosDeuda.total) + '</span></li>' : '') + (r.fiado.tickets ? '<li class="suave"><span>A cuenta, sin cobrar (' + r.fiado.tickets + ')</span><span class="lv">' + F.din(r.fiado.total) + '</span></li>' : '') + '</ul></div>' +
         '<label class="campo"><span>Efectivo que hay en el cajón (contalo ahora)</span><input name="c" class="entrada" inputmode="decimal" autocomplete="off" placeholder="0"></label>',
       acciones: [{ texto: 'Cancelar', clase: 'btn--linea' }, { texto: 'Cerrar caja', clase: 'btn--tinta', cerrar: false, accion: function () {
         var v = UI.valores(ctl); if (v.c === '') { UI.toast('Escribí cuánto efectivo contaste.', 'error'); return false; }
@@ -380,7 +493,8 @@
     var pr = t.closest('.prod'); if (pr) { var p = LE.producto(pr.dataset.p); if (p.unidad === 'kg') pedirPeso(p); else { agregar(p, 1); if (window.innerWidth < 768) { /* en el celular el catálogo se queda abierto para sumar varios */ } } return; }
     if (t.closest('#btn-productos') || t.closest('[data-abrir-cat]')) return abrirCatalogo(true);
     if (t.closest('#cat-cerrar')) { abrirCatalogo(false); var sc = $('#scan'); if (sc) sc.focus({ preventScroll: true }); return; }
-    if (t.closest('#btn-cobrar')) return abrirCobro();
+    if (t.closest('[data-quitar-deudor]')) { delete S.actual.deudor; guardarEstado(); pintarTicket(); return; }
+    if (t.closest('#btn-cobrar')) return S.actual.deudor ? finalizarCuenta() : abrirCobro();
     if (t.closest('#btn-espera')) return ponerEnEspera();
     if (t.closest('#btn-anular')) { UI.confirmar('Anular el ticket', 'Se borran los ' + S.actual.items.length + ' productos del ticket actual.', { ok: 'Anular ticket', peligro: true }).then(function (si) { if (si) { S.actual = nuevoTicket(); pintarTicket(); } }); return; }
     if (t.closest('#demo-red')) return conexion(!LE.red.offline);

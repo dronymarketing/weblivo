@@ -202,6 +202,45 @@ create table if not exists public.codigos_sin_cargar (
   por     text not null default ''
 );
 
+-- Personas que compran fiado (a cuenta). El saldo sale de sus ventas fiadas menos lo que fueron pagando.
+-- límite en pesos: 0 = sin límite (no se avisa).
+create table if not exists public.deudores (
+  id       uuid primary key default gen_random_uuid(),
+  nombre   text not null check (char_length(nombre) between 2 and 60),
+  telefono text not null default '' check (char_length(telefono) <= 30),
+  limite   int not null default 0 check (limite >= 0),
+  activo   boolean not null default true,
+  creado   timestamptz not null default now()
+);
+alter table public.ventas add column if not exists deudor_id uuid references public.deudores (id);
+create index if not exists ventas_deudor on public.ventas (deudor_id) where deudor_id is not null;
+
+-- Pagos de deudas: entran en la caja del turno en que se cobran
+create table if not exists public.deudor_pagos (
+  id      uuid primary key,                       -- lo genera la caja: reenviar no duplica
+  deudor  uuid not null references public.deudores (id),
+  turno   uuid not null references public.caja_turnos (id),
+  ts      timestamptz not null default now(),
+  monto   int not null check (monto > 0),
+  medio   text not null check (medio in ('efectivo', 'debito', 'credito', 'qr')),
+  usuario text not null
+);
+create index if not exists deudor_pagos_deudor on public.deudor_pagos (deudor, ts desc);
+
+-- Mensajes de WhatsApp a los deudores (cerca del límite / límite superado). Una función del servidor los envía; si no está
+-- configurada quedan «pendiente» y el panel ofrece abrirlos en WhatsApp a mano.
+create table if not exists public.avisos_deudor (
+  id       bigserial primary key,
+  deudor   uuid not null references public.deudores (id) on delete cascade,
+  tipo     text not null check (tipo in ('cerca', 'limite')),
+  mensaje  text not null,
+  telefono text not null default '',
+  ts       timestamptz not null default now(),
+  estado   text not null default 'pendiente' check (estado in ('pendiente', 'enviado', 'error')),
+  detalle  text not null default ''
+);
+create index if not exists avisos_deudor_estado on public.avisos_deudor (estado, ts desc);
+
 -- ---------- Seguridad: RLS sin políticas = nadie toca las tablas directo ----------
 
 alter table public.perfiles          enable row level security;
@@ -220,6 +259,9 @@ alter table public.stock_movimientos enable row level security;
 alter table public.asistencias       enable row level security;
 alter table public.auditoria         enable row level security;
 alter table public.codigos_sin_cargar enable row level security;
+alter table public.deudores           enable row level security;
+alter table public.deudor_pagos       enable row level security;
+alter table public.avisos_deudor      enable row level security;
 
 revoke all on all tables    in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
@@ -259,7 +301,7 @@ language sql immutable as $$ select (extract(epoch from p_ts) * 1000)::bigint $$
 
 create or replace function public.din(p_c bigint) returns text
 language sql immutable as $$
-  select '$ ' || to_char(round(p_c / 100.0), 'FM999G999G999')
+  select '$ ' || replace(to_char(round(p_c / 100.0), 'FM999,999,999'), ',', '.')
 $$;
 
 -- ---------- Alta de personas ----------
@@ -296,6 +338,7 @@ language sql stable security definer set search_path = public as $$
        + coalesce((select sum(p.monto) from public.ventas v join public.venta_pagos p on p.venta = v.id
                     where v.turno = t.id and v.estado = 'ok' and p.medio = 'efectivo'), 0)::int
        + coalesce((select sum(m.monto) from public.caja_movimientos m where m.turno = t.id), 0)::int
+       + coalesce((select sum(g.monto) from public.deudor_pagos g where g.turno = t.id and g.medio = 'efectivo'), 0)::int
     from public.caja_turnos t where t.id = p_turno
 $$;
 
@@ -312,7 +355,8 @@ create or replace function public.venta_json(p_id uuid, p_con_costo boolean defa
 language sql stable security definer set search_path = public as $$
   select jsonb_build_object(
     'id', v.id, 'num', v.num, 'ts', public.ms(v.ts), 'turno', v.turno, 'cajeroId', v.cajero_id, 'cajero', v.cajero,
-    'total', v.total, 'recibido', v.recibido, 'vuelto', v.vuelto, 'estado', v.estado, 'anuladaPor', v.anulada_por, 'motivo', v.motivo, 'sync', true, 'act', public.ms(v.actualizado),
+    'total', v.total, 'recibido', v.recibido, 'vuelto', v.vuelto, 'estado', v.estado, 'anuladaPor', v.anulada_por, 'motivo', v.motivo, 'fiado', v.deudor_id is not null, 'deudor', v.deudor_id,
+    'deudorNombre', (select d.nombre from public.deudores d where d.id = v.deudor_id), 'sync', true, 'act', public.ms(v.actualizado),
     'items', coalesce((select jsonb_agg(jsonb_build_object('p', i.producto, 'n', i.nombre, 'c', i.cant, 'u', i.precio, 's', i.subtotal, 'iva', i.iva, 'k', case when p_con_costo then i.costo else 0 end) order by i.nombre)
                          from public.venta_items i where i.venta = v.id), '[]'::jsonb),
     'pagos', coalesce((select jsonb_agg(jsonb_build_object('m', g.medio, 'monto', g.monto)) from public.venta_pagos g where g.venta = v.id), '[]'::jsonb))
@@ -358,6 +402,14 @@ begin
                   from public.caja_turnos where (v_admin and apertura >= v_desde) or id = v_abierto), '[]'::jsonb));
   r := r || jsonb_build_object('movCaja', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'turno', m.turno, 'ts', public.ms(m.ts), 'concepto', m.concepto, 'monto', m.monto, 'usuario', m.usuario) order by m.ts)
                   from public.caja_movimientos m join public.caja_turnos t on t.id = m.turno where (v_admin and t.apertura >= v_desde) or t.id = v_abierto), '[]'::jsonb));
+  -- Deudores: todos los ven (la caja los necesita para fiar); los pagos, los avisos y los mensajes los ve administración (la caja, solo los del turno abierto)
+  r := r || jsonb_build_object(
+    'deudores', coalesce((select jsonb_agg(jsonb_build_object('id', d.id, 'nombre', d.nombre, 'telefono', d.telefono, 'limite', d.limite, 'activo', d.activo, 'saldo', public.saldo_deudor(d.id)) order by d.nombre)
+                  from public.deudores d), '[]'::jsonb),
+    'pagosDeuda', coalesce((select jsonb_agg(jsonb_build_object('id', g.id, 'deudor', g.deudor, 'turno', g.turno, 'ts', public.ms(g.ts), 'monto', g.monto, 'medio', g.medio, 'usuario', g.usuario) order by g.ts)
+                  from public.deudor_pagos g join public.caja_turnos t on t.id = g.turno where (v_admin and t.apertura >= v_desde) or t.id = v_abierto), '[]'::jsonb),
+    'avisosDeuda', case when v_admin then coalesce((select jsonb_agg(jsonb_build_object('id', a.id, 'deudor', a.deudor, 'tipo', a.tipo, 'mensaje', a.mensaje, 'telefono', a.telefono, 'ts', public.ms(a.ts), 'estado', a.estado, 'detalle', a.detalle) order by a.ts desc)
+                  from (select * from public.avisos_deudor order by ts desc limit 100) a), '[]'::jsonb) else '[]'::jsonb end);
   -- Horarios: administración, todos; caja, los suyos
   r := r || jsonb_build_object('asistencias', coalesce((select jsonb_agg(jsonb_build_object('id', id, 'usuarioId', usuario_id, 'nombre', nombre, 'entrada', public.ms(entrada), 'salida', public.ms(salida)) order by entrada)
                   from public.asistencias where entrada >= v_desde and (v_admin or usuario_id = auth.uid())), '[]'::jsonb));
@@ -461,6 +513,30 @@ end $$;
 
 -- p = {id, num, ts (ms), turno, items:[{p, c}], pagos:[{m, monto}], recibido}
 -- El precio sale de la base, nunca de la pantalla. Reenviar la misma venta devuelve la guardada.
+create or replace function public.saldo_deudor(p_id uuid) returns int
+language sql stable security definer set search_path = public as $$
+  select (coalesce((select sum(v.total) from public.ventas v where v.deudor_id = p_id and v.estado = 'ok'), 0)
+        - coalesce((select sum(g.monto) from public.deudor_pagos g where g.deudor = p_id), 0))::int
+$$;
+
+-- Crea el aviso de WhatsApp cuando el saldo cruza el 80 % del límite o el límite (una sola vez por cruce)
+create or replace function public.avisar_deudor(p_id uuid, p_antes int, p_despues int) returns void
+language plpgsql security definer set search_path = public as $$
+declare d public.deudores; v_neg text; v_tipo text; v_msg text; v_estado text := 'pendiente'; v_det text := '';
+begin
+  select * into d from public.deudores where id = p_id;
+  if not found or d.limite <= 0 then return; end if;
+  select nombre into v_neg from public.negocio where id = 1;
+  if p_antes < d.limite and p_despues >= d.limite then v_tipo := 'limite';
+  elsif p_antes * 10 < d.limite * 8 and p_despues * 10 >= d.limite * 8 then v_tipo := 'cerca';
+  else return; end if;
+  v_msg := case when v_tipo = 'limite'
+    then 'Hola ' || d.nombre || ', te escribimos de ' || v_neg || '. Tu cuenta está en ' || public.din(p_despues) || ' y llegó al límite de ' || public.din(d.limite) || '. Pasá a abonar cuando puedas para seguir comprando a cuenta. ¡Gracias!'
+    else 'Hola ' || d.nombre || ', te escribimos de ' || v_neg || '. Tu cuenta está en ' || public.din(p_despues) || ' y te estás acercando a tu límite de ' || public.din(d.limite) || '. Pasá a abonar cuando puedas. ¡Gracias!' end;
+  if btrim(d.telefono) = '' then v_estado := 'error'; v_det := 'El deudor no tiene teléfono cargado'; end if;
+  insert into public.avisos_deudor (deudor, tipo, mensaje, telefono, estado, detalle) values (d.id, v_tipo, v_msg, d.telefono, v_estado, v_det);
+end $$;
+
 create or replace function public.crear_venta(p jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
@@ -468,9 +544,15 @@ declare
   v_u public.perfiles; v_t public.caja_turnos; v_neg public.negocio;
   v_it jsonb; v_prod public.productos; v_c numeric; v_s int;
   v_total int := 0; v_pagado int := 0; v_ef int := 0; v_recibido int; v_vuelto int; v_num int; v_ts timestamptz; v_pg jsonb;
+  v_deu public.deudores; v_deu_id uuid := nullif(p ->> 'deudor', '')::uuid; v_saldo0 int := 0;
 begin
   perform public.exigir_rol('admin', 'caja');
   if exists (select 1 from public.ventas where id = v_id) then return public.venta_json(v_id); end if;
+  if v_deu_id is not null then
+    select * into v_deu from public.deudores where id = v_deu_id;
+    if not found or not v_deu.activo then raise exception 'Esa persona ya no está en la lista de deudores.' using errcode = 'P0001'; end if;
+    v_saldo0 := public.saldo_deudor(v_deu_id);
+  end if;
   select * into v_u from public.perfiles where id = auth.uid();
   select * into v_t from public.caja_turnos where id = (p ->> 'turno')::uuid;
   if not found then raise exception 'Abrí la caja antes de vender.' using errcode = 'P0001'; end if;
@@ -487,7 +569,11 @@ begin
     v_total := v_total + (round(v_prod.precio * v_c / 100) * 100)::int;
   end loop;
 
-  -- 2) cobro: los medios habilitados y que cierre justo
+  -- 2) cobro: los medios habilitados y que cierre justo (una venta fiada no lleva pagos: queda a cuenta del deudor)
+  if v_deu_id is not null then
+    if jsonb_array_length(coalesce(p -> 'pagos', '[]'::jsonb)) > 0 then raise exception 'Una venta a cuenta no lleva pagos.' using errcode = 'P0001'; end if;
+    v_recibido := 0; v_vuelto := 0;
+  else
   for v_pg in select * from jsonb_array_elements(coalesce(p -> 'pagos', '[]'::jsonb)) loop
     if coalesce((v_neg.medios ->> (v_pg ->> 'm'))::boolean, false) is not true then raise exception 'Medio de pago no habilitado.' using errcode = 'P0001'; end if;
     v_pagado := v_pagado + (v_pg ->> 'monto')::int;
@@ -498,13 +584,14 @@ begin
   v_recibido := case when v_ef > 0 then coalesce((p ->> 'recibido')::int, v_ef) else 0 end;
   if v_ef > 0 and v_recibido < v_ef then raise exception 'El efectivo recibido es menor al cobrado.' using errcode = 'P0001'; end if;
   v_vuelto := case when v_ef > 0 then v_recibido - v_ef else 0 end;
+  end if;
 
   -- 3) número de ticket: el de la caja si está libre; si no, el siguiente
   v_num := coalesce(nullif((p ->> 'num')::int, 0), nextval('public.venta_numero')::int);
   if exists (select 1 from public.ventas where num = v_num) then v_num := (select max(num) + 1 from public.ventas); end if;
 
-  insert into public.ventas (id, num, ts, turno, cajero_id, cajero, total, recibido, vuelto)
-  values (v_id, v_num, v_ts, v_t.id, v_u.id, v_u.nombre, v_total, v_recibido, v_vuelto);
+  insert into public.ventas (id, num, ts, turno, cajero_id, cajero, total, recibido, vuelto, deudor_id)
+  values (v_id, v_num, v_ts, v_t.id, v_u.id, v_u.nombre, v_total, v_recibido, v_vuelto, v_deu_id);
 
   for v_it in select * from jsonb_array_elements(p -> 'items') loop
     select * into v_prod from public.productos where id = (v_it ->> 'p')::uuid;
@@ -513,9 +600,10 @@ begin
     insert into public.venta_items (venta, producto, nombre, cant, precio, subtotal, iva, costo) values (v_id, v_prod.id, v_prod.nombre, v_c, v_prod.precio, v_s, v_prod.iva, v_prod.costo);
     perform public.mover_stock(v_prod.id, -v_c, 'venta', 'Ticket ' || lpad(v_num::text, 6, '0'), v_ts);
   end loop;
-  for v_pg in select * from jsonb_array_elements(p -> 'pagos') loop
+  for v_pg in select * from jsonb_array_elements(coalesce(p -> 'pagos', '[]'::jsonb)) loop
     insert into public.venta_pagos (venta, medio, monto) values (v_id, v_pg ->> 'm', (v_pg ->> 'monto')::int);
   end loop;
+  if v_deu_id is not null then perform public.avisar_deudor(v_deu_id, v_saldo0, v_saldo0 + v_total); end if;
   return public.venta_json(v_id);
 end $$;
 
@@ -545,7 +633,16 @@ declare
   v_precio int := (round((p ->> 'precio')::numeric / 100) * 100)::int; v_costo int := (round(coalesce((p ->> 'costo')::numeric, 0) / 100) * 100)::int; v_prov uuid := nullif(p ->> 'prov', '')::uuid;
   v_dup text;
 begin
-  perform public.exigir_rol('admin');
+  perform public.exigir_rol('admin', 'caja');
+  -- La caja puede cambiar el precio y el mínimo de un producto que ya existe; lo demás (nombre, costo, códigos…) es de administración.
+  if public.mi_rol() = 'caja' then
+    select * into v_old from public.productos where id = v_id for update;
+    if v_id is null or not found then raise exception 'Solo administración crea productos.' using errcode = '42501'; end if;
+    if not (v_precio > 0) then raise exception 'El precio tiene que ser mayor que cero.' using errcode = 'P0001'; end if;
+    update public.productos set precio = v_precio, minimo = coalesce((p ->> 'minimo')::numeric, minimo) where id = v_id;
+    perform public.anotar(case when v_old.precio <> v_precio then 'Cambió el precio de ' || v_old.nombre || ': ' || public.din(v_old.precio) || ' → ' || public.din(v_precio) else 'Cambió el mínimo de ' || v_old.nombre end);
+    return jsonb_build_object('id', v_id);
+  end if;
   if char_length(v_nombre) < 2 then raise exception 'Escribí el nombre del producto.' using errcode = 'P0001'; end if;
   if char_length(v_nombre) > 28 then raise exception 'El nombre no puede pasar de 28 letras (para que entre en el ticket).' using errcode = 'P0001'; end if;
   if not (v_precio > 0) then raise exception 'El precio tiene que ser mayor que cero.' using errcode = 'P0001'; end if;
@@ -595,6 +692,61 @@ begin
   delete from public.codigos_sin_cargar where codigo = btrim(coalesce(p_codigo, ''));
 end $$;
 
+-- Alta y edición de deudores. La caja puede darlos de alta y corregir nombre y teléfono; el límite y el alta/baja son de administración.
+create or replace function public.guardar_deudor(p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_id uuid := nullif(p ->> 'id', '')::uuid; v_nombre text := btrim(coalesce(p ->> 'nombre', '')); v_tel text := btrim(coalesce(p ->> 'telefono', ''));
+  v_lim int := greatest(0, (round(coalesce((p ->> 'limite')::numeric, 0) / 100) * 100)::int); v_admin boolean; v_old public.deudores;
+begin
+  perform public.exigir_rol('admin', 'caja'); v_admin := public.tiene_rol('admin');
+  if char_length(v_nombre) < 2 then raise exception 'Escribí el nombre.' using errcode = 'P0001'; end if;
+  if v_tel !~ '^[0-9 +()-]{0,30}$' then raise exception 'El teléfono solo puede llevar números.' using errcode = 'P0001'; end if;
+  if v_id is not null then
+    select * into v_old from public.deudores where id = v_id for update;
+    if not found then raise exception 'Deudor no encontrado.' using errcode = 'P0001'; end if;
+    update public.deudores set nombre = v_nombre, telefono = v_tel,
+           limite = case when v_admin then v_lim else limite end, activo = case when v_admin then coalesce((p ->> 'activo')::boolean, activo) else activo end where id = v_id;
+    perform public.anotar('Editó al deudor ' || v_nombre);
+  else
+    insert into public.deudores (nombre, telefono, limite) values (v_nombre, v_tel, case when v_admin then v_lim else 0 end) returning id into v_id;
+    perform public.anotar('Agregó al deudor ' || v_nombre);
+  end if;
+  return jsonb_build_object('id', v_id);
+end $$;
+
+-- Cobro de una deuda: entra en la caja del turno abierto (el efectivo suma al efectivo esperado)
+create or replace function public.cobrar_deuda(p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_id uuid := (p ->> 'id')::uuid; v_deu uuid := (p ->> 'deudor')::uuid; v_monto int := round((p ->> 'monto')::numeric)::int; v_medio text := coalesce(p ->> 'medio', 'efectivo');
+  v_t public.caja_turnos; v_n public.negocio; v_d public.deudores; v_saldo int; v_ts timestamptz;
+begin
+  perform public.exigir_rol('admin', 'caja');
+  if exists (select 1 from public.deudor_pagos where id = v_id) then return jsonb_build_object('saldo', public.saldo_deudor(v_deu)); end if;
+  select * into v_d from public.deudores where id = v_deu;
+  if not found then raise exception 'Deudor no encontrado.' using errcode = 'P0001'; end if;
+  select * into v_t from public.caja_turnos where cierre is null;
+  if not found then raise exception 'Abrí la caja para cobrar una deuda.' using errcode = 'P0001'; end if;
+  select * into v_n from public.negocio where id = 1;
+  if coalesce((v_n.medios ->> v_medio)::boolean, false) is not true then raise exception 'Medio de pago no habilitado.' using errcode = 'P0001'; end if;
+  v_saldo := public.saldo_deudor(v_deu);
+  if not (v_monto > 0) then raise exception 'Escribí cuánto pagó.' using errcode = 'P0001'; end if;
+  if v_monto > v_saldo then raise exception 'La deuda es de %.', public.din(v_saldo) using errcode = 'P0001'; end if;
+  v_ts := least(coalesce(to_timestamp(nullif(p ->> 'ts', '')::numeric / 1000.0), now()), now());
+  insert into public.deudor_pagos (id, deudor, turno, ts, monto, medio, usuario) values (v_id, v_deu, v_t.id, v_ts, v_monto, v_medio, public.mi_nombre());
+  perform public.anotar('Cobró ' || public.din(v_monto) || ' de la deuda de ' || v_d.nombre || ' (' || v_medio || ')');
+  return jsonb_build_object('saldo', v_saldo - v_monto);
+end $$;
+
+create or replace function public.marcar_aviso(p_id bigint, p_estado text, p_detalle text default '') returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.exigir_rol('admin', 'caja');
+  if p_estado not in ('pendiente', 'enviado', 'error') then raise exception 'Estado inválido.' using errcode = 'P0001'; end if;
+  update public.avisos_deudor set estado = p_estado, detalle = left(coalesce(p_detalle, ''), 200) where id = p_id;
+end $$;
+
 create or replace function public.activar_producto(p_id uuid, p_activo boolean) returns void
 language plpgsql security definer set search_path = public as $$
 declare v_n text;
@@ -609,7 +761,7 @@ create or replace function public.ajustar_stock(p_id uuid, p_delta numeric, p_mo
 language plpgsql security definer set search_path = public as $$
 declare v_n text;
 begin
-  perform public.exigir_rol('admin');
+  perform public.exigir_rol('admin', 'caja');
   select nombre into v_n from public.productos where id = p_id;
   if v_n is null then raise exception 'Producto no encontrado.' using errcode = 'P0001'; end if;
   if p_delta is null or p_delta = 0 then raise exception 'Escribí cuánto sumar o restar.' using errcode = 'P0001'; end if;
@@ -744,6 +896,7 @@ grant execute on function
   public.crear_venta(jsonb), public.anular_venta(uuid, text),
   public.guardar_producto(jsonb), public.activar_producto(uuid, boolean), public.ajustar_stock(uuid, numeric, text),
   public.registrar_codigo(text, bigint), public.descartar_codigo(text),
+  public.guardar_deudor(jsonb), public.cobrar_deuda(jsonb), public.marcar_aviso(bigint, text, text),
   public.guardar_proveedor(jsonb), public.guardar_compra(jsonb), public.recibir_compra(uuid), public.pagar_compra(uuid),
   public.guardar_usuario(jsonb), public.marcar_asistencia(), public.guardar_negocio(jsonb)
   to authenticated;

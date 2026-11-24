@@ -104,6 +104,20 @@ hizo con Parking Despegar. **Sin marcas de "borrador" en pantalla** (pedido de S
     se manda un aviso vacío por el canal `la-estrella-cambios` (Supabase Realtime Broadcast, sin datos) y las demás pantallas se ponen al día en el acto (≈0,2 s en la prueba),
     aunque su pestaña no esté a la vista. Si el canal no anda, queda de respaldo la consulta cada 8 segundos. Si algún día no llegan los avisos, revisar en
     Supabase → Realtime → Settings que «Allow public access» esté prendido. Prueba: `pgtest/ui-vivo2.js` (con un servidor Realtime simulado).
+  - **Deudores (compras a cuenta / fiado)**, pedido de la clienta. *Caja*: botón «Deudores» (lista con búsqueda y barra de uso del límite; «Nuevo» da de
+    alta con nombre y WhatsApp) → se elige a la persona → el ticket queda «A cuenta de …» (con lo que debe y cuánto quedaría) → se escanea como siempre →
+    **«Finalizar»**. Si con ese ticket pasa su límite, pregunta antes de fiar. La venta **descuenta stock pero NO suma plata**: el efectivo esperado, los
+    reportes y «Ventas de hoy» la ignoran; en el **Inicio** aparece solo como dato («A cuenta hoy $ X · sin cobrar»). Cuando el deudor paga («Cobrar» en
+    la lista), **ese pago sí entra en la caja del día** (suma al efectivo esperado si es en efectivo y figura en el cierre y en el turno del panel).
+    *Panel*: sección «Deudores» (lo que les deben en total, cerca/sobre el límite, lista con barra de uso, movimientos de cada uno, cobrar, editar con límite en
+    pesos; 0 = sin límite) y «Avisos de WhatsApp». **Avisos**: se crean solos (servidor, `avisar_deudor`) al cruzar el 80 % del límite y al llegar al límite,
+    una vez por cruce; la campana y un globito en el menú avisan. **Envío**: automático por la función `supabase/funciones/enviar-whatsapp` (requiere cuenta de
+    WhatsApp Business de Meta y plantilla aprobada; guía en `supabase/funciones/LEEME.md`; se activa con `whatsapp: true` en `config.js`; NO probada contra Meta);
+    mientras tanto cada aviso queda «Pendiente» y el botón «Abrir en WhatsApp» abre el chat con el texto armado y lo marca enviado. Modelo: tablas `deudores`,
+    `deudor_pagos`, `avisos_deudor`, columna `ventas.deudor_id`; funciones `guardar_deudor`, `cobrar_deuda`, `marcar_aviso`, `saldo_deudor`.
+  - **La caja también cambia precios y stock**: menú de la caja → «Precios y stock» (busca o escanea, cambia precio, mínimo y el stock contado). Server: la caja
+    puede `guardar_producto` solo sobre un producto existente y solo precio y mínimo (nombre, costo y códigos quedan como estaban; no crea productos) y
+    `ajustar_stock`; dar de baja, compras y alta de productos siguen siendo de administración. Queda en el registro con el nombre de quien lo hizo.
   - **Fecha y hora en la barra** (`UI.iniciarReloj`, hora de Uruguay, se actualiza sola): en el panel y en la caja, a la derecha («Lunes, 16 de
     noviembre» y la hora en negrita; en el celular, fecha corta en el panel y solo la hora en la caja).
   - **Sin subtítulos explicativos**: las pantallas del panel (y el ingreso y la caja cerrada) solo llevan título; lo que cada pantalla hace lo
