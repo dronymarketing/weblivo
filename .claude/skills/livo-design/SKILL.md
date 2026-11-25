@@ -353,8 +353,20 @@ Especificaciones en `references/construccion.md`.
 - `references/checklist.md` — verificación antes de entregar
 - `references/esteticas-livo.md` — las 6 estéticas (L, M, N, FM, FU, RE)
 - `references/catalogo-efectos.md` — efectos A a K y los 3 paquetes por sitio
+- `references/asistente-whatsapp.md` — asistente de WhatsApp y avisos para sistemas con
+  Supabase (Cloudflare + Meta): receta completa, errores conocidos y cómo guiar a Santi
 
 Abrilos cuando los necesites, no antes.
+
+---
+
+## Sistemas con WhatsApp
+
+Si el cliente pide un **asistente al que se le pregunte por WhatsApp** («como Torre»)
+o **avisos automáticos por WhatsApp** (deudores, reservas, recordatorios), abrí
+`references/asistente-whatsapp.md` **antes de empezar**: tiene la receta completa
+(base, Worker de Cloudflare, Meta), el código de referencia y los errores que ya
+aparecieron. Se guía a Santi **de a un paso**, y nunca se piden tokens por el chat.
 
 ---
 
