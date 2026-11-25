@@ -116,6 +116,26 @@ Venta/evento en el sistema → disparador pg_net → POST /aviso → Worker
    escribiéndole `hola` al número. Ojo: el celular **no** debe estar habilitado en el
    asistente de otro cliente que comparta el número de prueba (Torre le contestaría).
 
+## Avisos al dueño (eventos), como Torre
+
+Además de contestar preguntas, el asistente puede **avisar solo** al dueño. En La Estrella:
+entra o sale alguien a trabajar, se abre y se cierra la caja (el cierre con el detalle completo: vendido por medio,
+deudores, cobros de deudas, retiros, debería haber / se contó / diferencia), retiros, llegó mercadería, stock que
+**cruza** el mínimo o se acaba, deudores al 80 % o en su límite, cobros de deuda y ventas anuladas.
+
+- **Nunca avisar cada venta**: se vuelve fastidioso (pedido de Santi). Los de stock avisan solo al cruzar el mínimo.
+- Arquitectura: la función de la base que hace la acción anota el evento con `aviso_dueno(tipo, datos)` (tabla
+  `avisos_dueno`, nunca frena la operación) → disparador `pg_net` → `POST /evento` del Worker → `servicio_evento()`
+  entrega el evento una sola vez con los celulares habilitados → el Worker arma el texto con íconos
+  (`textoEvento` en `worker.js`) y lo manda.
+- **Ventana de 24 h:** WhatsApp solo deja escribir libre a quien le escribió al negocio en las últimas 24 h
+  (`asistente_telefonos.ultimo_mensaje`, se actualiza con `asistente_visto()` cada vez que escribe). Alcanza con un
+  `hola` cada mañana. Para avisar siempre: plantilla opcional `WHATSAPP_PLANTILLA_DUENO` (una variable, texto antes y
+  después, sin saltos de línea en el dato; Meta cobra cada aviso con plantilla).
+- Cada rubro tiene sus eventos: preguntarle al cliente **qué quiere que le avise** y qué le resultaría molesto.
+- Mensajes: íconos al comienzo de cada bloque, `*negrita*` para lo importante, listas con `•`, y el detalle
+  numérico en líneas cortas. Ejemplo completo en `textoCierre()` de `laestrella/supabase/servicio/worker.js`.
+
 ## Cuando no contesta: cómo diagnosticar
 
 Cloudflare → Worker → **Observability → Live** (subir al inicio de la página y tocar
