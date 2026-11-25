@@ -32,10 +32,14 @@
       (filtros ? '<div class="filtros" id="filtros">' + filtros + '</div>' : '') + '<div id="zona"></div>';
   };
   P.zona = function (html) {
-    var z = $('#zona'); z.innerHTML = html;
+    var z = $('#zona');
+    /* Cuando la pantalla se actualiza sola (datos nuevos), se queda donde estaba: no vuelve al principio de la lista */
+    var yo = P.alActualizar ? [].map.call(z.querySelectorAll('*'), function (e, i) { return e.scrollTop > 0 ? [i, e.tagName, e.scrollTop] : null; }).filter(Boolean) : null;
+    z.innerHTML = html;
     /* Pantallas de lista: indicadores + una tabla. En escritorio la tabla ocupa el resto de la pantalla y se desplaza por dentro. */
     var k = [].slice.call(z.children), ult = k[k.length - 1];
     $('#vista').classList.toggle('cuerpo--lista', !!(ult && (ult.classList.contains('paneles') || (ult.classList.contains('tarjeta') && ult.querySelector('.tabla'))) && k.slice(0, -1).every(function (c) { return c.classList.contains('kpis') || c.classList.contains('resumen'); })));
+    if (yo && yo.length) { var todos = z.querySelectorAll('*'); yo.forEach(function (g) { var e = todos[g[0]]; if (e && e.tagName === g[1]) e.scrollTop = g[2]; }); }
     if (P.alPintar) { var f = P.alPintar; P.alPintar = null; f(); } };
 
   /* Tabla que en el celular se vuelve una lista de tarjetas.
@@ -452,7 +456,18 @@
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('#menu').classList.contains('menu--abierto') && !UI.hayModal()) cerrarMenu(); });
 
-  document.addEventListener('le:datos', function () { if (!UI.hayModal() && P.actual) P.refrescar(); });
+  /* Cada pocos segundos llegan datos nuevos y la pantalla se redibuja. Si hay un formulario a medio completar (o el cursor está
+     escribiendo en uno), NO se redibuja: se perdería lo escrito. Al guardar, cambiar de sección o recargar se pone al día. */
+  function escribiendo() {
+    var z = $('#zona'); if (!z) return false;
+    var a = document.activeElement; if (a && z.contains(a) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)) return true;
+    return UI.$$('input, select, textarea', z).some(function (c) {
+      if (c.type === 'checkbox' || c.type === 'radio') return c.checked !== c.defaultChecked;
+      if (c.tagName === 'SELECT') { var d = 0; for (var i = 0; i < c.options.length; i++) if (c.options[i].defaultSelected) { d = i; break; } return c.selectedIndex !== d; }
+      return c.value !== c.defaultValue;
+    });
+  }
+  document.addEventListener('le:datos', function () { if (!UI.hayModal() && P.actual && !escribiendo()) { P.alActualizar = true; try { P.refrescar(); } finally { P.alActualizar = false; } } });
   $('#bar-avatar').textContent = UI.iniciales(usuario.nombre); $('#bar-nombre').textContent = usuario.nombre; $('#pie-nombre').textContent = usuario.nombre; $('#pie-rol').textContent = 'Administración · control total';
   P.acciones = P.acciones || {}; P.iniciar = ir; UI.iniciarReloj();
   P.acciones.registro = function () { P.est('equipo', { tab: 'personas', rango: '7', q: '' }).tab = 'registro'; };

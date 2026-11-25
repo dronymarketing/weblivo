@@ -260,3 +260,4 @@ Personas de ejemplo (el equipo real): Luana (administración) PIN 1234 · Noelia
 - Los avisos a deudores salen por el mismo Worker (`/aviso`, plantilla aprobada). El número de prueba de Meta es compartido con Parking y NO recibe
   mensajes en esta app: para conversar hace falta un número propio (idealmente en su propia cuenta de WhatsApp Business).
 - El asistente vive en WhatsApp (como Torre), NO dentro del panel: Santi pidió expresamente no tener un chat en el panel. En Ajustes → Asistente (solo conectado) solo se habilitan los celulares.
+- **Actualización automática del panel (25/11):** cada ~8 s llegan datos nuevos y la sección se redibuja. Para no perder lo escrito: no se redibuja si hay una ventana abierta, si el cursor está en un campo de la sección o si hay un formulario con cambios sin guardar (Ajustes, etc.); y al redibujar conserva el scroll de la lista. Arreglo en `js/panel.js` (`escribiendo()`, `P.alActualizar`).
