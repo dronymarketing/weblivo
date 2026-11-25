@@ -13,6 +13,13 @@
         POST /aviso {aviso: id} → servicio_aviso() entrega el mensaje → API de WhatsApp (plantilla aprobada)
                                 → servicio_resultado() anota «enviado» o «error» (se ve en Deudores → Avisos)
 
+   3) Avisos al dueño: el sistema anota lo importante (entra o sale alguien a trabajar, se abre o cierra la caja con su detalle,
+      llega mercadería, se acaba un producto, un deudor llega a su límite, un retiro, una venta anulada, un cobro de deuda) y
+      se lo manda por WhatsApp a los celulares habilitados. NUNCA se avisa de cada venta.
+        POST /evento {evento: id} → servicio_evento() → texto con formato → WhatsApp
+      WhatsApp solo deja escribirle libre a quien le escribió al negocio en las últimas 24 h: alcanza con mandar «hola» cada mañana.
+      Para avisar siempre, opcional: plantilla WHATSAPP_PLANTILLA_DUENO (una variable; Meta cobra cada aviso con plantilla).
+
    Secretos (Cloudflare → Worker → Settings → Variables and Secrets), nunca en este archivo:
      SERVICIO_CLAVE         la que devuelve select public.crear_clave_servicio();
      WHATSAPP_TOKEN         token permanente del usuario del sistema de Meta
@@ -22,6 +29,7 @@
      WHATSAPP_NUMERO_ID        «Phone number ID» del número de WhatsApp Business
      WHATSAPP_PLANTILLA        plantilla aprobada (categoría Utilidad, UNA variable en el cuerpo) para avisar a deudores
      WHATSAPP_PLANTILLA_IDIOMA opcional, por defecto «es»
+     WHATSAPP_PLANTILLA_DUENO  opcional: plantilla (una variable) para avisar al dueño fuera de las 24 h
    Enlace (Settings → Bindings → Add → Workers AI), con el nombre AI: para entender los audios.
    ============================================================ */
 const SUPABASE_URL = 'https://gbezzoutnaxvdzfjytlr.supabase.co';
@@ -35,6 +43,7 @@ export default {
     const ruta = url.pathname.replace(/\/+$/, '') || '/';
     if (ruta === '/whatsapp') return whatsapp(pedido, url, env, ctx);
     if (ruta === '/aviso') return recibirAviso(pedido, env, ctx);
+    if (ruta === '/evento') return recibirEvento(pedido, env, ctx);
     return new Response(JSON.stringify({
       avisos: !!(env.WHATSAPP_TOKEN && env.WHATSAPP_NUMERO_ID && env.WHATSAPP_PLANTILLA && env.SERVICIO_CLAVE),
       asistente: !!(env.WHATSAPP_TOKEN && env.WHATSAPP_NUMERO_ID && env.SERVICIO_CLAVE && env.WHATSAPP_SECRETO_APP && env.WHATSAPP_VERIFICACION)
@@ -160,6 +169,7 @@ async function atender(msj, numeroId, env) {
     throw e;
   }
   marcarLeido(env, numeroId, msj.id);
+  const visto = rpc(env, 'asistente_visto', { p_clave: env.SERVICIO_CLAVE || '', p_telefono: de }).catch(() => {});
   // 2) El texto de la pregunta (los audios se pasan a texto)
   let texto = '';
   if (msj.type === 'text') texto = (msj.text && msj.text.body) || '';
@@ -180,6 +190,7 @@ async function atender(msj, numeroId, env) {
   let respuesta = responder(p, foto, Date.now());
   if (msj.type === 'audio') respuesta = '_«' + texto.trim().slice(0, 200) + '»_\n\n' + respuesta;
   await enviar(env, numeroId, de, respuesta);
+  await visto;
 }
 
 /* ---------- Entender la pregunta (palabras clave, sin IA) ---------- */
@@ -267,7 +278,7 @@ function periodo(t, ahora) {
 }
 
 /* ---------- Armar la respuesta ---------- */
-const MEDIOS = { efectivo: 'Efectivo', debito: 'Débito', credito: 'Crédito', qr: 'QR' };
+const MEDIOS = { efectivo: '💵 Efectivo', debito: '💳 Débito', credito: '💳 Crédito', qr: '📱 QR' };
 // Los montos de la base van en centavos
 function plata(c) { return '$ ' + String(Math.round((c || 0) / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function hora(iso) { const x = new Date(new Date(iso).getTime() - UY); return String(x.getUTCHours()).padStart(2, '0') + ':' + String(x.getUTCMinutes()).padStart(2, '0'); }
@@ -283,12 +294,16 @@ function saludo(ahora = Date.now()) {
   const h = new Date(ahora - UY).getUTCHours();
   return h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
 }
+function duracion(desde, hasta) {
+  const min = Math.max(0, Math.round((hasta - desde) / 60000));
+  return Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') + ' min';
+}
 
 function responder(p, f, ahora = Date.now()) {
   const quien = primero(f.quien);
-  if (p.temas.includes('gracias')) return 'De nada' + (quien ? ', ' + quien : '') + '. Cualquier cosa me preguntás.';
+  if (p.temas.includes('gracias')) return 'De nada' + (quien ? ', ' + quien : '') + ' 😊 Cualquier cosa me preguntás.';
   if (p.producto) return respProducto(p);
-  if (!p.temas.length) return 'No te entendí' + (quien ? ', ' + quien : '') + '. ' + ayuda(ahora, true);
+  if (!p.temas.length) return '🤔 No te entendí' + (quien ? ', ' + quien : '') + '.\n\n' + ayuda(ahora, true);
   const partes = [];
   for (const t of p.temas) {
     const x = t === 'ayuda' ? ayuda(ahora, false, quien) : t === 'resumen' ? resumen(p, f) : t === 'ventas' ? ventas(p, f)
@@ -300,78 +315,153 @@ function responder(p, f, ahora = Date.now()) {
 }
 
 function ayuda(ahora, corto, quien) {
-  const ej = '• «¿Cuánto vendí hoy?» (también ayer, esta semana, este mes, un mes por nombre)\n• «¿Cómo está la caja?»\n• «¿Qué falta reponer?»\n• «¿Cuánto stock hay de arroz?»\n• «¿Quién debe?» o «¿Cuánto debe Ana?»\n• «¿Qué se vendió más?»\n• «¿Cómo vamos?» para un resumen';
-  if (corto) return 'Probá con algo como:\n' + ej;
-  return saludo(ahora) + (quien ? ' ' + quien : '') + '. Soy el asistente de La Estrella. Me podés preguntar, por escrito o con un audio:\n' + ej;
+  if (corto) return 'Probá con algo como:\n• 💰 _¿Cuánto vendí hoy?_\n• 🏪 _¿Cómo está la caja?_\n• 📦 _¿Qué falta reponer?_\n• 🤝 _¿Quién debe?_\n• 📊 _¿Cómo vamos?_';
+  return '👋 *' + saludo(ahora) + (quien ? ', ' + quien : '') + '!* Soy el asistente de *La Estrella* ⭐\n\n' +
+    'Preguntame lo que necesites, por escrito o con un audio 🎤\n\n' +
+    '💰 *Ventas*\n• ¿Cuánto vendí hoy? _(ayer, esta semana, este mes…)_\n• ¿Qué se vendió más?\n\n' +
+    '🏪 *Caja*\n• ¿Cómo está la caja?\n\n' +
+    '📦 *Stock*\n• ¿Qué falta reponer?\n• ¿Cuánto stock hay de arroz?\n\n' +
+    '🤝 *Deudores*\n• ¿Quién debe?\n• ¿Cuánto debe Ana?\n\n' +
+    '📊 *Resumen*\n• ¿Cómo vamos?\n\n' +
+    '🔔 *Yo te aviso solo* cuando alguien empieza o termina de trabajar, se abre o cierra la caja, llega mercadería, se acaba un producto o un deudor llega a su límite.';
 }
 
 function ventas(p, f) {
   const x = f.periodo, nom = p.periodo.nombre;
-  if (!x.tickets && !x.tickets_fiado && !x.cobros_deuda_n) return '*' + nom + '* todavía no hay ventas.';
-  const l = ['*' + nom + ' se vendió ' + plata(x.ventas) + '* en ' + n(x.tickets, 'ticket', 'tickets') + '.'];
+  if (!x.tickets && !x.tickets_fiado && !x.cobros_deuda_n) return '💰 *' + nom + '* todavía no hay ventas.';
+  const l = ['💰 *' + nom + ' se vendió ' + plata(x.ventas) + '*\n🧾 ' + n(x.tickets, 'ticket', 'tickets')];
   const medios = Object.entries(x.por_medio || {}).sort((a, b) => b[1] - a[1]);
   if (medios.length) l.push(medios.map(([m, v]) => '• ' + (MEDIOS[m] || m) + ': ' + plata(v)).join('\n'));
-  if (x.tickets_fiado) l.push('A cuenta (sin cobrar): ' + plata(x.fiado) + ' en ' + n(x.tickets_fiado, 'ticket', 'tickets') + '.');
-  if (x.cobros_deuda_n) l.push('Cobros de deudas: ' + plata(x.cobros_deuda) + ' (' + n(x.cobros_deuda_n, 'pago', 'pagos') + ').');
-  if (x.anuladas) l.push('Tickets anulados: ' + x.anuladas + '.');
-  return l.join('\n');
+  if (x.tickets_fiado) l.push('🤝 A cuenta (sin cobrar, no suma): ' + plata(x.fiado) + ' en ' + n(x.tickets_fiado, 'ticket', 'tickets'));
+  if (x.cobros_deuda_n) l.push('✅ Cobros de deudas: ' + plata(x.cobros_deuda) + ' (' + n(x.cobros_deuda_n, 'pago', 'pagos') + ')');
+  if (x.anuladas) l.push('🚫 Tickets anulados: ' + x.anuladas);
+  return l.join('\n\n');
 }
 function top(p, f) {
   const t = f.periodo.top || [];
-  if (!t.length) return '*' + p.periodo.nombre + '* todavía no se vendió nada.';
-  return '*Lo más vendido (' + p.periodo.nombre.toLowerCase() + '):*\n' + t.map((x, i) => (i + 1) + '. ' + x.nombre + ' — ' + cant(x.cant, x.unidad) + ' (' + plata(x.monto) + ')').join('\n');
+  if (!t.length) return '🏆 *' + p.periodo.nombre + '* todavía no se vendió nada.';
+  const med = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+  return '🏆 *Lo más vendido (' + p.periodo.nombre.toLowerCase() + ')*\n' + t.map((x, i) => med[i] + ' ' + x.nombre + ' · ' + cant(x.cant, x.unidad) + ' (' + plata(x.monto) + ')').join('\n');
 }
 function caja(f) {
   const c = f.caja;
   if (!c.abierta) {
     const u = c.ultimo;
-    return '*La caja está cerrada.*' + (u ? '\nÚltimo cierre: ' + hora(u.cierre) + ' por ' + u.cerro + '. Esperado ' + plata(u.esperado) + ', contado ' + plata(u.contado) + (u.contado === u.esperado ? ' (justo).' : ' (diferencia ' + (u.contado > u.esperado ? '+' : '-') + plata(Math.abs(u.contado - u.esperado)) + ').') : '');
+    return '🔒 *La caja está cerrada*' + (u ? '\n\nÚltimo cierre: ' + hora(u.cierre) + ', por ' + u.cerro + '\n• Debía haber ' + plata(u.esperado) + ' · se contó ' + plata(u.contado) + '\n' + (u.contado === u.esperado ? '✅ Cuadró justo' : '⚠️ Diferencia de ' + (u.contado > u.esperado ? '+' : '−') + plata(Math.abs(u.contado - u.esperado))) : '');
   }
-  return '*Caja abierta* por ' + c.abrio + ' desde las ' + hora(c.apertura) + ' (turno ' + c.turno + ').\nEfectivo que tiene que haber: ' + plata(c.efectivo) + '.\nVendido en el turno: ' + plata(c.ventas) + '.';
+  return '🟢 *Caja abierta* · turno ' + c.turno + '\n👤 ' + c.abrio + ', desde las ' + hora(c.apertura) + '\n💵 Efectivo en el cajón: *' + plata(c.efectivo) + '*\n💰 Vendido en el turno: ' + plata(c.ventas);
 }
 function stock(f) {
   const s = f.stock;
-  if (!s.sin_stock_n && !s.bajo_n) return '*Stock:* todo en orden, nada por debajo del mínimo.';
+  if (!s.sin_stock_n && !s.bajo_n) return '✅ *Stock en orden*\nNada por debajo del mínimo.';
   const l = [];
-  if (s.sin_stock_n) l.push('*Sin stock (' + s.sin_stock_n + '):*\n' + lista(s.sin_stock, (x) => '• ' + x, 10) + (s.sin_stock_n > s.sin_stock.length ? '\n…y ' + (s.sin_stock_n - s.sin_stock.length) + ' más' : ''));
-  if (s.bajo_n) l.push('*Para reponer (' + s.bajo_n + '):*\n' + lista(s.bajo, (x) => '• ' + x.nombre + ': quedan ' + cant(x.stock, x.unidad) + ' (mínimo ' + cant(x.minimo, x.unidad) + ')', 10) + (s.bajo_n > s.bajo.length ? '\n…y ' + (s.bajo_n - s.bajo.length) + ' más' : ''));
+  if (s.sin_stock_n) l.push('🔴 *Sin stock (' + s.sin_stock_n + ')*\n' + lista(s.sin_stock, (x) => '• ' + x, 10) + (s.sin_stock_n > s.sin_stock.length ? '\n…y ' + (s.sin_stock_n - s.sin_stock.length) + ' más' : ''));
+  if (s.bajo_n) l.push('🟡 *Para reponer (' + s.bajo_n + ')*\n' + lista(s.bajo, (x) => '• ' + x.nombre + ': quedan ' + cant(x.stock, x.unidad) + ' (mínimo ' + cant(x.minimo, x.unidad) + ')', 10) + (s.bajo_n > s.bajo.length ? '\n…y ' + (s.bajo_n - s.bajo.length) + ' más' : ''));
   return l.join('\n\n');
 }
 function deudores(p, f) {
   const d = f.deudores;
   if (p.deudor) {
     const hallados = d.lista.filter((x) => normalizar(x.nombre).includes(p.deudor));
-    if (!hallados.length) return 'No encontré a nadie llamado «' + p.deudor + '» con deuda.';
-    return hallados.slice(0, 5).map((x) => '*' + x.nombre + '* debe ' + plata(x.saldo) + (x.limite ? ' (límite ' + plata(x.limite) + ', usa el ' + Math.round(x.saldo * 100 / x.limite) + ' %)' : ' (sin límite)') + '.').join('\n');
+    if (!hallados.length) return '🔎 No encontré a nadie llamado «' + p.deudor + '» con deuda.';
+    return hallados.slice(0, 5).map((x) => '🤝 *' + x.nombre + '* debe *' + plata(x.saldo) + '*' + (x.limite ? '\nLímite ' + plata(x.limite) + ' · usa el ' + Math.round(x.saldo * 100 / x.limite) + ' %' : '\nSin límite')).join('\n\n');
   }
-  if (!d.n) return '*Deudores:* nadie debe nada.';
-  const cerca = d.lista.filter((x) => x.limite > 0 && x.saldo * 10 >= x.limite * 8);
-  return '*Deudores:* ' + n(d.n, 'persona debe', 'personas deben') + ' en total ' + plata(d.total) + '.\n' +
-    lista(d.lista, (x) => '• ' + x.nombre + ': ' + plata(x.saldo) + (x.limite > 0 && x.saldo >= x.limite ? ' (pasó su límite)' : x.limite > 0 && x.saldo * 10 >= x.limite * 8 ? ' (cerca del límite)' : '')) +
-    (cerca.length ? '\n\nCerca o por encima del límite: ' + cerca.length + '.' : '');
+  if (!d.n) return '✅ *Deudores*\nNadie debe nada.';
+  const nivel = (x) => x.limite > 0 && x.saldo >= x.limite ? '🔴' : x.limite > 0 && x.saldo * 10 >= x.limite * 8 ? '🟡' : '⚪';
+  return '🤝 *Deudores*\n' + n(d.n, 'persona debe', 'personas deben') + ' en total *' + plata(d.total) + '*\n\n' +
+    lista(d.lista, (x) => nivel(x) + ' ' + x.nombre + ': ' + plata(x.saldo)) + '\n\n_🟡 cerca del límite · 🔴 llegó al límite_';
 }
 function compras(f) {
   const c = f.compras;
-  if (!c.sin_recibir && !c.sin_pagar) return '*Compras:* no hay nada pendiente.';
-  return '*Compras:* ' + n(c.sin_recibir, 'pedido sin recibir', 'pedidos sin recibir') + ' y ' + n(c.sin_pagar, 'compra sin pagar', 'compras sin pagar') + (c.sin_pagar ? ' (' + plata(c.sin_pagar_total) + ')' : '') + '.';
+  if (!c.sin_recibir && !c.sin_pagar) return '✅ *Compras*\nNo hay nada pendiente.';
+  return '🚚 *Compras*\n• ' + n(c.sin_recibir, 'pedido sin recibir', 'pedidos sin recibir') + '\n• ' + n(c.sin_pagar, 'compra sin pagar', 'compras sin pagar') + (c.sin_pagar ? ' (' + plata(c.sin_pagar_total) + ')' : '');
 }
 function equipo(f) {
   const t = f.trabajando || [];
-  return t.length ? '*Trabajando ahora:*\n' + t.map((x) => '• ' + x.nombre + ' (desde las ' + hora(x.desde) + ')').join('\n') : 'Ahora no hay nadie con la jornada abierta.';
+  return t.length ? '👷 *Trabajando ahora*\n' + t.map((x) => '• ' + x.nombre + ' (desde las ' + hora(x.desde) + ')').join('\n') : '👷 Ahora no hay nadie con la jornada abierta.';
 }
 function respProducto(p) {
-  if (p.fallo) return 'No pude buscar el producto. Probá de nuevo en un rato.';
+  if (p.fallo) return '⚠️ No pude buscar el producto. Probá de nuevo en un rato.';
   const e = p.encontrados || [];
-  if (!e.length) return 'No encontré ningún producto que se parezca a «' + p.producto + '».';
-  return e.map((x) => '*' + x.nombre + '*: ' + plata(x.precio) + (x.unidad === 'kg' ? ' el kg' : '') + ', hay ' + cant(x.stock, x.unidad) + (x.stock <= 0 ? ' (sin stock)' : x.stock < x.minimo ? ' (por debajo del mínimo)' : '') + '.').join('\n');
+  if (!e.length) return '🔎 No encontré ningún producto que se parezca a «' + p.producto + '».';
+  return e.map((x) => '📦 *' + x.nombre + '*\n' + plata(x.precio) + (x.unidad === 'kg' ? ' el kg' : '') + ' · hay ' + cant(x.stock, x.unidad) + (x.stock <= 0 ? ' 🔴 sin stock' : x.stock < x.minimo ? ' 🟡 por debajo del mínimo' : ' ✅')).join('\n\n');
 }
 function resumen(p, f) {
   const x = f.periodo, c = f.caja, s = f.stock, d = f.deudores;
-  const l = ['*Resumen: ' + p.periodo.nombre.toLowerCase() + '*', 'Vendido: ' + plata(x.ventas) + ' en ' + n(x.tickets, 'ticket', 'tickets') + (x.tickets_fiado ? ' (más ' + plata(x.fiado) + ' a cuenta)' : '') + '.'];
-  l.push(c.abierta ? 'Caja abierta: efectivo ' + plata(c.efectivo) + '.' : 'Caja cerrada.');
-  l.push(s.sin_stock_n || s.bajo_n ? 'Stock: ' + n(s.sin_stock_n, 'producto sin stock', 'productos sin stock') + ' y ' + n(s.bajo_n, 'por reponer', 'por reponer') + '.' : 'Stock en orden.');
-  l.push(d.n ? 'Deudores: ' + plata(d.total) + ' entre ' + n(d.n, 'persona', 'personas') + '.' : 'Nadie debe nada.');
+  const l = ['📊 *Resumen: ' + p.periodo.nombre.toLowerCase() + '*', '💰 Vendido: *' + plata(x.ventas) + '* en ' + n(x.tickets, 'ticket', 'tickets') + (x.tickets_fiado ? ' (más ' + plata(x.fiado) + ' a cuenta)' : '')];
+  l.push(c.abierta ? '🟢 Caja abierta · efectivo ' + plata(c.efectivo) : '🔒 Caja cerrada');
+  l.push(s.sin_stock_n || s.bajo_n ? '📦 Stock: ' + n(s.sin_stock_n, 'producto sin stock', 'productos sin stock') + ' y ' + n(s.bajo_n, 'por reponer', 'por reponer') : '📦 Stock en orden');
+  l.push(d.n ? '🤝 Deudores: ' + plata(d.total) + ' entre ' + n(d.n, 'persona', 'personas') : '🤝 Nadie debe nada');
   return l.join('\n');
+}
+
+/* ============================================================
+   3) AVISOS AL DUEÑO (entra alguien a trabajar, caja, mercadería, stock…)
+   ============================================================ */
+function textoEvento(e) {
+  const d = e.datos || {};
+  switch (e.tipo) {
+    case 'jornada_inicio': return '👷 *' + d.nombre + '* empezó a trabajar a las ' + hora(d.entrada);
+    case 'jornada_fin': return '🏁 *' + d.nombre + '* terminó de trabajar a las ' + hora(d.salida) + '\n⏱️ Trabajó ' + duracion(d.entrada, d.salida);
+    case 'caja_abierta': return '🟢 *Caja abierta* · turno ' + d.turno + '\n👤 ' + d.abrio + ' · ' + hora(d.ts) + '\n💵 Efectivo inicial: ' + plata(d.base);
+    case 'caja_cerrada': return textoCierre(d);
+    case 'retiro': return '💸 *Retiro de caja: ' + plata(d.monto) + '*\n📝 ' + d.concepto + '\n👤 ' + d.usuario + '\n💵 Quedan en el cajón: ' + plata(d.efectivo);
+    case 'venta_anulada': return '🚫 *Venta anulada* · ticket N.º ' + String(d.num).padStart(6, '0') + '\n💰 ' + plata(d.total) + (d.fiado ? ' (era a cuenta)' : '') + '\n📝 Motivo: ' + d.motivo + '\n👤 Anuló: ' + d.usuario + (d.cajero && d.cajero !== d.usuario ? ' · vendió: ' + d.cajero : '');
+    case 'mercaderia': return '🚚 *Llegó mercadería* · ' + d.proveedor + '\n📋 Pedido C-' + String(d.num).padStart(4, '0') + ' · ' + n(d.items, 'producto', 'productos') + ' · ' + plata(d.total) + '\n' +
+      (d.lista || []).map((x) => '• ' + x.nombre + ' ×' + cant(x.cant)).join('\n') + (d.items > (d.lista || []).length ? '\n…y ' + (d.items - d.lista.length) + ' más' : '') + '\n👤 Recibió: ' + d.usuario;
+    case 'stock_bajo': return '🟡 *Stock bajo:* ' + d.nombre + '\nQuedan ' + cant(d.stock, d.unidad) + ' (mínimo ' + cant(d.minimo, d.unidad) + ')';
+    case 'sin_stock': return '🔴 *Se acabó:* ' + d.nombre + '\nSin stock';
+    case 'deudor_cerca': return '🟡 *' + d.nombre + '* llegó al 80 % de su límite\nDebe ' + plata(d.saldo) + ' de ' + plata(d.limite);
+    case 'deudor_limite': return '🔴 *' + d.nombre + '* llegó a su límite\nDebe ' + plata(d.saldo) + ' (límite ' + plata(d.limite) + ')';
+    case 'deuda_cobrada': return '✅ *Cobro de deuda:* ' + d.deudor + ' pagó ' + plata(d.monto) + ' (' + (MEDIOS[d.medio] || d.medio).replace(/^\S+\s/, '').toLowerCase() + ')\n👤 Cobró ' + d.usuario + '\n' + (d.saldo > 0 ? 'Le queda debiendo ' + plata(d.saldo) : 'Quedó al día 🎉');
+    default: return '';
+  }
+}
+function textoCierre(d) {
+  const diff = (d.contado || 0) - (d.esperado || 0);
+  const medios = Object.entries(d.por_medio || {}).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const l = ['🔒 *Caja cerrada* · turno ' + d.turno, '👤 Abrió ' + d.abrio + ' (' + hora(d.apertura) + ') · cerró ' + d.cerro + ' (' + hora(d.cierre) + ')', ''];
+  l.push('💰 *Vendido: ' + plata(d.ventas) + '* · ' + n(d.tickets, 'ticket', 'tickets'));
+  if (medios.length) l.push(medios.map(([m, v]) => '• ' + (MEDIOS[m] || m) + ': ' + plata(v)).join('\n'));
+  if (d.tickets_fiado) l.push('🤝 A cuenta (sin cobrar, no suma): ' + plata(d.fiado) + ' en ' + n(d.tickets_fiado, 'ticket', 'tickets'));
+  if (d.cobros_deuda_n) l.push('✅ Cobros de deudas: ' + plata(d.cobros_deuda) + ' (' + n(d.cobros_deuda_n, 'pago', 'pagos') + ')');
+  if (d.anuladas) l.push('🚫 Tickets anulados: ' + d.anuladas);
+  l.push('', '💼 *Efectivo del cajón*', '• Apertura: ' + plata(d.base), '• Cobrado en efectivo: ' + plata((d.por_medio || {}).efectivo || 0));
+  if (d.cobros_deuda_efectivo) l.push('• Pagos de deudas en efectivo: ' + plata(d.cobros_deuda_efectivo));
+  l.push('• Retiros: −' + plata(d.retiros) + (d.retiros_n ? ' (' + d.retiros_n + ')' : ''), '• Debería haber: ' + plata(d.esperado), '• Se contó: ' + plata(d.contado));
+  l.push(diff === 0 ? '✅ *Cuadró justo*' : '⚠️ *Diferencia: ' + (diff > 0 ? '+' : '−') + plata(Math.abs(diff)) + '* (' + (diff > 0 ? 'sobra' : 'falta') + ')');
+  return l.join('\n');
+}
+// Una sola línea, sin formato: las plantillas de Meta no aceptan saltos de línea en los datos
+const lineaEvento = (e) => textoEvento(e).replace(/[*_]/g, '').replace(/\s+/g, ' ').trim().slice(0, 900);
+
+async function recibirEvento(pedido, env, ctx) {
+  if (pedido.method !== 'POST') return new Response('No', { status: 405 });
+  let b; try { b = await pedido.json(); } catch (e) { b = null; }
+  const id = b && Number(b.evento);
+  if (!Number.isInteger(id) || id <= 0) return new Response('No', { status: 400 });
+  const tarea = enviarEvento(env, id).catch((e) => console.error('evento:', e));
+  if (ctx && ctx.waitUntil) ctx.waitUntil(tarea); else await tarea;
+  return new Response('ok');
+}
+
+async function enviarEvento(env, id) {
+  if (!env.WHATSAPP_TOKEN || !env.WHATSAPP_NUMERO_ID || !env.SERVICIO_CLAVE) return console.error('evento: falta configurar WhatsApp en Cloudflare');
+  const e = await rpc(env, 'servicio_evento', { p_clave: env.SERVICIO_CLAVE, p_id: id });
+  if (!e) return;
+  const texto = textoEvento(e);
+  if (texto) {
+    for (const d of e.destinatarios || []) {
+      // Se puede escribir libre solo si ese celular le habló al negocio en las últimas 24 h; si no, hace falta la plantilla (opcional, paga)
+      if (d.ventana) await enviar(env, env.WHATSAPP_NUMERO_ID, d.telefono, texto);
+      else if (env.WHATSAPP_PLANTILLA_DUENO) {
+        await mandar(env, env.WHATSAPP_NUMERO_ID, { to: d.telefono, type: 'template', template: {
+          name: env.WHATSAPP_PLANTILLA_DUENO, language: { code: env.WHATSAPP_PLANTILLA_DUENO_IDIOMA || env.WHATSAPP_PLANTILLA_IDIOMA || 'es' },
+          components: [{ type: 'body', parameters: [{ type: 'text', text: lineaEvento(e) }] }] } });
+      } else console.error('evento: ' + e.tipo + ' sin enviar a ' + d.telefono + ' (ventana de 24 h cerrada y sin WHATSAPP_PLANTILLA_DUENO)');
+    }
+  }
+  await rpc(env, 'servicio_evento_hecho', { p_clave: env.SERVICIO_CLAVE, p_id: id });
 }
 
 /* ============================================================

@@ -355,10 +355,20 @@ $$;
 
 create or replace function public.mover_stock(p_prod uuid, p_cant numeric, p_tipo text, p_ref text, p_ts timestamptz default now()) returns void
 language plpgsql security definer set search_path = public as $$
-declare v_nombre text;
+declare v_nombre text; v_antes numeric; v_p public.productos;
 begin
-  update public.productos set stock = round(stock + p_cant, 3) where id = p_prod returning nombre into v_nombre;
+  select stock into v_antes from public.productos where id = p_prod;
+  update public.productos set stock = round(stock + p_cant, 3) where id = p_prod returning * into v_p;
+  v_nombre := v_p.nombre;
   insert into public.stock_movimientos (ts, producto, nombre, cant, tipo, ref, usuario) values (p_ts, p_prod, v_nombre, p_cant, p_tipo, p_ref, public.mi_nombre());
+  -- Aviso al dueño solo cuando el producto CRUZA el mínimo o se queda sin stock (una vez por cruce, no en cada venta)
+  if p_cant < 0 then
+    if v_antes > 0 and v_p.stock <= 0 then
+      perform public.aviso_dueno('sin_stock', jsonb_build_object('nombre', v_p.nombre));
+    elsif v_p.minimo > 0 and v_antes >= v_p.minimo and v_p.stock > 0 and v_p.stock < v_p.minimo then
+      perform public.aviso_dueno('stock_bajo', jsonb_build_object('nombre', v_p.nombre, 'stock', v_p.stock, 'minimo', v_p.minimo, 'unidad', v_p.unidad));
+    end if;
+  end if;
 end $$;
 
 -- Una venta con la forma que usa la pantalla
@@ -483,6 +493,7 @@ begin
   select * into v_u from public.perfiles where id = auth.uid();
   insert into public.caja_turnos (base, turno, abrio_id, abrio) values (p_base, public.turno_nombre(), v_u.id, v_u.nombre) returning * into v_t;
   perform public.anotar('Abrió la caja del turno ' || v_t.turno || ' con ' || public.din(p_base));
+  perform public.aviso_dueno('caja_abierta', jsonb_build_object('turno', v_t.turno, 'abrio', v_t.abrio, 'base', v_t.base, 'ts', public.ms(v_t.apertura)));
   return jsonb_build_object('id', v_t.id, 'apertura', public.ms(v_t.apertura), 'base', v_t.base, 'turno', v_t.turno, 'abrioId', v_t.abrio_id, 'abrio', v_t.abrio, 'cierre', null);
 end $$;
 
@@ -501,6 +512,7 @@ begin
   insert into public.caja_movimientos (id, turno, ts, concepto, monto, usuario)
   values (v_id, v_t.id, coalesce(to_timestamp(p_ts / 1000.0), now()), btrim(p_concepto), -p_monto, public.mi_nombre());
   perform public.anotar('Retiró ' || public.din(p_monto) || ' de la caja: ' || btrim(p_concepto));
+  perform public.aviso_dueno('retiro', jsonb_build_object('monto', p_monto, 'concepto', btrim(p_concepto), 'usuario', public.mi_nombre(), 'efectivo', public.efectivo_esperado(v_t.id)));
   return jsonb_build_object('id', v_id);
 end $$;
 
@@ -517,6 +529,7 @@ begin
   update public.caja_turnos set cierre = now(), esperado = v_esp, contado = p_contado, cerro_id = v_u.id, cerro = v_u.nombre where id = v_t.id;
   perform public.anotar('Cerró la caja del turno ' || v_t.turno || ': esperado ' || public.din(v_esp) || ', contado ' || public.din(p_contado)
     || case when p_contado <> v_esp then ' (diferencia ' || case when p_contado > v_esp then '+' else '-' end || public.din(abs(p_contado - v_esp)) || ')' else '' end);
+  perform public.aviso_dueno('caja_cerrada', public.resumen_turno_json(v_t.id));
   return jsonb_build_object('esperado', v_esp, 'contado', p_contado, 'diferencia', p_contado - v_esp);
 end $$;
 
@@ -546,6 +559,7 @@ begin
     else 'Hola ' || d.nombre || ', te escribimos de ' || v_neg || '. Tu cuenta está en ' || public.din(p_despues) || ' y te estás acercando a tu límite de ' || public.din(d.limite) || '. Pasá a abonar cuando puedas. ¡Gracias!' end;
   if btrim(d.telefono) = '' then v_estado := 'error'; v_det := 'El deudor no tiene teléfono cargado'; end if;
   insert into public.avisos_deudor (deudor, tipo, mensaje, telefono, estado, detalle) values (d.id, v_tipo, v_msg, d.telefono, v_estado, v_det);
+  perform public.aviso_dueno(case when v_tipo = 'limite' then 'deudor_limite' else 'deudor_cerca' end, jsonb_build_object('nombre', d.nombre, 'saldo', p_despues, 'limite', d.limite));
 end $$;
 
 create or replace function public.crear_venta(p jsonb) returns jsonb
@@ -639,6 +653,7 @@ begin
     perform public.mover_stock(i.producto, i.cant, 'anulacion', 'Anuló ticket ' || lpad(v.num::text, 6, '0'));
   end loop;
   perform public.anotar('Anuló el ticket ' || lpad(v.num::text, 6, '0') || ' (' || public.din(v.total) || '): ' || btrim(p_motivo));
+  perform public.aviso_dueno('venta_anulada', jsonb_build_object('num', v.num, 'total', v.total, 'motivo', btrim(p_motivo), 'usuario', public.mi_nombre(), 'cajero', v.cajero, 'fiado', v.deudor_id is not null));
 end $$;
 
 -- ---------- Productos y stock (solo administración) ----------
@@ -755,6 +770,7 @@ begin
   v_ts := least(coalesce(to_timestamp(nullif(p ->> 'ts', '')::numeric / 1000.0), now()), now());
   insert into public.deudor_pagos (id, deudor, turno, ts, monto, medio, usuario) values (v_id, v_deu, v_t.id, v_ts, v_monto, v_medio, public.mi_nombre());
   perform public.anotar('Cobró ' || public.din(v_monto) || ' de la deuda de ' || v_d.nombre || ' (' || v_medio || ')');
+  perform public.aviso_dueno('deuda_cobrada', jsonb_build_object('deudor', v_d.nombre, 'monto', v_monto, 'medio', v_medio, 'usuario', public.mi_nombre(), 'saldo', v_saldo - v_monto));
   return jsonb_build_object('saldo', v_saldo - v_monto);
 end $$;
 
@@ -904,6 +920,9 @@ begin
   end loop;
   update public.compras set recibida = true, recibida_ts = now() where id = p_id;
   perform public.anotar('Recibió la compra C-' || lpad(v.num::text, 4, '0') || ' (el stock subió)');
+  perform public.aviso_dueno('mercaderia', jsonb_build_object('num', v.num, 'total', v.total, 'proveedor', coalesce((select nombre from public.proveedores where id = v.prov), 'Proveedor'), 'usuario', public.mi_nombre(),
+    'items', (select count(*) from public.compra_items where compra = p_id),
+    'lista', coalesce((select jsonb_agg(jsonb_build_object('nombre', x.nombre, 'cant', x.cant)) from (select nombre, cant from public.compra_items where compra = p_id order by nombre limit 8) x), '[]'::jsonb)));
 end $$;
 
 create or replace function public.pagar_compra(p_id uuid) returns void
@@ -945,10 +964,12 @@ begin
   if found then
     update public.asistencias set salida = now() where id = v_a.id;
     perform public.anotar('Terminó la jornada');
+    if v_u.rol <> 'admin' then perform public.aviso_dueno('jornada_fin', jsonb_build_object('nombre', v_u.nombre, 'entrada', public.ms(v_a.entrada), 'salida', public.ms(now()))); end if;
     return jsonb_build_object('estado', 'salida', 'entrada', public.ms(v_a.entrada), 'salida', public.ms(now()));
   end if;
   insert into public.asistencias (usuario_id, nombre) values (v_u.id, v_u.nombre) returning * into v_a;
   perform public.anotar('Empezó la jornada');
+  if v_u.rol <> 'admin' then perform public.aviso_dueno('jornada_inicio', jsonb_build_object('nombre', v_u.nombre, 'entrada', public.ms(v_a.entrada))); end if;
   return jsonb_build_object('estado', 'entrada', 'entrada', public.ms(v_a.entrada), 'salida', null);
 end $$;
 
@@ -1116,6 +1137,104 @@ begin
                             order by nombre limit 6) x), '[]'::jsonb);
 end $$;
 
+-- ---------- Avisos al dueño por WhatsApp ----------
+-- El sistema anota un evento (entra alguien a trabajar, se abre o cierra la caja, llega mercadería, se acaba un producto, un deudor
+-- llega al límite, un retiro, una venta anulada, un cobro de deuda) y le avisa al Worker, que se lo manda a los celulares habilitados.
+-- NUNCA se avisa de cada venta. Si algo falla, el aviso se pierde pero la operación sigue igual.
+
+-- Para saber si se puede escribirle libre a cada celular (WhatsApp lo permite 24 h después de su último mensaje)
+alter table public.asistente_telefonos add column if not exists ultimo_mensaje timestamptz;
+
+create table if not exists public.avisos_dueno (
+  id        bigserial primary key,
+  tipo      text not null,
+  datos     jsonb not null default '{}',
+  ts        timestamptz not null default now(),
+  reclamado timestamptz,
+  enviado   timestamptz
+);
+create index if not exists avisos_dueno_ts on public.avisos_dueno (ts desc);
+alter table public.avisos_dueno enable row level security;
+revoke all on public.avisos_dueno from anon, authenticated;
+revoke all on sequence public.avisos_dueno_id_seq from anon, authenticated;
+
+create or replace function public.aviso_dueno(p_tipo text, p_datos jsonb default '{}') returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.avisos_dueno (tipo, datos) values (p_tipo, coalesce(p_datos, '{}'::jsonb));
+  delete from public.avisos_dueno where ts < now() - interval '60 days';
+exception when others then null;
+end $$;
+
+-- Lo que pasó en un turno, para el aviso de cierre de caja (montos en centavos)
+create or replace function public.resumen_turno_json(p_turno uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'turno', t.turno, 'abrio', t.abrio, 'cerro', t.cerro, 'apertura', public.ms(t.apertura), 'cierre', public.ms(t.cierre),
+    'base', t.base, 'esperado', t.esperado, 'contado', t.contado,
+    'ventas', (select coalesce(sum(v.total), 0) from public.ventas v where v.turno = t.id and v.estado = 'ok' and v.deudor_id is null),
+    'tickets', (select count(*) from public.ventas v where v.turno = t.id and v.estado = 'ok' and v.deudor_id is null),
+    'por_medio', coalesce((select jsonb_object_agg(medio, s) from (select g.medio, sum(g.monto) as s from public.venta_pagos g join public.ventas v on v.id = g.venta
+                            where v.turno = t.id and v.estado = 'ok' group by g.medio) m), '{}'::jsonb),
+    'fiado', (select coalesce(sum(v.total), 0) from public.ventas v where v.turno = t.id and v.estado = 'ok' and v.deudor_id is not null),
+    'tickets_fiado', (select count(*) from public.ventas v where v.turno = t.id and v.estado = 'ok' and v.deudor_id is not null),
+    'cobros_deuda', (select coalesce(sum(g.monto), 0) from public.deudor_pagos g where g.turno = t.id),
+    'cobros_deuda_n', (select count(*) from public.deudor_pagos g where g.turno = t.id),
+    'cobros_deuda_efectivo', (select coalesce(sum(g.monto), 0) from public.deudor_pagos g where g.turno = t.id and g.medio = 'efectivo'),
+    'retiros', (select coalesce(-sum(m.monto), 0) from public.caja_movimientos m where m.turno = t.id),
+    'retiros_n', (select count(*) from public.caja_movimientos m where m.turno = t.id),
+    'anuladas', (select count(*) from public.ventas v where v.turno = t.id and v.estado = 'anulada'))
+  from public.caja_turnos t where t.id = p_turno
+$$;
+
+-- Cuando se anota un evento, la base le avisa al Worker (mismo servicio que los avisos a deudores: /aviso → /evento)
+create or replace function public.al_crear_aviso_dueno() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text;
+begin
+  select regexp_replace(aviso_url, '/aviso/?$', '/evento') into v_url from public.config_servicio where id = 1;
+  if coalesce(v_url, '') = '' then return new; end if;
+  begin
+    perform net.http_post(url := v_url, body := jsonb_build_object('evento', new.id), headers := '{"Content-Type": "application/json"}'::jsonb);
+  exception when others then null;
+  end;
+  return new;
+end $$;
+drop trigger if exists al_crear_aviso_dueno on public.avisos_dueno;
+create trigger al_crear_aviso_dueno after insert on public.avisos_dueno
+  for each row execute function public.al_crear_aviso_dueno();
+
+-- El Worker pide el evento: una sola vez, con los celulares habilitados y si se les puede escribir libre
+create or replace function public.servicio_evento(p_clave text, p_id bigint) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare a public.avisos_dueno;
+begin
+  perform public.servicio_validar(p_clave);
+  update public.avisos_dueno set reclamado = now()
+   where id = p_id and enviado is null and (reclamado is null or reclamado < now() - interval '5 minutes')
+   returning * into a;
+  if not found then return null; end if;
+  return jsonb_build_object('id', a.id, 'tipo', a.tipo, 'datos', a.datos, 'ts', public.ms(a.ts),
+    'negocio', (select nombre from public.negocio where id = 1),
+    'destinatarios', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre,
+                                 'ventana', coalesce(ultimo_mensaje > now() - interval '23 hours 50 minutes', false))) from public.asistente_telefonos), '[]'::jsonb));
+end $$;
+
+create or replace function public.servicio_evento_hecho(p_clave text, p_id bigint) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.servicio_validar(p_clave);
+  update public.avisos_dueno set enviado = now() where id = p_id;
+end $$;
+
+-- El asistente anota que ese celular le escribió (abre la ventana de 24 h para los avisos)
+create or replace function public.asistente_visto(p_clave text, p_telefono text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.asistente_validar(p_clave, p_telefono);
+  update public.asistente_telefonos set ultimo_mensaje = now() where telefono = p_telefono;
+end $$;
+
 -- ---------- Permisos: solo personas con sesión, y solo las funciones públicas ----------
 
 revoke execute on all functions in schema public from public, anon, authenticated;
@@ -1137,4 +1256,5 @@ language sql stable as $$ select now() $$;
 grant execute on function public.latido() to anon, authenticated;
 grant execute on function public.servicio_aviso(text, bigint), public.servicio_resultado(text, bigint, text, text) to anon, authenticated;
 grant execute on function public.asistente_consulta(text, text, timestamptz, timestamptz), public.asistente_producto(text, text, text) to anon, authenticated;
+grant execute on function public.servicio_evento(text, bigint), public.servicio_evento_hecho(text, bigint), public.asistente_visto(text, text) to anon, authenticated;
 grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text) to authenticated;

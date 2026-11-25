@@ -69,3 +69,30 @@ Abrir la dirección del Worker muestra `{"avisos":true,"asistente":true}` cuando
 - **Clave nueva:** correr de nuevo `select public.crear_clave_servicio();` y reemplazar `SERVICIO_CLAVE` en Cloudflare.
 - Diagnóstico: Cloudflare → Worker → Observability → Live.
 - **No probado contra Meta real** (necesita las credenciales). Sí probado: la base, el disparador, el panel y el Worker con un Meta simulado.
+
+## Avisos al dueño (como Torre en Parking)
+
+Además de contestar preguntas, el sistema le **avisa solo** a los celulares habilitados (Ajustes → Asistente):
+
+| Aviso | Cuándo |
+|---|---|
+| 👷 Empezó / 🏁 terminó de trabajar | Cuando una cajera marca su jornada (la administración no se avisa a sí misma) |
+| 🟢 Caja abierta | Al abrir el turno (quién, a qué hora, con cuánto) |
+| 🔒 Caja cerrada | Al cerrar, con el detalle: vendido y por medio de pago, deudores (no suma), cobros de deudas, retiros, cuánto debía haber, cuánto se contó y la diferencia |
+| 💸 Retiro de caja | Cada retiro (monto, motivo, quién, cuánto queda en el cajón) |
+| 🚚 Llegó mercadería | Al recibir una compra (proveedor, productos, total) |
+| 🟡 Stock bajo / 🔴 Se acabó | Solo cuando un producto **cruza** su mínimo o llega a cero, no en cada venta |
+| 🟡 / 🔴 Deudor al 80 % o en su límite | La primera vez que lo cruza |
+| ✅ Cobro de deuda | Cada pago de un deudor |
+| 🚫 Venta anulada | Cada anulación (ticket, motivo, quién) |
+
+**Nunca se avisa de cada venta.**
+
+**Ventana de 24 horas:** WhatsApp solo deja escribirle libre a quien le escribió al negocio en las últimas 24 horas. Alcanza con
+mandarle un `hola` al asistente cada mañana. Si querés que avise siempre, aunque no le hayas escrito, hace falta una plantilla
+(opcional, Meta cobra unos USD 0,011 por aviso): categoría Utilidad, español, cuerpo con una variable y texto antes y después, por ejemplo
+`Aviso de La Estrella: {{1}}` seguido de `Respondé este mensaje para ver más.` Cuando la aprueben, en Cloudflare:
+`WHATSAPP_PLANTILLA_DUENO` = su nombre (y `WHATSAPP_PLANTILLA_DUENO_IDIOMA` si no usa el de `WHATSAPP_PLANTILLA_IDIOMA`).
+
+Instalación: correr `esquema.sql` (o el archivo corto de avisos) y pegar el `worker.js` nuevo. No hace falta otra variable ni otro webhook:
+usa la misma dirección que los avisos a deudores (`/aviso` → `/evento`).
