@@ -259,7 +259,4 @@ Personas de ejemplo (el equipo real): Luana (administración) PIN 1234 · Noelia
 - Panel: **Ajustes → Asistente** (solo modo conectado) habilita o quita celulares.
 - Los avisos a deudores salen por el mismo Worker (`/aviso`, plantilla aprobada). El número de prueba de Meta es compartido con Parking y NO recibe
   mensajes en esta app: para conversar hace falta un número propio (idealmente en su propia cuenta de WhatsApp Business).
-- **Chat de prueba (Santi, 25/11):** en Ajustes → Asistente hay un chat «Probalo acá» que contesta con los datos del sistema (demo o conectado), con la misma lógica que
-  el WhatsApp real. Esa lógica vive en `supabase/servicio/worker.js` y se copia a `js/asistente.js` con `python3 supabase/servicio/generar-asistente-web.py`
-  (correrlo cada vez que se toque la parte de preguntas/respuestas del Worker). `js/asistente-chat.js` arma los datos desde la pantalla y dibuja el chat.
-  Sirve para mostrarle el asistente a la clienta sin tener todavía el número de WhatsApp propio.
+- El asistente vive en WhatsApp (como Torre), NO dentro del panel: Santi pidió expresamente no tener un chat en el panel. En Ajustes → Asistente (solo conectado) solo se habilitan los celulares.
