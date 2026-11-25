@@ -231,7 +231,7 @@
             '<div class="grafico grafico--llenar" id="g-ventas"></div>' +
             '<div class="mini-kpis"><div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-1)">' + ico('banknote') + '</span><div><small>Efectivo</small><strong>' + F.din(med.efectivo) + '</strong></div></div>' +
             '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-2)">' + ico('credit-card') + '</span><div><small>Tarjetas</small><strong>' + F.din(tarjetas) + '</strong></div></div>' +
-            '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--serie-4)">' + ico('qr-code') + '</span><div><small>QR</small><strong>' + F.din(med.qr) + '</strong></div></div>' +
+            '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--rosa)">' + ico('hand-coins') + '</span><div><small>Deudores</small><strong>' + F.din(R7.fiado.total) + '</strong></div></div>' +
             '<div class="mini-kpi"><span class="mini-kpi__ic" style="--c:var(--apagado)">' + ico('receipt') + '</span><div><small>Ticket promedio</small><strong>' + F.din(R7.promedio) + '</strong></div></div></div></section>' +
           '<section class="panel panel--ventas">' + cabPanel('Últimas ventas', '#/ventas', 'Ver todas') +
             (ult.length ? '<ul class="ult">' + ult.map(function (q) { return '<li><a href="#/ventas"><span class="ult__n"><strong>N.º ' + F.num(q.num) + '</strong><small>' + F.fechaCorta(q.ts) + ' · ' + F.hora(q.ts) + ' · ' + esc(q.pagos.map(function (y) { return LE.MEDIOS[y.m]; }).join(' + ')) + '</small></span>' +

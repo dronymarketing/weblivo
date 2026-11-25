@@ -39,7 +39,7 @@ create table if not exists public.negocio (
   rut       text not null default '',
   regimen   text not null default 'monotributo' check (regimen in ('monotributo', 'iva')),
   pie       text not null default '¡Gracias por tu compra!',
-  medios    jsonb not null default '{"efectivo":true,"debito":true,"credito":true,"qr":true}',
+  medios    jsonb not null default '{"efectivo":true,"debito":true,"credito":true,"qr":false}',
   balanza   jsonb not null default '{"prefijo":"20","modo":"peso"}'
 );
 insert into public.negocio (id) values (1) on conflict (id) do nothing;

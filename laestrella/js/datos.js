@@ -118,7 +118,7 @@
         nombre: 'La Estrella', rubro: 'Almacén y autoservicio',
         direccion: '', telefono: '',
         rut: '', regimen: 'monotributo', pie: '¡Gracias por tu compra!',
-        medios: { efectivo: true, debito: true, credito: true, qr: true },
+        medios: { efectivo: true, debito: true, credito: true, qr: false },
         balanza: { prefijo: '20', modo: 'peso' },
         facturaElectronica: false
       },
@@ -203,7 +203,7 @@
           if (rr < .46) { var paso = total > 150000 ? 50000 : total > 50000 ? 10000 : 5000; recibido = Math.ceil(total / paso) * paso + (rnd() < .3 ? paso : 0); if (rnd() < .3) recibido = total; vuelto = recibido - total; pagos = [{ m: 'efectivo', monto: total }]; }
           else if (rr < .76) pagos = [{ m: 'debito', monto: total }];
           else if (rr < .87) pagos = [{ m: 'credito', monto: total }];
-          else pagos = [{ m: 'qr', monto: total }];
+          else pagos = [{ m: 'debito', monto: total }];   // en este almacén el QR no se usa
           var v = { id: uid('v'), num: E.contador.venta, ts: ts, turno: turno.id, cajeroId: cajero.id, cajero: cajero.nombre, items: items, total: total, pagos: pagos, recibido: recibido, vuelto: vuelto, estado: 'ok', sync: true };
           if (rnd() < .012 && d > 0) { v.estado = 'anulada'; v.anuladaPor = duena.nombre; v.motivo = 'Error de cobro'; }
           E.ventas.push(v);
@@ -433,6 +433,8 @@
     },
     movimientosStock: function (limite) { return E.movStock.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, limite || 200); },
     /* Nivel de stock: 'cero' (no hay) · 'alerta' (menos que el mínimo) · 'ok' (el mínimo o más). Tener justo el mínimo está bien. */
+    /* Medios que se muestran en los resúmenes del día: el QR solo si está habilitado en Ajustes o si hubo cobros con QR en ese período */
+    mediosVista: function (porMedio) { var h = E.negocio.medios || {}; return Object.keys(MEDIOS).filter(function (m) { return m !== 'qr' || h.qr || (porMedio && porMedio.qr > 0); }); },
     nivelStock: function (p) { return p.stock <= 0 ? 'cero' : p.stock < p.minimo ? 'alerta' : 'ok'; },
     stockBajo: function () { return E.productos.filter(function (p) { return p.activo && LE.nivelStock(p) !== 'ok'; }).sort(function (a, b) { return (a.stock / (a.minimo || 1)) - (b.stock / (b.minimo || 1)); }); },
 

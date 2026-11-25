@@ -160,6 +160,7 @@
 .panel__cab h3 { font-size: 20px; }
 .ver:hover { text-decoration: underline; text-underline-offset: 3px; }
 .mini-kpis { grid-template-columns: repeat(4, 1fr); margin: 8px -20px 0; }
+.mini-kpis--5 { grid-template-columns: repeat(5, 1fr); }
 .mini-kpi { border-bottom: 0; border-right: var(--borde); padding: 12px 20px; }
 .mini-kpi:last-child { border-right: 0; }
 .grafico--llenar { position: relative; min-height: 140px; }
