@@ -186,6 +186,10 @@
   };
   LE.marcarAsistencia = function () { return hacer('marcar_asistencia', {}, function (r) { return { estado: r.estado, a: { entrada: r.entrada, salida: r.salida } }; }); };
   LE.guardarNegocio = function (d) { return hacer('guardar_negocio', { p: d }); };
+  /* Asistente de WhatsApp: celulares habilitados para consultarlo (no cambian el snapshot, van directo) */
+  LE.asistenteEstado = function () { return rpc('asistente_estado', {}); };
+  LE.asistenteAgregar = function (telefono, nombre) { return rpc('asistente_agregar', { p_telefono: telefono, p_nombre: nombre || '' }); };
+  LE.asistenteQuitar = function (telefono) { return rpc('asistente_quitar', { p_telefono: telefono }); };
 
   /* ---------- Ingreso, registro y salida ---------- */
   function guardarPerfil(p) { try { localStorage.setItem(LE.KEY_PERFIL, JSON.stringify(p)); } catch (e) { } }

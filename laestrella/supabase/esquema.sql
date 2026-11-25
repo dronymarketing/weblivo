@@ -967,6 +967,155 @@ begin
   perform public.anotar('Cambió los ajustes del negocio');
 end $$;
 
+-- ---------- Asistente de WhatsApp (la dueña le escribe y contesta con los datos del momento) ----------
+-- El Worker (supabase/servicio/worker.js) pregunta con asistente_consulta(): necesita la clave del servicio y un celular
+-- habilitado acá. Solo LEE: no puede cobrar, anular ni cambiar nada. A números no habilitados no se les contesta.
+
+create table if not exists public.asistente_telefonos (
+  telefono text primary key check (telefono ~ '^\d{8,15}$'),
+  nombre   text not null default '' check (char_length(nombre) <= 60),
+  creado   timestamptz not null default now()
+);
+alter table public.asistente_telefonos enable row level security;
+revoke all on public.asistente_telefonos from anon, authenticated;
+
+-- Celular uruguayo «099 123 456» → «59899123456» (como lo manda WhatsApp)
+create or replace function public.asistente_normalizar(p_telefono text) returns text
+language sql immutable set search_path = public as $$
+  select case
+    when v ~ '^09\d{7}$' then '598' || substr(v, 2)
+    when v ~ '^9\d{7}$'  then '598' || v
+    when v ~ '^00\d+$'   then substr(v, 3)
+    else v end
+  from (select regexp_replace(coalesce(p_telefono, ''), '\D', '', 'g') as v) x
+$$;
+
+create or replace function public.asistente_estado() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+begin
+  perform public.exigir_rol('admin');
+  return jsonb_build_object(
+    'clave', (select clave_hash is not null from public.config_servicio where id = 1),
+    'telefonos', coalesce((select jsonb_agg(jsonb_build_object('telefono', telefono, 'nombre', nombre, 'creado', public.ms(creado)) order by creado)
+                             from public.asistente_telefonos), '[]'::jsonb));
+end $$;
+
+create or replace function public.asistente_agregar(p_telefono text, p_nombre text) returns void
+language plpgsql security definer set search_path = public as $$
+declare v text := public.asistente_normalizar(p_telefono);
+begin
+  perform public.exigir_rol('admin');
+  if v !~ '^\d{8,15}$' then
+    raise exception 'Revisá el número: tiene que ser un celular con WhatsApp, por ejemplo 099 123 456.' using errcode = 'P0001';
+  end if;
+  if (select count(*) from public.asistente_telefonos) >= 10 and not exists (select 1 from public.asistente_telefonos where telefono = v) then
+    raise exception 'Ya hay 10 números habilitados: quitá alguno antes de sumar otro.' using errcode = 'P0001';
+  end if;
+  insert into public.asistente_telefonos (telefono, nombre) values (v, left(btrim(coalesce(p_nombre, '')), 60))
+    on conflict (telefono) do update set nombre = excluded.nombre;
+  perform public.anotar('Habilitó el WhatsApp +' || v || ' para consultar al asistente');
+end $$;
+
+create or replace function public.asistente_quitar(p_telefono text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.exigir_rol('admin');
+  delete from public.asistente_telefonos where telefono = public.asistente_normalizar(p_telefono);
+  if found then perform public.anotar('Quitó el WhatsApp +' || public.asistente_normalizar(p_telefono) || ' del asistente'); end if;
+end $$;
+
+-- Clave y número habilitado: lo mismo para todas las consultas del asistente
+create or replace function public.asistente_validar(p_clave text, p_telefono text) returns void
+language plpgsql stable security definer set search_path = public as $$
+begin
+  perform public.servicio_validar(p_clave);
+  if not exists (select 1 from public.asistente_telefonos where telefono = p_telefono) then
+    raise exception 'Este número no está habilitado.' using errcode = '42501';
+  end if;
+end $$;
+
+-- Lo que el asistente puede contar: foto del momento + números del período pedido (montos en centavos)
+create or replace function public.asistente_consulta(p_clave text, p_telefono text,
+                                                     p_desde timestamptz default null, p_hasta timestamptz default null)
+returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare
+  v_hoy   timestamptz := date_trunc('day', now() at time zone 'America/Montevideo') at time zone 'America/Montevideo';
+  v_man   timestamptz := v_hoy + interval '1 day';
+  v_desde timestamptz := coalesce(p_desde, v_hoy);
+  v_hasta timestamptz := coalesce(p_hasta, v_man);
+  v_caja  public.caja_turnos;
+begin
+  perform public.asistente_validar(p_clave, p_telefono);
+  if v_hasta <= v_desde or v_hasta - v_desde > interval '400 days' then
+    raise exception 'Período no válido.' using errcode = 'P0001';
+  end if;
+  select * into v_caja from public.caja_turnos where cierre is null;
+
+  return jsonb_build_object(
+    'ahora', now(),
+    'quien', (select nombre from public.asistente_telefonos where telefono = p_telefono),
+    'negocio', (select nombre from public.negocio where id = 1),
+    'periodo', jsonb_build_object(
+      'desde', v_desde, 'hasta', v_hasta,
+      'ventas', (select coalesce(sum(total), 0) from public.ventas where estado = 'ok' and deudor_id is null and ts >= v_desde and ts < v_hasta),
+      'tickets', (select count(*) from public.ventas where estado = 'ok' and deudor_id is null and ts >= v_desde and ts < v_hasta),
+      'fiado', (select coalesce(sum(total), 0) from public.ventas where estado = 'ok' and deudor_id is not null and ts >= v_desde and ts < v_hasta),
+      'tickets_fiado', (select count(*) from public.ventas where estado = 'ok' and deudor_id is not null and ts >= v_desde and ts < v_hasta),
+      'anuladas', (select count(*) from public.ventas where estado = 'anulada' and ts >= v_desde and ts < v_hasta),
+      'por_medio', coalesce((select jsonb_object_agg(medio, s) from (
+                     select g.medio, sum(g.monto) as s from public.venta_pagos g join public.ventas v on v.id = g.venta
+                      where v.estado = 'ok' and v.ts >= v_desde and v.ts < v_hasta group by g.medio) m), '{}'::jsonb),
+      'cobros_deuda', (select coalesce(sum(monto), 0) from public.deudor_pagos where ts >= v_desde and ts < v_hasta),
+      'cobros_deuda_n', (select count(*) from public.deudor_pagos where ts >= v_desde and ts < v_hasta),
+      'cobros_deuda_medio', coalesce((select jsonb_object_agg(medio, s) from (
+                     select medio, sum(monto) as s from public.deudor_pagos where ts >= v_desde and ts < v_hasta group by medio) m), '{}'::jsonb),
+      'top', coalesce((select jsonb_agg(jsonb_build_object('nombre', t.nombre, 'cant', t.cant, 'monto', t.monto, 'unidad', t.unidad) order by t.monto desc)
+                         from (select i.nombre, sum(i.cant) as cant, sum(i.subtotal) as monto, max(p.unidad) as unidad
+                                 from public.venta_items i join public.ventas v on v.id = i.venta left join public.productos p on p.id = i.producto
+                                where v.estado = 'ok' and v.ts >= v_desde and v.ts < v_hasta
+                                group by i.nombre order by sum(i.subtotal) desc limit 5) t), '[]'::jsonb)),
+    'caja', case when v_caja.id is null then jsonb_build_object('abierta', false,
+                   'ultimo', (select jsonb_build_object('cierre', cierre, 'esperado', esperado, 'contado', contado, 'cerro', cerro)
+                                from public.caja_turnos where cierre is not null order by cierre desc limit 1))
+            else jsonb_build_object('abierta', true, 'apertura', v_caja.apertura, 'turno', v_caja.turno, 'abrio', v_caja.abrio,
+                   'base', v_caja.base, 'efectivo', public.efectivo_esperado(v_caja.id),
+                   'ventas', (select coalesce(sum(total), 0) from public.ventas where turno = v_caja.id and estado = 'ok' and deudor_id is null)) end,
+    'stock', jsonb_build_object(
+      'productos', (select count(*) from public.productos where activo),
+      'sin_stock_n', (select count(*) from public.productos where activo and stock <= 0),
+      'sin_stock', coalesce((select jsonb_agg(nombre order by nombre) from (select nombre from public.productos where activo and stock <= 0 order by nombre limit 15) x), '[]'::jsonb),
+      'bajo_n', (select count(*) from public.productos where activo and stock > 0 and stock < minimo),
+      'bajo', coalesce((select jsonb_agg(jsonb_build_object('nombre', nombre, 'stock', stock, 'minimo', minimo, 'unidad', unidad) order by nombre)
+                          from (select * from public.productos where activo and stock > 0 and stock < minimo order by nombre limit 15) x), '[]'::jsonb)),
+    'deudores', jsonb_build_object(
+      'total', (select coalesce(sum(s), 0) from (select public.saldo_deudor(id) as s from public.deudores) x where s > 0),
+      'n', (select count(*) from (select public.saldo_deudor(id) as s from public.deudores) x where s > 0),
+      'lista', coalesce((select jsonb_agg(jsonb_build_object('nombre', d.nombre, 'saldo', d.saldo, 'limite', d.limite) order by d.saldo desc)
+                          from (select nombre, public.saldo_deudor(id) as saldo, limite from public.deudores where activo) d where d.saldo > 0), '[]'::jsonb)),
+    'compras', jsonb_build_object(
+      'sin_recibir', (select count(*) from public.compras where not recibida),
+      'sin_pagar', (select count(*) from public.compras where not pagada),
+      'sin_pagar_total', (select coalesce(sum(total), 0) from public.compras where not pagada)),
+    'trabajando', coalesce((select jsonb_agg(jsonb_build_object('nombre', nombre, 'desde', entrada) order by entrada)
+                              from public.asistencias where salida is null), '[]'::jsonb)
+  );
+end $$;
+
+-- Un producto puntual: «¿cuánto stock hay de arroz?», «¿a cuánto está la yerba?»
+create or replace function public.asistente_producto(p_clave text, p_telefono text, p_texto text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v text := btrim(coalesce(p_texto, ''));
+begin
+  perform public.asistente_validar(p_clave, p_telefono);
+  if char_length(v) < 2 then return '[]'::jsonb; end if;
+  return coalesce((select jsonb_agg(jsonb_build_object('nombre', nombre, 'stock', stock, 'minimo', minimo, 'precio', precio, 'unidad', unidad, 'cat', cat) order by nombre)
+                     from (select * from public.productos
+                            where activo and (translate(lower(nombre), 'áéíóúü', 'aeiouu') like '%' || translate(lower(v), 'áéíóúü', 'aeiouu') || '%'
+                                              or codigo = v)
+                            order by nombre limit 6) x), '[]'::jsonb);
+end $$;
+
 -- ---------- Permisos: solo personas con sesión, y solo las funciones públicas ----------
 
 revoke execute on all functions in schema public from public, anon, authenticated;
@@ -987,3 +1136,5 @@ create or replace function public.latido() returns timestamptz
 language sql stable as $$ select now() $$;
 grant execute on function public.latido() to anon, authenticated;
 grant execute on function public.servicio_aviso(text, bigint), public.servicio_resultado(text, bigint, text, text) to anon, authenticated;
+grant execute on function public.asistente_consulta(text, text, timestamptz, timestamptz), public.asistente_producto(text, text, text) to anon, authenticated;
+grant execute on function public.asistente_estado(), public.asistente_agregar(text, text), public.asistente_quitar(text) to authenticated;

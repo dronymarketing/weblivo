@@ -249,3 +249,13 @@ Personas de ejemplo (el equipo real): Luana (administración) PIN 1234 · Noelia
 - RUT, dirección y teléfono reales del almacén (hoy vacíos: el ticket los omite hasta que se carguen en Ajustes).
 - Logo definitivo (el actual es una estrella de Lucide con el nombre, provisorio).
 - Offline real, base real (Supabase), respaldos y traslado a su propio repo privado.
+
+## Asistente de WhatsApp (Santi, 25/11)
+- Como «Torre» de Parking Despegar: la dueña le escribe (texto o audio) al número del negocio y contesta con datos del momento
+  (ventas por período y medio, caja, stock a reponer, producto puntual, deudores, lo más vendido, resumen, equipo, compras).
+  Palabras clave, sin IA paga; audios con Whisper (Workers AI). Código en `supabase/servicio/worker.js`; guía en `supabase/servicio/LEEME.md`.
+- Base: `asistente_consulta` / `asistente_producto` (solo leen; piden la clave del servicio y un celular habilitado), `asistente_telefonos`,
+  `asistente_estado/agregar/quitar` (admin), clave con `crear_clave_servicio()` (`config_servicio`, solo la huella). Montos en centavos.
+- Panel: **Ajustes → Asistente** (solo modo conectado) habilita o quita celulares.
+- Los avisos a deudores salen por el mismo Worker (`/aviso`, plantilla aprobada). El número de prueba de Meta es compartido con Parking y NO recibe
+  mensajes en esta app: para conversar hace falta un número propio (idealmente en su propia cuenta de WhatsApp Business).

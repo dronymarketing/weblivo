@@ -1,36 +1,71 @@
-# Avisos de WhatsApp a deudores (Cloudflare Worker)
+# Asistente y avisos de WhatsApp (Cloudflare Worker)
 
-Misma idea que en Parking Despegar. Cuando un deudor llega al **80 %** de su límite y cuando lo **pasa**, la base crea el aviso
-y le avisa sola al Worker (`worker.js`), que lo manda por la API de WhatsApp de Meta con una plantilla aprobada y anota
-«Enviado» o «Error» en **Deudores → Avisos**. Nadie toca nada. Si falla, el aviso queda en el panel y se manda a mano con
-**Abrir en WhatsApp**.
+Mismo esquema que Parking Despegar. Un Worker gratis (`worker.js`) hace dos cosas:
+
+1. **Asistente:** la dueña le escribe (o manda un audio) al número del negocio y contesta con los datos del momento:
+   «¿cuánto vendí hoy?», «¿cómo está la caja?», «¿qué falta reponer?», «¿cuánto stock hay de arroz?», «¿quién debe?»,
+   «¿cuánto debe Ana?», «¿qué se vendió más?», «¿cómo vamos?». Sin IA paga: entiende por palabras clave y pasa los audios
+   a texto con Whisper (Workers AI, gratis en este uso). Solo lee, no puede cambiar nada, y solo contesta a los celulares
+   que se habilitan en **panel → Ajustes → Asistente**.
+2. **Avisos a deudores:** al llegar al 80 % de su límite y al pasarlo, la base crea el aviso y le avisa sola al Worker, que lo
+   manda con una plantilla aprobada y anota «Enviado» o «Error» en **Deudores → Avisos**. Si falla, se manda a mano con
+   **Abrir en WhatsApp**.
 
 Ninguna llave vive en la página: son secretos cifrados de Cloudflare.
 
 ## Instalación (una sola vez)
 
-1. **Base:** correr `supabase/esquema.sql` completo en Supabase → SQL Editor (agrega las funciones del servicio).
-2. **Clave del servicio:** en el SQL Editor correr `select public.crear_clave_servicio();` → copiar el resultado (se ve una sola vez).
+### A. Base y Worker
+1. **Base:** correr `supabase/esquema.sql` completo en Supabase → SQL Editor.
+2. **Clave del servicio:** en el SQL Editor, `select public.crear_clave_servicio();` → copiar el resultado (se ve una sola vez).
 3. **Worker:** dash.cloudflare.com → Workers & Pages → Create → Create Worker, nombre `la-estrella` → Deploy → **Edit code** →
-   pegar `worker.js` → Deploy. Su dirección es `https://la-estrella.….workers.dev`.
-4. **Secretos** (Worker → Settings → Variables and Secrets), tipo *Secret*: `SERVICIO_CLAVE` (la del paso 2) y `WHATSAPP_TOKEN`.
-5. **Meta** (developers.facebook.com): app con el producto WhatsApp, un **número** que no tenga WhatsApp instalado y un
-   **usuario del sistema** (Business Settings → System users) con token permanente (`whatsapp_business_messaging`).
-6. **Plantilla** (WhatsApp Manager → Message templates → Create): categoría **Utilidad**, idioma español, nombre `aviso_cuenta`,
-   cuerpo con **una sola variable**: `Aviso de tu cuenta en La Estrella: {{1}}`. Meta la aprueba en minutos o pocos días.
-   Para escribirle a un cliente que nunca le escribió al negocio **la plantilla es obligatoria**.
-7. **Variables de texto** del Worker: `WHATSAPP_NUMERO_ID` (el *Phone number ID*), `WHATSAPP_PLANTILLA` = `aviso_cuenta`
-   y, si el idioma no es `es`, `WHATSAPP_PLANTILLA_IDIOMA`.
-8. **Conectar la base con el Worker:** en el SQL Editor,
+   pegar `worker.js` → Deploy. Dirección: `https://la-estrella.….workers.dev`.
+4. **Conectar la base con el Worker:** en el SQL Editor,
    `update public.config_servicio set aviso_url = 'https://la-estrella.….workers.dev/aviso';`
-9. En `js/config.js` poner `whatsapp: true` (solo hace que la pantalla se actualice sola cuando sale el aviso).
-10. Probar: abrir la dirección del Worker → tiene que decir `{"whatsapp":true}`. Después, una venta a cuenta que cruce el 80 %.
+5. En `js/config.js` poner `whatsapp: true` (solo hace que la pantalla se actualice sola cuando sale un aviso).
 
-Diagnóstico: Cloudflare → Worker → Observability → Live. Si dice «falta configurar WhatsApp», revisá los pasos 4 y 7.
+### B. Meta (developers.facebook.com)
+6. App con el caso de uso **Conectar con los clientes a través de WhatsApp**.
+7. **Número:** para probar, el número de prueba de Meta (manda solo a celulares verificados, hasta 5, y NO recibe
+   mensajes en esta app). Para el uso real, un chip que **no** tenga WhatsApp instalado, agregado en **WhatsApp →
+   Configuración de producción** (conviene en una cuenta de WhatsApp Business propia de La Estrella, así los mensajes
+   que llegan van al webhook de esta app y no al de otro negocio). Nombre visible «La Estrella».
+8. **Token permanente:** Business Settings → Usuarios del sistema → Agregar (Admin) → asignarle esta app y la cuenta de
+   WhatsApp → **Generar token** con `whatsapp_business_messaging` y `whatsapp_business_management` → secreto `WHATSAPP_TOKEN`.
+9. **App secret:** en la app, Configuración → Básica → Clave secreta → secreto `WHATSAPP_SECRETO_APP`.
+10. **Palabra de verificación:** inventar una (por ejemplo `estrella-` + algo al azar) → secreto `WHATSAPP_VERIFICACION`.
+11. **Plantilla** (WhatsApp Manager → Plantillas de mensajes → Crear): categoría **Utilidad**, español, nombre `aviso_cuenta`,
+    cuerpo con **una sola variable**: `Aviso de tu cuenta en La Estrella: {{1}}`. Hace falta para escribirle a un deudor que
+    nunca le escribió al negocio.
+12. **Webhook** (WhatsApp → Configuración → Webhook): URL `https://la-estrella.….workers.dev/whatsapp`, Verify token = la
+    palabra del paso 10 → **Verificar y guardar** → suscribir el campo **messages**.
+13. La cuenta de WhatsApp tiene que estar enganchada a la app (si no llega nada al Worker): en el Explorador de la API de
+    Graph, **POST** `<ID de la cuenta de WhatsApp Business>/subscribed_apps` → `{"success": true}`.
 
-## Costos y límites
+### C. Cloudflare: secretos y variables (Worker → Settings → Variables and Secrets)
 
-- Cloudflare Workers: gratis en este uso.
-- Meta cobra un precio chico por mensaje de plantilla de utilidad (revisar su tabla antes de prender el envío).
-- El teléfono se guarda como se escriba (`099 123 456`); el Worker lo pasa a `59899123456`. Sin teléfono, el aviso queda en Error.
-- **No probado contra Meta real** (necesita las credenciales). Sí probado: la base, el disparador y el Worker con un Meta simulado.
+| Nombre | Tipo | Valor |
+|---|---|---|
+| `SERVICIO_CLAVE` | Secret | la del paso 2 |
+| `WHATSAPP_TOKEN` | Secret | el token del paso 8 |
+| `WHATSAPP_SECRETO_APP` | Secret | el del paso 9 |
+| `WHATSAPP_VERIFICACION` | Secret | la palabra del paso 10 |
+| `WHATSAPP_NUMERO_ID` | Texto | el *Phone number ID* |
+| `WHATSAPP_PLANTILLA` | Texto | `aviso_cuenta` |
+| `WHATSAPP_PLANTILLA_IDIOMA` | Texto | solo si el idioma no es `es` |
+
+Audios: Worker → Settings → **Bindings → Add → Workers AI**, con el nombre `AI`.
+
+### D. Habilitar a la dueña
+14. Panel → **Ajustes → Asistente** → nombre y celular → **Habilitar**.
+15. Probar: desde ese celular, escribirle «hola» al número del negocio.
+
+Abrir la dirección del Worker muestra `{"avisos":true,"asistente":true}` cuando está todo cargado.
+
+## Notas
+- Las respuestas dentro de las 24 h desde el último mensaje de la dueña son gratis. Los avisos a deudores van con plantilla:
+  Meta cobra un precio chico por mensaje de utilidad (revisar su tabla antes de prender el envío).
+- El teléfono del deudor se guarda como se escriba (`099 123 456`); el Worker lo pasa a `59899123456`. Sin teléfono, el aviso queda en Error.
+- **Clave nueva:** correr de nuevo `select public.crear_clave_servicio();` y reemplazar `SERVICIO_CLAVE` en Cloudflare.
+- Diagnóstico: Cloudflare → Worker → Observability → Live.
+- **No probado contra Meta real** (necesita las credenciales). Sí probado: la base, el disparador, el panel y el Worker con un Meta simulado.

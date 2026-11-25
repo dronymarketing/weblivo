@@ -413,7 +413,7 @@
     titulo: 'Ajustes',
     entrar: function () {
       var S = P.est('ajustes', { tab: 'negocio' });
-      P.cab('Ajustes', null, null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza'], ['sistema', 'Sistema']], S.tab));
+      P.cab('Ajustes', null, null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza']].concat(LE.nubeActiva ? [['asistente', 'Asistente']] : [], [['sistema', 'Sistema']]), S.tab));
       P.rutas.ajustes.pintar();
     },
     pintar: function () {
@@ -425,6 +425,10 @@
           '<section class="panel panel--form">' + cab('Balanza') + '<form id="f-bal"><div class="fila-campos"><label class="campo"><span>Código inicial</span><select name="prefijo" class="entrada">' + ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29'].map(function (x) { return '<option' + (b.prefijo === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></label>' +
           '<label class="campo"><span>La etiqueta trae</span><select name="modo" class="entrada"><option value="peso"' + (b.modo === 'peso' ? ' selected' : '') + '>El peso</option><option value="precio"' + (b.modo === 'precio' ? ' selected' : '') + '>El precio</option></select></label></div>' +
           '<p class="suave" style="font-size:14px;margin-bottom:14px;line-height:1.5">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div>');
+      } else if (S.tab === 'asistente' && LE.nubeActiva) {
+        P.zona('<div class="paneles paneles--form"><section class="panel panel--form">' + cab('Asistente de WhatsApp') + '<div id="asist"><p class="suave">Cargando…</p></div></section>' +
+          '<section class="panel panel--form">' + cab('Qué le podés preguntar') + '<ul class="lista-simple"><li>«¿Cuánto vendí hoy?» (también ayer, esta semana, este mes)</li><li>«¿Cómo está la caja?»</li><li>«¿Qué falta reponer?»</li><li>«¿Cuánto stock hay de arroz?»</li><li>«¿Quién debe?» o «¿Cuánto debe Ana?»</li><li>«¿Qué se vendió más?»</li><li>«¿Cómo vamos?» para un resumen</li></ul><p class="suave" style="font-size:14px;margin-top:12px">Sirve por escrito o con un audio. Solo lee: no puede cobrar, anular ni cambiar nada. A los números que no están en la lista no les contesta.</p></section></div>');
+        asistentePintar();
       } else if (S.tab === 'sistema') {
         P.zona('<div class="paneles paneles--form paneles--iguales"><div class="panel-col"><section class="panel panel--form">' + cab('Factura electrónica') + '<p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
           (LE.nubeActiva ? '<section class="panel panel--form">' + cab('Base de datos') + '<p class="suave">Conectada a Supabase. Los cambios se guardan en la nube y los ven todas las terminales. Las ventas hechas sin internet se envían solas cuando vuelve la conexión.</p></section>' : '<section class="panel panel--form">' + cab('Datos del sistema') + '<p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section>') + '</div>' +
@@ -438,6 +442,23 @@
         f.addEventListener('input', pre); pre();
       }
     }
+  };
+  function asistentePintar() {
+    var el = $('#asist'); if (!el) return;
+    LE.asistenteEstado().then(function (e) {
+      el = $('#asist'); if (!el) return;
+      el.innerHTML = '<p class="suave" style="margin-bottom:12px">Celulares que pueden hacerle preguntas al asistente de La Estrella:</p>' +
+        (e.telefonos.length ? '<ul class="avisos-wa">' + e.telefonos.map(function (t) { return '<li><div class="aw__cab"><strong>' + esc(t.nombre || 'Sin nombre') + '</strong><button type="button" class="btn btn--chico btn--linea" data-acc="asist-quitar" data-id="' + esc(t.telefono) + '">Quitar</button></div><small>+' + esc(t.telefono) + '</small></li>'; }).join('') + '</ul>' : '<p class="vacio">Todavía no hay ningún celular habilitado.</p>') +
+        '<form id="f-asist" style="margin-top:16px"><div class="fila-campos"><label class="campo"><span>Nombre</span><input name="nombre" class="entrada" maxlength="60" placeholder="Por ejemplo, Marta"></label><label class="campo"><span>Celular con WhatsApp</span><input name="telefono" class="entrada" inputmode="tel" maxlength="20" placeholder="099 123 456"></label></div><button type="button" class="btn btn--tinta" data-acc="asist-agregar">Habilitar</button></form>' +
+        (e.clave ? '' : '<p class="nota" style="margin-top:16px">' + ico('info') + '<span>Falta conectar el servicio de WhatsApp (clave, Cloudflare y Meta). Los pasos están en <span class="mono">supabase/servicio/LEEME.md</span>.</span></p>');
+    }, function (err) { el.innerHTML = '<p class="vacio">No se pudo leer la lista: ' + esc(err.message || 'sin conexión') + '</p>'; });
+  }
+  P.acciones['asist-agregar'] = function () {
+    var f = $('#f-asist'), tel = f.telefono.value.trim(); if (!tel) return UI.toast('Escribí el celular.', 'error');
+    UI.hacer(function () { return LE.asistenteAgregar(tel, f.nombre.value); }, 'Celular habilitado.').then(function (r) { if (r.ok) asistentePintar(); });
+  };
+  P.acciones['asist-quitar'] = function (tel) {
+    UI.confirmar('Quitar celular', 'Ese celular deja de poder consultar al asistente.', { ok: 'Quitar', peligro: true }).then(function (si) { if (si) UI.hacer(function () { return LE.asistenteQuitar(tel); }, 'Celular quitado.').then(function (r) { if (r.ok) asistentePintar(); }); });
   };
   P.acciones['guardar-negocio'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-neg')); } }); UI.hacer(function () { return LE.guardarNegocio(v); }, 'Datos guardados.').then(function (r) { if (r.ok) P.refrescar(); }); };
   P.acciones['guardar-medios'] = function () { var v = UI.valores({ $$: function (s) { return UI.$$(s, $('#f-med')); } }); if (!Object.keys(v).some(function (k) { return v[k]; })) return UI.toast('Dejá al menos un medio de pago.', 'error'); UI.hacer(function () { return LE.guardarNegocio({ medios: v }); }, 'Medios de pago guardados.').then(function (r) { if (r.ok) P.refrescar(); }); };
