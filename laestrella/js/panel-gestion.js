@@ -413,7 +413,7 @@
     titulo: 'Ajustes',
     entrar: function () {
       var S = P.est('ajustes', { tab: 'negocio' });
-      P.cab('Ajustes', null, null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza']].concat(LE.nubeActiva ? [['asistente', 'Asistente']] : [], [['sistema', 'Sistema']]), S.tab));
+      P.cab('Ajustes', null, null, tabs([['negocio', 'El negocio'], ['cobro', 'Cobro y balanza'], ['asistente', 'Asistente'], ['sistema', 'Sistema']], S.tab));
       P.rutas.ajustes.pintar();
     },
     pintar: function () {
@@ -425,10 +425,13 @@
           '<section class="panel panel--form">' + cab('Balanza') + '<form id="f-bal"><div class="fila-campos"><label class="campo"><span>Código inicial</span><select name="prefijo" class="entrada">' + ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29'].map(function (x) { return '<option' + (b.prefijo === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></label>' +
           '<label class="campo"><span>La etiqueta trae</span><select name="modo" class="entrada"><option value="peso"' + (b.modo === 'peso' ? ' selected' : '') + '>El peso</option><option value="precio"' + (b.modo === 'precio' ? ' selected' : '') + '>El precio</option></select></label></div>' +
           '<p class="suave" style="font-size:14px;margin-bottom:14px;line-height:1.5">Ejemplo con el Jamón Cocido (PLU 00101): <span class="mono">' + ejemplo + '</span>. Se lee así: <span class="mono">' + b.prefijo + '</span> inicio · <span class="mono">00101</span> producto · <span class="mono">00350</span> ' + (b.modo === 'peso' ? '350 gramos' : '$ 3,50') + ' · último dígito de control. <strong>Hay que confirmar el formato de la balanza real.</strong></p><button type="button" class="btn btn--tinta" data-acc="guardar-balanza">Guardar</button></form></section></div>');
-      } else if (S.tab === 'asistente' && LE.nubeActiva) {
-        P.zona('<div class="paneles paneles--form"><section class="panel panel--form">' + cab('Asistente de WhatsApp') + '<div id="asist"><p class="suave">Cargando…</p></div></section>' +
-          '<section class="panel panel--form">' + cab('Qué le podés preguntar') + '<ul class="lista-simple"><li>«¿Cuánto vendí hoy?» (también ayer, esta semana, este mes)</li><li>«¿Cómo está la caja?»</li><li>«¿Qué falta reponer?»</li><li>«¿Cuánto stock hay de arroz?»</li><li>«¿Quién debe?» o «¿Cuánto debe Ana?»</li><li>«¿Qué se vendió más?»</li><li>«¿Cómo vamos?» para un resumen</li></ul><p class="suave" style="font-size:14px;margin-top:12px">Sirve por escrito o con un audio. Solo lee: no puede cobrar, anular ni cambiar nada. A los números que no están en la lista no les contesta.</p></section></div>');
-        asistentePintar();
+      } else if (S.tab === 'asistente') {
+        var ejemplos = '<ul class="lista-simple"><li>«¿Cuánto vendí hoy?» (también ayer, esta semana, este mes)</li><li>«¿Cómo está la caja?»</li><li>«¿Qué falta reponer?»</li><li>«¿Cuánto stock hay de arroz?»</li><li>«¿Quién debe?» o «¿Cuánto debe Ana?»</li><li>«¿Qué se vendió más?»</li><li>«¿Cómo vamos?» para un resumen</li></ul><p class="suave" style="font-size:14px;margin-top:12px">Por WhatsApp sirve por escrito o con un audio. Solo lee: no puede cobrar, anular ni cambiar nada. A los números que no están en la lista no les contesta.</p>';
+        P.zona('<div class="paneles paneles--form paneles--iguales"><section class="panel panel--form">' + cab('Probalo acá') + ASISTENTE_CHAT.html() + '</section><div class="panel-col">' +
+          (LE.nubeActiva ? '<section class="panel panel--form">' + cab('Quién puede consultarlo por WhatsApp') + '<div id="asist"><p class="suave">Cargando…</p></div></section>' : '') +
+          '<section class="panel panel--form">' + cab('Qué le podés preguntar') + ejemplos + '</section></div></div>');
+        ASISTENTE_CHAT.montar();
+        if (LE.nubeActiva) asistentePintar();
       } else if (S.tab === 'sistema') {
         P.zona('<div class="paneles paneles--form paneles--iguales"><div class="panel-col"><section class="panel panel--form">' + cab('Factura electrónica') + '<p class="nota" style="margin-bottom:12px">' + ico('info') + '<span>Hoy el ticket sale como <strong>comprobante interno</strong>, no como factura. Si el almacén pasa a emitir e-Ticket, se conecta un proveedor autorizado por la DGI y el ticket pasa a llevar CAE y código QR. El sistema ya guarda IVA por producto y numeración propia para ese día.</span></p><label class="interruptor"><span>Emitir e-Ticket (DGI)</span><input type="checkbox" disabled></label></section>' +
           (LE.nubeActiva ? '<section class="panel panel--form">' + cab('Base de datos') + '<p class="suave">Conectada a Supabase. Los cambios se guardan en la nube y los ven todas las terminales. Las ventas hechas sin internet se envían solas cuando vuelve la conexión.</p></section>' : '<section class="panel panel--form">' + cab('Datos del sistema') + '<p class="suave" style="margin-bottom:12px">Volvé a los datos iniciales: se borra todo lo que cargaste desde que empezaste.</p><button type="button" class="btn btn--peligro" data-acc="reset">' + ico('rotate-ccw') + 'Restablecer datos</button></section>') + '</div>' +

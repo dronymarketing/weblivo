@@ -239,6 +239,8 @@ function interpretar(texto, ahora) {
     if (m && !/^(hoy|ayer|plata|total|todos|todo|semana|mes|ano)$/.test(m[1])) deudor = m[1];
   }
   if (!temas.length && SALUDO.test(t)) temas = ['ayuda'];
+  // «¿y ayer?», «esta semana»: solo el período, se entiende que sigue hablando de lo vendido
+  if (!temas.length && periodo(t, ahora).clave !== 'hoy') temas = ['ventas'];
   return r(temas, { deudor });
 }
 
@@ -289,7 +291,7 @@ function responder(p, f, ahora = Date.now()) {
   if (!p.temas.length) return 'No te entendí' + (quien ? ', ' + quien : '') + '. ' + ayuda(ahora, true);
   const partes = [];
   for (const t of p.temas) {
-    const x = t === 'ayuda' ? ayuda(ahora, false, quien) : t === 'resumen' ? resumen(f) : t === 'ventas' ? ventas(p, f)
+    const x = t === 'ayuda' ? ayuda(ahora, false, quien) : t === 'resumen' ? resumen(p, f) : t === 'ventas' ? ventas(p, f)
       : t === 'top' ? top(p, f) : t === 'caja' ? caja(f) : t === 'stock' ? stock(f) : t === 'deudores' ? deudores(p, f)
       : t === 'compras' ? compras(f) : t === 'equipo' ? equipo(f) : '';
     if (x) partes.push(x);
@@ -363,9 +365,9 @@ function respProducto(p) {
   if (!e.length) return 'No encontré ningún producto que se parezca a «' + p.producto + '».';
   return e.map((x) => '*' + x.nombre + '*: ' + plata(x.precio) + (x.unidad === 'kg' ? ' el kg' : '') + ', hay ' + cant(x.stock, x.unidad) + (x.stock <= 0 ? ' (sin stock)' : x.stock < x.minimo ? ' (por debajo del mínimo)' : '') + '.').join('\n');
 }
-function resumen(f) {
+function resumen(p, f) {
   const x = f.periodo, c = f.caja, s = f.stock, d = f.deudores;
-  const l = ['*Resumen de hoy*', 'Vendido: ' + plata(x.ventas) + ' en ' + n(x.tickets, 'ticket', 'tickets') + (x.tickets_fiado ? ' (más ' + plata(x.fiado) + ' a cuenta)' : '') + '.'];
+  const l = ['*Resumen: ' + p.periodo.nombre.toLowerCase() + '*', 'Vendido: ' + plata(x.ventas) + ' en ' + n(x.tickets, 'ticket', 'tickets') + (x.tickets_fiado ? ' (más ' + plata(x.fiado) + ' a cuenta)' : '') + '.'];
   l.push(c.abierta ? 'Caja abierta: efectivo ' + plata(c.efectivo) + '.' : 'Caja cerrada.');
   l.push(s.sin_stock_n || s.bajo_n ? 'Stock: ' + n(s.sin_stock_n, 'producto sin stock', 'productos sin stock') + ' y ' + n(s.bajo_n, 'por reponer', 'por reponer') + '.' : 'Stock en orden.');
   l.push(d.n ? 'Deudores: ' + plata(d.total) + ' entre ' + n(d.n, 'persona', 'personas') + '.' : 'Nadie debe nada.');

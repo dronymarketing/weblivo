@@ -211,8 +211,8 @@
         });
         // Retiros de la jornada
         var egresos = 0;
-        if (rnd() < .6) { var m = (3 + r2(rnd() * 6)) * 100000; egresos += m; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .7, concepto: 'Retiro para administración', monto: -m, usuario: cajero.nombre }); }
-        if (rnd() < .3) { var m2 = (4 + r2(rnd() * 8)) * 5000; egresos += m2; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .4, concepto: 'Pago de reparto', monto: -m2, usuario: cajero.nombre }); }
+        if (rnd() < .6) { var m = (3 + r2(rnd() * 6)) * 100000; if (base + efectivo - egresos - m >= 0) { egresos += m; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .7, concepto: 'Retiro para administración', monto: -m, usuario: cajero.nombre }); } }
+        if (rnd() < .3) { var m2 = (4 + r2(rnd() * 8)) * 5000; if (base + efectivo - egresos - m2 >= 0) { egresos += m2; E.movCaja.push({ id: uid('m'), turno: turno.id, ts: apertura + (cierre - apertura) * .4, concepto: 'Pago de reparto', monto: -m2, usuario: cajero.nombre }); } }
         turno.esperado = base + efectivo - egresos;
         var dif = rnd() < .68 ? 0 : r2((rnd() * 70 - 45) / 5) * 500;
         turno.contado = turno.esperado + dif;
