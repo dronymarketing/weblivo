@@ -10,7 +10,7 @@ window.LE_CONFIG = {
   url: 'https://gbezzoutnaxvdzfjytlr.supabase.co',
   clave: 'sb_publishable_0vHo4Yucf_1wRD4N95W-jw__urGt__r',
   vivo: true,        // avisos en tiempo real entre la caja y el panel
-  whatsapp: false    // poner true cuando el servicio de WhatsApp esté conectado (supabase/servicio/LEEME.md)
+  whatsapp: true     // poner true cuando el servicio de WhatsApp esté conectado (supabase/servicio/LEEME.md)
 };
 // Solo si hay conexión configurada se carga la librería de Supabase (del propio proyecto, sin depender de internet)
 (function () {
