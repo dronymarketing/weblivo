@@ -8,7 +8,7 @@
    ============================================================ */
 (function () {
   'use strict';
-  var KEY = 'ag_v4', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
+  var KEY = 'ag_v5', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
   var TZ = 'America/Montevideo';
   var CAT = window.AG_CATALOGO || { cats: [], prov: [], prods: [] };
 
@@ -16,12 +16,12 @@
   var ESTADO_TXT = { nuevo: 'Nuevo', preparando: 'Preparando', en_camino: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado' };
   var CONSULTA_TXT = { nueva: 'Nueva', respondida: 'Respondida', cerrada: 'Cerrada' };
   var SERVICIOS = [
-    { id: 'cubiertas', nombre: 'Venta de cubiertas', icono: 'disc-3', texto: 'Cubiertas para tu auto o camioneta. Consultá medidas y disponibilidad.', confirmado: true },
-    { id: 'alineacion', nombre: 'Alineación y balanceo', icono: 'gauge', texto: 'Para que el auto no tire para un lado ni vibre en la ruta.', confirmado: true },
-    { id: 'taller', nombre: 'Taller mecánico', icono: 'wrench', texto: 'Revisión y reparación. Contanos qué le pasa y lo vemos con calma.', confirmado: true },
-    { id: 'gomeria', nombre: 'Gomería', icono: 'circle-dot', texto: 'Arreglo de pinchaduras, cambio de rueda y venta de neumáticos.', confirmado: false },   // PENDIENTE confirmar con la clienta
-    { id: 'lavadero', nombre: 'Lavadero', icono: 'droplets', texto: 'Lavado del auto, por fuera y por dentro, para dejarlo prolijo.', confirmado: false },                                   // PENDIENTE confirmar con la clienta
-    { id: 'lubricentro', nombre: 'Lubricentro', icono: 'fuel', texto: 'Cambio de aceite y de filtros, lubricantes y líquidos del auto.', confirmado: false }                      // PENDIENTE confirmar con la clienta
+    { id: 'cubiertas', nombre: 'Venta de cubiertas', icono: 'tire', texto: 'Cubiertas para tu auto o camioneta. Consultá medidas y disponibilidad.', confirmado: true },
+    { id: 'alineacion', nombre: 'Alineación y balanceo', icono: 'steering-wheel', texto: 'Para que el auto no tire para un lado ni vibre en la ruta.', confirmado: true },
+    { id: 'taller', nombre: 'Taller mecánico', icono: 'engine', texto: 'Revisión y reparación. Contanos qué le pasa y lo vemos con calma.', confirmado: true },
+    { id: 'gomeria', nombre: 'Gomería', icono: 'wrench', texto: 'Arreglo de pinchaduras, cambio de rueda y venta de neumáticos.', confirmado: false },   // PENDIENTE confirmar con la clienta
+    { id: 'lavadero', nombre: 'Lavadero', icono: 'drop', texto: 'Lavado del auto, por fuera y por dentro, para dejarlo prolijo.', confirmado: false },                                   // PENDIENTE confirmar con la clienta
+    { id: 'lubricentro', nombre: 'Lubricentro', icono: 'drop-half-bottom', texto: 'Cambio de aceite y de filtros, lubricantes y líquidos del auto.', confirmado: false }                      // PENDIENTE confirmar con la clienta
   ];
   var PERMISOS = {
     admin: ['inicio', 'pedidos', 'consultas', 'productos', 'zonas', 'ofertas', 'clientes', 'reportes', 'compras', 'equipo', 'registro', 'ajustes'],
@@ -76,7 +76,7 @@
     var rnd = mulberry32(26112026);
     var ahora = Date.now(), H = 3600000, D = 24 * H;
     var E = {
-      version: 4, sembrado: ahora,
+      version: 5, sembrado: ahora,
       negocio: {
         nombre: 'Ancap Santa María', direccion: 'Av. Gral. José Garibaldi 1902, esq. José L. Terra', barrio: 'Goes, Montevideo',
         horario: 'Abierto las 24 horas, todos los días', telefono: '2203 4196', telefonoLink: '+59822034196',
@@ -182,14 +182,14 @@
   var E = null, subs = [], canal = null, emitiendo = false;
   function cargar() {
     try { E = JSON.parse(localStorage.getItem(KEY)); } catch (e) { E = null; }
-    if (!E || E.version !== 4) { E = sembrar(); guardar(true); }
+    if (!E || E.version !== 5) { E = sembrar(); guardar(true); }
   }
   function guardar(silencioso) {
     try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin espacio o bloqueado: sigue en memoria */ }
     if (!silencioso) { try { if (canal) canal.postMessage({ t: 'cambio' }); } catch (e2) { } avisar('local'); }
   }
   function avisar(origen) { subs.forEach(function (f) { try { f(origen); } catch (e) { } }); }
-  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 4) E = n; } catch (e) { } }
+  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 5) E = n; } catch (e) { } }
   try { canal = new BroadcastChannel('ag-cambios'); canal.onmessage = function () { recargar(); avisar('otra'); }; } catch (e) { canal = null; }
   window.addEventListener('storage', function (ev) { if (ev.key === KEY) { recargar(); avisar('otra'); } else if (ev.key === KCART) avisar('carrito'); });
 

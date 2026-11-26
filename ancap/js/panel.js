@@ -46,7 +46,7 @@
   };
   PAN.toast = function (txt, tipo) {
     var t = document.createElement('div'); t.className = 'toast toast--' + (tipo || 'ok'); t.setAttribute('role', 'status');
-    t.innerHTML = ic(tipo === 'nuevo' ? 'bell' : (tipo === 'error' ? 'circle-alert' : 'circle-check')) + '<span>' + esc(txt) + '</span>';
+    t.innerHTML = ic(tipo === 'nuevo' ? 'bell' : (tipo === 'error' ? 'warning-circle' : 'check-circle')) + '<span>' + esc(txt) + '</span>';
     $('#toasts').appendChild(t); requestAnimationFrame(function () { t.classList.add('abierto'); });
     setTimeout(function () { t.classList.remove('abierto'); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 300); }, tipo === 'nuevo' ? 7000 : 3200);
   };
@@ -115,9 +115,9 @@
     var permitidas = PAN.orden.filter(function (id) { return A.puede(u.rol, id); });
     $('#app').innerHTML = '<div class="app"><aside class="lado" id="lado" aria-label="Secciones"><div class="lado__cab"><span class="logo"><img class="logo__img" src="../img/ancap-logo.png" alt="ANCAP" width="500" height="78"><span class="logo__b">Santa María</span></span><button class="icono-b lado__x" data-acc="menu" aria-label="Cerrar el menú">' + ic('x', 'icon--g') + '</button></div>' +
       '<nav class="lado__nav">' + permitidas.map(function (id) { var s = PAN.secs[id]; return '<a href="#' + id + '" data-sec="' + id + '">' + ic(s.i) + '<span>' + esc(s.t) + '</span><b class="nbadge num" data-nb="' + id + '" hidden></b></a>'; }).join('') + '</nav>' +
-      '<div class="lado__pie"><a href="../index.html" target="_blank" rel="noopener">' + ic('arrow-up-right') + 'Ver la tienda</a><div class="lado__u"><span class="ing__ua">' + esc(u.nombre.charAt(0)) + '</span><span><strong>' + esc(u.nombre) + '</strong><small>' + A.ROL_TXT[u.rol] + '</small></span><button class="icono-b" data-acc="salir" aria-label="Salir">' + ic('log-out') + '</button></div></div></aside>' +
+      '<div class="lado__pie"><a href="../index.html" target="_blank" rel="noopener">' + ic('arrow-up-right') + 'Ver la tienda</a><div class="lado__u"><span class="ing__ua">' + esc(u.nombre.charAt(0)) + '</span><span><strong>' + esc(u.nombre) + '</strong><small>' + A.ROL_TXT[u.rol] + '</small></span><button class="icono-b" data-acc="salir" aria-label="Salir">' + ic('sign-out') + '</button></div></div></aside>' +
       '<div class="velo-lado" data-acc="menu"></div>' +
-      '<div class="principal"><header class="barra"><button class="icono-b barra__menu" data-acc="menu" aria-label="Abrir el menú">' + ic('menu', 'icon--g') + '</button><h1 id="titulo-sec"></h1><div class="barra__d"><span class="reloj num" id="reloj"></span><button class="icono-b campana" data-acc="avisos" aria-label="Avisos">' + ic('bell', 'icon--g') + '<b class="nbadge nbadge--c num" id="nb-avisos" hidden></b></button></div></header><main class="cuerpo" id="cuerpo" tabindex="-1"></main></div></div>';
+      '<div class="principal"><header class="barra"><button class="icono-b barra__menu" data-acc="menu" aria-label="Abrir el menú">' + ic('list', 'icon--g') + '</button><h1 id="titulo-sec"></h1><div class="barra__d"><span class="reloj num" id="reloj"></span><button class="icono-b campana" data-acc="avisos" aria-label="Avisos">' + ic('bell', 'icon--g') + '<b class="nbadge nbadge--c num" id="nb-avisos" hidden></b></button></div></header><main class="cuerpo" id="cuerpo" tabindex="-1"></main></div></div>';
     reloj(); setInterval(reloj, 30000);
     ir(location.hash.slice(1));
   }
@@ -164,7 +164,7 @@
   PAN.acc.avisos = function () {
     var E = A.get(), lista = E.avisos;
     var m = PAN.modal({ titulo: 'Avisos al dueño', cuerpo: '<p class="suave">Así le llegarían por WhatsApp a los celulares habilitados. En este borrador el envío es simulado.</p>' +
-      (lista.length ? '<ul class="avisos">' + lista.slice(0, 30).map(function (a) { return '<li class="' + (a.leido ? '' : 'nuevo') + '"><span class="av__ic">' + ic(a.tipo === 'pedido' ? 'package' : a.tipo === 'consulta' ? 'wrench' : a.tipo === 'stock' ? 'boxes' : 'circle-x') + '</span><div><p>' + esc(a.texto) + '</p><small>' + A.hace(a.ts) + '</small></div></li>'; }).join('') + '</ul>' : PAN.vacio('Todavía no hay avisos.', 'bell')) });
+      (lista.length ? '<ul class="avisos">' + lista.slice(0, 30).map(function (a) { return '<li class="' + (a.leido ? '' : 'nuevo') + '"><span class="av__ic">' + ic(a.tipo === 'pedido' ? 'package' : a.tipo === 'consulta' ? 'wrench' : a.tipo === 'stock' ? 'cube' : 'x-circle') + '</span><div><p>' + esc(a.texto) + '</p><small>' + A.hace(a.ts) + '</small></div></li>'; }).join('') + '</ul>' : PAN.vacio('Todavía no hay avisos.', 'bell')) });
     A.marcarAvisos(); pintarNav(); return m;
   };
   document.addEventListener('click', function (e) {
@@ -187,7 +187,7 @@
      INICIO
      ============================================================ */
   PAN.registrar('inicio', {
-    t: 'Inicio', i: 'layout-dashboard',
+    t: 'Inicio', i: 'squares-four',
     pintar: function () {
       var E = A.get(), rol = PAN.U.rol, hoy = A.dia(Date.now());
       var pedHoy = E.pedidos.filter(function (p) { return A.dia(p.ts) === hoy && p.estado !== 'cancelado'; });
@@ -231,7 +231,7 @@
       if (est === 'entregado' || est === 'cancelado') lista = lista.slice(0, 40);
       var chips = A.ESTADOS.map(function (s) { return '<button class="chip" data-acc="est-pedido" data-id="' + s + '" aria-pressed="' + (s === est) + '">' + A.ESTADO_TXT[s] + '<b class="num">' + (s === 'entregado' ? E.pedidos.filter(function (p) { return p.estado === s && A.dia(p.ts) === hoy; }).length + ' hoy' : cuenta[s]) + '</b></button>'; }).join('');
       var h = PAN.cab('Pedidos') + '<div class="chips chips--p" role="group" aria-label="Estado">' + chips + '</div>';
-      if (!lista.length) return h + PAN.vacio(est === 'nuevo' ? 'No hay pedidos nuevos. Cuando entre uno desde la tienda, suena un aviso acá.' : 'No hay pedidos en este estado.', 'package-check');
+      if (!lista.length) return h + PAN.vacio(est === 'nuevo' ? 'No hay pedidos nuevos. Cuando entre uno desde la tienda, suena un aviso acá.' : 'No hay pedidos en este estado.', 'package');
       return h + '<div class="pedidos">' + lista.map(function (p) {
         var sig = SIGUIENTE[p.estado];
         return '<article class="ped ped--' + p.estado + '"><header><strong class="ped__n num">#' + p.num + '</strong>' + PAN.pill(p.estado) + '<time>' + A.hace(p.ts) + '</time></header>' +
@@ -254,7 +254,7 @@
       '<section><h3>Cliente</h3><p><strong>' + esc(p.cliente.nombre) + '</strong></p><p>' + esc(A.fmtCel(p.cliente.tel)) + '</p><p>' + esc(p.cliente.direccion) + ' · ' + esc(p.cliente.zonaNombre) + (p.cliente.referencia ? '<br><span class="suave">' + esc(p.cliente.referencia) + '</span>' : '') + '</p>' +
       '<div class="acc-fila"><a class="btn btn--borde btn--chico" href="tel:' + p.cliente.tel + '">' + ic('phone') + 'Llamar</a><a class="btn btn--borde btn--chico" href="' + A.waLink(p.cliente.tel, msg) + '" target="_blank" rel="noopener">' + ib('whatsapp') + 'WhatsApp</a></div></section>' +
       '<section><h3>Productos</h3><ul class="res__items">' + p.items.map(function (i) { return '<li><span>' + esc(i.nombre) + ' <small class="num">× ' + (i.unidad === 'kg' ? A.cant(i.cant, 'kg') : i.cant) + '</small></span><span class="num">' + pesos(i.subtotal) + '</span></li>'; }).join('') + '</ul>' +
-      '<dl class="res__tot"><div><dt>Subtotal</dt><dd class="num">' + pesos(p.subtotal) + '</dd></div><div><dt>Envío</dt><dd class="num">' + (p.envio ? pesos(p.envio) : 'Gratis') + '</dd></div><div class="res__total"><dt>Total</dt><dd class="num">' + pesos(p.total) + '</dd></div></dl><p class="suave">Pago de muestra, sin cobro real.</p>' + (p.mayor18 ? '<p class="aviso-caja">' + ic('circle-alert') + 'Lleva bebidas alcohólicas: la clienta confirmó que es mayor de 18. Pedile la cédula al entregar.</p>' : '') + '</section>' +
+      '<dl class="res__tot"><div><dt>Subtotal</dt><dd class="num">' + pesos(p.subtotal) + '</dd></div><div><dt>Envío</dt><dd class="num">' + (p.envio ? pesos(p.envio) : 'Gratis') + '</dd></div><div class="res__total"><dt>Total</dt><dd class="num">' + pesos(p.total) + '</dd></div></dl><p class="suave">Pago de muestra, sin cobro real.</p>' + (p.mayor18 ? '<p class="aviso-caja">' + ic('warning-circle') + 'Lleva bebidas alcohólicas: la clienta confirmó que es mayor de 18. Pedile la cédula al entregar.</p>' : '') + '</section>' +
       '<section><h3>Historial</h3><ul class="hist">' + p.historial.map(function (h) { return '<li><span>' + A.ESTADO_TXT[h.estado] + '</span><small>' + A.fecha(h.ts) + ' · ' + esc(h.quien) + '</small></li>'; }).join('') + '</ul></section></div>';
     var pie = (p.estado !== 'cancelado' && p.estado !== 'entregado' ? '<button class="btn btn--borde btn--peligro-b" data-acc="cancelar" data-id="' + p.id + '">Cancelar pedido</button>' : '') + (sig ? '<button class="btn ' + (p.estado === 'nuevo' ? 'btn--amarillo' : '') + '" data-acc="avanzar" data-id="' + p.id + '">' + sig[1] + '</button>' : '');
     PAN.modal({ titulo: 'Pedido #' + p.num, cuerpo: cuerpo, pie: pie, ancho: 'medio' });

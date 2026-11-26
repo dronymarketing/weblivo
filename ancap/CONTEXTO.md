@@ -18,7 +18,7 @@ El nombre en pantalla es **Ancap Santa María**, que es como figura en directori
   Piden por **formulario de consulta** (marca, modelo, año, qué necesita) que entra al panel.
 - **Marca:** se usa el **logo oficial de ANCAP** (bajado de ancap.com.uy, con autorización de Santi/la clienta) junto a «Santa María». Colores: **azul `#00457C`** y
   **amarillo `#F8B810`** (el amarillo del logo; solo como fondo con texto `#1A1A1A`, 10,6:1), celeste `#0077A2`, grises de ancap.com.uy. El naranja `#FE7903` del CSS de ANCAP
-  quedó solo para avisos. Tipografía: **Archivo** (ancho variable, pesada como el logo) para títulos y precios + **Inter Tight** para el texto; las dos libres y autoalojadas
+  quedó solo para avisos. Tipografía: **Montserrat** (variable 100–900, libre y autoalojada) para todo: fina (300) en textos grandes como subtítulos de banners y párrafos de sección, gruesa (800) en títulos, precios y botones
   (Ancap usa Helvetica Neue LT Std, de pago). Franja de marca amarillo/azul en tramos desparejos, cinta amarilla con la flecha de ANCAP, sellos de descuento azul con letra amarilla.
 - **Primera pantalla = la tienda** (pedido de Santi, sin hero fotográfico): **móvil** como la imagen de referencia (encabezado azul con buscador y carrito, categorías en círculos
   sobre el azul, hoja blanca con esquinas redondeadas, banner de ofertas con carrusel, tarjetas de producto asomando, barra inferior con botón central de ofertas);
@@ -31,15 +31,17 @@ El nombre en pantalla es **Ancap Santa María**, que es como figura en directori
   **PENDIENTE:** confirmar con la clienta/contador el texto legal de venta de alcohol y si el envío de alcohol a domicilio tiene horarios o restricciones. Faltan el resto de las categorías de Ancap Puntos (se cargan igual que estas, con capturas).
 - **Productos de Tienda Inglesa / Express (26/11):** Santi pasó capturas de bebidas y snacks y se cargaron **34 productos** (24 en «Bebidas», 10 en «Kiosco y golosinas»: Coca-Cola, Salus, Vitale,
   Sprite, Schweppes, Pepsi, Citric, Paso de los Toros, snacks) con **título, foto y precio**; donde la fuente mostraba «Antes $ X» quedó como oferta real (Coca-Cola Zero 250 ml, Citric 1,5 L, Paso de los
-  Toros pomelo). Las promos de pack («2x$289», «3x$199») no se cargaron. Los precios son de esa fuente en esa fecha: **PENDIENTE** confirmar los precios propios de la estación. Algunos productos genéricos de
-  La Estrella (agua, cola, refresco de naranja) quedan repetidos con los de marca: se pueden ocultar desde el panel.
+  Toros pomelo). Las promos de pack («2x$289», «3x$199») no se cargaron. Los precios son de esa fuente en esa fecha: **PENDIENTE** confirmar los precios propios de la estación. Se **sacaron los 7 genéricos de La Estrella** que repetían los de marca (aguas, colas, refresco de naranja, jugo, papas fritas): el catálogo queda en 122 productos.
 - **Cuenta del visitante:** ícono de usuario a la izquierda del carrito. Abre «Mi cuenta»: guarda nombre, celular, dirección y zona **en este navegador** (sin contraseña), completa el checkout solo y lista los pedidos
   hechos con ese celular. **PENDIENTE (base real):** registro e ingreso con mail y contraseña, cuentas por aparato, direcciones múltiples.
 - **Menú de la hamburguesa (celular):** cajón lateral a la manera de Tienda Express: buscador, botón «Ingresar o crear cuenta», Inicio, «Cambiá de sección» (Tienda, Servicios del auto, Mi pedido, con «Estás acá» en la actual),
   tarjeta «Entregamos en», categorías y accesos. En escritorio el botón MENÚ despliega solo las categorías. Se quitó el ícono de teléfono del encabezado (el número sigue en el menú, el pie y la franja de escritorio).
 - **Ancap Puntos:** `ancapuntos.com.uy/estaciones-ancap` muestra una verificación anti-robots y no se pudo leer. Es el programa de canje de la tarjeta BROU ANCAP (catálogo de 200+ productos y
   canje por combustible). **PENDIENTE:** que Santi pegue o capture esa página (productos, estaciones) y, si la estación participa, sumar «Sumá ANCAPuntos» a la tienda.
-- Paquete de movimiento **«Fundar»** (apariciones al entrar en pantalla, microtransiciones de 0,3 s). Sin glassmorphism. Íconos Lucide; WhatsApp e Instagram de Simple Icons.
+- **Íconos: Phosphor** (MIT, phosphoricons.com), no Lucide: regular en los grandes, bold en los chicos (más, menos, cerrar, flechas), fill en las pestañas activas; WhatsApp e Instagram de Simple Icons. El envío es una **motocicleta**;
+  los servicios usan neumático, volante, motor y llave. Todo en un sprite inline (`js/iconos.js`).
+- **Márgenes laterales en móvil de 14 px** (antes 24) para que el contenido sea más ancho; en escritorio siguen en 40 px.
+- Paquete de movimiento **«Fundar»** (apariciones al entrar en pantalla, microtransiciones de 0,3 s). Sin glassmorphism. 
 - Pedido de Santi: **que no parezca hecho por IA** → sin degradés decorativos, sin emojis, sin tarjetas de tres íconos, texto concreto y en rioplatense, sin adjetivos de relleno, y datos reales donde los hay.
 
 ## Estructura

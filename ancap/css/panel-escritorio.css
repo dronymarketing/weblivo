@@ -5,7 +5,7 @@
 /* ---------- Ingreso a dos columnas ---------- */
 .ing { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
 .ing__izq { padding: 56px 64px; align-content: space-between; }
-.ing__t h1 { font-size: 46px; max-width: 14ch; }
+.ing__t h1 { font-size: 38px; max-width: 14ch; }
 .ing__der { display: grid; align-content: center; padding: 56px 64px; }
 
 /* ---------- Estructura: barra lateral fija ---------- */
@@ -13,14 +13,14 @@
 .lado { position: sticky; top: 0; z-index: 20; height: 100vh; height: 100svh; width: auto; max-width: none; transform: none; }
 .lado__x, .barra__menu, .velo-lado { display: none; }
 .barra { padding: 0 24px; height: 64px; }
-.barra h1 { font-size: 22px; padding-left: 4px; }
+.barra h1 { font-size: 19px; padding-left: 4px; }
 .reloj { display: block; }
 .cuerpo { padding: 28px 32px 64px; }
-.cab-sec h2 { font-size: 26px; }
+.cab-sec h2 { font-size: 22px; }
 
 /* ---------- Indicadores y cajas ---------- */
 .kpis { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 14px; margin-bottom: 18px; }
-.kpi { padding: 18px; } .kpi__v { font-size: 32px; }
+.kpi { padding: 18px; } .kpi__v { font-size: 27px; }
 .panel-c { padding: 22px; margin-bottom: 18px; }
 .dos { grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; } .dos > .panel-c { margin-bottom: 0; }
 .graf__y, .graf__cols { height: 230px; }

@@ -24,7 +24,6 @@ Las marcas y los envases que se ven pertenecen a sus dueños y aparecen solo com
 | p036.png | Queso Colonia | [Farming queso colonia artesanal · ](https://world.openfoodfacts.org/product/2100040265204) |
 | p038.png | Paleta Cocida | [Paleta Cocida Extra · Realvalle](https://world.openfoodfacts.org/product/4056489044048) |
 | p039.png | Mortadela | [Mortadela clásica · Campofrío](https://world.openfoodfacts.org/product/8410320001847) |
-| p061.png | Refresco Naranja 2,25 L | [Fanta Naranja · COCA-COLA SERVICES](https://world.openfoodfacts.org/product/5449000004840) |
 | p065.png | Cerveza Retornable 1 L | [Cerveza Premium Lager 5.0° Botella · Stella Artois](https://world.openfoodfacts.org/product/5410228143376) |
 | p066.png | Vino Tinto 750 ml | [Vino tinto Rioja crianza · El Coto](https://world.openfoodfacts.org/product/8410537200422) |
 | p067.png | Vino Tinto Cartón 1 L | [Vino tinto · Don Simon, J. GARC](https://world.openfoodfacts.org/product/8410261271101) |
@@ -41,7 +40,6 @@ Las marcas y los envases que se ven pertenecen a sus dueños y aparecen solo com
 | p078.png | Pasta Dental 90 g | [Natural Extracts Reinforced Defens · Colgate](https://world.openbeautyfacts.org/product/6920354822209) |
 | p079.png | Desodorante Aerosol 150 ml | [Black & White Invisible · Black & White, Niv](https://world.openbeautyfacts.org/product/4005808980239) |
 | p082.png | Caramelos Surtidos 150 g | [Caramelos de nata · Tirma](https://world.openfoodfacts.org/product/8410085111850) |
-| p083.png | Papas Fritas 100 g | [Papas Pringles Sabor BBQ · Pringles](https://world.openfoodfacts.org/product/0038000183713) |
 | p084.png | Chupetín | [Chupetín Paragüitas · Fel Fort](https://world.openfoodfacts.org/product/7790206009534) |
 | p086.png | Pizza Muzzarella | [Pizza · Dr. Oetker](https://world.openfoodfacts.org/product/4001724039112) |
 | p087.png | Helado de Vainilla 1 L | [Helado de Vainilla de Madagascar · Magnum ICC Global ](https://world.openfoodfacts.org/product/8711327544772) |
@@ -72,11 +70,6 @@ Las marcas y los envases que se ven pertenecen a sus dueños y aparecen solo com
 | p034.png | Jamón Cocido | [Jamón cocido extra](https://world.openfoodfacts.org/product/7730138001329) |
 | p037.png | Salame Milán | [Centenario salame tipo Milán feteado](https://world.openfoodfacts.org/product/7730687070005) |
 | p056.png | Pan de Molde 500 g | [Pan de molde lacteado](https://world.openfoodfacts.org/product/7730912480524) |
-| p058.png | Agua Sin Gas 2 L | [Agua Mineral Natural](https://world.openfoodfacts.org/product/7730400000395) |
-| p059.png | Agua Con Gas 500 ml | [Agua Mineralizada con gas](https://world.openfoodfacts.org/product/7730400003884) |
-| p060.png | Refresco Cola 2,25 L | [Coca cola](https://world.openfoodfacts.org/product/7730197301958) |
-| p062.png | Refresco Cola 600 ml | [Coca cola](https://world.openfoodfacts.org/product/7730197232962) |
-| p063.png | Jugo de Naranja 1 L | [Jugo naranja exprimido](https://world.openfoodfacts.org/product/7730976823480) |
 | p064.png | Cerveza Lata 473 ml | [cerveza extra](https://world.openfoodfacts.org/product/7730452003764) |
 | p080.png | Chocolate con Leche 100 g | [Vizzio Almendras](https://world.openfoodfacts.org/product/7792360092513) |
 | p081.png | Alfajor Triple 70 g | [Minitorta Coco](https://world.openfoodfacts.org/product/7790040133600) |

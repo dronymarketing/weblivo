@@ -50,11 +50,11 @@
     var cab = document.createElement('header'); cab.className = 'cab'; cab.id = 'cab';
     cab.innerHTML =
       '<div class="cab__franja"><div class="cont cab__franja-i"><span>' + ic('clock') + N.horario + ' · ' + ic('map-pin') + esc(N.direccion) + '</span>' +
-      '<span class="cab__franja-d"><span>' + ic('truck') + 'Entregamos en Goes y barrios cercanos</span><a href="tel:' + N.telefonoLink + '">' + ic('phone') + esc(N.telefono) + '</a></span></div></div>' +
+      '<span class="cab__franja-d"><span>' + ic('motorcycle') + 'Entregamos en Goes y barrios cercanos</span><a href="tel:' + N.telefonoLink + '">' + ic('phone') + esc(N.telefono) + '</a></span></div></div>' +
       '<div class="cont cab__fila">' +
       '<a class="cab__logo" href="index.html" aria-label="ANCAP Santa María, ir al inicio">' + logo() + '</a>' +
-      '<button class="cab__menu" id="btn-menu" aria-label="Categorías" aria-expanded="false" aria-controls="hoja-menu">' + ic('menu', 'icon--g') + '<span class="cab__menu-t">Menú</span></button>' +
-      '<form class="busca" role="search" action="tienda.html" id="form-busca">' + ic('search') + '<label class="sr-only" for="q">Buscar productos</label><input id="q" name="q" type="search" placeholder="Buscar" autocomplete="off"></form>' +
+      '<button class="cab__menu" id="btn-menu" aria-label="Categorías" aria-expanded="false" aria-controls="hoja-menu">' + ic('list', 'icon--g') + '<span class="cab__menu-t">Menú</span></button>' +
+      '<form class="busca" role="search" action="tienda.html" id="form-busca">' + ic('magnifying-glass') + '<label class="sr-only" for="q">Buscar productos</label><input id="q" name="q" type="search" placeholder="Buscar" autocomplete="off"></form>' +
       '<nav class="cab__links" aria-label="Principal">' + lnk('tienda.html', 'Tienda', 'tienda') + lnk('servicios.html', 'Servicios', 'servicios') + '</nav>' +
       '<button class="cab__usuario" id="btn-cuenta" aria-label="Mi cuenta">' + ic('user', 'icon--g') + '<span class="cab__usuario-p" data-perfil-punto hidden></span></button>' +
       '<button class="cab__carrito" id="btn-carrito" aria-label="Abrir el carrito">' + ic('shopping-cart', 'icon--g') + '<span class="cab__carrito-t num" data-total></span><span class="badge num" data-badge hidden></span></button>' +
@@ -63,23 +63,23 @@
     document.body.insertBefore(cab, document.body.firstChild.nextSibling || null);
 
     var tabs = document.createElement('nav'); tabs.className = 'tabs'; tabs.setAttribute('aria-label', 'Secciones');
-    var tab = function (h, i, t, k) { return '<a href="' + h + '"' + (pagina === k ? ' aria-current="page"' : '') + '>' + ic(i, 'icon--g') + '<span>' + t + '</span></a>'; };
-    tabs.innerHTML = tab('index.html', 'house', 'Inicio', 'inicio') + tab('tienda.html', 'store', 'Tienda', 'tienda') +
-      '<a class="tabs__fab" href="tienda.html?oferta=1" aria-label="Ofertas">' + ic('badge-percent', 'icon--g') + '</a>' +
+    var tab = function (h, i, t, k) { return '<a href="' + h + '"' + (pagina === k ? ' aria-current="page"' : '') + '>' + ic(pagina === k ? i + '-fill' : i, 'icon--g') + '<span>' + t + '</span></a>'; };
+    tabs.innerHTML = tab('index.html', 'house', 'Inicio', 'inicio') + tab('tienda.html', 'storefront', 'Tienda', 'tienda') +
+      '<a class="tabs__fab" href="tienda.html?oferta=1" aria-label="Ofertas">' + ic('seal-percent-fill', 'icon--g') + '</a>' +
       tab('servicios.html', 'wrench', 'Servicios', 'servicios') + tab('pedido.html', 'package', 'Pedido', 'pedido');
     document.body.appendChild(tabs);
 
     var hoja = document.createElement('div'); hoja.className = 'hoja'; hoja.id = 'hoja-menu'; hoja.hidden = true; hoja.setAttribute('role', 'dialog'); hoja.setAttribute('aria-label', 'Menú'); hoja.setAttribute('aria-modal', 'true');
     var mundo = function (h, i, txt, ok) { return '<li><a class="mundo' + (ok ? ' mundo--actual' : '') + '" href="' + h + '"><span class="mundo__i">' + ic(i, 'icon--g') + '</span><span class="mundo__t">' + txt + '</span>' + (ok ? '<span class="mundo__a">Estás acá' + ic('check') + '</span>' : '') + '</a></li>'; };
     hoja.innerHTML = '<div class="hoja__velo" data-cerrar></div><div class="hoja__panel"><div class="hoja__cab"><span class="hoja__logo">' + logo() + '</span><button class="hoja__x" data-cerrar aria-label="Cerrar el menú">' + ic('x', 'icon--g') + '</button></div><div class="hoja__cuerpo">' +
-      '<form class="hoja__busca hoja__m" role="search" action="tienda.html"><label class="sr-only" for="q-menu">Buscar productos</label><input id="q-menu" name="q" type="search" placeholder="Buscar productos" autocomplete="off">' + ic('search') + '</form>' +
+      '<form class="hoja__busca hoja__m" role="search" action="tienda.html"><label class="sr-only" for="q-menu">Buscar productos</label><input id="q-menu" name="q" type="search" placeholder="Buscar productos" autocomplete="off">' + ic('magnifying-glass') + '</form>' +
       '<button class="btn btn--amarillo btn--ancho hoja__m hoja__cuenta" type="button" data-cuenta>Ingresar o crear cuenta</button>' +
       '<a class="hoja__fila hoja__m" href="index.html"' + (pagina === 'inicio' ? ' aria-current="page"' : '') + '>' + ic('house', 'icon--g') + 'Inicio</a>' +
-      '<p class="hoja__rotulo hoja__m">Cambiá de sección</p><ul class="hoja__mundos hoja__m">' + mundo('tienda.html', 'store', 'Tienda', pagina === 'tienda' || pagina === 'checkout') + mundo('servicios.html', 'wrench', 'Servicios del auto', pagina === 'servicios') + mundo('pedido.html', 'package', 'Mi pedido', pagina === 'pedido') + '</ul>' +
-      '<a class="hoja__envio hoja__m" href="index.html#envios">' + ic('truck', 'icon--g') + '<span><small>Entregamos en:</small>Goes y barrios cercanos</span>' + ic('chevron-right') + '</a>' +
+      '<p class="hoja__rotulo hoja__m">Cambiá de sección</p><ul class="hoja__mundos hoja__m">' + mundo('tienda.html', 'storefront', 'Tienda', pagina === 'tienda' || pagina === 'checkout') + mundo('servicios.html', 'wrench', 'Servicios del auto', pagina === 'servicios') + mundo('pedido.html', 'package', 'Mi pedido', pagina === 'pedido') + '</ul>' +
+      '<a class="hoja__envio hoja__m" href="index.html#envios">' + ic('motorcycle', 'icon--g') + '<span><small>Entregamos en:</small>Goes y barrios cercanos</span>' + ic('caret-right') + '</a>' +
       '<p class="hoja__rotulo">Categorías</p>' +
-      '<ul class="hoja__lista">' + A.categorias().map(function (c, i) { return '<li style="--k:' + i + '"><a href="' + url(c) + '">' + esc(c) + ic('chevron-right') + '</a></li>'; }).join('') + '</ul>' +
-      '<ul class="hoja__lista hoja__lista--sec"><li style="--k:12"><a href="tienda.html?oferta=1">' + ic('badge-percent') + 'Ofertas' + ic('chevron-right') + '</a></li><li style="--k:13" class="hoja__d"><a href="servicios.html">' + ic('wrench') + 'Servicios del auto' + ic('chevron-right') + '</a></li><li style="--k:14" class="hoja__d"><a href="pedido.html">' + ic('package') + 'Seguir mi pedido' + ic('chevron-right') + '</a></li><li style="--k:15" class="hoja__m"><a href="' + N.mapa + '" target="_blank" rel="noopener">' + ic('map-pin') + 'Cómo llegar' + ic('chevron-right') + '</a></li><li style="--k:16" class="hoja__m"><a href="tel:' + N.telefonoLink + '">' + ic('phone') + 'Llamar al ' + esc(N.telefono) + ic('chevron-right') + '</a></li></ul></div></div>';
+      '<ul class="hoja__lista">' + A.categorias().map(function (c, i) { return '<li style="--k:' + i + '"><a href="' + url(c) + '">' + esc(c) + ic('caret-right') + '</a></li>'; }).join('') + '</ul>' +
+      '<ul class="hoja__lista hoja__lista--sec"><li style="--k:12"><a href="tienda.html?oferta=1">' + ic('seal-percent') + 'Ofertas' + ic('caret-right') + '</a></li><li style="--k:13" class="hoja__d"><a href="servicios.html">' + ic('wrench') + 'Servicios del auto' + ic('caret-right') + '</a></li><li style="--k:14" class="hoja__d"><a href="pedido.html">' + ic('package') + 'Seguir mi pedido' + ic('caret-right') + '</a></li><li style="--k:15" class="hoja__m"><a href="' + N.mapa + '" target="_blank" rel="noopener">' + ic('map-pin') + 'Cómo llegar' + ic('caret-right') + '</a></li><li style="--k:16" class="hoja__m"><a href="tel:' + N.telefonoLink + '">' + ic('phone') + 'Llamar al ' + esc(N.telefono) + ic('caret-right') + '</a></li></ul></div></div>';
     document.body.appendChild(hoja);
 
     var cu = document.createElement('div'); cu.className = 'sheet'; cu.id = 'sheet-cuenta'; cu.hidden = true; cu.setAttribute('role', 'dialog'); cu.setAttribute('aria-modal', 'true'); cu.setAttribute('aria-label', 'Mi cuenta');
@@ -154,7 +154,7 @@
     cuerpo.innerHTML = '<ul class="lineas">' + l.map(function (x) {
       return '<li class="linea" data-id="' + x.p.id + '">' + (x.p.foto ? '<img src="' + x.p.foto + '" alt="" width="56" height="56">' : '<span class="linea__sf">' + ic('image') + '</span>') + '<div class="linea__t"><p class="linea__n">' + esc(x.p.nombre) + '</p><p class="linea__p num">' + precioTxt(x.p) + '</p></div>' +
         '<div class="paso paso--chico"><button class="paso__b" data-menos="' + x.p.id + '" aria-label="Quitar uno de ' + esc(x.p.nombre) + '">' + ic('minus') + '</button><span class="paso__n num">' + cantTxt(x.p, x.cant) + '</span><button class="paso__b" data-mas="' + x.p.id + '" aria-label="Agregar uno de ' + esc(x.p.nombre) + '"' + (x.cant >= x.p.stock ? ' disabled' : '') + '>' + ic('plus') + '</button></div>' +
-        '<p class="linea__s num">' + pesos(x.subtotal) + '</p><button class="linea__x" data-quitar="' + x.p.id + '" aria-label="Sacar ' + esc(x.p.nombre) + ' del carrito">' + ic('trash-2') + '</button></li>';
+        '<p class="linea__s num">' + pesos(x.subtotal) + '</p><button class="linea__x" data-quitar="' + x.p.id + '" aria-label="Sacar ' + esc(x.p.nombre) + ' del carrito">' + ic('trash') + '</button></li>';
     }).join('') + '</ul>';
     pie.innerHTML = '<div class="cart__sub"><span>Subtotal</span><strong class="num">' + pesos(sub) + '</strong></div><p class="cart__nota">El envío se calcula al elegir tu zona.' + (l.some(function (x) { return x.p.alcohol; }) ? ' Las bebidas alcohólicas son solo para mayores de 18 años.' : '') + '</p><a class="btn btn--amarillo btn--ancho" href="checkout.html">Seguir al pago</a>';
   }
@@ -268,7 +268,7 @@
       titulo.textContent = estado.oferta ? 'Ofertas' : (estado.cat || (q ? 'Resultados' : 'Toda la tienda'));
       cuenta.textContent = r.length + (r.length === 1 ? ' producto' : ' productos');
       $$('.chip', chips).forEach(function (c) { c.setAttribute('aria-pressed', c.getAttribute('data-cat') === estado.cat ? 'true' : 'false'); });
-      lista.innerHTML = r.length ? r.map(tarjeta).join('') : '<div class="vacio vacio--ancho">' + ic('search', 'icon--xl') + '<p><strong>No encontramos' + (estado.q ? ' «' + esc(estado.q) + '»' : ' productos') + '.</strong></p><p>Probá con otra palabra o mirá todas las categorías.</p><button class="btn btn--borde" id="ver-todo">Ver todo</button></div>';
+      lista.innerHTML = r.length ? r.map(tarjeta).join('') : '<div class="vacio vacio--ancho">' + ic('magnifying-glass', 'icon--xl') + '<p><strong>No encontramos' + (estado.q ? ' «' + esc(estado.q) + '»' : ' productos') + '.</strong></p><p>Probá con otra palabra o mirá todas las categorías.</p><button class="btn btn--borde" id="ver-todo">Ver todo</button></div>';
       pintarAcciones(lista);
       var u = new URLSearchParams(); if (estado.q) u.set('q', estado.q); if (estado.cat) u.set('cat', estado.cat); if (estado.oferta) u.set('oferta', '1'); if (estado.orden !== 'rel') u.set('orden', estado.orden);
       history.replaceState(null, '', 'tienda.html' + (u.toString() ? '?' + u.toString() : ''));
@@ -293,7 +293,7 @@
       $('#res-sub').textContent = pesos(sub);
       $('#res-env').textContent = z ? (env === 0 ? 'Gratis' : pesos(env)) : 'Elegí tu zona';
       $('#res-total').textContent = pesos(sub + env);
-      $('#res-aviso').innerHTML = z && falta ? ic('circle-alert') + 'Para ' + esc(z.nombre) + ' el pedido mínimo es ' + pesos(z.minimo) + '. Te faltan ' + pesos(falta) + '.' : (z && z.gratisDesde && sub < z.gratisDesde ? ic('truck') + 'Te faltan ' + pesos(z.gratisDesde - sub) + ' para el envío gratis.' : '');
+      $('#res-aviso').innerHTML = z && falta ? ic('warning-circle') + 'Para ' + esc(z.nombre) + ' el pedido mínimo es ' + pesos(z.minimo) + '. Te faltan ' + pesos(falta) + '.' : (z && z.gratisDesde && sub < z.gratisDesde ? ic('motorcycle') + 'Te faltan ' + pesos(z.gratisDesde - sub) + ' para el envío gratis.' : '');
       $('#res-aviso').hidden = !$('#res-aviso').innerHTML;
       $('#btn-pagar').textContent = 'Pagar ' + pesos(sub + env);
     }
@@ -332,7 +332,7 @@
       var tiempo = function (est) { var h = p.historial.filter(function (x) { return x.estado === est; })[0]; return h ? A.hora(h.ts) : ''; };
       caja.hidden = false; form.hidden = true;
       caja.innerHTML = '<div class="seg__cab"><div><p class="micro">Pedido</p><h1 class="seg__num num">#' + p.num + '</h1><p class="seg__sub">' + A.fecha(p.ts) + ' · ' + esc(p.cliente.nombre) + '</p></div><span class="pill pill--' + p.estado + '">' + A.ESTADO_TXT[p.estado] + '</span></div>' +
-        (cancel ? '<div class="aviso-caja aviso-caja--error">' + ic('circle-x') + 'Este pedido se canceló. Si pagaste, te devolvemos el importe. Llamanos al ' + esc(N.telefono) + '.</div>' :
+        (cancel ? '<div class="aviso-caja aviso-caja--error">' + ic('x-circle') + 'Este pedido se canceló. Si pagaste, te devolvemos el importe. Llamanos al ' + esc(N.telefono) + '.</div>' :
           '<ol class="pasos">' + PASOS.map(function (s, i) { return '<li class="' + (i < idx ? 'hecho' : (i === idx ? 'actual' : '')) + '"><span class="pasos__p">' + (i < idx ? ic('check') : (i + 1)) + '</span><span class="pasos__t">' + s[1] + '</span><span class="pasos__h num">' + (i <= idx ? tiempo(s[0]) : '') + '</span></li>'; }).join('') + '</ol>') +
         '<div class="seg__cols"><section><h2>Qué pediste</h2><ul class="res__items">' + p.items.map(function (i) { return '<li><span>' + esc(i.nombre) + ' <small class="num">× ' + (i.unidad === 'kg' ? A.cant(i.cant, 'kg') : i.cant) + '</small></span><span class="num">' + pesos(i.subtotal) + '</span></li>'; }).join('') + '</ul>' +
         '<dl class="res__tot"><div><dt>Subtotal</dt><dd class="num">' + pesos(p.subtotal) + '</dd></div><div><dt>Envío</dt><dd class="num">' + (p.envio ? pesos(p.envio) : 'Gratis') + '</dd></div><div class="res__total"><dt>Total</dt><dd class="num">' + pesos(p.total) + '</dd></div></dl></section>' +

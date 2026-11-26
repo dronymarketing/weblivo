@@ -6,15 +6,10 @@
    Pisa a tokens.css.
    ============================================================ */
 
-/* Ancap usa Helvetica Neue LT Std (de pago). Acá: Inter Tight para el texto y Archivo (ancho variable) para títulos y precios; las dos libres y autoalojadas. */
+/* Ancap usa Helvetica Neue LT Std (de pago). Acá: Montserrat (OFL, autoalojada, variable 100–900): fina en textos grandes y gruesa en títulos, precios y botones. */
 @font-face {
-  font-family: "Archivo";
-  src: url("../fonts/archivo-variable.woff2") format("woff2");
-  font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Inter Tight";
-  src: url("../fonts/inter-tight.woff2") format("woff2");
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat-variable.woff2") format("woff2");
   font-weight: 100 900; font-style: normal; font-display: swap;
 }
 
@@ -52,13 +47,14 @@
   --rayas: linear-gradient(90deg, var(--amarillo) 0 14%, var(--azul) 14% 22%, var(--celeste) 22% 49%, var(--amarillo) 49% 57%, var(--azul) 57% 79%, var(--amarillo) 79% 86%, var(--celeste) 86% 100%);
   --acento:        var(--amarillo);
   --acento-claro:  var(--amarillo-claro);
-  --fuente:        "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --display:       "Archivo", "Inter Tight", "Helvetica Neue", Arial, sans-serif;   /* ancha y pesada, como el logo de ANCAP */
+  --fuente:        "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display:       "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;   /* la misma familia: la jerarquía la dan los pesos (300 a 900) */
   --radio:         6px;       /* servicios básicos: recto o radio bajo */
   --radio-g:       10px;
   --alto-campo:    48px;
   --barra-inferior: var(--fondo);
-  --fs-h1: 36px; --fs-h2: 24px; --fs-h3: 19px;
+  --fs-h1: 30px; --fs-h2: 21px; --fs-h3: 17px;
+  --margen-lateral: 14px;   /* móvil: márgenes chicos para que el contenido respire más ancho */
 
   /* Alturas del encabezado (móvil: 2 filas, escritorio: 1 fila + franja) */
   --nav-alto: 116px;
@@ -67,7 +63,8 @@
 
 @media (min-width: 768px) {
   :root {
-    --fs-h1: 54px; --fs-h2: 34px; --fs-h3: 22px;
+    --fs-h1: 46px; --fs-h2: 30px; --fs-h3: 20px;
+    --margen-lateral: 40px;
     --nav-alto: 124px;
     --tabs-alto: 0px;
   }

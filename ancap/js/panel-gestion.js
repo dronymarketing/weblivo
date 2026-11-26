@@ -34,15 +34,15 @@
       if (F.ver === 'oferta' && !(p.oferta && p.oferta < p.precio)) return false; if (F.ver === 'ocultos' && p.activo) return false;
       return !q || norm(p.nombre + ' ' + p.cat).indexOf(q) >= 0;
     });
-    return '<p class="cuenta-l suave num">' + l.length + (l.length === 1 ? ' producto' : ' productos') + '</p>' + (l.length ? '<div class="prows">' + l.map(filaProd).join('') + '</div>' : P.vacio('No hay productos con ese filtro.', 'boxes'));
+    return '<p class="cuenta-l suave num">' + l.length + (l.length === 1 ? ' producto' : ' productos') + '</p>' + (l.length ? '<div class="prows">' + l.map(filaProd).join('') + '</div>' : P.vacio('No hay productos con ese filtro.', 'cube'));
   }
   P.registrar('productos', {
-    t: 'Productos', i: 'boxes',
+    t: 'Productos', i: 'cube',
     pintar: function () {
       var F = P.F.productos, E = A.get();
       var rep = E.productos.filter(function (p) { return p.activo && A.nivelStock(p) !== 'bien'; }).length;
       return P.cab('Productos y stock', A.puede(P.U.rol, 'productos') && P.U.rol === 'admin' ? '<button class="btn btn--chico" data-acc="nuevo-prod">' + ic('plus') + 'Nuevo producto</button>' : '') +
-        '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('search') + '<input type="search" data-inp="q-prod" value="' + esc(F.q) + '" placeholder="Buscar producto"></label>' +
+        '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('magnifying-glass') + '<input type="search" data-inp="q-prod" value="' + esc(F.q) + '" placeholder="Buscar producto"></label>' +
         '<label class="campo"><span class="sr-only">Categoría</span><select data-chg="cat-prod">' + opt(A.categorias(), F.cat, 'Todas las categorías') + '</select></label>' +
         '<label class="campo"><span class="sr-only">Mostrar</span><select data-chg="ver-prod">' + opt([{ v: 'reponer', t: 'Por reponer (' + rep + ')' }, { v: 'sin', t: 'Sin stock' }, { v: 'oferta', t: 'En oferta' }, { v: 'ocultos', t: 'Ocultos de la tienda' }], F.ver, 'Todos') + '</select></label></div>' +
         '<div id="lista-prod">' + listaProductos() + '</div>';
@@ -88,7 +88,7 @@
      ZONAS DE ENVÍO
      ============================================================ */
   P.registrar('zonas', {
-    t: 'Zonas de envío', i: 'truck',
+    t: 'Zonas de envío', i: 'motorcycle',
     pintar: function () {
       var zs = A.zonas();
       return P.cab('Zonas de envío', '<button class="btn btn--chico" data-acc="nueva-zona">' + ic('plus') + 'Nueva zona</button>') +
@@ -122,7 +122,7 @@
      OFERTAS Y BANNERS
      ============================================================ */
   P.registrar('ofertas', {
-    t: 'Ofertas y banners', i: 'badge-percent',
+    t: 'Ofertas y banners', i: 'seal-percent',
     pintar: function () {
       var E = A.get(), of = E.productos.filter(function (p) { return p.oferta && p.oferta < p.precio; });
       return P.cab('Ofertas y banners', '<button class="btn btn--chico" data-acc="nuevo-banner">' + ic('plus') + 'Nuevo banner</button>') +
@@ -159,7 +159,7 @@
       return '<tr class="clic" data-acc="ver-cliente" data-id="' + c.tel + '" tabindex="0"><th scope="row">' + esc(c.nombre) + '</th><td class="d num">' + esc(A.fmtCel(c.tel)) + '</td><td class="d">' + esc(c.zona) + '</td><td class="num" data-l="Pedidos">' + c.pedidos + '</td><td class="num" data-l="Total">' + pesos(c.total) + '</td><td class="d">' + A.hace(c.ultimo) + '</td></tr>'; }).join('') + '</tbody></table></div>' : P.vacio('No hay clientes con ese nombre.', 'users'));
   }
   P.registrar('clientes', { t: 'Clientes', i: 'users', pintar: function () {
-    return P.cab('Clientes') + '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('search') + '<input type="search" data-inp="q-cli" value="' + esc(P.F.clientes.q) + '" placeholder="Buscar por nombre, celular o zona"></label></div><div id="lista-cli">' + listaClientes() + '</div>'; } });
+    return P.cab('Clientes') + '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('magnifying-glass') + '<input type="search" data-inp="q-cli" value="' + esc(P.F.clientes.q) + '" placeholder="Buscar por nombre, celular o zona"></label></div><div id="lista-cli">' + listaClientes() + '</div>'; } });
   P.chg['q-cli'] = function (el) { P.F.clientes.q = el.value; $('#lista-cli').innerHTML = listaClientes(); };
   P.acc['ver-cliente'] = function (el) {
     var c = A.clientes().filter(function (x) { return x.tel === el.getAttribute('data-id'); })[0]; if (!c) return;
@@ -171,7 +171,7 @@
      REPORTES
      ============================================================ */
   P.registrar('reportes', {
-    t: 'Reportes', i: 'chart-column',
+    t: 'Reportes', i: 'chart-bar',
     pintar: function () {
       var dias = P.F.reportes.dias, datos = A.ventasPorDia(dias), desde = Date.now() - dias * 86400000;
       var tot = datos.reduce(function (a, d) { return a + d.total; }, 0), ped = datos.reduce(function (a, d) { return a + d.pedidos; }, 0);
@@ -191,7 +191,7 @@
      ============================================================ */
   function nomProv(id) { var v = A.get().proveedores.filter(function (x) { return x.id === id; })[0]; return v ? v.nombre : id; }
   P.registrar('compras', {
-    t: 'Compras', i: 'clipboard-list',
+    t: 'Compras', i: 'clipboard-text',
     pintar: function () {
       var E = A.get();
       return P.cab('Compras a proveedores', '<button class="btn btn--chico" data-acc="nueva-compra">' + ic('plus') + 'Nueva compra</button>') + '<div class="pedidos">' + E.compras.map(function (c) {
@@ -257,17 +257,17 @@
      ============================================================ */
   function listaRegistro() {
     var q = norm(P.F.registro.q), l = A.get().registro.filter(function (r) { return !q || norm(r.quien + ' ' + r.accion).indexOf(q) >= 0; }).slice(0, 150);
-    return l.length ? '<ul class="reg">' + l.map(function (r) { return '<li><time class="num">' + A.fecha(r.ts) + '</time><strong>' + esc(r.quien) + '</strong><span>' + esc(r.accion) + '</span></li>'; }).join('') + '</ul>' : P.vacio('No hay movimientos con ese texto.', 'scroll-text');
+    return l.length ? '<ul class="reg">' + l.map(function (r) { return '<li><time class="num">' + A.fecha(r.ts) + '</time><strong>' + esc(r.quien) + '</strong><span>' + esc(r.accion) + '</span></li>'; }).join('') + '</ul>' : P.vacio('No hay movimientos con ese texto.', 'scroll');
   }
-  P.registrar('registro', { t: 'Registro', i: 'scroll-text', pintar: function () {
-    return P.cab('Registro de movimientos') + '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('search') + '<input type="search" data-inp="q-reg" value="' + esc(P.F.registro.q) + '" placeholder="Buscar por persona o acción"></label></div><div id="lista-reg">' + listaRegistro() + '</div>'; } });
+  P.registrar('registro', { t: 'Registro', i: 'scroll', pintar: function () {
+    return P.cab('Registro de movimientos') + '<div class="barra-f"><label class="campo campo--buscar"><span class="sr-only">Buscar</span>' + ic('magnifying-glass') + '<input type="search" data-inp="q-reg" value="' + esc(P.F.registro.q) + '" placeholder="Buscar por persona o acción"></label></div><div id="lista-reg">' + listaRegistro() + '</div>'; } });
   P.chg['q-reg'] = function (el) { P.F.registro.q = el.value; $('#lista-reg').innerHTML = listaRegistro(); };
 
   /* ============================================================
      AJUSTES
      ============================================================ */
   P.registrar('ajustes', {
-    t: 'Ajustes', i: 'settings',
+    t: 'Ajustes', i: 'gear',
     pintar: function () {
       var E = A.get(), N = E.negocio, D = E.config.dueno, ev = D.eventos;
       var evs = [['pedido', 'Entra un pedido nuevo'], ['consulta', 'Entra una consulta de vehículo'], ['stock', 'Un producto baja del mínimo'], ['cancelado', 'Se cancela un pedido']];
