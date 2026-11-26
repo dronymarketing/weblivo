@@ -16,10 +16,17 @@ Referencia de estructura (no copia): Parking Despegar, dos paneles sobre la mism
 - **Servicios del vehículo:** confirmados por la clienta: venta de **cubiertas**, **alineación y balanceo**, **taller mecánico**, abiertos 24 h.
   Salieron de directorios y están **sin confirmar** (marcados `PENDIENTE` en `js/datos.js`): **gomería, lavadero, lubricentro**.
   Piden por **formulario de consulta** (marca, modelo, año, qué necesita) que entra al panel.
-- **Estética:** colores y tipografía tomados del CSS real de ancap.com.uy: azul `#00457C`, naranja `#FE7903` (solo como fondo con texto `#1A1A1A`,
-  nunca como letra: 2,6:1), celeste `#0077A2`, grises. Ancap usa Helvetica Neue LT Std (de pago): acá **Inter Tight** (libre, autoalojada).
-  **No se usa el logo de ANCAP.** Estructura móvil tomada de la imagen que pasó Santi (buscador arriba, categorías en círculos, ofertas, barra inferior
-  con botón de carrito central); escritorio inspirado en la estructura de Tienda Inglesa (franja, buscador ancho, categorías, banners), sin su marca ni textos.
+- **Marca:** se usa el **logo oficial de ANCAP** (bajado de ancap.com.uy, con autorización de Santi/la clienta) junto a «Santa María». Colores: **azul `#00457C`** y
+  **amarillo `#F8B810`** (el amarillo del logo; solo como fondo con texto `#1A1A1A`, 10,6:1), celeste `#0077A2`, grises de ancap.com.uy. El naranja `#FE7903` del CSS de ANCAP
+  quedó solo para avisos. Tipografía: **Archivo** (ancho variable, pesada como el logo) para títulos y precios + **Inter Tight** para el texto; las dos libres y autoalojadas
+  (Ancap usa Helvetica Neue LT Std, de pago). Franja de marca amarillo/azul en tramos desparejos, cinta amarilla con la flecha de ANCAP, sellos de descuento azul con letra amarilla.
+- **Primera pantalla = la tienda** (pedido de Santi, sin hero fotográfico): **móvil** como la imagen de referencia (encabezado azul con buscador y carrito, categorías en círculos
+  sobre el azul, hoja blanca con esquinas redondeadas, banner de ofertas con carrusel, tarjetas de producto asomando, barra inferior con botón central de ofertas);
+  **escritorio** como Tienda Inglesa (franja superior, logo + MENÚ + buscador ancho + carrito + «Mi pedido», píldoras de accesos, banner a todo el ancho con flechas, puntos y marco de
+  franjas, categorías en círculos celestes con flecha). Tienda Inglesa bloquea la lectura automática (403): se tomó la estructura y los colores de la captura que pasó Santi.
+  El hero a pantalla completa con scroll cue se mantiene solo en `servicios.html`.
+- **Ancap Puntos:** `ancapuntos.com.uy/estaciones-ancap` muestra una verificación anti-robots y no se pudo leer. Es el programa de canje de la tarjeta BROU ANCAP (catálogo de 200+ productos y
+  canje por combustible). **PENDIENTE:** que Santi pegue o capture esa página (productos, estaciones) y, si la estación participa, sumar «Sumá ANCAPuntos» a la tienda.
 - Paquete de movimiento **«Fundar»** (apariciones al entrar en pantalla, microtransiciones de 0,3 s). Sin glassmorphism. Íconos Lucide; WhatsApp e Instagram de Simple Icons.
 - Pedido de Santi: **que no parezca hecho por IA** → sin degradés decorativos, sin emojis, sin tarjetas de tres íconos, texto concreto y en rioplatense, sin adjetivos de relleno, y datos reales donde los hay.
 
@@ -59,7 +66,6 @@ verlos sin JS, pasan a marcado fijo en cada archivo.
 
 ## PENDIENTES (para cerrar con la clienta)
 
-- **Logo** de la estación (hoy es el nombre en texto; la imagen para compartir y el favicon son provisorios).
 - **WhatsApp** (celular de 9 dígitos) e **Instagram**: se cargan en Panel → Ajustes y aparecen solos. Los celulares que aparecen en directorios vienen con 8 dígitos: no se usaron.
 - **Servicios sin confirmar:** gomería, lavadero, lubricentro.
 - **Zonas de envío reales** con costo, mínimo y monto de envío gratis (las 10 actuales son de ejemplo).

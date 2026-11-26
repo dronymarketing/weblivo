@@ -92,7 +92,7 @@
   function ingreso() {
     var us = A.get().usuarios.filter(function (u) { return u.activo; });
     document.body.className = 'panel panel--ingreso';
-    $('#app').innerHTML = '<div class="ing"><div class="ing__izq"><span class="logo"><span class="logo__a">Ancap</span><span class="logo__b">Santa María</span></span>' +
+    $('#app').innerHTML = '<div class="ing"><div class="ing__izq"><span class="logo"><img class="logo__img" src="../img/ancap-logo.png" alt="ANCAP" width="500" height="78"><span class="logo__b">Santa María</span></span>' +
       '<div class="ing__t"><p class="micro">Panel</p><h1>Pedidos, consultas y stock</h1><p>Entrá con tu usuario y tu PIN de 4 números.</p></div>' +
       '<p class="ing__nota">Borrador con datos de ejemplo. PIN de prueba: Administración 1234 · Mostrador 1111 · Taller 2222.</p></div>' +
       '<div class="ing__der"><form id="form-ingreso" novalidate><h2>Ingresar</h2><div class="ing__us" role="radiogroup" aria-label="Usuario">' +
@@ -113,7 +113,7 @@
   function iniciarSesion(u) {
     PAN.U = u; marcarVistos(); document.body.className = 'panel';
     var permitidas = PAN.orden.filter(function (id) { return A.puede(u.rol, id); });
-    $('#app').innerHTML = '<div class="app"><aside class="lado" id="lado" aria-label="Secciones"><div class="lado__cab"><span class="logo"><span class="logo__a">Ancap</span><span class="logo__b">Santa María</span></span><button class="icono-b lado__x" data-acc="menu" aria-label="Cerrar el menú">' + ic('x', 'icon--g') + '</button></div>' +
+    $('#app').innerHTML = '<div class="app"><aside class="lado" id="lado" aria-label="Secciones"><div class="lado__cab"><span class="logo"><img class="logo__img" src="../img/ancap-logo.png" alt="ANCAP" width="500" height="78"><span class="logo__b">Santa María</span></span><button class="icono-b lado__x" data-acc="menu" aria-label="Cerrar el menú">' + ic('x', 'icon--g') + '</button></div>' +
       '<nav class="lado__nav">' + permitidas.map(function (id) { var s = PAN.secs[id]; return '<a href="#' + id + '" data-sec="' + id + '">' + ic(s.i) + '<span>' + esc(s.t) + '</span><b class="nbadge num" data-nb="' + id + '" hidden></b></a>'; }).join('') + '</nav>' +
       '<div class="lado__pie"><a href="../index.html" target="_blank" rel="noopener">' + ic('arrow-up-right') + 'Ver la tienda</a><div class="lado__u"><span class="ing__ua">' + esc(u.nombre.charAt(0)) + '</span><span><strong>' + esc(u.nombre) + '</strong><small>' + A.ROL_TXT[u.rol] + '</small></span><button class="icono-b" data-acc="salir" aria-label="Salir">' + ic('log-out') + '</button></div></div></aside>' +
       '<div class="velo-lado" data-acc="menu"></div>' +
@@ -140,8 +140,8 @@
   };
   function pintarNav() {
     var E = A.get(), n = {
-      pedidos: [E.pedidos.filter(function (p) { return p.estado === 'nuevo'; }).length, 'naranja'],
-      consultas: [E.consultas.filter(function (c) { return c.estado === 'nueva'; }).length, 'naranja'],
+      pedidos: [E.pedidos.filter(function (p) { return p.estado === 'nuevo'; }).length, 'amarillo'],
+      consultas: [E.consultas.filter(function (c) { return c.estado === 'nueva'; }).length, 'amarillo'],
       productos: [E.productos.filter(function (p) { return p.activo && A.nivelStock(p) !== 'bien'; }).length, E.productos.some(function (p) { return p.activo && p.stock <= 0; }) ? 'rojo' : 'ambar']
     };
     Object.keys(n).forEach(function (k) { var b = $('[data-nb="' + k + '"]'); if (b) { b.hidden = !n[k][0]; b.textContent = n[k][0]; b.className = 'nbadge num nbadge--' + n[k][1]; } });
@@ -198,8 +198,8 @@
       var rep = E.productos.filter(function (p) { return p.activo && A.nivelStock(p) !== 'bien'; }).length;
       var h = '<div class="saludo"><h2>Hola, ' + esc(PAN.U.nombre) + '</h2><p class="suave">' + (rol === 'taller' ? 'Estas son las consultas de vehículos.' : 'Esto es lo que hay para atender ahora.') + '</p></div>';
       var kp = [];
-      if (A.puede(rol, 'pedidos')) kp.push(PAN.kpi('Pedidos nuevos', nuevos, nuevos ? 'Esperando que los prepares' : 'Nada pendiente', '#pedidos', nuevos ? 'kpi--naranja' : ''), PAN.kpi('En curso', curso, 'Preparando o en camino', '#pedidos'), PAN.kpi('Ventas de hoy', pesos(venHoy), pedHoy.length + (pedHoy.length === 1 ? ' pedido' : ' pedidos'), A.puede(rol, 'reportes') ? '#reportes' : ''));
-      if (A.puede(rol, 'consultas')) kp.push(PAN.kpi('Consultas nuevas', cons, cons ? 'Sin responder' : 'Todo respondido', '#consultas', cons ? 'kpi--naranja' : ''));
+      if (A.puede(rol, 'pedidos')) kp.push(PAN.kpi('Pedidos nuevos', nuevos, nuevos ? 'Esperando que los prepares' : 'Nada pendiente', '#pedidos', nuevos ? 'kpi--amarillo' : ''), PAN.kpi('En curso', curso, 'Preparando o en camino', '#pedidos'), PAN.kpi('Ventas de hoy', pesos(venHoy), pedHoy.length + (pedHoy.length === 1 ? ' pedido' : ' pedidos'), A.puede(rol, 'reportes') ? '#reportes' : ''));
+      if (A.puede(rol, 'consultas')) kp.push(PAN.kpi('Consultas nuevas', cons, cons ? 'Sin responder' : 'Todo respondido', '#consultas', cons ? 'kpi--amarillo' : ''));
       if (A.puede(rol, 'productos')) kp.push(PAN.kpi('Para reponer', rep, E.productos.some(function (p) { return p.activo && p.stock <= 0; }) ? 'Hay productos sin stock' : 'Por debajo del mínimo', '#productos', rep ? 'kpi--aviso' : ''));
       h += '<div class="kpis">' + kp.join('') + '</div>';
       if (A.puede(rol, 'reportes')) h += '<section class="panel-c"><div class="panel-c__cab"><h3>Ventas de los últimos 7 días</h3><a class="ver" href="#reportes">Ver reportes</a></div>' + PAN.barrasDias(A.ventasPorDia(7), 'Ventas por día, últimos 7 días') + '</section>';
@@ -237,7 +237,7 @@
         return '<article class="ped ped--' + p.estado + '"><header><strong class="ped__n num">#' + p.num + '</strong>' + PAN.pill(p.estado) + '<time>' + A.hace(p.ts) + '</time></header>' +
           '<p class="ped__cli"><strong>' + esc(p.cliente.nombre) + '</strong><span>' + esc(p.cliente.zonaNombre) + ' · ' + esc(p.cliente.direccion) + '</span></p>' +
           '<p class="ped__res"><span>' + itemsTxt(p) + '</span><strong class="num">' + pesos(p.total) + '</strong></p>' +
-          '<footer><button class="btn btn--borde btn--chico" data-acc="ver-pedido" data-id="' + p.id + '">Ver detalle</button>' + (sig ? '<button class="btn btn--chico ' + (p.estado === 'nuevo' ? 'btn--naranja' : '') + '" data-acc="avanzar" data-id="' + p.id + '">' + sig[1] + '</button>' : '') + '</footer></article>';
+          '<footer><button class="btn btn--borde btn--chico" data-acc="ver-pedido" data-id="' + p.id + '">Ver detalle</button>' + (sig ? '<button class="btn btn--chico ' + (p.estado === 'nuevo' ? 'btn--amarillo' : '') + '" data-acc="avanzar" data-id="' + p.id + '">' + sig[1] + '</button>' : '') + '</footer></article>';
       }).join('') + '</div>';
     }
   });
@@ -256,7 +256,7 @@
       '<section><h3>Productos</h3><ul class="res__items">' + p.items.map(function (i) { return '<li><span>' + esc(i.nombre) + ' <small class="num">× ' + (i.unidad === 'kg' ? A.cant(i.cant, 'kg') : i.cant) + '</small></span><span class="num">' + pesos(i.subtotal) + '</span></li>'; }).join('') + '</ul>' +
       '<dl class="res__tot"><div><dt>Subtotal</dt><dd class="num">' + pesos(p.subtotal) + '</dd></div><div><dt>Envío</dt><dd class="num">' + (p.envio ? pesos(p.envio) : 'Gratis') + '</dd></div><div class="res__total"><dt>Total</dt><dd class="num">' + pesos(p.total) + '</dd></div></dl><p class="suave">Pago de muestra, sin cobro real.</p></section>' +
       '<section><h3>Historial</h3><ul class="hist">' + p.historial.map(function (h) { return '<li><span>' + A.ESTADO_TXT[h.estado] + '</span><small>' + A.fecha(h.ts) + ' · ' + esc(h.quien) + '</small></li>'; }).join('') + '</ul></section></div>';
-    var pie = (p.estado !== 'cancelado' && p.estado !== 'entregado' ? '<button class="btn btn--borde btn--peligro-b" data-acc="cancelar" data-id="' + p.id + '">Cancelar pedido</button>' : '') + (sig ? '<button class="btn ' + (p.estado === 'nuevo' ? 'btn--naranja' : '') + '" data-acc="avanzar" data-id="' + p.id + '">' + sig[1] + '</button>' : '');
+    var pie = (p.estado !== 'cancelado' && p.estado !== 'entregado' ? '<button class="btn btn--borde btn--peligro-b" data-acc="cancelar" data-id="' + p.id + '">Cancelar pedido</button>' : '') + (sig ? '<button class="btn ' + (p.estado === 'nuevo' ? 'btn--amarillo' : '') + '" data-acc="avanzar" data-id="' + p.id + '">' + sig[1] + '</button>' : '');
     PAN.modal({ titulo: 'Pedido #' + p.num, cuerpo: cuerpo, pie: pie, ancho: 'medio' });
   };
 
@@ -274,7 +274,7 @@
       return h + '<div class="pedidos">' + lista.map(function (c) {
         return '<article class="ped"><header><strong class="ped__n">' + esc(c.marca + ' ' + c.modelo) + '</strong>' + (c.anio ? '<span class="suave num">' + c.anio + '</span>' : '') + '<time>' + A.hace(c.ts) + '</time></header>' +
           '<p class="ped__cli"><strong>' + esc(c.nombre) + '</strong><span>' + esc(A.fmtCel(c.tel)) + '</span></p><p class="etiquetas">' + c.servicios.map(function (s) { return '<span class="etq">' + esc(servNombre(s)) + '</span>'; }).join('') + '</p>' +
-          '<footer><button class="btn btn--chico ' + (c.estado === 'nueva' ? 'btn--naranja' : 'btn--borde') + '" data-acc="ver-consulta" data-id="' + c.id + '">' + (c.estado === 'nueva' ? 'Responder' : 'Ver consulta') + '</button></footer></article>';
+          '<footer><button class="btn btn--chico ' + (c.estado === 'nueva' ? 'btn--amarillo' : 'btn--borde') + '" data-acc="ver-consulta" data-id="' + c.id + '">' + (c.estado === 'nueva' ? 'Responder' : 'Ver consulta') + '</button></footer></article>';
       }).join('') + '</div>';
     }
   });

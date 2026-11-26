@@ -6,7 +6,12 @@
    Pisa a tokens.css.
    ============================================================ */
 
-/* Ancap usa Helvetica Neue LT Std (de pago). Acá: Inter Tight, libre, autoalojada. */
+/* Ancap usa Helvetica Neue LT Std (de pago). Acá: Inter Tight para el texto y Archivo (ancho variable) para títulos y precios; las dos libres y autoalojadas. */
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/archivo-variable.woff2") format("woff2");
+  font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap;
+}
 @font-face {
   font-family: "Inter Tight";
   src: url("../fonts/inter-tight.woff2") format("woff2");
@@ -19,9 +24,11 @@
   --azul-oscuro:   #00305A;   /* pie y fondos de foto; 13,4:1 con blanco */
   --azul-claro:    #E6EEF5;   /* fondo de círculos de categoría y píldoras */
   --celeste:       #0077A2;   /* enlaces e íconos; 5,05:1 sobre blanco */
-  --naranja:       #FE7903;   /* SOLO como fondo, con texto #1A1A1A (6,6:1). Nunca como letra */
-  --naranja-texto: #B34F00;   /* el naranja cuando tiene que ser letra: 5,2:1 sobre blanco */
-  --naranja-claro: #FFF1E3;
+  --amarillo:      #F8B810;   /* el amarillo del logo de ANCAP. SOLO como fondo, con texto #1A1A1A (10,6:1). Nunca como letra */
+  --amarillo-hover:#E5A700;
+  --amarillo-claro:#FFF5D3;
+  --amarillo-borde:#EBCB6B;
+  --naranja:       #FE7903;   /* acento chico de ancap.com.uy: solo se usa en avisos */
 
   /* Neutros */
   --texto:         #1A1A1A;
@@ -39,14 +46,19 @@
   --info:          #00457C;   --info-fondo:  #E1F1F7;
 
   /* Tokens de Livo que este proyecto afina */
-  --acento:        var(--naranja);
-  --acento-claro:  var(--naranja-claro);
+  /* franja de marca: amarillo y azul de ANCAP en tramos desparejos (como el marco de los banners de Tienda Inglesa, pero con nuestros colores) */
+  --rayas: linear-gradient(90deg, var(--amarillo) 0 14%, var(--azul) 14% 22%, var(--celeste) 22% 49%, var(--amarillo) 49% 57%, var(--azul) 57% 79%, var(--amarillo) 79% 86%, var(--celeste) 86% 100%);
+  /* franja de marca: amarillo y azul de ANCAP en tramos desparejos (a la manera del marco de los banners de Tienda Inglesa, con nuestros colores) */
+  --rayas: linear-gradient(90deg, var(--amarillo) 0 14%, var(--azul) 14% 22%, var(--celeste) 22% 49%, var(--amarillo) 49% 57%, var(--azul) 57% 79%, var(--amarillo) 79% 86%, var(--celeste) 86% 100%);
+  --acento:        var(--amarillo);
+  --acento-claro:  var(--amarillo-claro);
   --fuente:        "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display:       "Archivo", "Inter Tight", "Helvetica Neue", Arial, sans-serif;   /* ancha y pesada, como el logo de ANCAP */
   --radio:         6px;       /* servicios básicos: recto o radio bajo */
   --radio-g:       10px;
   --alto-campo:    48px;
   --barra-inferior: var(--fondo);
-  --fs-h1: 38px; --fs-h2: 26px; --fs-h3: 19px;
+  --fs-h1: 36px; --fs-h2: 24px; --fs-h3: 19px;
 
   /* Alturas del encabezado (móvil: 2 filas, escritorio: 1 fila + franja) */
   --nav-alto: 116px;
@@ -55,7 +67,7 @@
 
 @media (min-width: 768px) {
   :root {
-    --fs-h1: 58px; --fs-h2: 34px; --fs-h3: 22px;
+    --fs-h1: 54px; --fs-h2: 34px; --fs-h3: 22px;
     --nav-alto: 124px;
     --tabs-alto: 0px;
   }

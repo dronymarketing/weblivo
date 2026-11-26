@@ -8,7 +8,7 @@
    ============================================================ */
 (function () {
   'use strict';
-  var KEY = 'ag_v1', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
+  var KEY = 'ag_v2', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
   var TZ = 'America/Montevideo';
   var CAT = window.AG_CATALOGO || { cats: [], prov: [], prods: [] };
 
@@ -76,7 +76,7 @@
     var rnd = mulberry32(26112026);
     var ahora = Date.now(), H = 3600000, D = 24 * H;
     var E = {
-      version: 1, sembrado: ahora,
+      version: 2, sembrado: ahora,
       negocio: {
         nombre: 'Ancap Santa María', direccion: 'Av. Gral. José Garibaldi 1902, esq. José L. Terra', barrio: 'Goes, Montevideo',
         horario: 'Abierto las 24 horas, todos los días', telefono: '2203 4196', telefonoLink: '+59822034196',
@@ -93,9 +93,11 @@
       }),
       zonas: ZONAS.map(function (z, i) { return { id: 'z' + (i + 1), nombre: z[0], costo: z[1], minimo: z[2], gratisDesde: z[3], activa: true }; }),
       banners: [
-        { id: 'b1', titulo: 'Para la heladera', texto: 'Lácteos y fiambres con envío a tu barrio.', boton: 'Ver lácteos', cat: 'Lácteos', activo: true, tono: 'azul' },
-        { id: 'b2', titulo: 'Cerveza y refrescos', texto: 'Para el fin de semana, sin salir.', boton: 'Ver bebidas', cat: 'Bebidas', activo: true, tono: 'naranja' },
-        { id: 'b3', titulo: 'Cubiertas y taller', texto: 'Contanos qué necesita tu vehículo.', boton: 'Ver servicios', href: 'servicios.html', activo: true, tono: 'oscuro' }
+        { id: 'b1', titulo: 'Pedí el súper y te lo llevamos', texto: 'Envío a tu barrio. Pagás online y seguís el pedido.', boton: 'Hacer mi pedido', href: 'tienda.html', activo: true, tono: 'azul' },
+        { id: 'b2', titulo: 'Cerveza y refrescos', texto: 'Para el fin de semana, sin salir de casa.', boton: 'Ver bebidas', cat: 'Bebidas', activo: true, tono: 'amarillo' },
+        { id: 'b3', titulo: 'Cubiertas, alineación y taller', texto: 'Contanos qué necesita tu vehículo.', boton: 'Ver servicios', href: 'servicios.html', activo: true, tono: 'oscuro' },
+        { id: 'b4', titulo: 'Abiertos las 24 horas', texto: 'Estación, súper y taller en Garibaldi y José L. Terra.', boton: 'Cómo llegar', href: 'index.html#donde', activo: true, tono: 'estacion' },
+        { id: 'b5', titulo: 'Para la heladera', texto: 'Lácteos y fiambres con envío a tu barrio.', boton: 'Ver lácteos', cat: 'Lácteos', activo: true, tono: 'amarillo' }
       ],
       pedidos: [], consultas: [], compras: [], movStock: [], registro: [], avisos: [],
       usuarios: [
@@ -179,14 +181,14 @@
   var E = null, subs = [], canal = null, emitiendo = false;
   function cargar() {
     try { E = JSON.parse(localStorage.getItem(KEY)); } catch (e) { E = null; }
-    if (!E || E.version !== 1) { E = sembrar(); guardar(true); }
+    if (!E || E.version !== 2) { E = sembrar(); guardar(true); }
   }
   function guardar(silencioso) {
     try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin espacio o bloqueado: sigue en memoria */ }
     if (!silencioso) { try { if (canal) canal.postMessage({ t: 'cambio' }); } catch (e2) { } avisar('local'); }
   }
   function avisar(origen) { subs.forEach(function (f) { try { f(origen); } catch (e) { } }); }
-  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 1) E = n; } catch (e) { } }
+  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 2) E = n; } catch (e) { } }
   try { canal = new BroadcastChannel('ag-cambios'); canal.onmessage = function () { recargar(); avisar('otra'); }; } catch (e) { canal = null; }
   window.addEventListener('storage', function (ev) { if (ev.key === KEY) { recargar(); avisar('otra'); } else if (ev.key === KCART) avisar('carrito'); });
 

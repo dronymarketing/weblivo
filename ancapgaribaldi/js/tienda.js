@@ -32,7 +32,7 @@
   function accionHTML(p) {
     var n = A.carrito.cantidad(p.id);
     if (!p.activo || p.stock <= 0) return '<button class="btn btn--borde btn--chico btn--ancho" disabled>Sin stock</button>';
-    if (n <= 0) return '<button class="btn btn--borde btn--chico btn--ancho" data-mas="' + p.id + '">' + ic('plus') + 'Agregar</button>';
+    if (n <= 0) return '<button class="btn btn--amarillo btn--chico btn--ancho" data-mas="' + p.id + '">' + ic('plus') + 'Agregar</button>';
     return '<div class="paso"><button class="paso__b" data-menos="' + p.id + '" aria-label="Quitar uno">' + ic('minus') + '</button>' +
       '<span class="paso__n num" aria-live="polite">' + cantTxt(p, n) + '</span>' +
       '<button class="paso__b" data-mas="' + p.id + '" aria-label="Agregar uno"' + (n >= p.stock ? ' disabled' : '') + '>' + ic('plus') + '</button></div>';
@@ -42,26 +42,30 @@
   }
 
   /* ---------- encabezado, barra inferior, carrito, pie ---------- */
+  function logo(extra) {
+    return '<span class="logo' + (extra || '') + '"><img class="logo__img" src="img/ancap-logo.png" alt="ANCAP" width="500" height="78"><span class="logo__b">Santa María</span></span>';
+  }
   function chrome() {
     var lnk = function (h, t, k) { return '<a href="' + h + '"' + (pagina === k ? ' aria-current="page"' : '') + '>' + t + '</a>'; };
     var cab = document.createElement('header'); cab.className = 'cab'; cab.id = 'cab';
     cab.innerHTML =
-      '<div class="cab__franja"><div class="cont cab__franja-i"><span>' + ic('clock') + N.horario + ' · ' + esc(N.direccion) + '</span>' +
-      '<span class="cab__franja-d"><a href="tel:' + N.telefonoLink + '">' + ic('phone') + 'Llamar al ' + esc(N.telefono) + '</a></span></div></div>' +
+      '<div class="cab__franja"><div class="cont cab__franja-i"><span>' + ic('clock') + N.horario + ' · ' + ic('map-pin') + esc(N.direccion) + '</span>' +
+      '<span class="cab__franja-d"><span>' + ic('truck') + 'Entregamos en Goes y barrios cercanos</span><a href="tel:' + N.telefonoLink + '">' + ic('phone') + esc(N.telefono) + '</a></span></div></div>' +
       '<div class="cont cab__fila">' +
-      '<a class="logo" href="index.html" aria-label="Ancap Santa María, ir al inicio"><span class="logo__a">Ancap</span><span class="logo__b">Santa María</span></a>' +
+      '<a class="cab__logo" href="index.html" aria-label="ANCAP Santa María, ir al inicio">' + logo() + '</a>' +
       '<a class="cab__llamar" href="tel:' + N.telefonoLink + '" aria-label="Llamar al local">' + ic('phone', 'icon--g') + '</a>' +
-      '<button class="cab__menu" id="btn-menu" aria-label="Categorías y menú" aria-expanded="false" aria-controls="hoja-menu">' + ic('menu', 'icon--g') + '</button>' +
+      '<button class="cab__menu" id="btn-menu" aria-label="Categorías" aria-expanded="false" aria-controls="hoja-menu">' + ic('menu', 'icon--g') + '<span class="cab__menu-t">Menú</span></button>' +
       '<form class="busca" role="search" action="tienda.html" id="form-busca">' + ic('search') + '<label class="sr-only" for="q">Buscar productos</label><input id="q" name="q" type="search" placeholder="Buscar productos" autocomplete="off"></form>' +
-      '<nav class="cab__links" aria-label="Principal">' + lnk('tienda.html', 'Tienda', 'tienda') + lnk('servicios.html', 'Servicios', 'servicios') + lnk('pedido.html', 'Mi pedido', 'pedido') + '</nav>' +
+      '<nav class="cab__links" aria-label="Principal">' + lnk('tienda.html', 'Tienda', 'tienda') + lnk('servicios.html', 'Servicios', 'servicios') + '</nav>' +
       '<button class="cab__carrito" id="btn-carrito" aria-label="Abrir el carrito">' + ic('shopping-cart', 'icon--g') + '<span class="cab__carrito-t num" data-total></span><span class="badge num" data-badge hidden></span></button>' +
+      '<a class="btn btn--amarillo cab__pedido" href="pedido.html"' + (pagina === 'pedido' ? ' aria-current="page"' : '') + '>Mi pedido</a>' +
       '</div>';
     document.body.insertBefore(cab, document.body.firstChild.nextSibling || null);
 
     var tabs = document.createElement('nav'); tabs.className = 'tabs'; tabs.setAttribute('aria-label', 'Secciones');
     var tab = function (h, i, t, k) { return '<a href="' + h + '"' + (pagina === k ? ' aria-current="page"' : '') + '>' + ic(i, 'icon--g') + '<span>' + t + '</span></a>'; };
     tabs.innerHTML = tab('index.html', 'house', 'Inicio', 'inicio') + tab('tienda.html', 'store', 'Tienda', 'tienda') +
-      '<button class="tabs__carrito" id="btn-carrito-2" aria-label="Abrir el carrito">' + ic('shopping-cart', 'icon--g') + '<span class="badge num" data-badge hidden></span></button>' +
+      '<a class="tabs__fab" href="tienda.html?oferta=1" aria-label="Ofertas">' + ic('badge-percent', 'icon--g') + '</a>' +
       tab('servicios.html', 'wrench', 'Servicios', 'servicios') + tab('pedido.html', 'package', 'Pedido', 'pedido');
     document.body.appendChild(tabs);
 
@@ -76,7 +80,7 @@
     document.body.appendChild(car);
 
     var pie = document.createElement('footer'); pie.className = 'pie';
-    pie.innerHTML = '<div class="cont pie__i"><div class="pie__marca"><span class="logo"><span class="logo__a">Ancap</span><span class="logo__b">Santa María</span></span>' +
+    pie.innerHTML = '<div class="pie__raya" aria-hidden="true"></div><div class="cont pie__i"><div class="pie__marca">' + logo() +
       '<p>' + esc(N.direccion) + '<br>' + esc(N.barrio) + '</p><p>' + N.horario + '</p></div>' +
       '<nav class="pie__col" aria-label="Pie"><h3>Comprar</h3><a href="tienda.html">Toda la tienda</a><a href="tienda.html?oferta=1">Ofertas</a><a href="pedido.html">Seguir mi pedido</a></nav>' +
       '<nav class="pie__col" aria-label="Servicios"><h3>El auto</h3><a href="servicios.html">Servicios</a><a href="servicios.html#consulta">Consultar por mi vehículo</a></nav>' +
@@ -84,7 +88,7 @@
       (N.whatsapp ? '<a href="' + A.waLink(N.whatsapp, 'Hola, quiero consultar algo.') + '">' + ib('whatsapp') + 'WhatsApp</a>' : '') +
       (N.instagram ? '<a href="https://instagram.com/' + esc(N.instagram) + '">' + ib('instagram') + '@' + esc(N.instagram) + '</a>' : '') +
       '<a href="' + N.mapa + '" target="_blank" rel="noopener">' + ic('map-pin') + 'Cómo llegar</a></div></div>' +
-      '<div class="cont pie__nota"><p>Productos, precios y zonas de envío de ejemplo, a reemplazar por los reales. Fotos de muestra: <a href="img/CREDITOS.md">créditos</a>.</p></div>';
+      '<div class="cont pie__nota"><p>Productos, precios y zonas de envío de ejemplo, a reemplazar por los reales. Fotos de muestra: <a href="img/CREDITOS.md">créditos</a>. El logo y los colores son de ANCAP.</p></div>';
     document.body.appendChild(pie);
 
     var meta = $('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', '#00457C');
@@ -97,7 +101,7 @@
     requestAnimationFrame(function () { el.classList.add('abierto'); var f = $('button, a', el.querySelector('.hoja__panel, .cart__panel')); if (f) foco(f); });
   }
   function cerrar(el) {
-    el.classList.remove('abierto'); document.documentElement.classList.remove('bloqueado');
+    el.classList.remove('abierto'); var bm = $('#btn-menu'); if (bm) bm.setAttribute('aria-expanded', 'false'); document.documentElement.classList.remove('bloqueado');
     setTimeout(function () { el.hidden = true; }, 350);
     if (ultimoFoco) foco(ultimoFoco);
   }
@@ -117,7 +121,7 @@
         '<div class="paso paso--chico"><button class="paso__b" data-menos="' + x.p.id + '" aria-label="Quitar uno de ' + esc(x.p.nombre) + '">' + ic('minus') + '</button><span class="paso__n num">' + cantTxt(x.p, x.cant) + '</span><button class="paso__b" data-mas="' + x.p.id + '" aria-label="Agregar uno de ' + esc(x.p.nombre) + '"' + (x.cant >= x.p.stock ? ' disabled' : '') + '>' + ic('plus') + '</button></div>' +
         '<p class="linea__s num">' + pesos(x.subtotal) + '</p><button class="linea__x" data-quitar="' + x.p.id + '" aria-label="Sacar ' + esc(x.p.nombre) + ' del carrito">' + ic('trash-2') + '</button></li>';
     }).join('') + '</ul>';
-    pie.innerHTML = '<div class="cart__sub"><span>Subtotal</span><strong class="num">' + pesos(sub) + '</strong></div><p class="cart__nota">El envío se calcula al elegir tu zona.</p><a class="btn btn--naranja btn--ancho" href="checkout.html">Seguir al pago</a>';
+    pie.innerHTML = '<div class="cart__sub"><span>Subtotal</span><strong class="num">' + pesos(sub) + '</strong></div><p class="cart__nota">El envío se calcula al elegir tu zona.</p><a class="btn btn--amarillo btn--ancho" href="checkout.html">Seguir al pago</a>';
   }
 
   function eventos() {
@@ -127,7 +131,7 @@
       else if (t.hasAttribute('data-menos')) A.carrito.sumar(t.getAttribute('data-menos'), -1);
       else if (t.hasAttribute('data-quitar')) A.carrito.quitar(t.getAttribute('data-quitar'));
       else if (t.hasAttribute('data-cerrar')) { var h = t.closest('.hoja, .cart'); if (h) cerrar(h); }
-      else if (t.id === 'btn-menu') { abrir($('#hoja-menu'), t); t.setAttribute('aria-expanded', 'true'); }
+      else if (t.id === 'btn-menu') { var hm = $('#hoja-menu'); if (hm.classList.contains('abierto')) cerrar(hm); else { abrir(hm, t); t.setAttribute('aria-expanded', 'true'); } }
       else abrir($('#cart'), t);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { abiertas().forEach(cerrar); var b = $('#btn-menu'); if (b) b.setAttribute('aria-expanded', 'false'); } });
@@ -146,16 +150,46 @@
   }
 
   /* ---------- INICIO ---------- */
+  function bannerHTML(b, prods) {
+    var h = b.href || (b.cat ? url(b.cat) : 'tienda.html'), extra = '', tono = b.tono || 'azul';
+    if (tono === 'amarillo') {
+      var l = prods.filter(function (p) { return p.foto && p.stock > 0 && (!b.cat || p.cat === b.cat); });
+      l.sort(function (x, y) { return (y.oferta ? 1 : 0) - (x.oferta ? 1 : 0); });
+      var f = l.slice(0, 3), desde = l.length ? Math.min.apply(null, l.map(A.precioDe)) : 0;
+      extra = '<div class="banner__fotos" aria-hidden="true">' + f.map(function (p) { return '<span><img src="' + p.foto + '" alt="" width="120" height="120" loading="lazy"></span>'; }).join('') + '</div>' +
+        (desde ? '<span class="banner__sello" aria-hidden="true">Desde<strong class="num">' + pesos(desde) + '</strong></span>' : '');
+    }
+    return '<a class="banner banner--' + esc(tono) + '" href="' + esc(h) + '"><div class="banner__i"><div class="banner__t"><h3>' + esc(b.titulo) + '</h3><p>' + esc(b.texto) + '</p><span class="btn btn--chico btn--claro">' + esc(b.boton || 'Ver más') + '</span></div></div>' + extra + '</a>';
+  }
+  function carrusel() {
+    var pista = $('#banners'), puntos = $('#puntos'), items = $$('.banner', pista); if (!items.length) return;
+    puntos.innerHTML = items.map(function (_, i) { return '<button class="ban__p" aria-label="Ir al banner ' + (i + 1) + '"></button>'; }).join('');
+    var ps = $$('.ban__p', puntos), pausa = false, idx = 0;
+    function pad() { return parseFloat(getComputedStyle(pista).paddingLeft) || 0; }
+    function marcar() {
+      var base = pista.getBoundingClientRect().left + pad(), mejor = 1e9;
+      items.forEach(function (it, i) { var d = Math.abs(it.getBoundingClientRect().left - base); if (d < mejor) { mejor = d; idx = i; } });
+      ps.forEach(function (p, i) { p.setAttribute('aria-current', i === idx ? 'true' : 'false'); });
+    }
+    function ir(i) { i = (i + items.length) % items.length; pista.scrollTo({ left: items[i].offsetLeft - pad(), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+    pista.addEventListener('scroll', function () { window.requestAnimationFrame(marcar); }, { passive: true });
+    puntos.addEventListener('click', function (e) { var b = e.target.closest('.ban__p'); if (b) ir(ps.indexOf(b)); });
+    $('#ban-ant').addEventListener('click', function () { ir(idx - 1); });
+    $('#ban-sig').addEventListener('click', function () { ir(idx + 1); });
+    var caja = pista.closest('.ban');
+    ['pointerenter', 'focusin', 'touchstart'].forEach(function (ev) { caja.addEventListener(ev, function () { pausa = true; }, { passive: true }); });
+    ['pointerleave', 'focusout'].forEach(function (ev) { caja.addEventListener(ev, function () { pausa = false; }); });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(function () { if (!pausa && !document.hidden) ir(idx + 1); }, 6500);
+    marcar();
+  }
   function inicio() {
     var cats = A.categorias(), prods = A.productos().filter(function (p) { return p.activo; });
     $('#cats').innerHTML = cats.map(function (c) {
       var p = prods.filter(function (x) { return x.cat === c && x.foto; })[0];
       return '<a class="cat" href="' + url(c) + '"><span class="cat__o">' + (p ? '<img src="' + p.foto + '" alt="" width="64" height="64" loading="lazy">' : '') + '</span><span class="cat__n">' + esc(c) + '</span></a>';
     }).join('');
-    $('#banners').innerHTML = A.banners().filter(function (b) { return b.activo; }).map(function (b) {
-      var h = b.href || (b.cat ? url(b.cat) : 'tienda.html');
-      return '<a class="banner banner--' + esc(b.tono || 'azul') + '" href="' + esc(h) + '"><div class="banner__t"><h3>' + esc(b.titulo) + '</h3><p>' + esc(b.texto) + '</p><span class="btn btn--claro btn--chico">' + esc(b.boton || 'Ver más') + '</span></div></a>';
-    }).join('');
+    $('#banners').innerHTML = A.banners().filter(function (b) { return b.activo; }).map(function (b) { return bannerHTML(b, prods); }).join('');
+    carrusel();
     var ofs = prods.filter(function (p) { return p.oferta && p.oferta < p.precio && p.stock > 0; });
     $('#ofertas').innerHTML = ofs.map(tarjeta).join(''); pintarAcciones($('#ofertas'));
     var des = prods.filter(function (p) { return p.destacado && p.stock > 0; }).slice(0, 8);
@@ -164,6 +198,8 @@
     $('#tabla-zonas').innerHTML = A.zonas().filter(function (z) { return z.activa; }).map(function (z) {
       return '<tr><th scope="row">' + esc(z.nombre) + '</th><td class="num">' + pesos(z.costo) + '</td><td class="num">' + pesos(z.minimo) + '</td><td class="num">' + (z.gratisDesde ? pesos(z.gratisDesde) : '—') + '</td></tr>';
     }).join('');
+    var ant = $('#cats-ant'), sig = $('#cats-sig'), cs = $('#cats');
+    if (ant) { ant.addEventListener('click', function () { cs.scrollBy({ left: -cs.clientWidth * .8, behavior: 'smooth' }); }); sig.addEventListener('click', function () { cs.scrollBy({ left: cs.clientWidth * .8, behavior: 'smooth' }); }); }
   }
 
   /* ---------- CATÁLOGO ---------- */

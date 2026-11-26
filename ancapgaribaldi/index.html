@@ -12,56 +12,73 @@
 <meta property="og:title" content="Ancap Santa María · Estación de servicio y tienda en Goes">
 <meta property="og:description" content="Estación de servicio en Goes, abierta las 24 horas. Pedí el súper desde el celular y consultá por cubiertas, alineación, balanceo y taller mecánico.">
 <meta property="og:url" content="https://livo.com.uy/ancapgaribaldi/index.html">
-<meta property="og:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<meta property="og:image" content="https://livo.com.uy/ancapgaribaldi/img/og-ancap.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="Ancap Santa María sobre fondo blanco">
+<meta property="og:image:alt" content="Logo de ANCAP y Santa María sobre fondo azul">
 <meta property="og:locale" content="es_UY">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<meta name="twitter:image" content="https://livo.com.uy/ancapgaribaldi/img/og-ancap.jpg?v=2">
 <link rel="icon" href="img/favicon.png">
 <link rel="stylesheet" href="css/tokens.css?v=1">
-<link rel="stylesheet" href="css/tokens-proyecto.css?v=1">
-<link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/movil.css?v=1">
-<link rel="stylesheet" href="css/escritorio.css?v=1" media="(min-width: 768px)">
-<link rel="stylesheet" href="css/alturas.css?v=1" media="(max-height: 660px)">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=2">
+<link rel="stylesheet" href="css/base.css?v=2">
+<link rel="stylesheet" href="css/movil.css?v=2">
+<link rel="stylesheet" href="css/escritorio.css?v=2" media="(min-width: 768px)">
 </head>
 <body data-pagina="inicio">
 <script src="js/iconos.js?v=1"></script>
+<noscript><p class="sinjs">La tienda necesita JavaScript para mostrar los productos. Podés llamarnos al <a href="tel:+59822034196">2203 4196</a>: estamos abiertos las 24 horas.</p></noscript>
 
 <main>
-  <section class="hero" id="inicio">
-    <div class="hero__fondo"><img src="img/estacion.jpg" alt="Techo de una estación de servicio de noche, con las luces encendidas" fetchpriority="high"></div>
-    <div class="cont hero__c">
-      <p class="hero__tag micro">Abierto las 24 horas</p>
-      <h1>La esquina que nunca cierra</h1>
-      <p class="hero__sub">Hacé el pedido del súper desde el celular y te lo llevamos. Y si el auto necesita algo, también lo vemos acá.</p>
-      <div class="hero__btns">
-        <a class="btn btn--naranja" href="tienda.html">Hacer mi pedido</a>
-        <a class="btn btn--fantasma" href="servicios.html">Servicios del auto</a>
+  <div class="portada" id="inicio">
+    <nav class="promos" aria-label="Accesos rápidos">
+      <div class="cont promos__i">
+        <a class="promo" href="tienda.html?oferta=1"><svg class="icon" aria-hidden="true"><use href="#i-badge-percent"/></svg>Todas las ofertas</a>
+        <a class="promo" href="#envios"><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg>Envío a tu barrio</a>
+        <a class="promo" href="servicios.html"><svg class="icon" aria-hidden="true"><use href="#i-disc-3"/></svg>Cubiertas y alineación</a>
+        <a class="promo" href="servicios.html#servicios"><svg class="icon" aria-hidden="true"><use href="#i-wrench"/></svg>Taller mecánico</a>
+        <a class="promo" href="#donde"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Abierto las 24 horas</a>
       </div>
-    </div>
-    <a class="cue" href="#categorias" aria-label="Bajar a las categorías"><span>Bajá</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-down"/></svg></a>
-  </section>
+    </nav>
 
-  <section class="sec" id="categorias">
-    <div class="cont"><h2 class="rev">Categorías</h2></div>
-    <div class="carril-wrap"><div class="cats rev" id="cats" data-i="1"></div></div>
-  </section>
+    <section class="ban-sec" aria-label="Ofertas y novedades">
+      <div class="cont ban-sec__cab"><h2>Ofertas para vos</h2><a class="ver" href="tienda.html?oferta=1">Ver todas</a></div>
+      <div class="ban">
+        <div class="ban__pista" id="banners"></div>
+        <button class="ban__f ban__f--i" id="ban-ant" type="button" aria-label="Banner anterior"><svg class="icon icon--g" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <button class="ban__f ban__f--d" id="ban-sig" type="button" aria-label="Banner siguiente"><svg class="icon icon--g" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        <div class="ban__puntos" id="puntos"></div>
+      </div>
+    </section>
 
-  <section class="sec sec--marco" id="ofertas-sec">
-    <div class="cont sec__cab rev"><h2>Ofertas de la semana</h2><a class="ver" href="tienda.html?oferta=1">Ver todas</a></div>
-    <div class="cont"><div class="banners rev" id="banners" data-i="1"></div></div>
-    <div class="carril-wrap"><div class="carril rev" id="ofertas" data-i="2"></div></div>
-  </section>
+    <section class="cats-sec" id="categorias" aria-label="Categorías">
+      <div class="cats-w">
+        <button class="cats__f cats__f--i" id="cats-ant" type="button" aria-label="Categorías anteriores"><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+        <div class="cats" id="cats"></div>
+        <button class="cats__f cats__f--d" id="cats-sig" type="button" aria-label="Más categorías"><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+      </div>
+    </section>
+  </div>
 
   <section class="sec" id="destacados-sec">
     <div class="cont sec__cab rev"><h2>Para el día a día</h2><a class="ver" href="tienda.html">Ver toda la tienda</a></div>
     <div class="cont"><div class="grilla rev" id="destacados" data-i="1"></div></div>
   </section>
 
-  <section class="sec sec--marco vehiculo" id="vehiculo">
+  <div class="cinta" aria-hidden="true">
+    <div class="cinta__pista">
+      <span>Abierto las 24 horas</span><i></i><span>Envío a tu barrio</span><i></i><span>Cubiertas · alineación · taller</span><i></i><span>Pedí desde el celular</span><i></i>
+      <span>Abierto las 24 horas</span><i></i><span>Envío a tu barrio</span><i></i><span>Cubiertas · alineación · taller</span><i></i><span>Pedí desde el celular</span><i></i>
+    </div>
+  </div>
+
+  <section class="sec sec--tinte" id="ofertas-sec">
+    <div class="cont sec__cab rev"><h2>Ofertas de la semana</h2><a class="ver" href="tienda.html?oferta=1">Ver todas</a></div>
+    <div class="carril-wrap"><div class="carril rev" id="ofertas" data-i="1"></div></div>
+  </section>
+
+  <section class="sec vehiculo" id="vehiculo">
     <div class="cont vehiculo__g">
       <div class="vehiculo__t rev">
         <p class="micro etiqueta">Para el vehículo</p>
@@ -74,7 +91,7 @@
     </div>
   </section>
 
-  <section class="sec" id="envios">
+  <section class="sec sec--tinte" id="envios">
     <div class="cont envios">
       <div class="envios__t rev">
         <p class="micro etiqueta">Envíos</p>
@@ -98,15 +115,15 @@
         <p>Av. Gral. José Garibaldi 1902, esquina José L. Terra, Montevideo.<br>Abierto las 24 horas, todos los días.</p>
       </div>
       <div class="donde__b">
-        <a class="btn btn--naranja" href="tel:+59822034196">Llamar al 2203 4196</a>
+        <a class="btn btn--amarillo" href="tel:+59822034196">Llamar al 2203 4196</a>
         <a class="btn btn--fantasma" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Gral.+Garibaldi+1902+Montevideo" target="_blank" rel="noopener">Ver en el mapa</a>
       </div>
     </div>
   </section>
 </main>
 
-<script src="js/catalogo.js?v=1"></script>
-<script src="js/datos.js?v=1"></script>
-<script src="js/tienda.js?v=1"></script>
+<script src="js/catalogo.js?v=2"></script>
+<script src="js/datos.js?v=2"></script>
+<script src="js/tienda.js?v=2"></script>
 </body>
 </html>

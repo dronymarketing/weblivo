@@ -134,10 +134,10 @@
   function formBanner(b) {
     b = b || { titulo: '', texto: '', boton: 'Ver más', cat: '', href: '', tono: 'azul', activo: true };
     var dest = b.href ? 'servicios' : (b.cat || '');
-    return '<form data-frm="banner" data-id="' + (b.id || '') + '" novalidate><div class="form-g"><label class="campo campo--2"><span>Título</span><input name="titulo" value="' + esc(b.titulo) + '" maxlength="26" required></label>' +
+    return '<form data-frm="banner" data-id="' + (b.id || '') + '" novalidate><div class="form-g"><label class="campo campo--2"><span>Título</span><input name="titulo" value="' + esc(b.titulo) + '" maxlength="34" required></label>' +
       '<label class="campo campo--2"><span>Texto</span><input name="texto" value="' + esc(b.texto) + '" maxlength="60"></label><label class="campo"><span>Texto del botón</span><input name="boton" value="' + esc(b.boton) + '" maxlength="18"></label>' +
       '<label class="campo"><span>Lleva a</span><select name="dest">' + opt([{ v: 'servicios', t: 'Servicios del auto' }].concat(A.categorias().map(function (c) { return { v: c, t: 'Categoría: ' + c }; })), dest, 'Toda la tienda') + '</select></label>' +
-      '<label class="campo campo--2"><span>Color</span><select name="tono">' + opt([{ v: 'azul', t: 'Azul con foto de la tienda' }, { v: 'naranja', t: 'Naranja' }, { v: 'oscuro', t: 'Oscuro con foto del taller' }], b.tono) + '</select></label></div>' +
+      '<label class="campo campo--2"><span>Color</span><select name="tono">' + opt([{ v: 'azul', t: 'Azul con foto de la tienda' }, { v: 'amarillo', t: 'Amarillo con productos de la categoría' }, { v: 'oscuro', t: 'Oscuro con foto del taller' }, { v: 'estacion', t: 'Azul con foto de la estación' }], b.tono) + '</select></label></div>' +
       '<div class="checks-l"><label class="check"><input type="checkbox" name="activo"' + (b.activo ? ' checked' : '') + '><span>Se muestra en el inicio</span></label></div><div class="acc-fila acc-fila--fin">' + (b.id ? '<button type="button" class="btn btn--borde btn--peligro-b" data-acc="borrar-banner" data-id="' + b.id + '">Eliminar</button>' : '') + '<button type="button" class="btn btn--borde" data-acc="cerrar-modal">Cancelar</button><button class="btn" type="submit">Guardar</button></div></form>';
   }
   P.acc['nuevo-banner'] = function () { P.modal({ titulo: 'Nuevo banner', cuerpo: formBanner(null), ancho: 'chico' }); };
