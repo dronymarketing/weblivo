@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="css/tokens.css?v=1">
 <link rel="stylesheet" href="css/tokens-proyecto.css?v=2">
 <link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/movil.css?v=2">
+<link rel="stylesheet" href="css/movil.css?v=4">
 <link rel="stylesheet" href="css/escritorio.css?v=2" media="(min-width: 768px)">
 </head>
 <body data-pagina="checkout">
@@ -60,6 +60,9 @@
           <div><p><strong>Mercado Pago</strong></p><p class="suave">Pago de muestra: no se cobra nada. Cuando la estación conecte su cuenta, acá se abre el pago real.</p></div>
         </div>
       </fieldset>
+      <div class="campo" id="campo-mayor" hidden>
+        <label class="check check--largo"><input type="checkbox" name="mayor"><span>Soy mayor de 18 años. El pedido lleva bebidas alcohólicas y puede que te pidan la cédula al entregarlo.</span></label>
+      </div>
       <p class="aviso-caja aviso-caja--error" id="form-error" role="alert" hidden></p>
       <button class="btn btn--amarillo btn--ancho btn--grande" id="btn-pagar" type="submit">Pagar</button>
     </form>
@@ -77,8 +80,8 @@
   </div>
 </main>
 
-<script src="js/catalogo.js?v=2"></script>
-<script src="js/datos.js?v=2"></script>
-<script src="js/tienda.js?v=2"></script>
+<script src="js/catalogo.js?v=3"></script>
+<script src="js/datos.js?v=3"></script>
+<script src="js/tienda.js?v=3"></script>
 </body>
 </html>

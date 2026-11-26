@@ -20,7 +20,7 @@
   function filaProd(p) {
     var of = p.oferta && p.oferta < p.precio, n = A.nivelStock(p), pct = Math.min(100, p.stock / Math.max(p.minimo * 2, 1) * 100);
     return '<article class="prow' + (p.activo ? '' : ' prow--off') + '">' + (p.foto ? '<img src="../' + esc(p.foto) + '" alt="" width="48" height="48" loading="lazy">' : '<span class="prow__sf">' + ic('image') + '</span>') +
-      '<div class="prow__n"><strong>' + esc(p.nombre) + '</strong><small>' + esc(p.cat) + ' · ' + (p.unidad === 'kg' ? 'por kg' : 'por unidad') + (p.destacado ? ' · en inicio' : '') + '</small></div>' +
+      '<div class="prow__n"><strong>' + esc(p.nombre) + '</strong><small>' + esc(p.cat) + ' · ' + (p.unidad === 'kg' ? 'por kg' : 'por unidad') + (p.destacado ? ' · en inicio' : '') + (p.alcohol ? ' · +18' : '') + '</small></div>' +
       '<div class="prow__p num"><strong>' + pesos(of ? p.oferta : p.precio) + '</strong>' + (of ? '<s>' + pesos(p.precio) + '</s>' : '') + '</div>' +
       '<div class="prow__s"><div class="stk stk--' + n + '"><span class="stk__t"><i style="width:' + pct + '%"></i></span><span class="stk__v num">' + A.cant(p.stock, p.unidad) + (p.unidad === 'kg' ? '' : ' u') + ' · mín ' + A.cant(p.minimo, p.unidad) + '</span></div></div>' +
       '<div class="prow__e">' + (p.activo ? (n === 'bien' ? '<span class="pill pill--ok">En tienda</span>' : '<span class="pill ' + (n === 'no' ? 'pill--error' : 'pill--aviso') + '">' + nivelTxt(p) + '</span>') : '<span class="pill pill--gris">Oculto</span>') + '</div>' +
@@ -64,7 +64,7 @@
       '<label class="campo"><span>Stock contado' + (p.unidad === 'kg' ? ' (kg)' : '') + '</span><input name="stock" inputmode="decimal" value="' + esc(p.stock) + '"><small>Si lo cambiás, queda anotado como ajuste.</small></label>' +
       '<label class="campo"><span>Stock mínimo</span><input name="minimo" inputmode="decimal" value="' + esc(p.minimo) + '"' + ro + '></label>' +
       (admin ? '<label class="campo"><span>Proveedor</span><select name="prov">' + opt(E.proveedores.map(function (v) { return { v: v.id, t: v.nombre }; }), p.prov) + '</select></label>' : '') + '</div>' +
-      '<div class="checks-l"><label class="check"><input type="checkbox" name="activo"' + (p.activo ? ' checked' : '') + '><span>Se muestra en la tienda</span></label>' + (admin ? '<label class="check"><input type="checkbox" name="destacado"' + (p.destacado ? ' checked' : '') + '><span>Destacado en el inicio</span></label>' : '') + '</div>' +
+      '<div class="checks-l"><label class="check"><input type="checkbox" name="activo"' + (p.activo ? ' checked' : '') + '><span>Se muestra en la tienda</span></label>' + (admin ? '<label class="check"><input type="checkbox" name="destacado"' + (p.destacado ? ' checked' : '') + '><span>Destacado en el inicio</span></label><label class="check"><input type="checkbox" name="alcohol"' + (p.alcohol ? ' checked' : '') + '><span>Bebida alcohólica (solo mayores de 18)</span></label>' : '') + '</div>' +
       '<p class="aviso-caja aviso-caja--error" data-err hidden role="alert"></p><div class="acc-fila acc-fila--fin"><button type="button" class="btn btn--borde" data-acc="cerrar-modal">Cancelar</button><button class="btn" type="submit">Guardar</button></div></form>';
   }
   P.acc['editar-prod'] = function (el) { var p = A.producto(el.getAttribute('data-id')); P.modal({ titulo: p.nombre, cuerpo: formProd(p), ancho: 'medio' }); };
@@ -78,7 +78,7 @@
     if (num(f.stock.value) < 0) { campoErr(f, 'stock', 'No puede ser negativo.'); err = true; }
     if (err) return;
     var d = { id: id || undefined, precio: precio, oferta: oferta, activo: f.activo.checked };
-    if (admin) { d.nombre = f.nombre.value; d.cat = f.cat.value; d.costo = num(f.costo.value); d.minimo = num(f.minimo.value); d.prov = f.prov.value; d.destacado = f.destacado.checked; if (!id) { d.unidad = f.unidad.value; } }
+    if (admin) { d.nombre = f.nombre.value; d.cat = f.cat.value; d.costo = num(f.costo.value); d.minimo = num(f.minimo.value); d.prov = f.prov.value; d.destacado = f.destacado.checked; d.alcohol = f.alcohol.checked; if (!id) { d.unidad = f.unidad.value; } }
     var r = A.guardarProducto(d, quien()), s = num(f.stock.value);
     if (!id) { r.foto = ''; A.ajustarStock(r.id, s, 'Stock inicial', quien()); } else if (s !== p.stock) A.ajustarStock(r.id, s, 'Conteo', quien());
     P.cerrarModal(f.closest('.modal')); P.toast('«' + r.nombre + '» guardado'); P.repintar();

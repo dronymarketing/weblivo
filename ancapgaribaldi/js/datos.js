@@ -8,7 +8,7 @@
    ============================================================ */
 (function () {
   'use strict';
-  var KEY = 'ag_v2', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
+  var KEY = 'ag_v3', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
   var TZ = 'America/Montevideo';
   var CAT = window.AG_CATALOGO || { cats: [], prov: [], prods: [] };
 
@@ -76,7 +76,7 @@
     var rnd = mulberry32(26112026);
     var ahora = Date.now(), H = 3600000, D = 24 * H;
     var E = {
-      version: 2, sembrado: ahora,
+      version: 3, sembrado: ahora,
       negocio: {
         nombre: 'Ancap Santa María', direccion: 'Av. Gral. José Garibaldi 1902, esq. José L. Terra', barrio: 'Goes, Montevideo',
         horario: 'Abierto las 24 horas, todos los días', telefono: '2203 4196', telefonoLink: '+59822034196',
@@ -89,12 +89,13 @@
       productos: CAT.prods.map(function (p, i) {
         var kg = p.u === 'kg', f = 1.2 + rnd() * 3.2;
         return { id: p.id, cat: p.cat, nombre: p.n, unidad: p.u, costo: p.c, precio: p.p, oferta: p.o || 0, minimo: p.m, prov: p.v,
-          stock: kg ? Math.round(p.m * f * 2) / 2 : Math.round(p.m * f), activo: true, destacado: !!p.d, foto: 'img/productos/' + p.id + '.png' };
+          stock: kg ? Math.round(p.m * f * 2) / 2 : Math.round(p.m * f), activo: true, destacado: !!p.d, alcohol: !!p.a, foto: 'img/productos/' + p.id + '.png' };
       }),
       zonas: ZONAS.map(function (z, i) { return { id: 'z' + (i + 1), nombre: z[0], costo: z[1], minimo: z[2], gratisDesde: z[3], activa: true }; }),
       banners: [
         { id: 'b1', titulo: 'Pedí el súper y te lo llevamos', texto: 'Envío a tu barrio. Pagás online y seguís el pedido.', boton: 'Hacer mi pedido', href: 'tienda.html', activo: true, tono: 'azul' },
         { id: 'b2', titulo: 'Cerveza y refrescos', texto: 'Para el fin de semana, sin salir de casa.', boton: 'Ver bebidas', cat: 'Bebidas', activo: true, tono: 'amarillo' },
+        { id: 'b6', titulo: 'Vinos, whisky y gin', texto: 'Para regalar o para la mesa del finde.', boton: 'Ver vinos y whisky', cat: 'Vinos y licores', activo: true, tono: 'amarillo' },
         { id: 'b3', titulo: 'Cubiertas, alineación y taller', texto: 'Contanos qué necesita tu vehículo.', boton: 'Ver servicios', href: 'servicios.html', activo: true, tono: 'oscuro' },
         { id: 'b4', titulo: 'Abiertos las 24 horas', texto: 'Estación, súper y taller en Garibaldi y José L. Terra.', boton: 'Cómo llegar', href: 'index.html#donde', activo: true, tono: 'estacion' },
         { id: 'b5', titulo: 'Para la heladera', texto: 'Lácteos y fiambres con envío a tu barrio.', boton: 'Ver lácteos', cat: 'Lácteos', activo: true, tono: 'amarillo' }
@@ -181,14 +182,14 @@
   var E = null, subs = [], canal = null, emitiendo = false;
   function cargar() {
     try { E = JSON.parse(localStorage.getItem(KEY)); } catch (e) { E = null; }
-    if (!E || E.version !== 2) { E = sembrar(); guardar(true); }
+    if (!E || E.version !== 3) { E = sembrar(); guardar(true); }
   }
   function guardar(silencioso) {
     try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin espacio o bloqueado: sigue en memoria */ }
     if (!silencioso) { try { if (canal) canal.postMessage({ t: 'cambio' }); } catch (e2) { } avisar('local'); }
   }
   function avisar(origen) { subs.forEach(function (f) { try { f(origen); } catch (e) { } }); }
-  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 2) E = n; } catch (e) { } }
+  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 3) E = n; } catch (e) { } }
   try { canal = new BroadcastChannel('ag-cambios'); canal.onmessage = function () { recargar(); avisar('otra'); }; } catch (e) { canal = null; }
   window.addEventListener('storage', function (ev) { if (ev.key === KEY) { recargar(); avisar('otra'); } else if (ev.key === KCART) avisar('carrito'); });
 
@@ -236,6 +237,8 @@
     if (!tel) err.tel = 'Escribí un celular uruguayo, por ejemplo 099 123 456.';
     if (dir.length < 4) err.direccion = 'Escribí la calle y el número.';
     if (!z || !z.activa) err.zona = 'Elegí tu zona.';
+    var hayAlcohol = lineas.some(function (l) { return l.p.alcohol; });
+    if (hayAlcohol && !d.mayor) err.mayor = 'Para llevar bebidas alcohólicas tenés que ser mayor de 18 años.';
     if (Object.keys(err).length) return { ok: false, campos: err, error: 'Revisá los datos marcados.' };
     for (var i = 0; i < lineas.length; i++) {
       var l = lineas[i];
@@ -249,7 +252,7 @@
     var ped = { id: uid('ped'), num: E.contador.pedido, ts: ahora,
       cliente: { nombre: nombre, tel: tel, direccion: dir, referencia: String(d.referencia || '').trim(), zona: z.id, zonaNombre: z.nombre },
       items: lineas.map(function (l) { return { id: l.p.id, nombre: l.p.nombre, unidad: l.p.unidad, cant: l.cant, precio: l.precio, subtotal: l.subtotal }; }),
-      subtotal: sub, envio: env, total: sub + env, pago: { medio: 'muestra', estado: 'pagado' }, estado: 'nuevo', nota: '',
+      subtotal: sub, envio: env, total: sub + env, pago: { medio: 'muestra', estado: 'pagado' }, estado: 'nuevo', nota: '', mayor18: hayAlcohol,
       historial: [{ estado: 'nuevo', ts: ahora, quien: 'Cliente' }] };
     lineas.forEach(function (l) {
       var antes = nivelStock(l.p); l.p.stock = Math.round((l.p.stock - l.cant) * 1000) / 1000;
@@ -313,7 +316,7 @@
     ['nombre', 'cat', 'unidad', 'prov'].forEach(function (k) { if (d[k] != null) p[k] = String(d[k]).trim(); });
     ['costo', 'precio', 'oferta', 'minimo'].forEach(function (k) { if (d[k] != null) p[k] = Math.max(0, Number(d[k]) || 0); });
     if (d.stock != null) p.stock = Math.max(0, Number(d.stock) || 0);
-    if (d.activo != null) p.activo = !!d.activo; if (d.destacado != null) p.destacado = !!d.destacado;
+    if (d.activo != null) p.activo = !!d.activo; if (d.destacado != null) p.destacado = !!d.destacado; if (d.alcohol != null) p.alcohol = !!d.alcohol;
     reg(quien, (nuevo ? 'Producto agregado: «' : 'Producto actualizado: «') + p.nombre + '»'); guardar(); return p;
   }
   function ajustarStock(id, nuevo, motivo, quien) {

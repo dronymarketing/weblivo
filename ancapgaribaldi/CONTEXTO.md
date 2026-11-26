@@ -25,6 +25,10 @@ Referencia de estructura (no copia): Parking Despegar, dos paneles sobre la mism
   **escritorio** como Tienda Inglesa (franja superior, logo + MENÚ + buscador ancho + carrito + «Mi pedido», píldoras de accesos, banner a todo el ancho con flechas, puntos y marco de
   franjas, categorías en círculos celestes con flecha). Tienda Inglesa bloquea la lectura automática (403): se tomó la estructura y los colores de la captura que pasó Santi.
   El hero a pantalla completa con scroll cue se mantiene solo en `servicios.html`.
+- **Bebidas de Ancap Puntos (26/11):** Santi pasó capturas de `ancapuntos.com.uy/bebidas.html` y se cargaron **8 productos** en la categoría «Vinos y licores» (gin, whiskies, vinos y un set de copas) con su
+  **título, foto y precio de VENTA**; los puntos se ignoran a pedido suyo. Son datos reales de ese catálogo (stock y mínimo de ejemplo). Como llevan alcohol, los productos tienen marca **+18** y,
+  si el carrito incluye alguno, el checkout exige confirmar que es mayor de 18 (el pedido queda con `mayor18` y el panel avisa que hay que pedir la cédula al entregar).
+  **PENDIENTE:** confirmar con la clienta/contador el texto legal de venta de alcohol y si el envío de alcohol a domicilio tiene horarios o restricciones. Faltan el resto de las categorías de Ancap Puntos (se cargan igual que estas, con capturas).
 - **Ancap Puntos:** `ancapuntos.com.uy/estaciones-ancap` muestra una verificación anti-robots y no se pudo leer. Es el programa de canje de la tarjeta BROU ANCAP (catálogo de 200+ productos y
   canje por combustible). **PENDIENTE:** que Santi pegue o capture esa página (productos, estaciones) y, si la estación participa, sumar «Sumá ANCAPuntos» a la tienda.
 - Paquete de movimiento **«Fundar»** (apariciones al entrar en pantalla, microtransiciones de 0,3 s). Sin glassmorphism. Íconos Lucide; WhatsApp e Instagram de Simple Icons.

@@ -24,7 +24,7 @@
   function tarjeta(p) {
     var of = p.oferta && p.oferta < p.precio, pct = of ? Math.round((1 - p.oferta / p.precio) * 100) : 0;
     return '<article class="prod" data-id="' + p.id + '">' +
-      '<div class="prod__foto">' + (p.foto ? '<img src="' + p.foto + '" alt="' + esc(p.nombre) + '" loading="lazy" width="256" height="256">' : '<span class="prod__sinfoto">' + ic('image', 'icon--xl') + '<small>Foto pendiente</small></span>') + (of ? '<span class="prod__tag">-' + pct + '%</span>' : '') + '</div>' +
+      '<div class="prod__foto">' + (p.foto ? '<img src="' + p.foto + '" alt="' + esc(p.nombre) + '" loading="lazy" width="256" height="256">' : '<span class="prod__sinfoto">' + ic('image', 'icon--xl') + '<small>Foto pendiente</small></span>') + (of ? '<span class="prod__tag">-' + pct + '%</span>' : '') + (p.alcohol ? '<span class="prod__edad" title="Solo mayores de 18 años">+18</span>' : '') + '</div>' +
       '<div class="prod__cuerpo"><h3 class="prod__nombre">' + esc(p.nombre) + '</h3>' +
       '<p class="prod__precio num"><strong>' + precioTxt(p) + '</strong>' + (of ? '<s>' + pesos(p.precio) + '</s>' : '') + '</p></div>' +
       '<div class="prod__accion" data-accion></div></article>';
@@ -88,7 +88,7 @@
       (N.whatsapp ? '<a href="' + A.waLink(N.whatsapp, 'Hola, quiero consultar algo.') + '">' + ib('whatsapp') + 'WhatsApp</a>' : '') +
       (N.instagram ? '<a href="https://instagram.com/' + esc(N.instagram) + '">' + ib('instagram') + '@' + esc(N.instagram) + '</a>' : '') +
       '<a href="' + N.mapa + '" target="_blank" rel="noopener">' + ic('map-pin') + 'Cómo llegar</a></div></div>' +
-      '<div class="cont pie__nota"><p>Productos, precios y zonas de envío de ejemplo, a reemplazar por los reales. Fotos de muestra: <a href="img/CREDITOS.md">créditos</a>. El logo y los colores son de ANCAP.</p></div>';
+      '<div class="cont pie__nota"><p>Productos, precios y zonas de envío de ejemplo, a reemplazar por los reales. Fotos de muestra: <a href="img/CREDITOS.md">créditos</a>. El logo y los colores son de ANCAP. Venta de bebidas alcohólicas prohibida a menores de 18 años.</p></div>';
     document.body.appendChild(pie);
 
     var meta = $('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', '#00457C');
@@ -121,7 +121,7 @@
         '<div class="paso paso--chico"><button class="paso__b" data-menos="' + x.p.id + '" aria-label="Quitar uno de ' + esc(x.p.nombre) + '">' + ic('minus') + '</button><span class="paso__n num">' + cantTxt(x.p, x.cant) + '</span><button class="paso__b" data-mas="' + x.p.id + '" aria-label="Agregar uno de ' + esc(x.p.nombre) + '"' + (x.cant >= x.p.stock ? ' disabled' : '') + '>' + ic('plus') + '</button></div>' +
         '<p class="linea__s num">' + pesos(x.subtotal) + '</p><button class="linea__x" data-quitar="' + x.p.id + '" aria-label="Sacar ' + esc(x.p.nombre) + ' del carrito">' + ic('trash-2') + '</button></li>';
     }).join('') + '</ul>';
-    pie.innerHTML = '<div class="cart__sub"><span>Subtotal</span><strong class="num">' + pesos(sub) + '</strong></div><p class="cart__nota">El envío se calcula al elegir tu zona.</p><a class="btn btn--amarillo btn--ancho" href="checkout.html">Seguir al pago</a>';
+    pie.innerHTML = '<div class="cart__sub"><span>Subtotal</span><strong class="num">' + pesos(sub) + '</strong></div><p class="cart__nota">El envío se calcula al elegir tu zona.' + (l.some(function (x) { return x.p.alcohol; }) ? ' Las bebidas alcohólicas son solo para mayores de 18 años.' : '') + '</p><a class="btn btn--amarillo btn--ancho" href="checkout.html">Seguir al pago</a>';
   }
 
   function eventos() {
@@ -253,7 +253,7 @@
     }
     function pintar() {
       if (!A.carrito.lineas().length) { cont.hidden = true; $('#vacio').hidden = false; return; }
-      cont.hidden = false; $('#vacio').hidden = true; resumen();
+      cont.hidden = false; $('#vacio').hidden = true; $('#campo-mayor').hidden = !A.carrito.lineas().some(function (x) { return x.p.alcohol; }); resumen();
     }
     $('#zona').innerHTML = '<option value="">Elegí tu zona</option>' + A.zonas().filter(function (z) { return z.activa; }).map(function (z) { return '<option value="' + z.id + '">' + esc(z.nombre) + ' · envío ' + pesos(z.costo) + '</option>'; }).join('');
     $('#zona').addEventListener('change', resumen);
@@ -261,7 +261,7 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       $$('.campo--error', form).forEach(function (c) { c.classList.remove('campo--error'); var er = $('.error', c); if (er) er.remove(); });
-      var d = { nombre: form.nombre.value, tel: form.tel.value, direccion: form.direccion.value, referencia: form.referencia.value, zona: form.zona.value };
+      var d = { nombre: form.nombre.value, tel: form.tel.value, direccion: form.direccion.value, referencia: form.referencia.value, zona: form.zona.value, mayor: form.mayor.checked };
       var r = A.crearPedido(d);
       if (!r.ok) {
         $('#form-error').textContent = r.error; $('#form-error').hidden = false;
