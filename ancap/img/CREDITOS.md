@@ -10,3 +10,4 @@ Todas son de muestra, para reemplazar por fotos reales de la estación (Ancap Sa
 
 - `ancap-logo.png` y `favicon.png` (la flecha del logo) — logo oficial de ANCAP, tomado de ancap.com.uy, usado con autorización del cliente. `og-ancap.jpg` lo compone sobre fondo azul.
 - `productos/p088.png` a `p095.png` (gin, whiskies, vinos y copas) — fotos del catálogo de Ancap Puntos (ancapuntos.com.uy), recortadas de las capturas que pasó Santi; los títulos y el precio de venta también salen de ahí. Las marcas son de sus dueños.
+- `productos/p096.png` a `p129.png` (bebidas y snacks) — fotos recortadas de las capturas de tiendainglesa.com.uy que pasó Santi, con sus títulos y precios. Las marcas son de sus dueños.

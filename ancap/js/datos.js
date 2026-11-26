@@ -8,7 +8,7 @@
    ============================================================ */
 (function () {
   'use strict';
-  var KEY = 'ag_v3', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
+  var KEY = 'ag_v4', KCART = 'ag_carrito_v1', KSES = 'ag_sesion_v1';
   var TZ = 'America/Montevideo';
   var CAT = window.AG_CATALOGO || { cats: [], prov: [], prods: [] };
 
@@ -76,7 +76,7 @@
     var rnd = mulberry32(26112026);
     var ahora = Date.now(), H = 3600000, D = 24 * H;
     var E = {
-      version: 3, sembrado: ahora,
+      version: 4, sembrado: ahora,
       negocio: {
         nombre: 'Ancap Santa María', direccion: 'Av. Gral. José Garibaldi 1902, esq. José L. Terra', barrio: 'Goes, Montevideo',
         horario: 'Abierto las 24 horas, todos los días', telefono: '2203 4196', telefonoLink: '+59822034196',
@@ -182,14 +182,14 @@
   var E = null, subs = [], canal = null, emitiendo = false;
   function cargar() {
     try { E = JSON.parse(localStorage.getItem(KEY)); } catch (e) { E = null; }
-    if (!E || E.version !== 3) { E = sembrar(); guardar(true); }
+    if (!E || E.version !== 4) { E = sembrar(); guardar(true); }
   }
   function guardar(silencioso) {
     try { localStorage.setItem(KEY, JSON.stringify(E)); } catch (e) { /* sin espacio o bloqueado: sigue en memoria */ }
     if (!silencioso) { try { if (canal) canal.postMessage({ t: 'cambio' }); } catch (e2) { } avisar('local'); }
   }
   function avisar(origen) { subs.forEach(function (f) { try { f(origen); } catch (e) { } }); }
-  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 3) E = n; } catch (e) { } }
+  function recargar() { try { var n = JSON.parse(localStorage.getItem(KEY)); if (n && n.version === 4) E = n; } catch (e) { } }
   try { canal = new BroadcastChannel('ag-cambios'); canal.onmessage = function () { recargar(); avisar('otra'); }; } catch (e) { canal = null; }
   window.addEventListener('storage', function (ev) { if (ev.key === KEY) { recargar(); avisar('otra'); } else if (ev.key === KCART) avisar('carrito'); });
 
@@ -223,6 +223,24 @@
     fijar: function (id, n) { var c = leerCarrito(); if (n > 0) c[id] = n; else delete c[id]; escribirCarrito(c); },
     quitar: function (id) { var c = leerCarrito(); delete c[id]; escribirCarrito(c); },
     vaciar: function () { escribirCarrito({}); }
+  };
+
+  /* ---------- cuenta del visitante: por ahora vive en este navegador ---------- */
+  var KPERFIL = 'ag_perfil_v1';
+  var perfil = {
+    get: function () { try { var p = JSON.parse(localStorage.getItem(KPERFIL)); return p && p.tel ? p : null; } catch (e) { return null; } },
+    guardar: function (d) {
+      var nombre = String(d.nombre || '').trim(), tel = celularUY(d.tel), dir = String(d.direccion || '').trim(), err = {};
+      if (nombre.length < 2) err.nombre = 'Escribí tu nombre.';
+      if (!tel) err.tel = 'Escribí un celular uruguayo, por ejemplo 099 123 456.';
+      if (dir.length < 4) err.direccion = 'Escribí la calle y el número.';
+      if (Object.keys(err).length) return { ok: false, campos: err, error: 'Revisá los datos marcados.' };
+      var p = { nombre: nombre, tel: tel, direccion: dir, zona: d.zona || '' };
+      try { localStorage.setItem(KPERFIL, JSON.stringify(p)); } catch (e) { }
+      avisar('perfil'); return { ok: true, perfil: p };
+    },
+    borrar: function () { try { localStorage.removeItem(KPERFIL); } catch (e) { } avisar('perfil'); },
+    pedidos: function () { var p = perfil.get(); if (!p) return []; recargar(); return E.pedidos.filter(function (x) { return x.cliente.tel === p.tel; }).sort(function (a, b) { return b.ts - a.ts; }); }
   };
 
   /* ---------- tienda: pedidos y consultas ---------- */
@@ -408,7 +426,7 @@
     get: function () { return E; }, recargar: recargar, suscribir: function (f) { subs.push(f); },
     negocio: function () { return E.negocio; }, categorias: function () { return E.categorias; }, productos: function () { return E.productos; },
     producto: prod, precioDe: precioDe, nivelStock: nivelStock, zonas: function () { return E.zonas; }, banners: function () { return E.banners; },
-    carrito: carrito, paso: paso, crearPedido: crearPedido, buscarPedido: buscarPedido, crearConsulta: crearConsulta,
+    carrito: carrito, perfil: perfil, paso: paso, crearPedido: crearPedido, buscarPedido: buscarPedido, crearConsulta: crearConsulta,
     sesion: sesion, ingresar: ingresar, salir: salir, puede: puede,
     cambiarEstado: cambiarEstado, guardarProducto: guardarProducto, ajustarStock: ajustarStock, guardarZona: guardarZona, borrarZona: borrarZona,
     guardarBanner: guardarBanner, borrarBanner: borrarBanner, actualizarConsulta: actualizarConsulta, crearCompra: crearCompra, recibirCompra: recibirCompra,

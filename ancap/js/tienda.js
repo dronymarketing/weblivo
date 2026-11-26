@@ -53,10 +53,10 @@
       '<span class="cab__franja-d"><span>' + ic('truck') + 'Entregamos en Goes y barrios cercanos</span><a href="tel:' + N.telefonoLink + '">' + ic('phone') + esc(N.telefono) + '</a></span></div></div>' +
       '<div class="cont cab__fila">' +
       '<a class="cab__logo" href="index.html" aria-label="ANCAP Santa María, ir al inicio">' + logo() + '</a>' +
-      '<a class="cab__llamar" href="tel:' + N.telefonoLink + '" aria-label="Llamar al local">' + ic('phone', 'icon--g') + '</a>' +
       '<button class="cab__menu" id="btn-menu" aria-label="Categorías" aria-expanded="false" aria-controls="hoja-menu">' + ic('menu', 'icon--g') + '<span class="cab__menu-t">Menú</span></button>' +
-      '<form class="busca" role="search" action="tienda.html" id="form-busca">' + ic('search') + '<label class="sr-only" for="q">Buscar productos</label><input id="q" name="q" type="search" placeholder="Buscar productos" autocomplete="off"></form>' +
+      '<form class="busca" role="search" action="tienda.html" id="form-busca">' + ic('search') + '<label class="sr-only" for="q">Buscar productos</label><input id="q" name="q" type="search" placeholder="Buscar" autocomplete="off"></form>' +
       '<nav class="cab__links" aria-label="Principal">' + lnk('tienda.html', 'Tienda', 'tienda') + lnk('servicios.html', 'Servicios', 'servicios') + '</nav>' +
+      '<button class="cab__usuario" id="btn-cuenta" aria-label="Mi cuenta">' + ic('user', 'icon--g') + '<span class="cab__usuario-p" data-perfil-punto hidden></span></button>' +
       '<button class="cab__carrito" id="btn-carrito" aria-label="Abrir el carrito">' + ic('shopping-cart', 'icon--g') + '<span class="cab__carrito-t num" data-total></span><span class="badge num" data-badge hidden></span></button>' +
       '<a class="btn btn--amarillo cab__pedido" href="pedido.html"' + (pagina === 'pedido' ? ' aria-current="page"' : '') + '>Mi pedido</a>' +
       '</div>';
@@ -70,10 +70,21 @@
     document.body.appendChild(tabs);
 
     var hoja = document.createElement('div'); hoja.className = 'hoja'; hoja.id = 'hoja-menu'; hoja.hidden = true; hoja.setAttribute('role', 'dialog'); hoja.setAttribute('aria-label', 'Menú'); hoja.setAttribute('aria-modal', 'true');
-    hoja.innerHTML = '<div class="hoja__velo" data-cerrar></div><div class="hoja__panel"><div class="hoja__cab"><h2>Categorías</h2><button class="hoja__x" data-cerrar aria-label="Cerrar">' + ic('x', 'icon--g') + '</button></div>' +
+    var mundo = function (h, i, txt, ok) { return '<li><a class="mundo' + (ok ? ' mundo--actual' : '') + '" href="' + h + '"><span class="mundo__i">' + ic(i, 'icon--g') + '</span><span class="mundo__t">' + txt + '</span>' + (ok ? '<span class="mundo__a">Estás acá' + ic('check') + '</span>' : '') + '</a></li>'; };
+    hoja.innerHTML = '<div class="hoja__velo" data-cerrar></div><div class="hoja__panel"><div class="hoja__cab"><span class="hoja__logo">' + logo() + '</span><button class="hoja__x" data-cerrar aria-label="Cerrar el menú">' + ic('x', 'icon--g') + '</button></div><div class="hoja__cuerpo">' +
+      '<form class="hoja__busca hoja__m" role="search" action="tienda.html"><label class="sr-only" for="q-menu">Buscar productos</label><input id="q-menu" name="q" type="search" placeholder="Buscar productos" autocomplete="off">' + ic('search') + '</form>' +
+      '<button class="btn btn--amarillo btn--ancho hoja__m hoja__cuenta" type="button" data-cuenta>Ingresar o crear cuenta</button>' +
+      '<a class="hoja__fila hoja__m" href="index.html"' + (pagina === 'inicio' ? ' aria-current="page"' : '') + '>' + ic('house', 'icon--g') + 'Inicio</a>' +
+      '<p class="hoja__rotulo hoja__m">Cambiá de sección</p><ul class="hoja__mundos hoja__m">' + mundo('tienda.html', 'store', 'Tienda', pagina === 'tienda' || pagina === 'checkout') + mundo('servicios.html', 'wrench', 'Servicios del auto', pagina === 'servicios') + mundo('pedido.html', 'package', 'Mi pedido', pagina === 'pedido') + '</ul>' +
+      '<a class="hoja__envio hoja__m" href="index.html#envios">' + ic('truck', 'icon--g') + '<span><small>Entregamos en:</small>Goes y barrios cercanos</span>' + ic('chevron-right') + '</a>' +
+      '<p class="hoja__rotulo">Categorías</p>' +
       '<ul class="hoja__lista">' + A.categorias().map(function (c, i) { return '<li style="--k:' + i + '"><a href="' + url(c) + '">' + esc(c) + ic('chevron-right') + '</a></li>'; }).join('') + '</ul>' +
-      '<ul class="hoja__lista hoja__lista--sec"><li style="--k:11"><a href="tienda.html?oferta=1">Ofertas' + ic('chevron-right') + '</a></li><li style="--k:12"><a href="servicios.html">Servicios del auto' + ic('chevron-right') + '</a></li><li style="--k:13"><a href="pedido.html">Seguir mi pedido' + ic('chevron-right') + '</a></li></ul></div>';
+      '<ul class="hoja__lista hoja__lista--sec"><li style="--k:12"><a href="tienda.html?oferta=1">' + ic('badge-percent') + 'Ofertas' + ic('chevron-right') + '</a></li><li style="--k:13" class="hoja__d"><a href="servicios.html">' + ic('wrench') + 'Servicios del auto' + ic('chevron-right') + '</a></li><li style="--k:14" class="hoja__d"><a href="pedido.html">' + ic('package') + 'Seguir mi pedido' + ic('chevron-right') + '</a></li><li style="--k:15" class="hoja__m"><a href="' + N.mapa + '" target="_blank" rel="noopener">' + ic('map-pin') + 'Cómo llegar' + ic('chevron-right') + '</a></li><li style="--k:16" class="hoja__m"><a href="tel:' + N.telefonoLink + '">' + ic('phone') + 'Llamar al ' + esc(N.telefono) + ic('chevron-right') + '</a></li></ul></div></div>';
     document.body.appendChild(hoja);
+
+    var cu = document.createElement('div'); cu.className = 'sheet'; cu.id = 'sheet-cuenta'; cu.hidden = true; cu.setAttribute('role', 'dialog'); cu.setAttribute('aria-modal', 'true'); cu.setAttribute('aria-label', 'Mi cuenta');
+    cu.innerHTML = '<div class="sheet__velo" data-cerrar></div><div class="sheet__panel"><div class="sheet__cab"><h2>Mi cuenta</h2><button class="hoja__x" data-cerrar aria-label="Cerrar">' + ic('x', 'icon--g') + '</button></div><div class="sheet__cuerpo" id="cuenta-cuerpo"></div></div>';
+    document.body.appendChild(cu);
 
     var car = document.createElement('div'); car.className = 'cart'; car.id = 'cart'; car.hidden = true; car.setAttribute('role', 'dialog'); car.setAttribute('aria-modal', 'true'); car.setAttribute('aria-label', 'Carrito');
     car.innerHTML = '<div class="cart__velo" data-cerrar></div><aside class="cart__panel"><div class="cart__cab"><h2>Tu carrito</h2><button class="hoja__x" data-cerrar aria-label="Cerrar el carrito">' + ic('x', 'icon--g') + '</button></div><div class="cart__cuerpo" id="cart-cuerpo"></div><div class="cart__pie" id="cart-pie"></div></aside>';
@@ -98,14 +109,38 @@
   var ultimoFoco = null;
   function abrir(el, disparador) {
     ultimoFoco = disparador || document.activeElement; el.hidden = false; document.documentElement.classList.add('bloqueado');
-    requestAnimationFrame(function () { el.classList.add('abierto'); var f = $('button, a', el.querySelector('.hoja__panel, .cart__panel')); if (f) foco(f); });
+    requestAnimationFrame(function () { el.classList.add('abierto'); var f = $('button, a, input', el.querySelector('.hoja__panel, .cart__panel, .sheet__panel')); if (f) foco(f); });
   }
   function cerrar(el) {
     el.classList.remove('abierto'); var bm = $('#btn-menu'); if (bm) bm.setAttribute('aria-expanded', 'false'); document.documentElement.classList.remove('bloqueado');
     setTimeout(function () { el.hidden = true; }, 350);
     if (ultimoFoco) foco(ultimoFoco);
   }
-  function abiertas() { return $$('.hoja.abierto, .cart.abierto'); }
+  function abiertas() { return $$('.hoja.abierto, .cart.abierto, .sheet.abierto'); }
+
+  /* ---------- Mi cuenta (por ahora se guarda en este navegador) ---------- */
+  function campoC(nombre, etq, valor, extra) { return '<label class="campo"><span>' + etq + '</span><input name="' + nombre + '" value="' + esc(valor || '') + '" ' + (extra || '') + '></label>'; }
+  function formCuenta(p) {
+    return '<form id="form-cuenta" novalidate><p class="suave">Guardá tus datos y los completamos solos cuando hacés un pedido.</p>' +
+      campoC('nombre', 'Nombre', p && p.nombre, 'autocomplete="name"') + campoC('tel', 'Celular', p && p.tel ? A.fmtCel(p.tel) : '', 'type="tel" inputmode="tel" placeholder="099 123 456" autocomplete="tel"') +
+      campoC('direccion', 'Calle y número', p && p.direccion, 'autocomplete="street-address"') +
+      '<label class="campo"><span>Zona</span><select name="zona"><option value="">Elegí tu zona</option>' + A.zonas().filter(function (z) { return z.activa; }).map(function (z) { return '<option value="' + z.id + '"' + (p && p.zona === z.id ? ' selected' : '') + '>' + esc(z.nombre) + '</option>'; }).join('') + '</select></label>' +
+      '<p class="aviso-caja">' + ic('info') + 'Por ahora tus datos quedan en este navegador. Cuando se conecte la base real vas a poder ingresar con tu mail y tu contraseña desde cualquier aparato.</p>' +
+      '<p class="aviso-caja aviso-caja--error" id="cuenta-error" role="alert" hidden></p><button class="btn btn--ancho" type="submit">Guardar mis datos</button></form>';
+  }
+  function pintarCuenta(editar) {
+    var p = A.perfil.get(), c = $('#cuenta-cuerpo'); if (!c) return;
+    if (!p || editar) { c.innerHTML = formCuenta(p); return; }
+    var ps = A.perfil.pedidos().slice(0, 5);
+    c.innerHTML = '<div class="cuenta__hola"><span class="cuenta__ini">' + esc(p.nombre.charAt(0).toUpperCase()) + '</span><div><strong>Hola, ' + esc(p.nombre.split(' ')[0]) + '</strong><small>' + esc(A.fmtCel(p.tel)) + ' · ' + esc(p.direccion) + '</small></div></div>' +
+      '<h3>Mis pedidos</h3>' + (ps.length ? '<ul class="cuenta__peds">' + ps.map(function (x) { return '<li><a href="pedido.html?n=' + x.num + '" data-pedido="' + x.num + '"><span><strong>#' + x.num + '</strong><small>' + A.fecha(x.ts) + '</small></span><span class="num">' + pesos(x.total) + '</span><span class="pill pill--' + x.estado + '">' + A.ESTADO_TXT[x.estado] + '</span></a></li>'; }).join('') + '</ul>' : '<p class="suave">Todavía no hiciste pedidos con este celular.</p>') +
+      '<div class="cuenta__acc"><button class="btn btn--borde" type="button" data-cuenta-editar>Editar mis datos</button><button class="btn btn--borde btn--peligro-b" type="button" data-cuenta-borrar>Borrar mis datos</button></div>';
+  }
+  function marcarPerfil() { var on = !!A.perfil.get(); $$('[data-perfil-punto]').forEach(function (d) { d.hidden = !on; }); }
+  function abrirCuenta(disparador) {
+    var m = $('#hoja-menu'); if (m && m.classList.contains('abierto')) cerrar(m);
+    pintarCuenta(false); abrir($('#sheet-cuenta'), disparador);
+  }
 
   function pintarCarrito() {
     var l = A.carrito.lineas(), sub = A.carrito.total(), n = l.length;
@@ -126,17 +161,28 @@
 
   function eventos() {
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-mas],[data-menos],[data-quitar],[data-cerrar],#btn-menu,#btn-carrito,#btn-carrito-2'); if (!t) return;
+      var t = e.target.closest('[data-mas],[data-menos],[data-quitar],[data-cerrar],[data-cuenta],[data-cuenta-editar],[data-cuenta-borrar],[data-pedido],#btn-cuenta,#btn-menu,#btn-carrito,#btn-carrito-2'); if (!t) return;
       if (t.hasAttribute('data-mas')) { A.carrito.sumar(t.getAttribute('data-mas'), 1); rebote(); }
       else if (t.hasAttribute('data-menos')) A.carrito.sumar(t.getAttribute('data-menos'), -1);
       else if (t.hasAttribute('data-quitar')) A.carrito.quitar(t.getAttribute('data-quitar'));
-      else if (t.hasAttribute('data-cerrar')) { var h = t.closest('.hoja, .cart'); if (h) cerrar(h); }
+      else if (t.hasAttribute('data-cerrar')) { var h = t.closest('.hoja, .cart, .sheet'); if (h) cerrar(h); }
+      else if (t.hasAttribute('data-cuenta') || t.id === 'btn-cuenta') abrirCuenta(t.id === 'btn-cuenta' ? t : $('#btn-cuenta'));
+      else if (t.hasAttribute('data-cuenta-editar')) pintarCuenta(true);
+      else if (t.hasAttribute('data-cuenta-borrar')) { A.perfil.borrar(); pintarCuenta(false); marcarPerfil(); }
+      else if (t.hasAttribute('data-pedido')) { var pf = A.perfil.get(); try { sessionStorage.setItem('ag_ultimo', JSON.stringify({ n: t.getAttribute('data-pedido'), t: pf && pf.tel })); } catch (x) { } }
       else if (t.id === 'btn-menu') { var hm = $('#hoja-menu'); if (hm.classList.contains('abierto')) cerrar(hm); else { abrir(hm, t); t.setAttribute('aria-expanded', 'true'); } }
       else abrir($('#cart'), t);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { abiertas().forEach(cerrar); var b = $('#btn-menu'); if (b) b.setAttribute('aria-expanded', 'false'); } });
-    $$('.hoja a').forEach(function (a) { a.addEventListener('click', function () { var h = a.closest('.hoja'); if (h) cerrar(h); }); });
-    A.suscribir(function () { pintarCarrito(); pintarAcciones(document); if (window.__refrescar) window.__refrescar(); });
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('#form-cuenta'); if (!f) return; e.preventDefault();
+      $$('.campo--error', f).forEach(function (c) { c.classList.remove('campo--error'); var er = $('.error', c); if (er) er.remove(); });
+      var r = A.perfil.guardar({ nombre: f.nombre.value, tel: f.tel.value, direccion: f.direccion.value, zona: f.zona.value });
+      if (!r.ok) { $('#cuenta-error').textContent = r.error; $('#cuenta-error').hidden = false; Object.keys(r.campos).forEach(function (k) { var c = f[k] && f[k].closest('.campo'); if (c) { c.classList.add('campo--error'); c.insertAdjacentHTML('beforeend', '<span class="error">' + esc(r.campos[k]) + '</span>'); } }); return; }
+      marcarPerfil(); pintarCuenta(false);
+    });
+    $$('.hoja__lista a, .hoja__fila, .hoja__mundos a, .hoja__envio').forEach(function (a) { a.addEventListener('click', function () { var h = a.closest('.hoja'); if (h) cerrar(h); }); });
+    A.suscribir(function () { pintarCarrito(); pintarAcciones(document); marcarPerfil(); if (window.__refrescar) window.__refrescar(); });
   }
   function rebote() { $$('[data-badge]').forEach(function (b) { b.classList.remove('rebote'); void b.offsetWidth; b.classList.add('rebote'); }); }
 
@@ -256,6 +302,7 @@
       cont.hidden = false; $('#vacio').hidden = true; $('#campo-mayor').hidden = !A.carrito.lineas().some(function (x) { return x.p.alcohol; }); resumen();
     }
     $('#zona').innerHTML = '<option value="">Elegí tu zona</option>' + A.zonas().filter(function (z) { return z.activa; }).map(function (z) { return '<option value="' + z.id + '">' + esc(z.nombre) + ' · envío ' + pesos(z.costo) + '</option>'; }).join('');
+    var pf = A.perfil.get(); if (pf) { form.nombre.value = pf.nombre; form.tel.value = A.fmtCel(pf.tel); form.direccion.value = pf.direccion; if (pf.zona) $('#zona').value = pf.zona; }
     $('#zona').addEventListener('change', resumen);
     window.__refrescar = pintar;
     form.addEventListener('submit', function (e) {
@@ -332,7 +379,7 @@
   }
 
   /* ---------- arranque ---------- */
-  chrome(); eventos(); pintarCarrito();
+  chrome(); eventos(); pintarCarrito(); marcarPerfil();
   ({ inicio: inicio, tienda: catalogo, checkout: checkout, pedido: pedido, servicios: servicios }[pagina] || function () { })();
   reveal();
 })();

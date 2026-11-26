@@ -29,6 +29,14 @@ El nombre en pantalla es **Ancap Santa María**, que es como figura en directori
   **título, foto y precio de VENTA**; los puntos se ignoran a pedido suyo. Son datos reales de ese catálogo (stock y mínimo de ejemplo). Como llevan alcohol, los productos tienen marca **+18** y,
   si el carrito incluye alguno, el checkout exige confirmar que es mayor de 18 (el pedido queda con `mayor18` y el panel avisa que hay que pedir la cédula al entregar).
   **PENDIENTE:** confirmar con la clienta/contador el texto legal de venta de alcohol y si el envío de alcohol a domicilio tiene horarios o restricciones. Faltan el resto de las categorías de Ancap Puntos (se cargan igual que estas, con capturas).
+- **Productos de Tienda Inglesa / Express (26/11):** Santi pasó capturas de bebidas y snacks y se cargaron **34 productos** (24 en «Bebidas», 10 en «Kiosco y golosinas»: Coca-Cola, Salus, Vitale,
+  Sprite, Schweppes, Pepsi, Citric, Paso de los Toros, snacks) con **título, foto y precio**; donde la fuente mostraba «Antes $ X» quedó como oferta real (Coca-Cola Zero 250 ml, Citric 1,5 L, Paso de los
+  Toros pomelo). Las promos de pack («2x$289», «3x$199») no se cargaron. Los precios son de esa fuente en esa fecha: **PENDIENTE** confirmar los precios propios de la estación. Algunos productos genéricos de
+  La Estrella (agua, cola, refresco de naranja) quedan repetidos con los de marca: se pueden ocultar desde el panel.
+- **Cuenta del visitante:** ícono de usuario a la izquierda del carrito. Abre «Mi cuenta»: guarda nombre, celular, dirección y zona **en este navegador** (sin contraseña), completa el checkout solo y lista los pedidos
+  hechos con ese celular. **PENDIENTE (base real):** registro e ingreso con mail y contraseña, cuentas por aparato, direcciones múltiples.
+- **Menú de la hamburguesa (celular):** cajón lateral a la manera de Tienda Express: buscador, botón «Ingresar o crear cuenta», Inicio, «Cambiá de sección» (Tienda, Servicios del auto, Mi pedido, con «Estás acá» en la actual),
+  tarjeta «Entregamos en», categorías y accesos. En escritorio el botón MENÚ despliega solo las categorías. Se quitó el ícono de teléfono del encabezado (el número sigue en el menú, el pie y la franja de escritorio).
 - **Ancap Puntos:** `ancapuntos.com.uy/estaciones-ancap` muestra una verificación anti-robots y no se pudo leer. Es el programa de canje de la tarjeta BROU ANCAP (catálogo de 200+ productos y
   canje por combustible). **PENDIENTE:** que Santi pegue o capture esa página (productos, estaciones) y, si la estación participa, sumar «Sumá ANCAPuntos» a la tienda.
 - Paquete de movimiento **«Fundar»** (apariciones al entrar en pantalla, microtransiciones de 0,3 s). Sin glassmorphism. Íconos Lucide; WhatsApp e Instagram de Simple Icons.

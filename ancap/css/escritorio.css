@@ -5,7 +5,7 @@
    ============================================================ */
 
 /* ---------- Encabezado: franja + una fila ---------- */
-.tabs, .cab__llamar { display: none; }
+.tabs { display: none; }
 .cab__franja { display: block; height: 36px; background: var(--azul-oscuro); font-size: 13px; }
 .cab__franja-i { display: flex; align-items: center; justify-content: space-between; height: 36px; }
 .cab__franja span, .cab__franja a { display: inline-flex; align-items: center; gap: 8px; color: #E3EDF5; text-decoration: none; }
@@ -28,16 +28,22 @@
 .cab__carrito-t:empty { display: none; }
 .cab__carrito-t { display: inline; }
 .cab__pedido { display: inline-flex; min-height: 48px; padding: 0 20px; font-weight: 800; }
+.cab__usuario { width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.4); border-radius: var(--radio); background: transparent; transition: background var(--dur-micro) var(--ease); }
+.cab__usuario:hover { background: rgba(255,255,255,.12); }
+.cab__usuario-p { top: 9px; right: 9px; }
 
 /* ---------- Categorías: panel que cuelga del encabezado ---------- */
 .hoja { z-index: 45; }
 .hoja__velo { background: rgba(0, 20, 40, .28); }
-.hoja__panel { top: var(--nav-alto); bottom: auto; left: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral))); right: auto; width: 600px; max-height: calc(100vh - var(--nav-alto) - 24px); border-radius: 0 0 14px 14px; transform: translateY(-14px); opacity: 0; transition: transform var(--dur-cierre) var(--ease), opacity var(--dur-cierre) var(--ease); }
+.hoja__panel { top: var(--nav-alto); bottom: auto; left: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral))); right: auto; width: 600px; max-width: none; max-height: calc(100vh - var(--nav-alto) - 24px); overflow: auto; background: #fff; border-radius: 0 0 14px 14px; transform: translateY(-14px); opacity: 0; transition: transform var(--dur-cierre) var(--ease), opacity var(--dur-cierre) var(--ease); }
 .hoja.abierto .hoja__panel { transform: none; opacity: 1; }
-.hoja__cab { display: none; }
-.hoja__lista { display: grid; grid-template-columns: 1fr 1fr; padding: 10px 14px 0; column-gap: 20px; }
-.hoja__lista a { padding: 0 6px; min-height: 48px; font-size: 16px; }
-.hoja__lista--sec { margin: 8px 0 0; padding: 8px 14px; }
+.hoja__cab, .hoja__m, .hoja__rotulo { display: none; }
+.hoja__d { display: list-item; }
+.hoja__cuerpo { display: block; padding: 8px 14px 14px; overflow: visible; }
+.hoja__lista { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; border: 0; border-radius: 0; background: transparent; }
+.hoja__lista a { padding: 0 6px; min-height: 48px; font-size: 16px; border-bottom: 1px solid var(--linea-suave); }
+.hoja__lista--sec { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--linea); }
+.hoja__lista--sec a svg:first-child { display: none; }
 
 /* ---------- Carrito: panel lateral ---------- */
 .cart__panel { left: auto; top: 0; width: 430px; max-height: none; border-radius: 0; transform: translateX(100%); padding-bottom: 0; }
@@ -169,3 +175,8 @@ thead th { font-size: 12px; }
 .checks { grid-template-columns: 1fr 1fr; }
 
 .carril { scroll-padding-inline: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral))); }
+
+/* ---------- Hoja «Mi cuenta»: ventana centrada ---------- */
+.sheet__panel { left: 50%; right: auto; top: 50%; bottom: auto; width: 460px; max-width: calc(100vw - 48px); max-height: 86vh; border-radius: 14px; transform: translate(-50%, -46%); opacity: 0; padding-bottom: 0; transition: transform var(--dur-cierre) var(--ease), opacity var(--dur-cierre) var(--ease); }
+.sheet.abierto .sheet__panel { transform: translate(-50%, -50%); opacity: 1; }
+.sheet__cab { padding: 18px 12px 6px 28px; } .sheet__cuerpo { padding: 8px 28px 28px; }
