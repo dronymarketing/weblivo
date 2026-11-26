@@ -195,15 +195,15 @@ async function atender(msj, numeroId, env) {
 
 /* ---------- Entender la pregunta (palabras clave, sin IA) ---------- */
 const TEMAS = [
-  ['ayuda', /\b(ayuda|menu|opciones|que (me )?(podes|puedo|sabes)|como (te )?(uso|funciona)s?|comandos)\b/],
-  ['resumen', /\b(resumen|como (viene|va|vamos|venimos|estamos|anda|andamos)|novedades|todo el dia|en general)\b/],
-  ['deudores', /deud|fiad|fio\b|fiaron|a cuenta|cuenta corriente|\bdeb(e|en)\b|moros|cobrar a/],
-  ['top', /mas vendid|vende mas|se vende mas|vendio mas|mas se vendio|mas se vende|mejor(es)? (producto|venta)|\btop\b|lo que mas/],
-  ['caja', /\bcaja\b|arqueo|turno/],
-  ['stock', /\bstock\b|falt(a|an|ando)|repon|reposicion|agotad|se acab|sin stock|quedan?\b|minimo|\bpedir\b/],
+  ['ayuda', /\b(ayuda|menu|opciones|que (me )?(podes|puedo|sabes|haces)|como (te )?(uso|funciona)s?|comandos|para que servis)\b/],
+  ['resumen', /\b(resumen|como (viene|va|vamos|venimos|estamos|anda|andamos|nos fue|fue|esta) (el |la |todo|hoy)?(dia|cosa|semana|negocio|almacen)?|novedades|todo el dia|en general|que tal (el dia|vamos|todo)|como andamos)\b/],
+  ['deudores', /deud|fiad|\bfio\b|fiaron|fiamos|\bfie\b|a cuenta|cuenta corriente|\bdeb(e|en|ia|iendo)\b|moros|cobrar a|me deben|pendiente de pago|sin pagar/],
+  ['top', /mas vendid|vende mas|se vende mas|vendio mas|mas se vendio|mas se vende|mejor(es)? (producto|venta)|\btop\b|lo que mas|que mas sale|mas sale/],
+  ['caja', /\bcaja\b|cajon|arqueo|turno/],
+  ['stock', /\bstock\b|\bstok\b|\bstoc\b|\bestoc\b|falt(a|an|ando)|repon|reposicion|agotad|se acab|se esta acabando|sin stock|quedan?\b|minimo|\bpedir\b|hay que (comprar|pedir|reponer)|que (compro|pido|tengo que (comprar|pedir))|queda poco|poco stock|bajo de/],
   ['compras', /\bcompras?\b|proveedor|mercaderia|pedidos? a/],
-  ['equipo', /emplead|\bequipo\b|\bpersonal\b|trabaj|cajer[ao]s?|quien(es)? (esta|estan|vino|vinieron)/],
-  ['ventas', /\bvend|factur|\bcobr|recaud|\bplata\b|ingres|gananci|\bgane\b|ganamos|dinero|\bpesos\b|tarjeta|transferencia|efectivo|\bqr\b|debito|credito|cuanto (hice|hicimos|saque|sacamos|entro|entraron)|tickets?|ventas?/]
+  ['equipo', /emplead|\bequipo\b|\bpersonal\b|trabaj|laburand|cajer[ao]s?|atend(iendo|ido|iendo)|quien(es)? (esta|estan|vino|vinieron|atiende|hay)/],
+  ['ventas', /\bvend|factur|\bcobr|recaud|\bplata\b|\bguita\b|\bmangos?\b|ingres|gananci|\bgane\b|ganamos|dinero|\bpesos\b|tarjeta|transferencia|efectivo|\bqr\b|debito|credito|cuanto (hice|hicimos|saque|sacamos|entro|entraron|cayo|cayeron|junte|juntamos)|tickets?|ventas?/]
 ];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const GRACIAS = /^(muchas |mil )?(gracias|genial|perfecto|buenisimo|joya|barbaro|excelente|ok|okey|oka|listo|dale|bien|impecable|crack|bueno|ta|vale)( (gracias|crack|joya|genial))*$/;
@@ -211,7 +211,55 @@ const SALUDO = /^(hola|holis|buenas|buen dia|buenos dias|buenas tardes|buenas no
 
 function normalizar(t) {
   return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/setiembre/g, 'septiembre')
-    .replace(/[^a-z0-9ñ ]+/g, ' ').replace(/\s+/g, ' ').trim();
+    .replace(/(.)\1{2,}/g, '$1')                       // holaaa → hola, graciasss → gracias
+    .replace(/[^a-z0-9ñ ]+/g, ' ')
+    .replace(/\b(q|k)\b/g, 'que').replace(/\bxq\b|\bporq\b/g, 'porque').replace(/\boy\b/g, 'hoy').replace(/\bayr\b/g, 'ayer')
+    .replace(/\bkien(es)?\b/g, 'quien$1').replace(/\bcuanta?s?\b(?= que\b)/g, 'cuanto')
+    .replace(/\s+/g, ' ').trim();
+}
+
+/* Errores de ortografía: cada palabra se compara con el vocabulario del asistente y, si está a una o dos letras de distancia
+   de una sola, se corrige («bendi» → «vendi», «stok» → «stock», «deudoes» → «deudores»). Las palabras cortas y los nombres no se tocan. */
+const VOCAB = ['cuanto', 'cuantos', 'cuanta', 'vendi', 'vendido', 'vendimos', 'vendio', 'vendiste', 'ventas', 'caja', 'cajon', 'stock', 'reponer',
+  'falta', 'faltan', 'deudores', 'deudor', 'debe', 'deben', 'debiendo', 'fiado', 'fiados', 'resumen', 'ayer', 'semana', 'efectivo', 'tarjeta',
+  'transferencia', 'plata', 'facturado', 'facturamos', 'proveedor', 'mercaderia', 'trabajando', 'empleados', 'cajera', 'quien',
+  'quienes', 'tengo', 'quedan', 'precio', 'ayuda', 'gracias', 'vendio', 'hicimos', 'debito', 'credito', 'ganancia', 'reponer', 'agotado'];
+function distancia(a, b) {
+  const m = a.length, n = b.length; if (Math.abs(m - n) > 2) return 9;
+  const d = Array.from({ length: m + 1 }, (_, i) => [i].concat(new Array(n).fill(0)));
+  for (let j = 0; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+  }
+  return d[m][n];
+}
+function corregir(t) {
+  return t.split(' ').map((w) => {
+    if (w.length < 5 || /\d/.test(w) || VOCAB.includes(w)) return w;
+    const max = w.length >= 8 ? 2 : 1;
+    let mejor = null, dmin = 9, empate = false;
+    for (const v of VOCAB) {
+      const d = distancia(w, v);
+      if (d < dmin) { dmin = d; mejor = v; empate = false; } else if (d === dmin && v !== mejor) empate = true;
+    }
+    return dmin <= max && !empate ? mejor : w;
+  }).join(' ');
+}
+
+/* Palabras que NO son el nombre de un deudor («cuánto deben los deudores», «quién me debe plata») */
+const NO_DEUDOR = new Set(['los', 'las', 'lo', 'el', 'la', 'de', 'del', 'al', 'a', 'me', 'nos', 'le', 'les', 'se', 'y', 'o', 'que', 'en', 'por', 'con', 'sin', 'cuanto', 'cuanta', 'cuantos',
+  'cuantas', 'quien', 'quienes', 'todos', 'todas', 'todo', 'toda', 'deudores', 'deudor', 'deudora', 'clientes', 'cliente', 'personas', 'persona', 'gente', 'vecinos', 'vecino', 'total', 'hoy', 'ayer',
+  'mes', 'semana', 'ano', 'plata', 'guita', 'dinero', 'fiado', 'fiados', 'fiaron', 'fiamos', 'cuenta', 'cuentas', 'dia', 'estan', 'esta', 'son', 'hay', 'tengo', 'tenemos', 'debiendo',
+  'debe', 'debia', 'deben', 'deuda', 'deudas', 'pendiente', 'pendientes', 'pagar', 'pago', 'pagaron', 'cobrar', 'general', 'lista', 'todavia', 'aun', 'ahora', 'mas', 'menos', 'ese', 'esa',
+  'eso', 'esos', 'esas', 'mi', 'mis', 'tu', 'su', 'tiene', 'tienen', 'tiendas', 'tienda', 'almacen', 'negocio', 'resumen', 'por', 'favor', 'porfa', 'gracias', 'hola', 'buenas', 'saldo', 'estado', 'moros', 'morosos']);
+function candidatosDeudor(t) {
+  return t.split(' ').filter((w) => w.length >= 3 && !NO_DEUDOR.has(w) && !MESES.includes(w) && !/^(deud|fiad|debi|cuant|vend|period)/.test(w));
+}
+function coincide(c, nombre) {
+  return normalizar(nombre).split(' ').some((x) => x === c || (c.length >= 3 && x.startsWith(c)) || (c.length >= 4 && distancia(x, c) <= 1));
 }
 
 // «stock de arroz», «a cuánto está la yerba», «cuánto cuesta el aceite» → el producto que se nombra
@@ -227,13 +275,13 @@ function buscarProducto(t) {
     const m = t.match(re);
     if (!m) continue;
     const v = m[1].replace(CORTE, '').replace(/^(el|la|los|las|un|una)\s+/, '').trim();
-    if (v.length >= 3 && !/^(stock|ventas?|caja|deudas?|falta|dinero|plata)$/.test(v)) return v;
+    if (v.length >= 3 && !/^(stock|ventas?|caja|deudas?|falta|dinero|plata)$/.test(v) && !TEMAS.some(([, re]) => re.test(v))) return v;
   }
   return null;
 }
 
 function interpretar(texto, ahora) {
-  const t = normalizar(texto);
+  const t = corregir(normalizar(texto));
   const r = (temas, extra) => Object.assign({ texto: t, temas, periodo: periodo(t, ahora), producto: null, deudor: null }, extra);
   if (GRACIAS.test(t)) return r(['gracias']);
   const producto = buscarProducto(t);
@@ -245,10 +293,7 @@ function interpretar(texto, ahora) {
   if (temas.includes('ayuda') && temas.length > 1) temas = temas.filter((x) => x !== 'ayuda');
   if (temas.includes('compras') && temas.includes('stock')) temas = temas.filter((x) => x !== 'compras');
   let deudor = null;
-  if (temas.includes('deudores')) {
-    const m = t.match(/\b(?:debe|deben|deuda de|le debe|cuenta de|fiado a|fio a|fiaron a|cuanto debe)\s+(?:el |la |don |dona )?([a-zñ]{3,}(?: [a-zñ]{3,})?)/);
-    if (m && !/^(hoy|ayer|plata|total|todos|todo|semana|mes|ano)$/.test(m[1])) deudor = m[1];
-  }
+  if (temas.includes('deudores')) { const c = candidatosDeudor(t); if (c.length) deudor = c.slice(0, 3); }
   if (!temas.length && SALUDO.test(t)) temas = ['ayuda'];
   // «¿y ayer?», «esta semana»: solo el período, se entiende que sigue hablando de lo vendido
   if (!temas.length && periodo(t, ahora).clave !== 'hoy') temas = ['ventas'];
@@ -362,8 +407,8 @@ function stock(f) {
 function deudores(p, f) {
   const d = f.deudores;
   if (p.deudor) {
-    const hallados = d.lista.filter((x) => normalizar(x.nombre).includes(p.deudor));
-    if (!hallados.length) return '🔎 No encontré a nadie llamado «' + p.deudor + '» con deuda.';
+    const hallados = d.lista.filter((x) => p.deudor.some((c) => coincide(c, x.nombre)));
+    if (!hallados.length) return '🔎 No encontré a nadie llamado «' + p.deudor.join(' ') + '» con deuda.' + (d.n ? '\n\n' + deudores({ deudor: null }, f) : '');
     return hallados.slice(0, 5).map((x) => '🤝 *' + x.nombre + '* debe *' + plata(x.saldo) + '*' + (x.limite ? '\nLímite ' + plata(x.limite) + ' · usa el ' + Math.round(x.saldo * 100 / x.limite) + ' %' : '\nSin límite')).join('\n\n');
   }
   if (!d.n) return '✅ *Deudores*\nNadie debe nada.';

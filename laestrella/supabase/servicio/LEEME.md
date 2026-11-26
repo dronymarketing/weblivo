@@ -96,3 +96,5 @@ mandarle un `hola` al asistente cada mañana. Si querés que avise siempre, aunq
 
 Instalación: correr `esquema.sql` (o el archivo corto de avisos) y pegar el `worker.js` nuevo. No hace falta otra variable ni otro webhook:
 usa la misma dirección que los avisos a deudores (`/aviso` → `/evento`).
+
+- **Frases:** `node supabase/servicio/prueba-frases.mjs` prueba 34 maneras de preguntar (jerga, abreviaturas, errores de ortografía) contra un Meta y una base simulados. El asistente corrige palabras mal escritas (`corregir()`), entiende «q», «oy», «holaaa», «stok», «guita», «laburando» y no confunde «los deudores» con un nombre. Al sumar un rubro nuevo, agregar sus frases ahí.

@@ -165,3 +165,5 @@ El panel se actualiza solo cada ~8 s. **No redibujar la sección si el usuario e
 escribiendo** o tiene un formulario con cambios sin guardar (se borraba lo escrito en
 los formularios que no están en una ventana), y **conservar el scroll** al redibujar.
 Implementación en `laestrella/js/panel.js` (`escribiendo()` y `P.alActualizar`).
+
+- **Entender a la gente:** el cliente escribe como habla: jerga, abreviaturas, faltas de ortografía, audios. El Worker corrige palabras cercanas al vocabulario (distancia de edición, con letras cambiadas de lugar) y NO toca palabras cortas ni nombres. Cuidado con vocabulario que se parece a otro significado («comprar» ≠ «compras», «cuenta» ≠ «cuesta»). Siempre dejar un archivo de pruebas de frases (`laestrella/supabase/servicio/prueba-frases.mjs`).
