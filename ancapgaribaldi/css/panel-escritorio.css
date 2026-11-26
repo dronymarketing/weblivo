@@ -1,0 +1,57 @@
+/* ============================================================
+   ANCAP SANTA MARÍA — panel de atrás · SOLO lo que cambia de 768px para arriba
+   ============================================================ */
+
+/* ---------- Ingreso a dos columnas ---------- */
+.ing { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+.ing__izq { padding: 56px 64px; align-content: space-between; }
+.ing__t h1 { font-size: 46px; max-width: 14ch; }
+.ing__der { display: grid; align-content: center; padding: 56px 64px; }
+
+/* ---------- Estructura: barra lateral fija ---------- */
+.app { display: grid; grid-template-columns: 252px 1fr; align-items: start; }
+.lado { position: sticky; top: 0; z-index: 20; height: 100vh; height: 100svh; width: auto; max-width: none; transform: none; }
+.lado__x, .barra__menu, .velo-lado { display: none; }
+.barra { padding: 0 24px; height: 64px; }
+.barra h1 { font-size: 22px; padding-left: 4px; }
+.reloj { display: block; }
+.cuerpo { padding: 28px 32px 64px; }
+.cab-sec h2 { font-size: 26px; }
+
+/* ---------- Indicadores y cajas ---------- */
+.kpis { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.kpi { padding: 18px; } .kpi__v { font-size: 32px; }
+.panel-c { padding: 22px; margin-bottom: 18px; }
+.dos { grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; } .dos > .panel-c { margin-bottom: 0; }
+.graf__y, .graf__cols { height: 230px; }
+
+/* ---------- Pedidos y consultas: tarjetas en grilla ---------- */
+.pedidos { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.ped > footer .btn { flex: 0 1 auto; }
+
+/* ---------- Modales centrados ---------- */
+.modal { align-items: center; }
+.modal__caja { width: 560px; max-width: calc(100vw - 48px); border-radius: 14px; transform: translateY(16px) scale(.98); opacity: 0; transition: transform 320ms var(--ease), opacity 240ms var(--ease); }
+.modal.abierto .modal__caja { opacity: 1; }
+.modal__caja--chico { width: 440px; } .modal__caja--medio { width: 680px; }
+.modal__cuerpo { padding: 8px 28px 24px; } .modal__cab { padding: 16px 16px 6px 28px; } .modal__pie { padding: 14px 28px; } .modal__pie .btn { flex: 0 0 auto; }
+.avisos li.nuevo { margin: 0 -28px; padding-inline: 28px; }
+.acc-fila--fin .btn { flex: 0 0 auto; }
+#toasts { left: auto; right: 24px; top: auto; bottom: 24px; justify-items: end; }
+
+/* ---------- Formularios y tablas ---------- */
+.form-g { grid-template-columns: 1fr 1fr; }
+.barra-f { grid-template-columns: minmax(260px, 1fr) 220px 220px; }
+.tabla .d { display: table-cell; }
+.tabla th, .tabla td { padding: 13px 16px; }
+.prow { grid-template-columns: 52px minmax(220px, 1.6fr) 120px minmax(220px, 1.2fr) 120px 84px; grid-template-areas: "img n p s e b"; gap: 16px; padding: 12px 18px; }
+.prow > img { width: 52px; height: 52px; align-self: center; }
+.prow > .btn { margin-top: 0; justify-self: end; }
+.prow__e { justify-self: start; }
+.crow { grid-template-columns: 1fr 110px; }
+.reg li { grid-template-columns: 150px 150px 1fr; align-items: baseline; } .reg time { grid-column: auto; }
+.fila-b { padding: 12px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 8px; }
+
+.tabla .m { display: none; }
+.tabla--perm th, .tabla--perm td { padding: 13px 16px; }
+.tabla--perm thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; } .tabla--perm tbody th { font-size: 15px; }

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tu pedido · Ancap Santa María</title>
+<meta name="description" content="Completá tus datos, elegí tu zona y confirmá el pedido. Te lo llevamos a tu barrio.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#00457C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ancap Santa María">
+<meta property="og:title" content="Tu pedido · Ancap Santa María">
+<meta property="og:description" content="Completá tus datos, elegí tu zona y confirmá el pedido. Te lo llevamos a tu barrio.">
+<meta property="og:url" content="https://livo.com.uy/ancapgaribaldi/checkout.html">
+<meta property="og:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Ancap Santa María sobre fondo blanco">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<link rel="icon" href="img/favicon.png">
+<link rel="stylesheet" href="css/tokens.css?v=1">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=1">
+<link rel="stylesheet" href="css/movil.css?v=1">
+<link rel="stylesheet" href="css/escritorio.css?v=1" media="(min-width: 768px)">
+</head>
+<body data-pagina="checkout">
+<script src="js/iconos.js?v=1"></script>
+
+<main class="cont pag">
+  <h1 class="pag__t">Tu pedido</h1>
+
+  <div class="vacio vacio--ancho" id="vacio" hidden>
+    <svg class="icon icon--xl" aria-hidden="true"><use href="#i-shopping-bag"/></svg>
+    <p><strong>El carrito está vacío.</strong></p>
+    <p>Elegí productos en la tienda para armar el pedido.</p>
+    <a class="btn" href="tienda.html">Ir a la tienda</a>
+  </div>
+
+  <div class="pago" id="checkout">
+    <form class="pago__f" id="form-pedido" novalidate>
+      <fieldset>
+        <legend><span class="legend__n">1</span>Tus datos</legend>
+        <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
+        <label class="campo"><span>Celular</span><input name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="099 123 456" required><small>Te avisamos por acá cuando salga el pedido.</small></label>
+      </fieldset>
+      <fieldset>
+        <legend><span class="legend__n">2</span>Dónde te lo llevamos</legend>
+        <label class="campo"><span>Zona</span><select name="zona" id="zona" required></select></label>
+        <label class="campo"><span>Calle y número</span><input name="direccion" autocomplete="street-address" required></label>
+        <label class="campo"><span>Apartamento o referencia (opcional)</span><input name="referencia" placeholder="Apto 4, portón negro"></label>
+      </fieldset>
+      <fieldset>
+        <legend><span class="legend__n">3</span>Pago</legend>
+        <div class="pago__mp">
+          <svg class="icon icon--g" aria-hidden="true"><use href="#i-credit-card"/></svg>
+          <div><p><strong>Mercado Pago</strong></p><p class="suave">Pago de muestra: no se cobra nada. Cuando la estación conecte su cuenta, acá se abre el pago real.</p></div>
+        </div>
+      </fieldset>
+      <p class="aviso-caja aviso-caja--error" id="form-error" role="alert" hidden></p>
+      <button class="btn btn--naranja btn--ancho btn--grande" id="btn-pagar" type="submit">Pagar</button>
+    </form>
+
+    <aside class="res" aria-label="Resumen del pedido">
+      <h2>Resumen</h2>
+      <ul class="res__items" id="res-items"></ul>
+      <dl class="res__tot">
+        <div><dt>Subtotal</dt><dd class="num" id="res-sub"></dd></div>
+        <div><dt>Envío</dt><dd class="num" id="res-env"></dd></div>
+        <div class="res__total"><dt>Total</dt><dd class="num" id="res-total"></dd></div>
+      </dl>
+      <p class="aviso-caja" id="res-aviso" hidden></p>
+    </aside>
+  </div>
+</main>
+
+<script src="js/catalogo.js?v=1"></script>
+<script src="js/datos.js?v=1"></script>
+<script src="js/tienda.js?v=1"></script>
+</body>
+</html>

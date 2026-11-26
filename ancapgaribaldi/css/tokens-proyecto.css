@@ -1,0 +1,62 @@
+/* ============================================================
+   ANCAP SANTA MARÍA — paleta y tipografía de este proyecto
+   Los colores salen del CSS real de ancap.com.uy (leído el 26/11/2026):
+   azul #00457C (dominante), naranja #FE7903 (acento), celeste #0077A2,
+   grises #555555 / #F2F2F2 / #DADADA. Lo demás son derivados con contraste medido.
+   Pisa a tokens.css.
+   ============================================================ */
+
+/* Ancap usa Helvetica Neue LT Std (de pago). Acá: Inter Tight, libre, autoalojada. */
+@font-face {
+  font-family: "Inter Tight";
+  src: url("../fonts/inter-tight.woff2") format("woff2");
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* Marca */
+  --azul:          #00457C;   /* 9,8:1 sobre blanco */
+  --azul-oscuro:   #00305A;   /* pie y fondos de foto; 13,4:1 con blanco */
+  --azul-claro:    #E6EEF5;   /* fondo de círculos de categoría y píldoras */
+  --celeste:       #0077A2;   /* enlaces e íconos; 5,05:1 sobre blanco */
+  --naranja:       #FE7903;   /* SOLO como fondo, con texto #1A1A1A (6,6:1). Nunca como letra */
+  --naranja-texto: #B34F00;   /* el naranja cuando tiene que ser letra: 5,2:1 sobre blanco */
+  --naranja-claro: #FFF1E3;
+
+  /* Neutros */
+  --texto:         #1A1A1A;
+  --texto-suave:   #555555;   /* 7,5:1 sobre blanco */
+  --texto-apagado: #6B6B6B;   /* 5,3:1 sobre blanco, 4,8:1 sobre el marco */
+  --fondo:         #FFFFFF;
+  --marco:         #F2F2F2;
+  --linea:         #DADADA;
+  --linea-suave:   #E8E8E8;
+
+  /* Estados (texto sobre fondo tintado, todos ≥ 4,5:1) */
+  --ok:            #1F7A4D;   --ok-fondo:    #E4F3EA;
+  --aviso:         #8A5A00;   --aviso-fondo: #FFF4D6;
+  --error:         #B3261E;   --error-fondo: #FBE9E7;
+  --info:          #00457C;   --info-fondo:  #E1F1F7;
+
+  /* Tokens de Livo que este proyecto afina */
+  --acento:        var(--naranja);
+  --acento-claro:  var(--naranja-claro);
+  --fuente:        "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --radio:         6px;       /* servicios básicos: recto o radio bajo */
+  --radio-g:       10px;
+  --alto-campo:    48px;
+  --barra-inferior: var(--fondo);
+  --fs-h1: 38px; --fs-h2: 26px; --fs-h3: 19px;
+
+  /* Alturas del encabezado (móvil: 2 filas, escritorio: 1 fila + franja) */
+  --nav-alto: 116px;
+  --tabs-alto: 60px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --fs-h1: 58px; --fs-h2: 34px; --fs-h3: 22px;
+    --nav-alto: 124px;
+    --tabs-alto: 0px;
+  }
+}

@@ -1,0 +1,18 @@
+/* ============================================================
+   ANCAP SANTA MARÍA — pantallas BAJAS (se carga con media="(max-height: 660px)")
+   Hace que el hero siga midiendo exactamente una pantalla en celulares chicos
+   y en notebooks de poca altura, sin que la flecha de "Bajá" quede tapada.
+   Se comprime con un corte por alto, no con clamp() + svh (ver construccion.md).
+   ============================================================ */
+.hero { padding: 20px 0 64px; }
+.hero__c { gap: 12px; }
+.hero h1 { font-size: 32px; }
+.hero__sub { font-size: 16px; line-height: 1.4; }
+.hero__btns { gap: 8px; margin-top: 2px; }
+.hero__btns .btn { min-height: 46px; padding-block: 0; }
+.cue { bottom: 14px; }
+
+@media (max-height: 600px) {
+  .hero__sub { display: none; }   /* lo menos esencial: la sección no se estira */
+  .hero { padding-bottom: 56px; }
+}

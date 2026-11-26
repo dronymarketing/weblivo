@@ -1,0 +1,121 @@
+/* ============================================================
+   ANCAP SANTA MARÍA — tienda · SOLO lo que cambia de 768px para arriba
+   Se carga con media="(min-width: 768px)" en el <link>. Acá no hace falta envolver nada.
+   Regla fija: en escritorio nunca hay hamburguesa; los links van a la vista.
+   ============================================================ */
+
+/* ---------- Encabezado: franja + una fila ---------- */
+.tabs, .cab__menu, .cab__llamar, .hoja { display: none; }
+.cab__franja { display: block; height: 36px; background: var(--azul-oscuro); font-size: 13px; }
+.cab__franja-i { display: flex; align-items: center; justify-content: space-between; height: 36px; }
+.cab__franja span, .cab__franja a { display: inline-flex; align-items: center; gap: 8px; color: #E3EDF5; text-decoration: none; }
+.cab__franja a:hover { text-decoration: underline; }
+.cab__franja .icon { width: 16px; height: 16px; }
+.cab__fila { display: flex; align-items: center; gap: 28px; height: 88px; }
+.logo { gap: 9px; }
+.logo__a { font-size: 28px; }
+.logo__b { font-size: 17px; }
+.busca { flex: 1; max-width: 620px; height: 48px; }
+.busca input { font-size: 16px; }
+.cab__links { display: flex; align-items: center; gap: 26px; margin-left: auto; }
+.cab__links a { padding: 6px 0; color: #fff; text-decoration: none; font-size: 13px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px solid transparent; transition: border-color var(--dur-micro) var(--ease); }
+.cab__links a:hover, .cab__links a[aria-current="page"] { border-bottom-color: #fff; }
+.cab__carrito { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border: 1px solid rgba(255,255,255,.4); border-radius: var(--radio); background: transparent; color: #fff; font-weight: 650; font-size: 15px; transition: background var(--dur-micro) var(--ease); }
+.cab__carrito:hover { background: rgba(255,255,255,.12); }
+.cab__carrito .badge { top: -9px; right: -9px; }
+.cab__carrito-t:empty { display: none; }
+
+/* ---------- Carrito: panel lateral ---------- */
+.cart__panel { left: auto; top: 0; width: 430px; max-height: none; border-radius: 0; transform: translateX(100%); padding-bottom: 0; }
+.cart.abierto .cart__panel { transform: none; }
+.cart__cab { padding: 20px 28px 8px; }
+.cart__cuerpo { padding: 0 28px; }
+.cart__pie { padding: 18px 28px 24px; }
+
+/* ---------- Producto, carriles, grilla ---------- */
+.grilla { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.prod { transition: border-color var(--dur-micro) var(--ease); }
+.prod:hover { border-color: #B9C9D8; }
+.prod__foto { padding: 18px; }
+.prod__nombre { font-size: 16px; }
+.prod__precio strong { font-size: 20px; }
+.carril { padding-inline: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral))); overflow-x: auto; }
+.carril .prod { flex: 0 0 224px; }
+
+/* ---------- Secciones ---------- */
+.sec { padding: 72px 0; }
+.sec h2 { margin-bottom: 26px; }
+.sec__cab h2 { margin-bottom: 26px; }
+
+/* ---------- Inicio ---------- */
+.hero { padding: 64px 0 96px; }
+.hero__c { gap: 22px; }
+.hero__c > * { max-width: 620px; }
+.hero__sub { font-size: 19px; }
+.hero__btns { display: flex; gap: 12px; }
+.hero__btns .btn { min-height: 54px; padding: 0 30px; font-size: 17px; }
+.hero__fondo img { object-position: center 40%; }
+.hero__fondo::after { background: linear-gradient(90deg, rgba(0, 35, 66, .9) 0%, rgba(0, 35, 66, .74) 45%, rgba(0, 35, 66, .5) 100%); }
+
+.cats { overflow: visible; justify-content: space-between; padding: 4px 0; gap: 12px; max-width: var(--max-contenedor); margin: 0 auto; padding-inline: var(--margen-lateral); }
+.cat { flex: 1 1 0; }
+.cat__o { width: 92px; height: 92px; }
+.cat__o img { width: 60px; height: 60px; }
+.cat__n { font-size: 14.5px; }
+
+.banners { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; overflow: visible; margin: 0 0 28px; padding: 0; }
+.banner { flex: none; min-height: 210px; padding: 26px; }
+.banner h3 { font-size: 27px; }
+
+.vehiculo__g { grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.vehiculo__f img { aspect-ratio: 5 / 4; }
+.vehiculo__t > p:not(.etiqueta) { max-width: 46ch; font-size: 17px; }
+.envios { grid-template-columns: 1fr 1.25fr; gap: 64px; align-items: start; }
+.envios__t p:not(.etiqueta) { max-width: 40ch; font-size: 17px; }
+th, td { padding: 13px 18px; font-size: 15.5px; }
+thead th { font-size: 12px; }
+.donde { grid-template-columns: 1fr auto; align-items: center; gap: 48px; }
+.donde__b { grid-auto-flow: column; }
+.donde__b .btn { min-height: 54px; padding: 0 28px; }
+
+/* ---------- Pie ---------- */
+.pie { padding: 56px 0 32px; }
+.pie__i { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; }
+
+/* ---------- Páginas internas ---------- */
+.pag { padding-top: 40px; padding-bottom: 80px; }
+.pag__t { font-size: 36px; margin-bottom: 26px; }
+
+/* Tienda: filtros a la izquierda */
+.tienda__cab { margin-bottom: 20px; }
+.tienda__cab h1 { font-size: 36px; }
+.tienda__g { display: grid; grid-template-columns: 236px 1fr; gap: 40px; align-items: start; }
+.filtros { position: sticky; top: calc(var(--nav-alto) + 20px); display: grid; gap: 20px; }
+.chips { position: static; flex-direction: column; gap: 2px; overflow: visible; margin: 0; padding: 0; border: 0; background: transparent; }
+.chip { min-height: 42px; border-radius: var(--radio); border-color: transparent; text-align: left; font-size: 15.5px; }
+.chip:hover { background: var(--azul-claro); border-color: transparent; }
+.filtros__f { display: grid; justify-content: stretch; gap: 10px; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--linea); }
+.campo--linea { display: grid; gap: 6px; }
+.campo--linea select { width: 100%; min-height: 44px; }
+.tienda .grilla { grid-template-columns: repeat(auto-fill, minmax(206px, 1fr)); }
+
+/* Checkout: formulario y resumen lado a lado */
+.pago { grid-template-columns: 1fr 400px; gap: 64px; }
+.res { position: sticky; top: calc(var(--nav-alto) + 20px); }
+
+/* Seguimiento */
+.seg__cols { grid-template-columns: 1.3fr 1fr; gap: 56px; }
+.seg__num { font-size: 52px; }
+
+/* Servicios */
+.serv__g { grid-template-columns: 1.1fr 1fr; gap: 72px; align-items: start; }
+.serv__fotos { position: sticky; top: calc(var(--nav-alto) + 20px); }
+.consulta { grid-template-columns: .8fr 1.3fr; gap: 28px; align-items: stretch; }
+.consulta__t { min-height: 520px; padding: 36px; }
+.consulta__t h2 { font-size: 34px; }
+.consulta__f { padding: 36px; }
+.fila2 { grid-template-columns: 1fr 1fr; }
+.fila3 { grid-template-columns: 1fr 1fr 120px; }
+.checks { grid-template-columns: 1fr 1fr; }
+
+.carril { scroll-padding-inline: max(var(--margen-lateral), calc((100vw - var(--max-contenedor)) / 2 + var(--margen-lateral))); }

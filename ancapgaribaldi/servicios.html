@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Servicios del auto · Ancap Santa María</title>
+<meta name="description" content="Cubiertas, alineación y balanceo, y taller mecánico en Garibaldi 1902, Goes. Abiertos las 24 horas. Contanos qué necesita tu vehículo.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#00457C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ancap Santa María">
+<meta property="og:title" content="Servicios del auto · Ancap Santa María">
+<meta property="og:description" content="Cubiertas, alineación y balanceo, y taller mecánico en Garibaldi 1902, Goes. Abiertos las 24 horas. Contanos qué necesita tu vehículo.">
+<meta property="og:url" content="https://livo.com.uy/ancapgaribaldi/servicios.html">
+<meta property="og:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Ancap Santa María sobre fondo blanco">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<link rel="icon" href="img/favicon.png">
+<link rel="stylesheet" href="css/tokens.css?v=1">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=1">
+<link rel="stylesheet" href="css/movil.css?v=1">
+<link rel="stylesheet" href="css/escritorio.css?v=1" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/alturas.css?v=1" media="(max-height: 660px)">
+</head>
+<body data-pagina="servicios">
+<script src="js/iconos.js?v=1"></script>
+
+<main>
+  <section class="hero hero--serv" id="inicio">
+    <div class="hero__fondo"><img src="img/servicios/taller-3.jpg" alt="Primer plano del motor de un auto, con la correa y las poleas" fetchpriority="high"></div>
+    <div class="cont hero__c">
+      <p class="hero__tag micro">Garibaldi 1902, Goes</p>
+      <h1>Cubiertas, alineación y taller</h1>
+      <p class="hero__sub">Estamos abiertos las 24 horas. Contanos qué necesita tu vehículo y lo vemos con calma.</p>
+      <div class="hero__btns">
+        <a class="btn btn--naranja" href="#consulta">Hacer una consulta</a>
+        <a class="btn btn--fantasma" href="tel:+59822034196">Llamar al local</a>
+      </div>
+    </div>
+    <a class="cue" href="#servicios" aria-label="Bajar a los servicios"><span>Bajá</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-down"/></svg></a>
+  </section>
+
+  <section class="sec" id="servicios">
+    <div class="cont serv__g">
+      <div>
+        <p class="micro etiqueta rev">Qué hacemos</p>
+        <h2 class="rev">Servicios</h2>
+        <ul class="serv__l" id="lista-servicios"></ul>
+      </div>
+      <div class="serv__fotos">
+        <figure class="rev"><img src="img/servicios/taller-2.jpg" alt="Manos de un mecánico con una llave sobre el motor" loading="lazy" width="1200" height="900"></figure>
+        <figure class="rev" data-i="1"><img src="img/servicios/herramientas.jpg" alt="Pared del taller con las llaves colgadas en orden" loading="lazy" width="1200" height="800"></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--marco" id="consulta">
+    <div class="cont consulta">
+      <div class="consulta__t rev">
+        <img src="img/servicios/lavadero.jpg" alt="" aria-hidden="true" loading="lazy" width="1200" height="675">
+        <div>
+          <p class="micro etiqueta">Consulta</p>
+          <h2>Contanos qué necesita</h2>
+          <p>Completá los datos de tu vehículo y te respondemos al celular. No tiene costo ni compromiso.</p>
+        </div>
+      </div>
+      <div class="consulta__f rev" data-i="1">
+        <form id="form-consulta" novalidate>
+          <div class="fila2">
+            <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
+            <label class="campo"><span>Celular</span><input name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="099 123 456" required></label>
+          </div>
+          <div class="fila3">
+            <label class="campo"><span>Marca</span><input name="marca" list="marcas" required></label>
+            <label class="campo"><span>Modelo</span><input name="modelo" required></label>
+            <label class="campo"><span>Año</span><select name="anio" id="anio"></select></label>
+          </div>
+          <datalist id="marcas"><option>Chevrolet</option><option>Citroën</option><option>Fiat</option><option>Ford</option><option>Honda</option><option>Hyundai</option><option>Kia</option><option>Nissan</option><option>Peugeot</option><option>Renault</option><option>Suzuki</option><option>Toyota</option><option>Volkswagen</option></datalist>
+          <div class="campo"><span>Qué necesita</span><div class="checks" id="necesita"></div></div>
+          <label class="campo"><span>Algo más que quieras contarnos (opcional)</span><textarea name="mensaje"></textarea></label>
+          <p class="aviso-caja aviso-caja--error" id="form-error" role="alert" hidden></p>
+          <button class="btn btn--naranja btn--ancho btn--grande" type="submit">Enviar consulta</button>
+        </form>
+        <div class="consulta__ok" id="consulta-ok" hidden>
+          <svg class="icon icon--xl" aria-hidden="true"><use href="#i-circle-check"/></svg>
+          <h3>Consulta <span id="ok-num"></span> enviada</h3>
+          <p>Te respondemos al <strong id="ok-tel"></strong> lo antes posible.</p>
+          <a class="btn btn--borde" href="tel:+59822034196">Llamar al 2203 4196</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/catalogo.js?v=1"></script>
+<script src="js/datos.js?v=1"></script>
+<script src="js/tienda.js?v=1"></script>
+</body>
+</html>

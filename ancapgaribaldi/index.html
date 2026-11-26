@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es-UY">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ancap Santa María · Estación de servicio y tienda en Goes</title>
+<meta name="description" content="Estación de servicio en Goes, abierta las 24 horas. Pedí el súper desde el celular y consultá por cubiertas, alineación, balanceo y taller mecánico.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#00457C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ancap Santa María">
+<meta property="og:title" content="Ancap Santa María · Estación de servicio y tienda en Goes">
+<meta property="og:description" content="Estación de servicio en Goes, abierta las 24 horas. Pedí el súper desde el celular y consultá por cubiertas, alineación, balanceo y taller mecánico.">
+<meta property="og:url" content="https://livo.com.uy/ancapgaribaldi/index.html">
+<meta property="og:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Ancap Santa María sobre fondo blanco">
+<meta property="og:locale" content="es_UY">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://livo.com.uy/ancapgaribaldi/img/og-blanco.jpg?v=1">
+<link rel="icon" href="img/favicon.png">
+<link rel="stylesheet" href="css/tokens.css?v=1">
+<link rel="stylesheet" href="css/tokens-proyecto.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=1">
+<link rel="stylesheet" href="css/movil.css?v=1">
+<link rel="stylesheet" href="css/escritorio.css?v=1" media="(min-width: 768px)">
+<link rel="stylesheet" href="css/alturas.css?v=1" media="(max-height: 660px)">
+</head>
+<body data-pagina="inicio">
+<script src="js/iconos.js?v=1"></script>
+
+<main>
+  <section class="hero" id="inicio">
+    <div class="hero__fondo"><img src="img/estacion.jpg" alt="Techo de una estación de servicio de noche, con las luces encendidas" fetchpriority="high"></div>
+    <div class="cont hero__c">
+      <p class="hero__tag micro">Abierto las 24 horas</p>
+      <h1>La esquina que nunca cierra</h1>
+      <p class="hero__sub">Hacé el pedido del súper desde el celular y te lo llevamos. Y si el auto necesita algo, también lo vemos acá.</p>
+      <div class="hero__btns">
+        <a class="btn btn--naranja" href="tienda.html">Hacer mi pedido</a>
+        <a class="btn btn--fantasma" href="servicios.html">Servicios del auto</a>
+      </div>
+    </div>
+    <a class="cue" href="#categorias" aria-label="Bajar a las categorías"><span>Bajá</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-down"/></svg></a>
+  </section>
+
+  <section class="sec" id="categorias">
+    <div class="cont"><h2 class="rev">Categorías</h2></div>
+    <div class="carril-wrap"><div class="cats rev" id="cats" data-i="1"></div></div>
+  </section>
+
+  <section class="sec sec--marco" id="ofertas-sec">
+    <div class="cont sec__cab rev"><h2>Ofertas de la semana</h2><a class="ver" href="tienda.html?oferta=1">Ver todas</a></div>
+    <div class="cont"><div class="banners rev" id="banners" data-i="1"></div></div>
+    <div class="carril-wrap"><div class="carril rev" id="ofertas" data-i="2"></div></div>
+  </section>
+
+  <section class="sec" id="destacados-sec">
+    <div class="cont sec__cab rev"><h2>Para el día a día</h2><a class="ver" href="tienda.html">Ver toda la tienda</a></div>
+    <div class="cont"><div class="grilla rev" id="destacados" data-i="1"></div></div>
+  </section>
+
+  <section class="sec sec--marco vehiculo" id="vehiculo">
+    <div class="cont vehiculo__g">
+      <div class="vehiculo__t rev">
+        <p class="micro etiqueta">Para el vehículo</p>
+        <h2>Taller y gomería</h2>
+        <p>Cubiertas, alineación y balanceo, y taller mecánico. Contanos qué necesita tu vehículo y lo vemos con calma.</p>
+        <ul class="vehiculo__l" id="serv-mini"></ul>
+        <a class="btn" href="servicios.html#consulta">Hacer una consulta</a>
+      </div>
+      <figure class="vehiculo__f rev" data-i="1"><img src="img/servicios/taller-1.jpg" alt="Mecánico revisando el motor de un auto con el capó abierto" loading="lazy" width="1200" height="675"></figure>
+    </div>
+  </section>
+
+  <section class="sec" id="envios">
+    <div class="cont envios">
+      <div class="envios__t rev">
+        <p class="micro etiqueta">Envíos</p>
+        <h2>Llegamos a tu barrio</h2>
+        <p>Elegís tu zona al hacer el pedido y el costo del envío se suma al total. Desde cierto monto, el envío es gratis.</p>
+      </div>
+      <div class="envios__tabla rev" data-i="1">
+        <table>
+          <thead><tr><th scope="col">Zona</th><th scope="col">Envío</th><th scope="col">Mínimo</th><th scope="col">Gratis desde</th></tr></thead>
+          <tbody id="tabla-zonas"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--azul" id="donde">
+    <div class="cont donde rev">
+      <div>
+        <p class="micro etiqueta">Cómo llegar</p>
+        <h2>Estamos en Goes</h2>
+        <p>Av. Gral. José Garibaldi 1902, esquina José L. Terra, Montevideo.<br>Abierto las 24 horas, todos los días.</p>
+      </div>
+      <div class="donde__b">
+        <a class="btn btn--naranja" href="tel:+59822034196">Llamar al 2203 4196</a>
+        <a class="btn btn--fantasma" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Gral.+Garibaldi+1902+Montevideo" target="_blank" rel="noopener">Ver en el mapa</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/catalogo.js?v=1"></script>
+<script src="js/datos.js?v=1"></script>
+<script src="js/tienda.js?v=1"></script>
+</body>
+</html>
