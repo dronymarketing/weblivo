@@ -3,8 +3,8 @@
 Estación de servicio en **Av. Gral. José Garibaldi 1902, esquina José L. Terra (Goes, Montevideo)**, abierta las 24 horas.
 Es un **sistema**, no una web de presentación: una **tienda** de súper donde la gente compra y paga online con envío a domicilio,
 una sección de **servicios del vehículo** con formulario de consulta, y un **panel de atrás** donde el negocio recibe y gestiona todo.
-Referencia de estructura (no copia): Parking Despegar, dos paneles sobre la misma base. La carpeta se llama `ancapgaribaldi/`
-(así se bautizó el proyecto); el nombre en pantalla es **Ancap Santa María**, que es como figura en directorios.
+Referencia de estructura (no copia): Parking Despegar, dos paneles sobre la misma base. La carpeta se llama `ancap/` (dirección: **livo.com.uy/ancap**; el proyecto se bautizó «Ancap Garibaldi»).
+El nombre en pantalla es **Ancap Santa María**, que es como figura en directorios.
 
 ## Decisiones (Santi)
 
@@ -37,7 +37,7 @@ Referencia de estructura (no copia): Parking Despegar, dos paneles sobre la mism
 ## Estructura
 
 ```
-ancapgaribaldi/
+ancap/
   index.html        inicio: hero 100svh con scroll cue, categorías, ofertas, destacados, taller y gomería, envíos, cómo llegar
   tienda.html       catálogo: filtros por categoría, ofertas, orden, búsqueda
   checkout.html     datos, zona (calcula envío y mínimo), pago de muestra
